@@ -1,0 +1,19 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: tools/setup.sh
+      - run: cargo build
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: tools/setup.sh
+      - run: cargo test
