@@ -1,90 +1,160 @@
 use crate::{
     attribute::Attribute,
     block::Block,
+    context::Context,
+    identifier::Identifier,
     location::Location,
     r#type::Type,
     region::Region,
     utility::{as_string_ref, into_raw_array},
     value::Value,
 };
-use mlir_sys::{mlirIdentifierGet, mlirNamedAttributeGet, MlirOperationState};
-use std::collections::HashMap;
+use mlir_sys::{
+    mlirNamedAttributeGet, mlirOperationStateAddAttributes, mlirOperationStateAddOperands,
+    mlirOperationStateAddOwnedRegions, mlirOperationStateAddResults,
+    mlirOperationStateAddSuccessors, mlirOperationStateGet, MlirOperationState,
+};
+use std::marker::PhantomData;
 
 pub struct OperationState<'c> {
-    name: String,
-    location: Location<'c>,
-    results: Vec<Type<'c>>,
-    operands: Vec<Value>,
-    regions: Vec<Region>,
-    successors: Vec<Block>,
-    attributes: HashMap<String, Attribute<'c>>,
-    enable_result_type_inference: bool,
+    state: MlirOperationState,
+    _context: PhantomData<&'c Context>,
 }
 
 impl<'c> OperationState<'c> {
-    pub fn new(name: impl Into<String>, location: Location<'c>) -> Self {
+    pub fn new(name: &str, location: Location<'c>) -> Self {
         Self {
-            name: name.into(),
-            location,
-            results: vec![],
-            operands: vec![],
-            regions: vec![],
-            successors: vec![],
-            attributes: Default::default(),
-            enable_result_type_inference: false,
+            state: unsafe { mlirOperationStateGet(as_string_ref(name), location.to_raw()) },
+            _context: Default::default(),
         }
     }
 
-    pub(crate) fn into_raw(self) -> MlirOperationState {
+    pub fn add_results(&mut self, results: Vec<Type<'c>>) -> &mut Self {
         unsafe {
-            MlirOperationState {
-                name: as_string_ref(&self.name),
-                location: self.location.to_raw(),
-                nResults: self.results.len() as isize,
-                results: into_raw_array(
-                    self.results
+            mlirOperationStateAddResults(
+                &mut self.state,
+                results.len() as isize,
+                into_raw_array(results.iter().map(|r#type| r#type.to_raw()).collect()),
+            )
+        }
+
+        self
+    }
+
+    pub fn add_operands(&mut self, operands: Vec<Value>) -> &mut Self {
+        unsafe {
+            mlirOperationStateAddOperands(
+                &mut self.state,
+                operands.len() as isize,
+                into_raw_array(operands.iter().map(|value| value.to_raw()).collect()),
+            )
+        }
+
+        self
+    }
+
+    pub fn add_owned_regions(&mut self, regions: Vec<Region>) -> &mut Self {
+        unsafe {
+            mlirOperationStateAddOwnedRegions(
+                &mut self.state,
+                regions.len() as isize,
+                into_raw_array(regions.iter().map(|region| region.to_raw()).collect()),
+            )
+        }
+
+        self
+    }
+
+    pub fn add_successors(&mut self, successors: Vec<Block>) -> &mut Self {
+        unsafe {
+            mlirOperationStateAddSuccessors(
+                &mut self.state,
+                successors.len() as isize,
+                into_raw_array(successors.iter().map(|block| block.to_raw()).collect()),
+            )
+        }
+
+        self
+    }
+
+    pub fn add_attributes(&mut self, attributes: Vec<(Identifier, Attribute<'c>)>) -> &mut Self {
+        unsafe {
+            mlirOperationStateAddAttributes(
+                &mut self.state,
+                attributes.len() as isize,
+                into_raw_array(
+                    attributes
                         .into_iter()
-                        .map(|r#type| r#type.to_raw())
-                        .collect(),
-                ),
-                nOperands: self.operands.len() as isize,
-                operands: into_raw_array(
-                    self.operands
-                        .into_iter()
-                        .map(|value| value.to_raw())
-                        .collect(),
-                ),
-                nRegions: self.regions.len() as isize,
-                regions: into_raw_array(
-                    self.regions
-                        .into_iter()
-                        .map(|region| region.to_raw())
-                        .collect(),
-                ),
-                nSuccessors: self.successors.len() as isize,
-                successors: into_raw_array(
-                    self.successors
-                        .into_iter()
-                        .map(|block| block.to_raw())
-                        .collect(),
-                ),
-                nAttributes: self.attributes.len() as isize,
-                attributes: into_raw_array(
-                    self.attributes
-                        .into_iter()
-                        .map(|(name, attribute)| {
-                            mlirNamedAttributeGet(
-                                mlirIdentifierGet(
-                                    self.location.context().to_raw(),
-                                    as_string_ref(&name),
-                                ),
-                                attribute.to_raw(),
-                            )
+                        .map(|(identifier, attribute)| {
+                            mlirNamedAttributeGet(identifier.to_raw(), attribute.to_raw())
                         })
                         .collect(),
                 ),
-                enableResultTypeInference: self.enable_result_type_inference,
-            }
+            )
         }
+
+        self
+    }
+
+    pub(crate) unsafe fn into_raw(self) -> MlirOperationState {
+        self.state
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::context::Context;
+    use crate::operation::Operation;
+
+    #[test]
+    fn new() {
+        Operation::new(OperationState::new(
+            "foo",
+            Location::unknown(&Context::new()),
+        ));
+    }
+
+    #[test]
+    fn add_results() {
+        let context = Context::new();
+        let mut state = OperationState::new("foo", Location::unknown(&context));
+
+        state.add_results(vec![Type::parse(&context, "i1")]);
+
+        Operation::new(state);
+    }
+
+    #[test]
+    fn add_owned_regions() {
+        let context = Context::new();
+        let mut state = OperationState::new("foo", Location::unknown(&context));
+
+        state.add_owned_regions(vec![Region::new()]);
+
+        Operation::new(state);
+    }
+
+    #[test]
+    fn add_successors() {
+        let context = Context::new();
+        let mut state = OperationState::new("foo", Location::unknown(&context));
+
+        state.add_successors(vec![Block::new(vec![])]);
+
+        Operation::new(state);
+    }
+
+    #[test]
+    fn add_attributes() {
+        let context = Context::new();
+        let mut state = OperationState::new("foo", Location::unknown(&context));
+
+        state.add_attributes(vec![(
+            Identifier::new(&context, "foo"),
+            Attribute::parse(&context, "unit"),
+        )]);
+
+        Operation::new(state);
     }
 }
