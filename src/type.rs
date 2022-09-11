@@ -1,10 +1,12 @@
 use crate::{
     context::{Context, ContextRef},
-    utility::as_string_ref,
+    string_ref::StringRef,
 };
 use mlir_sys::{mlirTypeGetContext, mlirTypeParseGet, MlirType};
 use std::marker::PhantomData;
 
+// Types are always values but their internal storage is owned by contexts.
+#[derive(Clone, Copy, Debug)]
 pub struct Type<'c> {
     r#type: MlirType,
     _context: PhantomData<&'c Context>,
@@ -13,7 +15,7 @@ pub struct Type<'c> {
 impl<'c> Type<'c> {
     pub fn parse(context: &Context, source: &str) -> Self {
         Self {
-            r#type: unsafe { mlirTypeParseGet(context.to_raw(), as_string_ref(source)) },
+            r#type: unsafe { mlirTypeParseGet(context.to_raw(), StringRef::from(source).to_raw()) },
             _context: Default::default(),
         }
     }
@@ -22,7 +24,7 @@ impl<'c> Type<'c> {
         unsafe { ContextRef::from_raw(mlirTypeGetContext(self.r#type)) }
     }
 
-    pub(crate) unsafe fn to_raw(&self) -> MlirType {
+    pub(crate) unsafe fn to_raw(self) -> MlirType {
         self.r#type
     }
 }

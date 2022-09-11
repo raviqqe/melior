@@ -1,12 +1,13 @@
 use crate::{
     context::{Context, ContextRef},
-    utility::as_string_ref,
+    string_ref::StringRef,
 };
 use mlir_sys::{
     mlirLocationFileLineColGet, mlirLocationGetContext, mlirLocationUnknownGet, MlirLocation,
 };
 use std::marker::PhantomData;
 
+#[derive(Clone, Copy, Debug)]
 pub struct Location<'c> {
     location: MlirLocation,
     _context: PhantomData<&'c Context>,
@@ -18,7 +19,7 @@ impl<'c> Location<'c> {
             location: unsafe {
                 mlirLocationFileLineColGet(
                     context.to_raw(),
-                    as_string_ref(filename),
+                    StringRef::from(filename).to_raw(),
                     line as u32,
                     column as u32,
                 )
@@ -38,7 +39,7 @@ impl<'c> Location<'c> {
         unsafe { ContextRef::from_raw(mlirLocationGetContext(self.location)) }
     }
 
-    pub(crate) unsafe fn to_raw(&self) -> MlirLocation {
+    pub(crate) unsafe fn to_raw(self) -> MlirLocation {
         self.location
     }
 }

@@ -1,15 +1,23 @@
 use mlir_sys::MlirValue;
+use std::marker::PhantomData;
 
-pub struct Value {
+// Values are always non-owning references to their parents, such as operations and block arguments.
+// See the `Value` class in the MLIR C++ API.
+#[derive(Clone, Copy, Debug)]
+pub struct Value<'a> {
     value: MlirValue,
+    _parent: PhantomData<&'a ()>,
 }
 
-impl Value {
-    pub(crate) fn from_raw(value: MlirValue) -> Self {
-        Self { value }
+impl<'a> Value<'a> {
+    pub(crate) unsafe fn from_raw(value: MlirValue) -> Self {
+        Self {
+            value,
+            _parent: Default::default(),
+        }
     }
 
-    pub(crate) fn to_raw(&self) -> MlirValue {
+    pub(crate) unsafe fn to_raw(self) -> MlirValue {
         self.value
     }
 }

@@ -1,8 +1,13 @@
 use crate::{
+    block::{BlockRef, BlockRefMut},
     context::{Context, ContextRef},
     location::Location,
+    operation::{OperationRef, OperationRefMut},
 };
-use mlir_sys::{mlirModuleCreateEmpty, mlirModuleDestroy, mlirModuleGetContext, MlirModule};
+use mlir_sys::{
+    mlirModuleCreateEmpty, mlirModuleDestroy, mlirModuleGetBody, mlirModuleGetContext,
+    mlirModuleGetOperation, MlirModule,
+};
 use std::marker::PhantomData;
 
 pub struct Module<'c> {
@@ -18,8 +23,24 @@ impl<'c> Module<'c> {
         }
     }
 
+    pub fn as_operation(&self) -> OperationRef {
+        unsafe { OperationRef::from_raw(mlirModuleGetOperation(self.module)) }
+    }
+
+    pub fn as_operation_mut(&mut self) -> OperationRefMut {
+        unsafe { OperationRefMut::from_raw(mlirModuleGetOperation(self.module)) }
+    }
+
     pub fn context(&self) -> ContextRef<'c> {
         unsafe { ContextRef::from_raw(mlirModuleGetContext(self.module)) }
+    }
+
+    pub fn body(&self) -> BlockRef {
+        unsafe { BlockRef::from_raw(mlirModuleGetBody(self.module)) }
+    }
+
+    pub fn body_mut(&mut self) -> BlockRefMut {
+        unsafe { BlockRefMut::from_raw(mlirModuleGetBody(self.module)) }
     }
 }
 

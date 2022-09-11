@@ -1,13 +1,7 @@
 use crate::{
-    attribute::Attribute,
-    block::Block,
-    context::Context,
-    identifier::Identifier,
-    location::Location,
-    r#type::Type,
-    region::Region,
-    utility::{as_string_ref, into_raw_array},
-    value::Value,
+    attribute::Attribute, block::Block, context::Context, identifier::Identifier,
+    location::Location, r#type::Type, region::Region, string_ref::StringRef,
+    utility::into_raw_array, value::Value,
 };
 use mlir_sys::{
     mlirNamedAttributeGet, mlirOperationStateAddAttributes, mlirOperationStateAddOperands,
@@ -24,7 +18,9 @@ pub struct OperationState<'c> {
 impl<'c> OperationState<'c> {
     pub fn new(name: &str, location: Location<'c>) -> Self {
         Self {
-            state: unsafe { mlirOperationStateGet(as_string_ref(name), location.to_raw()) },
+            state: unsafe {
+                mlirOperationStateGet(StringRef::from(name).to_raw(), location.to_raw())
+            },
             _context: Default::default(),
         }
     }
@@ -53,12 +49,17 @@ impl<'c> OperationState<'c> {
         self
     }
 
-    pub fn add_owned_regions(&mut self, regions: Vec<Region>) -> &mut Self {
+    pub fn add_regions(&mut self, regions: Vec<Region>) -> &mut Self {
         unsafe {
             mlirOperationStateAddOwnedRegions(
                 &mut self.state,
                 regions.len() as isize,
-                into_raw_array(regions.iter().map(|region| region.to_raw()).collect()),
+                into_raw_array(
+                    regions
+                        .into_iter()
+                        .map(|region| region.into_raw())
+                        .collect(),
+                ),
             )
         }
 
@@ -70,7 +71,12 @@ impl<'c> OperationState<'c> {
             mlirOperationStateAddSuccessors(
                 &mut self.state,
                 successors.len() as isize,
-                into_raw_array(successors.iter().map(|block| block.to_raw()).collect()),
+                into_raw_array(
+                    successors
+                        .into_iter()
+                        .map(|block| block.into_raw())
+                        .collect(),
+                ),
             )
         }
 
@@ -126,11 +132,11 @@ mod tests {
     }
 
     #[test]
-    fn add_owned_regions() {
+    fn add_regions() {
         let context = Context::new();
         let mut state = OperationState::new("foo", Location::unknown(&context));
 
-        state.add_owned_regions(vec![Region::new()]);
+        state.add_regions(vec![Region::new()]);
 
         Operation::new(state);
     }
