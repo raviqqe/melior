@@ -6,11 +6,15 @@ This crate is a wrapper of [the MLIR C API](https://mlir.llvm.org/docs/CAPI/).
 
 ## Dependencies
 
-- LLVM/MLIR 15
+[LLVM/MLIR 15](https://llvm.org/) needs to be installed on your system. On Linux and macOS, you can install it via [Homebrew](https://brew.sh).
+
+```sh
+brew install llvm@15
+```
 
 ## Contribution
 
-Melior is still in the alpha stage as well as the MLIR C API. Contribution is welcome! But, note that the API is unstable and can have breaking changes in the future.
+Contribution is welcome! But, Melior is still in the alpha stage as well as the MLIR C API. Note that the API is unstable and can have breaking changes in the future.
 
 ### Naming conventions
 
