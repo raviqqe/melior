@@ -4,11 +4,16 @@ pub mod context;
 pub mod dialect;
 pub mod dialect_handle;
 pub mod dialect_registry;
+pub mod execution_engine;
 pub mod identifier;
 pub mod location;
+pub mod logical_result;
 pub mod module;
 pub mod operation;
+pub mod operation_pass_manager;
 pub mod operation_state;
+pub mod pass;
+pub mod pass_manager;
 pub mod region;
 pub mod string_ref;
 pub mod r#type;
@@ -18,10 +23,9 @@ pub mod value;
 #[cfg(test)]
 mod tests {
     use crate::{
-        attribute::Attribute, block::Block, context::Context, dialect_handle::DialectHandle,
-        dialect_registry::DialectRegistry, identifier::Identifier, location::Location,
-        module::Module, operation::Operation, operation_state::OperationState, r#type::Type,
-        region::Region,
+        attribute::Attribute, block::Block, context::Context, dialect_registry::DialectRegistry,
+        identifier::Identifier, location::Location, module::Module, operation::Operation,
+        operation_state::OperationState, r#type::Type, region::Region,
     };
 
     #[test]
@@ -44,8 +48,6 @@ mod tests {
         assert_eq!(module.as_operation().print(), "module{}");
     }
 
-    // This test is copied directly from a `makeAndDumpAdd` function in:
-    // https://github.com/llvm/llvm-project/blob/llvmorg-15.0.0/mlir/test/CAPI/ir.c
     #[test]
     fn build_add() {
         let registry = DialectRegistry::new();
@@ -177,20 +179,7 @@ mod tests {
         module.body_mut().insert_operation(0, function);
 
         assert!(module.as_operation().verify());
-        // TODO Fix this. Somehow, MLIR inserts null characters in the middle of string refs.
-        // assert_eq!(module.as_operation().print(), "");
-    }
-
-    #[test]
-    fn dialect_registry() {
-        let registry = DialectRegistry::new();
-        DialectHandle::func().insert_dialect(&registry);
-
-        let context = Context::new();
-        let count = context.registered_dialect_count();
-
-        context.append_dialect_registry(&registry);
-
-        assert_eq!(context.registered_dialect_count() - count, 1);
+        // TODO Fix this. Somehow, MLIR inserts null characters in the middle of
+        // string refs. assert_eq!(module.as_operation().print(), "");
     }
 }
