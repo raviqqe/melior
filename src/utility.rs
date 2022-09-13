@@ -1,5 +1,6 @@
 use crate::{context::Context, dialect_registry::DialectRegistry};
 use mlir_sys::{mlirRegisterAllDialects, mlirRegisterAllLLVMTranslations, mlirRegisterAllPasses};
+use std::sync::Once;
 
 /// Registers all dialects to a dialect registry.
 pub fn register_all_dialects(registry: &DialectRegistry) {
@@ -13,7 +14,10 @@ pub fn register_all_llvm_translations(context: &Context) {
 
 /// Register all passes.
 pub fn register_all_passes() {
-    unsafe { mlirRegisterAllPasses() }
+    static ONCE: Once = Once::new();
+
+    // Multiple calls of `mlirRegisterAllPasses` seems to cause double free.
+    ONCE.call_once(|| unsafe { mlirRegisterAllPasses() });
 }
 
 // TODO Use into_raw_parts.
@@ -64,5 +68,12 @@ mod tests {
     fn register_passes_twice() {
         register_all_passes();
         register_all_passes();
+    }
+
+    #[test]
+    fn register_passes_many_times() {
+        for _ in 0..1000 {
+            register_all_passes();
+        }
     }
 }

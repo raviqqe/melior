@@ -6,21 +6,28 @@ use mlir_sys::{
 };
 use std::{marker::PhantomData, mem::ManuallyDrop, ops::Deref};
 
+/// A context of IR, dialects, and passes.
+///
+/// Contexts own various objects, such as types, locations, and dialect
+/// instances.
 pub struct Context {
     raw: MlirContext,
 }
 
 impl Context {
+    /// Creates a context.
     pub fn new() -> Self {
         Self {
             raw: unsafe { mlirContextCreate() },
         }
     }
 
+    /// Gets a number of registered dialects.
     pub fn registered_dialect_count(&self) -> usize {
         unsafe { mlirContextGetNumRegisteredDialects(self.raw) as usize }
     }
 
+    /// Gets or loads a dialect.
     pub fn get_or_load_dialect(&self, name: &str) -> Dialect {
         unsafe {
             Dialect::from_raw(mlirContextGetOrLoadDialect(
@@ -30,10 +37,12 @@ impl Context {
         }
     }
 
+    /// Appends a dialect registry.
     pub fn append_dialect_registry(&self, registry: &DialectRegistry) {
         unsafe { mlirContextAppendDialectRegistry(self.raw, registry.to_raw()) }
     }
 
+    /// Loads all available dialects.
     pub fn load_all_available_dialects(&self) {
         unsafe { mlirContextLoadAllAvailableDialects(self.raw) }
     }
@@ -55,6 +64,7 @@ impl Default for Context {
     }
 }
 
+/// A reference to a context.
 pub struct ContextRef<'c> {
     raw: ManuallyDrop<Context>,
     _reference: PhantomData<&'c Context>,
