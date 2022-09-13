@@ -11,24 +11,24 @@ use mlir_sys::{
 use std::marker::PhantomData;
 
 pub struct OperationState<'c> {
-    state: MlirOperationState,
+    raw: MlirOperationState,
     _context: PhantomData<&'c Context>,
 }
 
 impl<'c> OperationState<'c> {
     pub fn new(name: &str, location: Location<'c>) -> Self {
         Self {
-            state: unsafe {
+            raw: unsafe {
                 mlirOperationStateGet(StringRef::from(name).to_raw(), location.to_raw())
             },
             _context: Default::default(),
         }
     }
 
-    pub fn add_results(mut self, results: Vec<Type<'c>>) -> Self {
+    pub fn add_results(mut self, results: &[Type<'c>]) -> Self {
         unsafe {
             mlirOperationStateAddResults(
-                &mut self.state,
+                &mut self.raw,
                 results.len() as isize,
                 into_raw_array(results.iter().map(|r#type| r#type.to_raw()).collect()),
             )
@@ -37,10 +37,10 @@ impl<'c> OperationState<'c> {
         self
     }
 
-    pub fn add_operands(mut self, operands: Vec<Value>) -> Self {
+    pub fn add_operands(mut self, operands: &[Value]) -> Self {
         unsafe {
             mlirOperationStateAddOperands(
-                &mut self.state,
+                &mut self.raw,
                 operands.len() as isize,
                 into_raw_array(operands.iter().map(|value| value.to_raw()).collect()),
             )
@@ -52,7 +52,7 @@ impl<'c> OperationState<'c> {
     pub fn add_regions(mut self, regions: Vec<Region>) -> Self {
         unsafe {
             mlirOperationStateAddOwnedRegions(
-                &mut self.state,
+                &mut self.raw,
                 regions.len() as isize,
                 into_raw_array(
                     regions
@@ -66,31 +66,26 @@ impl<'c> OperationState<'c> {
         self
     }
 
-    pub fn add_successors(mut self, successors: Vec<Block>) -> Self {
+    pub fn add_successors(mut self, successors: &[&Block]) -> Self {
         unsafe {
             mlirOperationStateAddSuccessors(
-                &mut self.state,
+                &mut self.raw,
                 successors.len() as isize,
-                into_raw_array(
-                    successors
-                        .into_iter()
-                        .map(|block| block.into_raw())
-                        .collect(),
-                ),
+                into_raw_array(successors.iter().map(|block| block.to_raw()).collect()),
             )
         }
 
         self
     }
 
-    pub fn add_attributes(mut self, attributes: Vec<(Identifier, Attribute<'c>)>) -> Self {
+    pub fn add_attributes(mut self, attributes: &[(Identifier, Attribute<'c>)]) -> Self {
         unsafe {
             mlirOperationStateAddAttributes(
-                &mut self.state,
+                &mut self.raw,
                 attributes.len() as isize,
                 into_raw_array(
                     attributes
-                        .into_iter()
+                        .iter()
                         .map(|(identifier, attribute)| {
                             mlirNamedAttributeGet(identifier.to_raw(), attribute.to_raw())
                         })
@@ -103,7 +98,7 @@ impl<'c> OperationState<'c> {
     }
 
     pub(crate) unsafe fn into_raw(self) -> MlirOperationState {
-        self.state
+        self.raw
     }
 }
 
@@ -126,7 +121,7 @@ mod tests {
 
         Operation::new(
             OperationState::new("foo", Location::unknown(&context))
-                .add_results(vec![Type::parse(&context, "i1")]),
+                .add_results(&[Type::parse(&context, "i1")]),
         );
     }
 
@@ -146,7 +141,7 @@ mod tests {
 
         Operation::new(
             OperationState::new("foo", Location::unknown(&context))
-                .add_successors(vec![Block::new(vec![])]),
+                .add_successors(&[&Block::new(&[])]),
         );
     }
 
@@ -155,7 +150,7 @@ mod tests {
         let context = Context::new();
 
         Operation::new(
-            OperationState::new("foo", Location::unknown(&context)).add_attributes(vec![(
+            OperationState::new("foo", Location::unknown(&context)).add_attributes(&[(
                 Identifier::new(&context, "foo"),
                 Attribute::parse(&context, "unit"),
             )]),

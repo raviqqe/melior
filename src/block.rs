@@ -18,13 +18,15 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
+/// A block
 pub struct Block<'c> {
-    block: MlirBlock,
+    raw: MlirBlock,
     _context: PhantomData<&'c Context>,
 }
 
 impl<'c> Block<'c> {
-    pub fn new(arguments: Vec<(Type<'c>, Location)>) -> Self {
+    /// Creates a block.
+    pub fn new(arguments: &[(Type<'c>, Location<'c>)]) -> Self {
         unsafe {
             Self::from_raw(mlirBlockCreate(
                 arguments.len() as isize,
@@ -44,11 +46,12 @@ impl<'c> Block<'c> {
         }
     }
 
+    /// Gets an argument at a position.
     pub fn argument(&self, position: usize) -> Option<Value> {
         unsafe {
-            if position < mlirBlockGetNumArguments(self.block) as usize {
+            if position < mlirBlockGetNumArguments(self.raw) as usize {
                 Some(Value::from_raw(mlirBlockGetArgument(
-                    self.block,
+                    self.raw,
                     position as isize,
                 )))
             } else {
@@ -57,13 +60,15 @@ impl<'c> Block<'c> {
         }
     }
 
+    /// Gets a parent region.
     pub fn parent_region(&self) -> RegionRef {
-        unsafe { RegionRef::from_raw(mlirBlockGetParentRegion(self.block)) }
+        unsafe { RegionRef::from_raw(mlirBlockGetParentRegion(self.raw)) }
     }
 
+    /// Gets the first operation.
     pub fn first_operation(&self) -> Option<OperationRef> {
         unsafe {
-            let operation = mlirBlockGetFirstOperation(self.block);
+            let operation = mlirBlockGetFirstOperation(self.raw);
 
             if operation.ptr.is_null() {
                 None
@@ -73,33 +78,36 @@ impl<'c> Block<'c> {
         }
     }
 
+    /// Adds an argument.
     pub fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value {
         unsafe {
             Value::from_raw(mlirBlockAddArgument(
-                self.block,
+                self.raw,
                 r#type.to_raw(),
                 location.to_raw(),
             ))
         }
     }
 
+    /// Inserts an operation.
     // TODO How can we make those update functions take `&mut self`?
     // TODO Use cells?
     pub fn insert_operation(&self, position: usize, operation: Operation) -> OperationRef {
         unsafe {
             let operation = operation.into_raw();
 
-            mlirBlockInsertOwnedOperation(self.block, position as isize, operation);
+            mlirBlockInsertOwnedOperation(self.raw, position as isize, operation);
 
             OperationRef::from_raw(operation)
         }
     }
 
+    /// Appends an operation.
     pub fn append_operation(&self, operation: Operation) -> OperationRef {
         unsafe {
             let operation = operation.into_raw();
 
-            mlirBlockAppendOwnedOperation(self.block, operation);
+            mlirBlockAppendOwnedOperation(self.raw, operation);
 
             OperationRef::from_raw(operation)
         }
@@ -107,37 +115,41 @@ impl<'c> Block<'c> {
 
     pub(crate) unsafe fn from_raw(block: MlirBlock) -> Self {
         Self {
-            block,
+            raw: block,
             _context: Default::default(),
         }
     }
 
     pub(crate) unsafe fn into_raw(self) -> MlirBlock {
-        let block = self.block;
+        let block = self.raw;
 
         forget(self);
 
         block
     }
+
+    pub(crate) unsafe fn to_raw(&self) -> MlirBlock {
+        self.raw
+    }
 }
 
 impl<'c> Drop for Block<'c> {
     fn drop(&mut self) {
-        unsafe { mlirBlockDestroy(self.block) };
+        unsafe { mlirBlockDestroy(self.raw) };
     }
 }
 
 // TODO Should we split context lifetimes? Or, is it transitively proven that 'c
 // > 'a?
 pub struct BlockRef<'a> {
-    block: ManuallyDrop<Block<'a>>,
+    raw: ManuallyDrop<Block<'a>>,
     _reference: PhantomData<&'a Block<'a>>,
 }
 
 impl<'a> BlockRef<'a> {
     pub(crate) unsafe fn from_raw(block: MlirBlock) -> Self {
         Self {
-            block: ManuallyDrop::new(Block::from_raw(block)),
+            raw: ManuallyDrop::new(Block::from_raw(block)),
             _reference: Default::default(),
         }
     }
@@ -147,19 +159,19 @@ impl<'a> Deref for BlockRef<'a> {
     type Target = Block<'a>;
 
     fn deref(&self) -> &Self::Target {
-        &self.block
+        &self.raw
     }
 }
 
 pub struct BlockRefMut<'a> {
-    block: ManuallyDrop<Block<'a>>,
+    raw: ManuallyDrop<Block<'a>>,
     _reference: PhantomData<&'a mut Block<'a>>,
 }
 
 impl<'a> BlockRefMut<'a> {
     pub(crate) unsafe fn from_raw(block: MlirBlock) -> Self {
         Self {
-            block: ManuallyDrop::new(Block::from_raw(block)),
+            raw: ManuallyDrop::new(Block::from_raw(block)),
             _reference: Default::default(),
         }
     }
@@ -169,13 +181,13 @@ impl<'a> Deref for BlockRefMut<'a> {
     type Target = Block<'a>;
 
     fn deref(&self) -> &Self::Target {
-        &self.block
+        &self.raw
     }
 }
 
 impl<'a> DerefMut for BlockRefMut<'a> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.block
+        &mut self.raw
     }
 }
 
@@ -185,11 +197,11 @@ mod tests {
 
     #[test]
     fn new() {
-        Block::new(vec![]);
+        Block::new(&[]);
     }
 
     #[test]
     fn get_non_existent_argument() {
-        assert!(Block::new(vec![]).argument(0).is_none());
+        assert!(Block::new(&[]).argument(0).is_none());
     }
 }

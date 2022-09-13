@@ -9,20 +9,21 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
+/// A region.
 pub struct Region {
-    region: MlirRegion,
+    raw: MlirRegion,
 }
 
 impl Region {
     pub fn new() -> Self {
         Self {
-            region: unsafe { mlirRegionCreate() },
+            raw: unsafe { mlirRegionCreate() },
         }
     }
 
     pub fn first_block(&self) -> Option<BlockRef> {
         unsafe {
-            let block = mlirRegionGetFirstBlock(self.region);
+            let block = mlirRegionGetFirstBlock(self.raw);
 
             if block.ptr.is_null() {
                 None
@@ -33,11 +34,11 @@ impl Region {
     }
 
     pub fn append_block(&self, block: Block) {
-        unsafe { mlirRegionAppendOwnedBlock(self.region, block.into_raw()) }
+        unsafe { mlirRegionAppendOwnedBlock(self.raw, block.into_raw()) }
     }
 
     pub(crate) unsafe fn into_raw(self) -> mlir_sys::MlirRegion {
-        let region = self.region;
+        let region = self.raw;
 
         forget(self);
 
@@ -53,19 +54,19 @@ impl Default for Region {
 
 impl Drop for Region {
     fn drop(&mut self) {
-        unsafe { mlirRegionDestroy(self.region) }
+        unsafe { mlirRegionDestroy(self.raw) }
     }
 }
 
 pub struct RegionRef<'a> {
-    region: ManuallyDrop<Region>,
+    raw: ManuallyDrop<Region>,
     _region: PhantomData<&'a Region>,
 }
 
 impl<'a> RegionRef<'a> {
     pub(crate) unsafe fn from_raw(region: MlirRegion) -> Self {
         Self {
-            region: ManuallyDrop::new(Region { region }),
+            raw: ManuallyDrop::new(Region { raw: region }),
             _region: Default::default(),
         }
     }
@@ -75,19 +76,19 @@ impl<'a> Deref for RegionRef<'a> {
     type Target = Region;
 
     fn deref(&self) -> &Self::Target {
-        &self.region
+        &self.raw
     }
 }
 
 pub struct RegionRefMut<'a> {
-    region: ManuallyDrop<Region>,
+    raw: ManuallyDrop<Region>,
     _region: PhantomData<&'a mut Region>,
 }
 
 impl<'a> RegionRefMut<'a> {
     pub(crate) unsafe fn from_raw(region: MlirRegion) -> Self {
         Self {
-            region: ManuallyDrop::new(Region { region }),
+            raw: ManuallyDrop::new(Region { raw: region }),
             _region: Default::default(),
         }
     }
@@ -97,13 +98,13 @@ impl<'a> Deref for RegionRefMut<'a> {
     type Target = Region;
 
     fn deref(&self) -> &Self::Target {
-        &self.region
+        &self.raw
     }
 }
 
 impl<'a> DerefMut for RegionRefMut<'a> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.region
+        &mut self.raw
     }
 }
 
