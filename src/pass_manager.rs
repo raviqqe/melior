@@ -26,7 +26,7 @@ impl<'c> PassManager<'c> {
 
     /// Gets an operation pass manager for nested operations corresponding to a
     /// given name.
-    pub fn nested_under(&mut self, name: &str) -> OperationPassManager {
+    pub fn nested_under(&self, name: &str) -> OperationPassManager {
         unsafe {
             OperationPassManager::from_raw(mlirPassManagerGetNestedUnder(
                 self.raw,
@@ -36,12 +36,12 @@ impl<'c> PassManager<'c> {
     }
 
     /// Adds a pass.
-    pub fn add_pass(&mut self, pass: Pass) {
+    pub fn add_pass(&self, pass: Pass) {
         unsafe { mlirPassManagerAddOwnedPass(self.raw, pass.to_raw()) }
     }
 
     /// Runs passes added to a pass manager against a module.
-    pub fn run(&self, module: &mut Module) -> LogicalResult {
+    pub fn run(&self, module: &Module) -> LogicalResult {
         LogicalResult::from_raw(unsafe { mlirPassManagerRun(self.raw, module.to_raw()) })
     }
 
@@ -79,9 +79,9 @@ mod tests {
     #[test]
     fn run() {
         let context = Context::new();
-        let mut manager = PassManager::new(&context);
+        let manager = PassManager::new(&context);
 
         manager.add_pass(Pass::convert_func_to_llvm());
-        manager.run(&mut Module::new(Location::unknown(&context)));
+        manager.run(&Module::new(Location::unknown(&context)));
     }
 }

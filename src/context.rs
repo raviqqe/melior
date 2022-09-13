@@ -2,7 +2,7 @@ use crate::{dialect::Dialect, dialect_registry::DialectRegistry, string_ref::Str
 use mlir_sys::{
     mlirContextAppendDialectRegistry, mlirContextCreate, mlirContextDestroy,
     mlirContextGetNumRegisteredDialects, mlirContextGetOrLoadDialect,
-    mlirContextLoadAllAvailableDialects, mlirRegisterAllLLVMTranslations, MlirContext,
+    mlirContextLoadAllAvailableDialects, MlirContext,
 };
 use std::{marker::PhantomData, mem::ManuallyDrop, ops::Deref};
 
@@ -28,10 +28,6 @@ impl Context {
                 StringRef::from(name).to_raw(),
             ))
         }
-    }
-
-    pub fn register_all_llvm_translations(&self) {
-        unsafe { mlirRegisterAllLLVMTranslations(self.raw) }
     }
 
     pub fn append_dialect_registry(&self, registry: &DialectRegistry) {

@@ -15,7 +15,7 @@ use mlir_sys::{
 use std::{
     marker::PhantomData,
     mem::{forget, ManuallyDrop},
-    ops::{Deref, DerefMut},
+    ops::Deref,
 };
 
 /// A block
@@ -160,34 +160,6 @@ impl<'a> Deref for BlockRef<'a> {
 
     fn deref(&self) -> &Self::Target {
         &self.raw
-    }
-}
-
-pub struct BlockRefMut<'a> {
-    raw: ManuallyDrop<Block<'a>>,
-    _reference: PhantomData<&'a mut Block<'a>>,
-}
-
-impl<'a> BlockRefMut<'a> {
-    pub(crate) unsafe fn from_raw(block: MlirBlock) -> Self {
-        Self {
-            raw: ManuallyDrop::new(Block::from_raw(block)),
-            _reference: Default::default(),
-        }
-    }
-}
-
-impl<'a> Deref for BlockRefMut<'a> {
-    type Target = Block<'a>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.raw
-    }
-}
-
-impl<'a> DerefMut for BlockRefMut<'a> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.raw
     }
 }
 

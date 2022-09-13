@@ -6,7 +6,7 @@ use mlir_sys::{
 use std::{
     marker::PhantomData,
     mem::{forget, ManuallyDrop},
-    ops::{Deref, DerefMut},
+    ops::Deref,
 };
 
 /// A region.
@@ -15,12 +15,14 @@ pub struct Region {
 }
 
 impl Region {
+    /// Creates a region.
     pub fn new() -> Self {
         Self {
             raw: unsafe { mlirRegionCreate() },
         }
     }
 
+    /// Gets the first block in a region.
     pub fn first_block(&self) -> Option<BlockRef> {
         unsafe {
             let block = mlirRegionGetFirstBlock(self.raw);
@@ -33,6 +35,7 @@ impl Region {
         }
     }
 
+    /// Appends a block.
     pub fn append_block(&self, block: Block) {
         unsafe { mlirRegionAppendOwnedBlock(self.raw, block.into_raw()) }
     }
@@ -58,6 +61,7 @@ impl Drop for Region {
     }
 }
 
+/// A reference to a region.
 pub struct RegionRef<'a> {
     raw: ManuallyDrop<Region>,
     _region: PhantomData<&'a Region>,
@@ -77,34 +81,6 @@ impl<'a> Deref for RegionRef<'a> {
 
     fn deref(&self) -> &Self::Target {
         &self.raw
-    }
-}
-
-pub struct RegionRefMut<'a> {
-    raw: ManuallyDrop<Region>,
-    _region: PhantomData<&'a mut Region>,
-}
-
-impl<'a> RegionRefMut<'a> {
-    pub(crate) unsafe fn from_raw(region: MlirRegion) -> Self {
-        Self {
-            raw: ManuallyDrop::new(Region { raw: region }),
-            _region: Default::default(),
-        }
-    }
-}
-
-impl<'a> Deref for RegionRefMut<'a> {
-    type Target = Region;
-
-    fn deref(&self) -> &Self::Target {
-        &self.raw
-    }
-}
-
-impl<'a> DerefMut for RegionRefMut<'a> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.raw
     }
 }
 

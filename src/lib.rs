@@ -26,6 +26,7 @@ mod tests {
         attribute::Attribute, block::Block, context::Context, dialect_registry::DialectRegistry,
         identifier::Identifier, location::Location, module::Module, operation::Operation,
         operation_state::OperationState, r#type::Type, region::Region,
+        utility::register_all_dialects,
     };
 
     #[test]
@@ -51,7 +52,7 @@ mod tests {
     #[test]
     fn build_add() {
         let registry = DialectRegistry::new();
-        registry.register_all_dialects();
+        register_all_dialects(&registry);
 
         let context = Context::new();
         context.append_dialect_registry(&registry);
@@ -61,7 +62,7 @@ mod tests {
         context.get_or_load_dialect("scf");
 
         let location = Location::unknown(&context);
-        let mut module = Module::new(location);
+        let module = Module::new(location);
 
         let r#type = Type::parse(&context, "memref<?xf32>");
 
@@ -173,7 +174,7 @@ mod tests {
             )
         };
 
-        module.body_mut().insert_operation(0, function);
+        module.body().insert_operation(0, function);
 
         assert!(module.as_operation().verify());
         insta::assert_display_snapshot!(&*module.as_operation());
