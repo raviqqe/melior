@@ -1,12 +1,20 @@
 use crate::{
+    attribute::Attribute,
     context::{Context, ContextRef},
     string_ref::StringRef,
+    utility::into_raw_array,
 };
 use mlir_sys::{
-    mlirLocationFileLineColGet, mlirLocationGetContext, mlirLocationUnknownGet, MlirLocation,
+    mlirLocationEqual, mlirLocationFileLineColGet, mlirLocationFusedGet, mlirLocationGetContext,
+    mlirLocationNameGet, mlirLocationPrint, mlirLocationUnknownGet, MlirLocation, MlirStringRef,
 };
-use std::marker::PhantomData;
+use std::{
+    ffi::c_void,
+    fmt::{self, Display, Formatter},
+    marker::PhantomData,
+};
 
+/// A location
 #[derive(Clone, Copy, Debug)]
 pub struct Location<'c> {
     raw: MlirLocation,
@@ -14,29 +22,56 @@ pub struct Location<'c> {
 }
 
 impl<'c> Location<'c> {
+    /// Creates a location with a filename and line and column numbers.
     pub fn new(context: &'c Context, filename: &str, line: usize, column: usize) -> Self {
-        Self {
-            raw: unsafe {
-                mlirLocationFileLineColGet(
-                    context.to_raw(),
-                    StringRef::from(filename).to_raw(),
-                    line as u32,
-                    column as u32,
-                )
-            },
-            _context: Default::default(),
+        unsafe {
+            Self::from_raw(mlirLocationFileLineColGet(
+                context.to_raw(),
+                StringRef::from(filename).to_raw(),
+                line as u32,
+                column as u32,
+            ))
         }
     }
 
+    /// Creates a fused location.
+    pub fn fused(context: &Context, locations: &[Self], attribute: Attribute) -> Self {
+        unsafe {
+            Self::from_raw(mlirLocationFusedGet(
+                context.to_raw(),
+                locations.len() as isize,
+                into_raw_array(locations.iter().map(|location| location.to_raw()).collect()),
+                attribute.to_raw(),
+            ))
+        }
+    }
+
+    /// Creates a name location.
+    pub fn name(context: &Context, name: &str, child: Location) -> Self {
+        unsafe {
+            Self::from_raw(mlirLocationNameGet(
+                context.to_raw(),
+                StringRef::from(name).to_raw(),
+                child.to_raw(),
+            ))
+        }
+    }
+
+    /// Creates an unknown location.
     pub fn unknown(context: &Context) -> Self {
-        Self {
-            raw: unsafe { mlirLocationUnknownGet(context.to_raw()) },
-            _context: Default::default(),
-        }
+        unsafe { Self::from_raw(mlirLocationUnknownGet(context.to_raw())) }
     }
 
+    /// Gets a context.
     pub fn context(&self) -> ContextRef<'c> {
         unsafe { ContextRef::from_raw(mlirLocationGetContext(self.raw)) }
+    }
+
+    pub(crate) unsafe fn from_raw(raw: MlirLocation) -> Self {
+        Self {
+            raw,
+            _context: Default::default(),
+        }
     }
 
     pub(crate) unsafe fn to_raw(self) -> MlirLocation {
@@ -44,13 +79,62 @@ impl<'c> Location<'c> {
     }
 }
 
+impl<'c> PartialEq for Location<'c> {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { mlirLocationEqual(self.raw, other.raw) }
+    }
+}
+
+impl<'c> Display for Location<'c> {
+    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
+        let mut data = (formatter, Ok(()));
+
+        unsafe extern "C" fn callback(string: MlirStringRef, data: *mut c_void) {
+            let data = &mut *(data as *mut (&mut Formatter, fmt::Result));
+            let result = write!(data.0, "{}", StringRef::from_raw(string).as_str());
+
+            if data.1.is_ok() {
+                data.1 = result;
+            }
+        }
+
+        unsafe {
+            mlirLocationPrint(self.raw, Some(callback), &mut data as *mut _ as *mut c_void);
+        }
+
+        data.1
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::{assert_eq, assert_ne};
 
     #[test]
     fn new() {
         Location::new(&Context::new(), "foo", 42, 42);
+    }
+
+    #[test]
+    fn fused() {
+        let context = Context::new();
+
+        Location::fused(
+            &context,
+            &[
+                Location::new(&Context::new(), "foo", 1, 1),
+                Location::new(&Context::new(), "foo", 2, 2),
+            ],
+            Attribute::parse(&context, "42"),
+        );
+    }
+
+    #[test]
+    fn name() {
+        let context = Context::new();
+
+        Location::name(&context, "foo", Location::unknown(&context));
     }
 
     #[test]
@@ -61,5 +145,37 @@ mod tests {
     #[test]
     fn context() {
         Location::new(&Context::new(), "foo", 42, 42).context();
+    }
+
+    #[test]
+    fn equal() {
+        let context = Context::new();
+
+        assert_eq!(Location::unknown(&context), Location::unknown(&context));
+        assert_eq!(
+            Location::new(&context, "foo", 42, 42),
+            Location::new(&context, "foo", 42, 42),
+        );
+    }
+
+    #[test]
+    fn not_equal() {
+        let context = Context::new();
+
+        assert_ne!(
+            Location::new(&context, "foo", 42, 42),
+            Location::unknown(&context)
+        );
+    }
+
+    #[test]
+    fn display() {
+        let context = Context::new();
+
+        assert_eq!(Location::unknown(&context).to_string(), "loc(unknown)");
+        assert_eq!(
+            Location::new(&context, "foo", 42, 42).to_string(),
+            "loc(\"foo\":42:42)"
+        );
     }
 }
