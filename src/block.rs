@@ -25,28 +25,24 @@ impl<'c> Block<'c> {
     /// Creates a block.
     pub fn new(arguments: &[(Type<'c>, Location<'c>)]) -> Self {
         unsafe {
-            Self::from_raw(mlirBlockCreate(
-                arguments.len() as isize,
-                into_raw_array(
-                    arguments
-                        .iter()
-                        .map(|(argument, _)| argument.to_raw())
-                        .collect(),
-                ),
-                into_raw_array(
-                    arguments
-                        .iter()
-                        .map(|(_, location)| location.to_raw())
-                        .collect(),
-                ),
-            ))
-        }
-    }
-
-    pub(crate) unsafe fn from_raw(block: MlirBlock) -> Self {
-        Self {
-            r#ref: BlockRef::from_raw(block),
-            _context: Default::default(),
+            Self {
+                r#ref: BlockRef::from_raw(mlirBlockCreate(
+                    arguments.len() as isize,
+                    into_raw_array(
+                        arguments
+                            .iter()
+                            .map(|(argument, _)| argument.to_raw())
+                            .collect(),
+                    ),
+                    into_raw_array(
+                        arguments
+                            .iter()
+                            .map(|(_, location)| location.to_raw())
+                            .collect(),
+                    ),
+                )),
+                _context: Default::default(),
+            }
         }
     }
 
@@ -73,8 +69,8 @@ impl<'c> PartialEq for Block<'c> {
 
 impl<'c> Eq for Block<'c> {}
 
-impl<'a> Deref for Block<'a> {
-    type Target = BlockRef<'a>;
+impl<'c> Deref for Block<'c> {
+    type Target = BlockRef<'static>;
 
     fn deref(&self) -> &Self::Target {
         &self.r#ref
@@ -161,6 +157,14 @@ impl<'c> BlockRef<'c> {
         Self {
             raw,
             _reference: Default::default(),
+        }
+    }
+
+    pub(crate) unsafe fn from_option_raw(raw: MlirBlock) -> Option<Self> {
+        if raw.ptr.is_null() {
+            None
+        } else {
+            Some(Self::from_raw(raw))
         }
     }
 
