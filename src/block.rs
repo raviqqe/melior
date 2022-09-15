@@ -77,6 +77,7 @@ impl<'c> Deref for Block<'c> {
     }
 }
 
+/// A reference of a block.
 // TODO Should we split context lifetimes? Or, is it transitively proven that 'c
 // > 'a?
 #[derive(Clone, Copy, Debug)]
@@ -106,8 +107,8 @@ impl<'c> BlockRef<'c> {
     }
 
     /// Gets a parent region.
-    pub fn parent_region(&self) -> RegionRef {
-        unsafe { RegionRef::from_raw(mlirBlockGetParentRegion(self.raw)) }
+    pub fn parent_region(&self) -> Option<RegionRef> {
+        unsafe { RegionRef::from_option_raw(mlirBlockGetParentRegion(self.raw)) }
     }
 
     /// Gets the first operation.
@@ -189,6 +190,7 @@ impl<'a> Eq for BlockRef<'a> {}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{operation_state::OperationState, region::Region};
 
     #[test]
     fn new() {
@@ -196,7 +198,83 @@ mod tests {
     }
 
     #[test]
-    fn get_non_existent_argument() {
+    fn argument() {
+        let context = Context::new();
+        let r#type = Type::integer(&context, 64);
+
+        assert_eq!(
+            Block::new(&[(r#type, Location::unknown(&context))])
+                .argument(0)
+                .unwrap()
+                .r#type(),
+            r#type
+        );
+    }
+
+    #[test]
+    fn argument_none() {
         assert!(Block::new(&[]).argument(0).is_none());
+    }
+
+    #[test]
+    fn argument_count() {
+        assert_eq!(Block::new(&[]).argument_count(), 0);
+    }
+
+    #[test]
+    fn parent_region() {
+        let region = Region::new();
+        let block = region.append_block(Block::new(&[]));
+
+        assert_eq!(block.parent_region(), Some(*region));
+    }
+
+    #[test]
+    fn parent_region_none() {
+        let block = Block::new(&[]);
+
+        assert_eq!(block.parent_region(), None);
+    }
+
+    #[test]
+    fn first_operation() {
+        let context = Context::new();
+        let block = Block::new(&[]);
+
+        let operation = block.append_operation(Operation::new(OperationState::new(
+            "foo",
+            Location::unknown(&context),
+        )));
+
+        assert_eq!(block.first_operation(), Some(operation));
+    }
+
+    #[test]
+    fn first_operation_none() {
+        let block = Block::new(&[]);
+
+        assert_eq!(block.first_operation(), None);
+    }
+
+    #[test]
+    fn append_operation() {
+        let context = Context::new();
+        let block = Block::new(&[]);
+
+        block.append_operation(Operation::new(OperationState::new(
+            "foo",
+            Location::unknown(&context),
+        )));
+    }
+
+    #[test]
+    fn insert_operation() {
+        let context = Context::new();
+        let block = Block::new(&[]);
+
+        block.insert_operation(
+            0,
+            Operation::new(OperationState::new("foo", Location::unknown(&context))),
+        );
     }
 }
