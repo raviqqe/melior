@@ -1,16 +1,18 @@
 use crate::{
     context::{Context, ContextRef},
     error::Error,
+    location::Location,
     string_ref::StringRef,
     utility::into_raw_array,
 };
 use mlir_sys::{
     mlirFunctionTypeGet, mlirFunctionTypeGetInput, mlirFunctionTypeGetNumInputs,
-    mlirFunctionTypeGetNumResults, mlirFunctionTypeGetResult, mlirIntegerTypeGet,
+    mlirFunctionTypeGetNumResults, mlirFunctionTypeGetResult, mlirIndexTypeGet, mlirIntegerTypeGet,
     mlirIntegerTypeSignedGet, mlirIntegerTypeUnsignedGet, mlirLLVMArrayTypeGet,
     mlirLLVMFunctionTypeGet, mlirLLVMPointerTypeGet, mlirLLVMStructTypeLiteralGet,
-    mlirLLVMVoidTypeGet, mlirTypeEqual, mlirTypeGetContext, mlirTypeIsAFunction, mlirTypeParseGet,
-    mlirTypePrint, MlirStringRef, MlirType,
+    mlirLLVMVoidTypeGet, mlirTypeDump, mlirTypeEqual, mlirTypeGetContext, mlirTypeIsAFunction,
+    mlirTypeParseGet, mlirTypePrint, mlirVectorTypeGet, mlirVectorTypeGetChecked, MlirStringRef,
+    MlirType,
 };
 use std::{
     ffi::c_void,
@@ -28,9 +30,9 @@ pub struct Type<'c> {
 
 impl<'c> Type<'c> {
     /// Parses a type.
-    pub fn parse(context: &'c Context, source: &str) -> Self {
+    pub fn parse(context: &'c Context, source: &str) -> Option<Self> {
         unsafe {
-            Self::from_raw(mlirTypeParseGet(
+            Self::from_option_raw(mlirTypeParseGet(
                 context.to_raw(),
                 StringRef::from(source).to_raw(),
             ))
@@ -50,6 +52,11 @@ impl<'c> Type<'c> {
         }
     }
 
+    /// Creates an index type.
+    pub fn index(context: &'c Context) -> Self {
+        unsafe { Self::from_raw(mlirIndexTypeGet(context.to_raw())) }
+    }
+
     /// Creates an integer type.
     pub fn integer(context: &'c Context, bits: u32) -> Self {
         unsafe { Self::from_raw(mlirIntegerTypeGet(context.to_raw(), bits)) }
@@ -63,6 +70,33 @@ impl<'c> Type<'c> {
     /// Creates an unsigned integer type.
     pub fn unsigned_integer(context: &'c Context, bits: u32) -> Self {
         unsafe { Self::from_raw(mlirIntegerTypeUnsignedGet(context.to_raw(), bits)) }
+    }
+
+    /// Creates a vector type.
+    pub fn vector(dimensions: &[u64], r#type: Self) -> Self {
+        unsafe {
+            Self::from_raw(mlirVectorTypeGet(
+                dimensions.len() as isize,
+                dimensions.as_ptr() as *const i64,
+                r#type.raw,
+            ))
+        }
+    }
+
+    /// Creates a vector type.
+    pub fn vector_checked(
+        location: Location<'c>,
+        dimensions: &[u64],
+        r#type: Self,
+    ) -> Option<Self> {
+        unsafe {
+            Self::from_option_raw(mlirVectorTypeGetChecked(
+                location.to_raw(),
+                dimensions.len() as isize,
+                dimensions.as_ptr() as *const i64,
+                r#type.raw,
+            ))
+        }
     }
 
     /// Creates an LLVM array type.
@@ -164,6 +198,11 @@ impl<'c> Type<'c> {
         }
     }
 
+    /// Dumps a type.
+    pub fn dump(&self) {
+        unsafe { mlirTypeDump(self.raw) }
+    }
+
     pub(crate) unsafe fn from_raw(raw: MlirType) -> Self {
         Self {
             raw,
@@ -225,14 +264,17 @@ mod tests {
 
     #[test]
     fn context() {
-        Type::parse(&Context::new(), "i8").context();
+        Type::parse(&Context::new(), "i8").unwrap().context();
     }
 
     #[test]
     fn integer() {
         let context = Context::new();
 
-        assert_eq!(Type::integer(&context, 42), Type::parse(&context, "i42"));
+        assert_eq!(
+            Type::integer(&context, 42),
+            Type::parse(&context, "i42").unwrap()
+        );
     }
 
     #[test]
@@ -241,7 +283,7 @@ mod tests {
 
         assert_eq!(
             Type::signed_integer(&context, 42),
-            Type::parse(&context, "si42")
+            Type::parse(&context, "si42").unwrap()
         );
     }
 
@@ -251,7 +293,61 @@ mod tests {
 
         assert_eq!(
             Type::unsigned_integer(&context, 42),
-            Type::parse(&context, "ui42")
+            Type::parse(&context, "ui42").unwrap()
+        );
+    }
+
+    #[test]
+    fn index() {
+        let context = Context::new();
+
+        assert_eq!(
+            Type::index(&context),
+            Type::parse(&context, "index").unwrap()
+        );
+    }
+
+    #[test]
+    fn vector() {
+        let context = Context::new();
+
+        assert_eq!(
+            Type::vector(&[42], Type::integer(&context, 32)),
+            Type::parse(&context, "vector<42xi32>").unwrap()
+        );
+    }
+
+    #[test]
+    fn vector_with_invalid_dimension() {
+        let context = Context::new();
+
+        assert_eq!(
+            Type::vector(&[0], Type::integer(&context, 32)).to_string(),
+            "vector<0xi32>"
+        );
+    }
+
+    #[test]
+    fn vector_checked() {
+        let context = Context::new();
+
+        assert_eq!(
+            Type::vector_checked(
+                Location::unknown(&context),
+                &[42],
+                Type::integer(&context, 32)
+            ),
+            Type::parse(&context, "vector<42xi32>")
+        );
+    }
+
+    #[test]
+    fn vector_checked_fail() {
+        let context = Context::new();
+
+        assert_eq!(
+            Type::vector_checked(Location::unknown(&context), &[0], Type::index(&context)),
+            None
         );
     }
 
@@ -272,7 +368,7 @@ mod tests {
 
             assert_eq!(
                 Type::function(&context, &[integer, integer], &[integer]),
-                Type::parse(&context, "(i42, i42) -> i42")
+                Type::parse(&context, "(i42, i42) -> i42").unwrap()
             );
         }
 
@@ -283,7 +379,7 @@ mod tests {
 
             assert_eq!(
                 Type::function(&context, &[], &[integer, integer]),
-                Type::parse(&context, "() -> (i42, i42)")
+                Type::parse(&context, "() -> (i42, i42)").unwrap()
             );
         }
 
@@ -383,7 +479,7 @@ mod tests {
 
             assert_eq!(
                 Type::llvm_pointer(i32, 0),
-                Type::parse(&context, "!llvm.ptr<i32>")
+                Type::parse(&context, "!llvm.ptr<i32>").unwrap()
             );
         }
 
@@ -394,7 +490,7 @@ mod tests {
 
             assert_eq!(
                 Type::llvm_pointer(i32, 4),
-                Type::parse(&context, "!llvm.ptr<i32, 4>")
+                Type::parse(&context, "!llvm.ptr<i32, 4>").unwrap()
             );
         }
 
@@ -404,7 +500,7 @@ mod tests {
 
             assert_eq!(
                 Type::llvm_void(&context),
-                Type::parse(&context, "!llvm.void")
+                Type::parse(&context, "!llvm.void").unwrap()
             );
         }
 
@@ -415,7 +511,7 @@ mod tests {
 
             assert_eq!(
                 Type::llvm_array(i32, 4),
-                Type::parse(&context, "!llvm.array<4xi32>")
+                Type::parse(&context, "!llvm.array<4xi32>").unwrap()
             );
         }
 
@@ -428,7 +524,7 @@ mod tests {
 
             assert_eq!(
                 Type::llvm_function(i8, &[i32, i64], false),
-                Type::parse(&context, "!llvm.func<i8 (i32, i64)>")
+                Type::parse(&context, "!llvm.func<i8 (i32, i64)>").unwrap()
             );
         }
 
@@ -440,7 +536,7 @@ mod tests {
 
             assert_eq!(
                 Type::llvm_struct(&context, &[i32, i64], false),
-                Type::parse(&context, "!llvm.struct<(i32, i64)>")
+                Type::parse(&context, "!llvm.struct<(i32, i64)>").unwrap()
             );
         }
 
@@ -452,7 +548,7 @@ mod tests {
 
             assert_eq!(
                 Type::llvm_struct(&context, &[i32, i64], true),
-                Type::parse(&context, "!llvm.struct<packed (i32, i64)>")
+                Type::parse(&context, "!llvm.struct<packed (i32, i64)>").unwrap()
             );
         }
     }
