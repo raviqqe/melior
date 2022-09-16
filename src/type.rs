@@ -1,3 +1,6 @@
+pub mod id;
+
+pub use self::id::Id;
 use crate::{
     context::{Context, ContextRef},
     error::Error,
@@ -10,9 +13,9 @@ use mlir_sys::{
     mlirFunctionTypeGetNumResults, mlirFunctionTypeGetResult, mlirIndexTypeGet, mlirIntegerTypeGet,
     mlirIntegerTypeSignedGet, mlirIntegerTypeUnsignedGet, mlirLLVMArrayTypeGet,
     mlirLLVMFunctionTypeGet, mlirLLVMPointerTypeGet, mlirLLVMStructTypeLiteralGet,
-    mlirLLVMVoidTypeGet, mlirTypeDump, mlirTypeEqual, mlirTypeGetContext, mlirTypeIsAFunction,
-    mlirTypeParseGet, mlirTypePrint, mlirVectorTypeGet, mlirVectorTypeGetChecked, MlirStringRef,
-    MlirType,
+    mlirLLVMVoidTypeGet, mlirNoneTypeGet, mlirTypeDump, mlirTypeEqual, mlirTypeGetContext,
+    mlirTypeGetTypeID, mlirTypeIsAFunction, mlirTypeParseGet, mlirTypePrint, mlirVectorTypeGet,
+    mlirVectorTypeGetChecked, MlirStringRef, MlirType,
 };
 use std::{
     ffi::c_void,
@@ -70,6 +73,11 @@ impl<'c> Type<'c> {
     /// Creates an unsigned integer type.
     pub fn unsigned_integer(context: &'c Context, bits: u32) -> Self {
         unsafe { Self::from_raw(mlirIntegerTypeUnsignedGet(context.to_raw(), bits)) }
+    }
+
+    /// Creates a none type.
+    pub fn none(context: &'c Context) -> Self {
+        unsafe { Self::from_raw(mlirNoneTypeGet(context.to_raw())) }
     }
 
     /// Creates a vector type.
@@ -146,6 +154,11 @@ impl<'c> Type<'c> {
     /// Gets a context.
     pub fn context(&self) -> ContextRef<'c> {
         unsafe { ContextRef::from_raw(mlirTypeGetContext(self.raw)) }
+    }
+
+    /// Gets an ID.
+    pub fn id(&self) -> Id {
+        unsafe { Id::from_raw(mlirTypeGetTypeID(self.raw)) }
     }
 
     /// Gets an input of a function type.
@@ -263,11 +276,6 @@ mod tests {
     }
 
     #[test]
-    fn context() {
-        Type::parse(&Context::new(), "i8").unwrap().context();
-    }
-
-    #[test]
     fn integer() {
         let context = Context::new();
 
@@ -349,6 +357,32 @@ mod tests {
             Type::vector_checked(Location::unknown(&context), &[0], Type::index(&context)),
             None
         );
+    }
+
+    #[test]
+    fn context() {
+        Type::parse(&Context::new(), "i8").unwrap().context();
+    }
+
+    #[test]
+    fn id() {
+        let context = Context::new();
+
+        assert_eq!(Type::index(&context).id(), Type::index(&context).id());
+    }
+
+    #[test]
+    fn equal() {
+        let context = Context::new();
+
+        assert_eq!(Type::index(&context), Type::index(&context));
+    }
+
+    #[test]
+    fn not_equal() {
+        let context = Context::new();
+
+        assert_ne!(Type::index(&context), Type::integer(&context, 1));
     }
 
     #[test]
