@@ -52,7 +52,7 @@ impl<'c> PassManager<'c> {
     }
 
     /// Runs passes added to a pass manager against a module.
-    pub fn run(&self, module: &Module) -> LogicalResult {
+    pub fn run(&self, module: &mut Module) -> LogicalResult {
         LogicalResult::from_raw(unsafe { mlirPassManagerRun(self.raw, module.to_raw()) })
     }
 
@@ -120,7 +120,7 @@ mod tests {
         let manager = PassManager::new(&context);
 
         manager.add_pass(Pass::convert_func_to_llvm());
-        manager.run(&Module::new(Location::unknown(&context)));
+        manager.run(&mut Module::new(Location::unknown(&context)));
     }
 
     #[test]
@@ -128,7 +128,7 @@ mod tests {
         let context = Context::new();
         register_all_upstream_dialects(&context);
 
-        let module = Module::parse(
+        let mut module = Module::parse(
             &context,
             indoc!(
                 "
@@ -144,7 +144,7 @@ mod tests {
         let manager = PassManager::new(&context);
         manager.add_pass(Pass::print_operation_stats());
 
-        assert!(manager.run(&module).is_success());
+        assert!(manager.run(&mut module).is_success());
     }
 
     #[test]
@@ -152,7 +152,7 @@ mod tests {
         let context = Context::new();
         register_all_upstream_dialects(&context);
 
-        let module = Module::parse(
+        let mut module = Module::parse(
             &context,
             indoc!(
                 "
@@ -177,7 +177,7 @@ mod tests {
             .nested_under("func.func")
             .add_pass(Pass::print_operation_stats());
 
-        assert!(manager.run(&module).is_success());
+        assert!(manager.run(&mut module).is_success());
 
         let manager = PassManager::new(&context);
         manager
@@ -185,7 +185,7 @@ mod tests {
             .nested_under("func.func")
             .add_pass(Pass::print_operation_stats());
 
-        assert!(manager.run(&module).is_success());
+        assert!(manager.run(&mut module).is_success());
     }
 
     #[test]
