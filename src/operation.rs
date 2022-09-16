@@ -156,10 +156,22 @@ impl<'a> OperationRef<'a> {
         unsafe { mlirOperationDump(self.raw) }
     }
 
+    pub(crate) unsafe fn to_raw(self) -> MlirOperation {
+        self.raw
+    }
+
     pub(crate) unsafe fn from_raw(raw: MlirOperation) -> Self {
         Self {
             raw,
             _reference: Default::default(),
+        }
+    }
+
+    pub(crate) unsafe fn from_option_raw(raw: MlirOperation) -> Option<Self> {
+        if raw.ptr.is_null() {
+            None
+        } else {
+            Some(Self::from_raw(raw))
         }
     }
 }
