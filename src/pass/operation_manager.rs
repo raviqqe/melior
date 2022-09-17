@@ -1,4 +1,5 @@
-use crate::{pass::Pass, pass_manager::PassManager, string_ref::StringRef};
+use super::Manager;
+use crate::{pass::Pass, string_ref::StringRef};
 use mlir_sys::{
     mlirOpPassManagerAddOwnedPass, mlirOpPassManagerGetNestedUnder, mlirPrintPassPipeline,
     MlirOpPassManager, MlirStringRef,
@@ -11,12 +12,12 @@ use std::{
 
 /// An operation pass manager.
 #[derive(Clone, Copy, Debug)]
-pub struct OperationPassManager<'a> {
+pub struct OperationManager<'a> {
     raw: MlirOpPassManager,
-    _parent: PhantomData<&'a PassManager<'a>>,
+    _parent: PhantomData<&'a Manager<'a>>,
 }
 
-impl<'a> OperationPassManager<'a> {
+impl<'a> OperationManager<'a> {
     /// Gets an operation pass manager for nested operations corresponding to a
     /// given name.
     pub fn nested_under(&self, name: &str) -> Self {
@@ -45,7 +46,7 @@ impl<'a> OperationPassManager<'a> {
     }
 }
 
-impl<'a> Display for OperationPassManager<'a> {
+impl<'a> Display for OperationManager<'a> {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
         let mut data = (formatter, Ok(()));
 

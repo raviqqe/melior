@@ -1,6 +1,5 @@
 use crate::{
-    context::Context, dialect_registry::DialectRegistry, logical_result::LogicalResult,
-    operation_pass_manager::OperationPassManager, string_ref::StringRef,
+    context::Context, dialect, logical_result::LogicalResult, pass, string_ref::StringRef,
 };
 use mlir_sys::{
     mlirParsePassPipeline, mlirRegisterAllDialects, mlirRegisterAllLLVMTranslations,
@@ -9,7 +8,7 @@ use mlir_sys::{
 use std::sync::Once;
 
 /// Registers all dialects to a dialect registry.
-pub fn register_all_dialects(registry: &DialectRegistry) {
+pub fn register_all_dialects(registry: &dialect::Registry) {
     unsafe { mlirRegisterAllDialects(registry.to_raw()) }
 }
 
@@ -27,7 +26,7 @@ pub fn register_all_passes() {
 }
 
 /// Parses a pass pipeline.
-pub fn parse_pass_pipeline(manager: OperationPassManager, source: &str) -> LogicalResult {
+pub fn parse_pass_pipeline(manager: pass::OperationManager, source: &str) -> LogicalResult {
     LogicalResult::from_raw(unsafe {
         mlirParsePassPipeline(manager.to_raw(), StringRef::from(source).to_raw())
     })
@@ -54,14 +53,14 @@ mod tests {
 
     #[test]
     fn register_dialects() {
-        let registry = DialectRegistry::new();
+        let registry = dialect::Registry::new();
 
         register_all_dialects(&registry);
     }
 
     #[test]
     fn register_dialects_twice() {
-        let registry = DialectRegistry::new();
+        let registry = dialect::Registry::new();
 
         register_all_dialects(&registry);
         register_all_dialects(&registry);

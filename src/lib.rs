@@ -21,7 +21,7 @@
 //!     attribute::Attribute,
 //!     block::Block,
 //!     context::Context,
-//!     dialect_registry::DialectRegistry,
+//!     dialect,
 //!     identifier::Identifier,
 //!     location::Location,
 //!     module::Module,
@@ -31,7 +31,7 @@
 //!     utility::register_all_dialects,
 //! };
 //!
-//! let registry = DialectRegistry::new();
+//! let registry = dialect::Registry::new();
 //! register_all_dialects(&registry);
 //!
 //! let context = Context::new();
@@ -47,27 +47,34 @@
 //!     let region = Region::new();
 //!     let block = Block::new(&[(integer_type, location), (integer_type, location)]);
 //!
-//!     let sum = block.append_operation(operation::Builder::new("arith.addi", location)
+//!     let sum = block.append_operation(
+//!         operation::Builder::new("arith.addi", location)
 //!             .add_operands(&[*block.argument(0).unwrap(), *block.argument(1).unwrap()])
-//!             .add_results(&[integer_type]).build());
+//!             .add_results(&[integer_type])
+//!             .build(),
+//!     );
 //!
-//!     block.append_operation(operation::Builder::new("func.return", Location::unknown(&context))
-//!             .add_operands(&[*sum.result(0).unwrap()]).build());
+//!     block.append_operation(
+//!         operation::Builder::new("func.return", Location::unknown(&context))
+//!             .add_operands(&[*sum.result(0).unwrap()])
+//!             .build(),
+//!     );
 //!
 //!     region.append_block(block);
 //!
 //!     operation::Builder::new("func.func", Location::unknown(&context))
-//!             .add_attributes(&[
-//!                 (
-//!                     Identifier::new(&context, "function_type"),
-//!                     Attribute::parse(&context, "(i64, i64) -> i64").unwrap(),
-//!                 ),
-//!                 (
-//!                     Identifier::new(&context, "sym_name"),
-//!                     Attribute::parse(&context, "\"add\"").unwrap(),
-//!                 ),
-//!             ])
-//!             .add_regions(vec![region]).build()
+//!         .add_attributes(&[
+//!             (
+//!                 Identifier::new(&context, "function_type"),
+//!                 Attribute::parse(&context, "(i64, i64) -> i64").unwrap(),
+//!             ),
+//!             (
+//!                 Identifier::new(&context, "sym_name"),
+//!                 Attribute::parse(&context, "\"add\"").unwrap(),
+//!             ),
+//!         ])
+//!         .add_regions(vec![region])
+//!         .build()
 //! };
 //!
 //! module.body().append_operation(function);
@@ -79,8 +86,6 @@ pub mod attribute;
 pub mod block;
 pub mod context;
 pub mod dialect;
-pub mod dialect_handle;
-pub mod dialect_registry;
 pub mod error;
 pub mod execution_engine;
 pub mod identifier;
@@ -88,9 +93,7 @@ pub mod location;
 pub mod logical_result;
 pub mod module;
 pub mod operation;
-pub mod operation_pass_manager;
 pub mod pass;
-pub mod pass_manager;
 pub mod region;
 pub mod string_ref;
 pub mod r#type;
@@ -100,16 +103,8 @@ pub mod value;
 #[cfg(test)]
 mod tests {
     use crate::{
-        attribute::Attribute,
-        block::Block,
-        context::Context,
-        dialect_registry::DialectRegistry,
-        identifier::Identifier,
-        location::Location,
-        module::Module,
-        operation::{self},
-        r#type::Type,
-        region::Region,
+        attribute::Attribute, block::Block, context::Context, dialect, identifier::Identifier,
+        location::Location, module::Module, operation, r#type::Type, region::Region,
         utility::register_all_dialects,
     };
 
@@ -124,7 +119,7 @@ mod tests {
 
     #[test]
     fn build_module_with_dialect() {
-        let registry = DialectRegistry::new();
+        let registry = dialect::Registry::new();
         let context = Context::new();
         context.append_dialect_registry(&registry);
         let module = Module::new(Location::unknown(&context));
@@ -135,7 +130,7 @@ mod tests {
 
     #[test]
     fn build_add() {
-        let registry = DialectRegistry::new();
+        let registry = dialect::Registry::new();
         register_all_dialects(&registry);
 
         let context = Context::new();
@@ -189,7 +184,7 @@ mod tests {
 
     #[test]
     fn build_sum() {
-        let registry = DialectRegistry::new();
+        let registry = dialect::Registry::new();
         register_all_dialects(&registry);
 
         let context = Context::new();

@@ -1,6 +1,11 @@
+//! Passes and pass managers.
+
 pub mod conversion;
+mod manager;
+mod operation_manager;
 pub mod transform;
 
+pub use self::{manager::Manager, operation_manager::OperationManager};
 use mlir_sys::MlirPass;
 
 /// A pass.
