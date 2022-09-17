@@ -6,7 +6,8 @@ use crate::{
 use mlir_sys::{
     mlirNamedAttributeGet, mlirOperationCreate, mlirOperationStateAddAttributes,
     mlirOperationStateAddOperands, mlirOperationStateAddOwnedRegions, mlirOperationStateAddResults,
-    mlirOperationStateAddSuccessors, mlirOperationStateGet, MlirOperationState,
+    mlirOperationStateAddSuccessors, mlirOperationStateEnableResultTypeInference,
+    mlirOperationStateGet, MlirOperationState,
 };
 use std::marker::PhantomData;
 
@@ -106,6 +107,13 @@ impl<'c> Builder<'c> {
         self
     }
 
+    /// Enables result type inference.
+    pub fn enable_result_type_inference(mut self) -> Self {
+        unsafe { mlirOperationStateEnableResultTypeInference(&mut self.raw) }
+
+        self
+    }
+
     /// Builds an operation.
     pub fn build(mut self) -> Operation<'c> {
         unsafe { Operation::from_raw(mlirOperationCreate(&mut self.raw)) }
@@ -115,7 +123,9 @@ impl<'c> Builder<'c> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::context::Context;
+    use crate::{
+        context::Context, dialect_registry::DialectRegistry, utility::register_all_dialects,
+    };
 
     #[test]
     fn new() {
@@ -159,5 +169,31 @@ mod tests {
                 Attribute::parse(&context, "unit").unwrap(),
             )])
             .build();
+    }
+
+    #[test]
+    fn enable_result_type_inference() {
+        let registry = DialectRegistry::new();
+        register_all_dialects(&registry);
+
+        let context = Context::new();
+        context.append_dialect_registry(&registry);
+        context.load_all_available_dialects();
+
+        let location = Location::unknown(&context);
+        let r#type = Type::index(&context);
+        let block = Block::new(&[(r#type, location)]);
+        let argument = *block.argument(0).unwrap();
+
+        assert_eq!(
+            Builder::new("arith.addi", location)
+                .add_operands(&[argument, argument])
+                .enable_result_type_inference()
+                .build()
+                .result(0)
+                .unwrap()
+                .r#type(),
+            r#type,
+        );
     }
 }
