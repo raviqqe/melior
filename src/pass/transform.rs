@@ -1,8 +1,8 @@
 use super::Pass;
 use mlir_sys::{
     mlirCreateTransformsCSE, mlirCreateTransformsCanonicalizer, mlirCreateTransformsInliner,
-    mlirCreateTransformsPrintOpStats, mlirCreateTransformsSymbolDCE,
-    mlirCreateTransformsSymbolPrivatize,
+    mlirCreateTransformsPrintOpStats, mlirCreateTransformsStripDebugInfo,
+    mlirCreateTransformsSymbolDCE, mlirCreateTransformsSymbolPrivatize,
 };
 
 /// Creates a pass to canonicalize IR.
@@ -18,6 +18,11 @@ pub fn cse() -> Pass {
 /// Creates a pass to inline function calls.
 pub fn inliner() -> Pass {
     Pass::from_raw_fn(mlirCreateTransformsInliner)
+}
+
+/// Creates a pass to strip debug information.
+pub fn strip_debug_info() -> Pass {
+    Pass::from_raw_fn(mlirCreateTransformsStripDebugInfo)
 }
 
 /// Creates a pass to eliminate dead symbols.
