@@ -1,3 +1,5 @@
+pub mod llvm;
+
 use crate::{
     context::{Context, ContextRef},
     string_ref::StringRef,
