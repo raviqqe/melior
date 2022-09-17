@@ -61,7 +61,7 @@ mod tests {
         context::Context,
         dialect_registry::DialectRegistry,
         module::Module,
-        pass::Pass,
+        pass,
         pass_manager::PassManager,
         utility::{register_all_dialects, register_all_llvm_translations},
     };
@@ -89,11 +89,11 @@ mod tests {
         .unwrap();
 
         let pass_manager = PassManager::new(&context);
-        pass_manager.add_pass(Pass::convert_func_to_llvm());
+        pass_manager.add_pass(pass::conversion::convert_func_to_llvm());
 
         pass_manager
             .nested_under("func.func")
-            .add_pass(Pass::convert_arithmetic_to_llvm());
+            .add_pass(pass::conversion::convert_arithmetic_to_llvm());
 
         assert!(pass_manager.run(&mut module).is_success());
 

@@ -7,7 +7,7 @@ use mlir_sys::{
 // TODO Check if the `llvm` dialect is loaded on use of those functions.
 
 /// Creates an LLVM array type.
-pub fn array<'c>(r#type: Type<'c>, len: u32) -> Type<'c> {
+pub fn array(r#type: Type, len: u32) -> Type {
     unsafe { Type::from_raw(mlirLLVMArrayTypeGet(r#type.to_raw(), len)) }
 }
 
@@ -28,7 +28,7 @@ pub fn function<'c>(
 }
 
 /// Creates an LLVM pointer type.
-pub fn pointer<'c>(r#type: Type<'c>, address_space: u32) -> Type<'c> {
+pub fn pointer(r#type: Type, address_space: u32) -> Type {
     unsafe { Type::from_raw(mlirLLVMPointerTypeGet(r#type.to_raw(), address_space)) }
 }
 
@@ -45,7 +45,7 @@ pub fn r#struct<'c>(context: &'c Context, fields: &[Type<'c>], packed: bool) -> 
 }
 
 /// Creates an LLVM void type.
-pub fn void<'c>(context: &'c Context) -> Type<'c> {
+pub fn void(context: &Context) -> Type {
     unsafe { Type::from_raw(mlirLLVMVoidTypeGet(context.to_raw())) }
 }
 

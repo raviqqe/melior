@@ -74,6 +74,7 @@ mod tests {
     use crate::{
         dialect_registry::DialectRegistry,
         location::Location,
+        pass,
         utility::{parse_pass_pipeline, register_all_dialects, register_print_operation_stats},
     };
     use indoc::indoc;
@@ -96,7 +97,7 @@ mod tests {
     fn add_pass() {
         let context = Context::new();
 
-        PassManager::new(&context).add_pass(Pass::convert_func_to_llvm());
+        PassManager::new(&context).add_pass(pass::conversion::convert_func_to_llvm());
     }
 
     #[test]
@@ -119,7 +120,7 @@ mod tests {
         let context = Context::new();
         let manager = PassManager::new(&context);
 
-        manager.add_pass(Pass::convert_func_to_llvm());
+        manager.add_pass(pass::conversion::convert_func_to_llvm());
         manager.run(&mut Module::new(Location::unknown(&context)));
     }
 
@@ -142,7 +143,7 @@ mod tests {
         .unwrap();
 
         let manager = PassManager::new(&context);
-        manager.add_pass(Pass::print_operation_stats());
+        manager.add_pass(pass::transform::print_operation_stats());
 
         assert!(manager.run(&mut module).is_success());
     }
@@ -175,7 +176,7 @@ mod tests {
         let manager = PassManager::new(&context);
         manager
             .nested_under("func.func")
-            .add_pass(Pass::print_operation_stats());
+            .add_pass(pass::transform::print_operation_stats());
 
         assert!(manager.run(&mut module).is_success());
 
@@ -183,7 +184,7 @@ mod tests {
         manager
             .nested_under("builtin.module")
             .nested_under("func.func")
-            .add_pass(Pass::print_operation_stats());
+            .add_pass(pass::transform::print_operation_stats());
 
         assert!(manager.run(&mut module).is_success());
     }
@@ -195,7 +196,7 @@ mod tests {
         let module_manager = manager.nested_under("builtin.module");
         let function_manager = module_manager.nested_under("func.func");
 
-        function_manager.add_pass(Pass::print_operation_stats());
+        function_manager.add_pass(pass::transform::print_operation_stats());
 
         assert_eq!(
             manager.as_operation_pass_manager().to_string(),
