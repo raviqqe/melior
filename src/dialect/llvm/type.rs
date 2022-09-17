@@ -4,8 +4,9 @@ use mlir_sys::{
     mlirLLVMStructTypeLiteralGet, mlirLLVMVoidTypeGet,
 };
 
+// TODO Check if the `llvm` dialect is loaded on use of those functions.
+
 /// Creates an LLVM array type.
-// TODO Check if the `llvm` dialect is loaded.
 pub fn array<'c>(r#type: Type<'c>, len: u32) -> Type<'c> {
     unsafe { Type::from_raw(mlirLLVMArrayTypeGet(r#type.to_raw(), len)) }
 }
