@@ -5,7 +5,7 @@ use crate::{
 };
 use mlir_sys::{
     mlirParsePassPipeline, mlirRegisterAllDialects, mlirRegisterAllLLVMTranslations,
-    mlirRegisterAllPasses, mlirRegisterTransformsCSE, mlirRegisterTransformsPrintOpStats,
+    mlirRegisterAllPasses,
 };
 use std::sync::Once;
 
@@ -32,16 +32,6 @@ pub fn parse_pass_pipeline(manager: pass::OperationManager, source: &str) -> Log
     LogicalResult::from_raw(unsafe {
         mlirParsePassPipeline(manager.to_raw(), StringRef::from(source).to_raw())
     })
-}
-
-/// Registers a pass to print operation stats.
-pub fn register_print_operation_stats() {
-    unsafe { mlirRegisterTransformsPrintOpStats() }
-}
-
-/// Registers a pass to print operation stats.
-pub fn register_cse() {
-    unsafe { mlirRegisterTransformsCSE() }
 }
 
 // TODO Use into_raw_parts.
