@@ -1,3 +1,6 @@
+mod block_argument;
+
+pub use self::block_argument::BlockArgument;
 use crate::{r#type::Type, string_ref::StringRef};
 use mlir_sys::{
     mlirValueDump, mlirValueEqual, mlirValueGetType, mlirValueIsABlockArgument,

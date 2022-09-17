@@ -6,7 +6,7 @@ use crate::{
     region::RegionRef,
     string_ref::StringRef,
     utility::into_raw_array,
-    value::Value,
+    value::{BlockArgument, Value},
 };
 use mlir_sys::{
     mlirBlockAddArgument, mlirBlockAppendOwnedOperation, mlirBlockCreate, mlirBlockDestroy,
@@ -100,12 +100,11 @@ pub struct BlockRef<'a> {
 
 impl<'c> BlockRef<'c> {
     /// Gets an argument at a position.
-    pub fn argument(&self, position: usize) -> Option<Value> {
+    pub fn argument(&self, position: usize) -> Option<BlockArgument> {
         unsafe {
             if position < self.argument_count() as usize {
-                Some(Value::from_raw(mlirBlockGetArgument(
-                    self.raw,
-                    position as isize,
+                Some(BlockArgument::from_value(Value::from_raw(
+                    mlirBlockGetArgument(self.raw, position as isize),
                 )))
             } else {
                 None

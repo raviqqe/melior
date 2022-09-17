@@ -50,7 +50,7 @@
 //!
 //!     let sum = block.append_operation(Operation::new(
 //!         OperationState::new("arith.addi", location)
-//!             .add_operands(&[block.argument(0).unwrap(), block.argument(1).unwrap()])
+//!             .add_operands(&[*block.argument(0).unwrap(), *block.argument(1).unwrap()])
 //!             .add_results(&[integer_type]),
 //!     ));
 //!
@@ -154,7 +154,7 @@ mod tests {
 
             let sum = block.append_operation(Operation::new(
                 OperationState::new("arith.addi", location)
-                    .add_operands(&[block.argument(0).unwrap(), block.argument(1).unwrap()])
+                    .add_operands(&[*block.argument(0).unwrap(), *block.argument(1).unwrap()])
                     .add_results(&[integer_type]),
             ));
 
@@ -219,7 +219,10 @@ mod tests {
 
             let dim = function_block.append_operation(Operation::new(
                 OperationState::new("memref.dim", location)
-                    .add_operands(&[function_block.argument(0).unwrap(), zero.result(0).unwrap()])
+                    .add_operands(&[
+                        *function_block.argument(0).unwrap(),
+                        zero.result(0).unwrap(),
+                    ])
                     .add_results(&[index_type]),
             ));
 
@@ -241,8 +244,8 @@ mod tests {
                 let lhs = loop_block.append_operation(Operation::new(
                     OperationState::new("memref.load", location)
                         .add_operands(&[
-                            function_block.argument(0).unwrap(),
-                            loop_block.argument(0).unwrap(),
+                            *function_block.argument(0).unwrap(),
+                            *loop_block.argument(0).unwrap(),
                         ])
                         .add_results(&[f32_type]),
                 ));
@@ -250,8 +253,8 @@ mod tests {
                 let rhs = loop_block.append_operation(Operation::new(
                     OperationState::new("memref.load", location)
                         .add_operands(&[
-                            function_block.argument(1).unwrap(),
-                            loop_block.argument(0).unwrap(),
+                            *function_block.argument(1).unwrap(),
+                            *loop_block.argument(0).unwrap(),
                         ])
                         .add_results(&[f32_type]),
                 ));
@@ -265,8 +268,8 @@ mod tests {
                 loop_block.append_operation(Operation::new(
                     OperationState::new("memref.store", location).add_operands(&[
                         add.result(0).unwrap(),
-                        function_block.argument(0).unwrap(),
-                        loop_block.argument(0).unwrap(),
+                        *function_block.argument(0).unwrap(),
+                        *loop_block.argument(0).unwrap(),
                     ]),
                 ));
 

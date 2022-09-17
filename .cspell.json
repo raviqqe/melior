@@ -2,6 +2,8 @@
   "words": [
     "addf",
     "addi",
+    "canonicalize",
+    "canonicalizer",
     "femtomc",
     "hasher",
     "indoc",
@@ -12,6 +14,7 @@
     "memref",
     "mlir",
     "rustc",
+    "sccp",
     "spirv",
     "stdc"
   ]
