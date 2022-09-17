@@ -4,18 +4,22 @@ use crate::{
     utility::into_raw_array, value::Value,
 };
 use mlir_sys::{
-    mlirNamedAttributeGet, mlirOperationStateAddAttributes, mlirOperationStateAddOperands,
-    mlirOperationStateAddOwnedRegions, mlirOperationStateAddResults,
+    mlirNamedAttributeGet, mlirOperationCreate, mlirOperationStateAddAttributes,
+    mlirOperationStateAddOperands, mlirOperationStateAddOwnedRegions, mlirOperationStateAddResults,
     mlirOperationStateAddSuccessors, mlirOperationStateGet, MlirOperationState,
 };
 use std::marker::PhantomData;
 
-pub struct OperationState<'c> {
+use super::Operation;
+
+/// An operation builder.
+pub struct Builder<'c> {
     raw: MlirOperationState,
     _context: PhantomData<&'c Context>,
 }
 
-impl<'c> OperationState<'c> {
+impl<'c> Builder<'c> {
+    /// Creates an operation builder.
     pub fn new(name: &str, location: Location<'c>) -> Self {
         Self {
             raw: unsafe {
@@ -25,6 +29,7 @@ impl<'c> OperationState<'c> {
         }
     }
 
+    /// Adds results.
     pub fn add_results(mut self, results: &[Type<'c>]) -> Self {
         unsafe {
             mlirOperationStateAddResults(
@@ -37,6 +42,7 @@ impl<'c> OperationState<'c> {
         self
     }
 
+    /// Adds operands.
     pub fn add_operands(mut self, operands: &[Value]) -> Self {
         unsafe {
             mlirOperationStateAddOperands(
@@ -49,6 +55,7 @@ impl<'c> OperationState<'c> {
         self
     }
 
+    /// Adds regions.
     pub fn add_regions(mut self, regions: Vec<Region>) -> Self {
         unsafe {
             mlirOperationStateAddOwnedRegions(
@@ -66,6 +73,7 @@ impl<'c> OperationState<'c> {
         self
     }
 
+    /// Adds successor blocks.
     pub fn add_successors(mut self, successors: &[&Block]) -> Self {
         unsafe {
             mlirOperationStateAddSuccessors(
@@ -78,6 +86,7 @@ impl<'c> OperationState<'c> {
         self
     }
 
+    /// Adds attributes.
     pub fn add_attributes(mut self, attributes: &[(Identifier, Attribute<'c>)]) -> Self {
         unsafe {
             mlirOperationStateAddAttributes(
@@ -97,63 +106,58 @@ impl<'c> OperationState<'c> {
         self
     }
 
-    pub(crate) unsafe fn into_raw(self) -> MlirOperationState {
-        self.raw
+    /// Builds an operation.
+    pub fn build(mut self) -> Operation<'c> {
+        unsafe { Operation::from_raw(mlirOperationCreate(&mut self.raw)) }
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{context::Context, operation::Operation};
+    use crate::context::Context;
 
     #[test]
     fn new() {
-        Operation::new(OperationState::new(
-            "foo",
-            Location::unknown(&Context::new()),
-        ));
+        Builder::new("foo", Location::unknown(&Context::new())).build();
     }
 
     #[test]
     fn add_results() {
         let context = Context::new();
 
-        Operation::new(
-            OperationState::new("foo", Location::unknown(&context))
-                .add_results(&[Type::parse(&context, "i1").unwrap()]),
-        );
+        Builder::new("foo", Location::unknown(&context))
+            .add_results(&[Type::parse(&context, "i1").unwrap()])
+            .build();
     }
 
     #[test]
     fn add_regions() {
         let context = Context::new();
 
-        Operation::new(
-            OperationState::new("foo", Location::unknown(&context))
-                .add_regions(vec![Region::new()]),
-        );
+        Builder::new("foo", Location::unknown(&context))
+            .add_regions(vec![Region::new()])
+            .build();
     }
 
     #[test]
     fn add_successors() {
         let context = Context::new();
 
-        Operation::new(
-            OperationState::new("foo", Location::unknown(&context))
-                .add_successors(&[&Block::new(&[])]),
-        );
+        Builder::new("foo", Location::unknown(&context))
+            .add_successors(&[&Block::new(&[])])
+            .build();
     }
 
     #[test]
     fn add_attributes() {
         let context = Context::new();
 
-        Operation::new(
-            OperationState::new("foo", Location::unknown(&context)).add_attributes(&[(
+        Builder::new("foo", Location::unknown(&context))
+            .add_attributes(&[(
                 Identifier::new(&context, "foo"),
                 Attribute::parse(&context, "unit").unwrap(),
-            )]),
-        );
+            )])
+            .build();
     }
 }
