@@ -1,7 +1,7 @@
 use super::Pass;
 use mlir_sys::{
     mlirCreateTransformsCSE, mlirCreateTransformsCanonicalizer, mlirCreateTransformsInliner,
-    mlirCreateTransformsPrintOpStats, mlirCreateTransformsStripDebugInfo,
+    mlirCreateTransformsPrintOpStats, mlirCreateTransformsSCCP, mlirCreateTransformsStripDebugInfo,
     mlirCreateTransformsSymbolDCE, mlirCreateTransformsSymbolPrivatize,
 };
 
@@ -18,6 +18,11 @@ pub fn cse() -> Pass {
 /// Creates a pass to inline function calls.
 pub fn inliner() -> Pass {
     Pass::from_raw_fn(mlirCreateTransformsInliner)
+}
+
+/// Creates a pass to propagate constants.
+pub fn sccp() -> Pass {
+    Pass::from_raw_fn(mlirCreateTransformsSCCP)
 }
 
 /// Creates a pass to strip debug information.
