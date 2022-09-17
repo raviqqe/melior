@@ -18,7 +18,7 @@
 //!
 //! ```rust
 //! use melior::{
-//!     context::Context,
+//!     Context,
 //!     dialect,
 //!     ir::*,
 //!     utility::register_all_dialects,
@@ -75,15 +75,20 @@
 //! assert!(module.as_operation().verify());
 //! ```
 
-pub mod context;
+mod context;
 pub mod dialect;
-pub mod error;
-pub mod execution_engine;
+mod error;
+mod execution_engine;
 pub mod ir;
-pub mod logical_result;
+mod logical_result;
 pub mod pass;
-pub mod string_ref;
+mod string_ref;
 pub mod utility;
+
+pub use self::{
+    context::Context, error::Error, execution_engine::ExecutionEngine,
+    logical_result::LogicalResult, string_ref::StringRef,
+};
 
 #[cfg(test)]
 mod tests {
