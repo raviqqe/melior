@@ -222,7 +222,7 @@ impl<'c> Display for Type<'c> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{dialect_handle::DialectHandle, error::Error};
+    use crate::error::Error;
 
     #[test]
     fn new() {
