@@ -1,6 +1,7 @@
 use super::OperationManager;
 use crate::{
     context::Context, ir::Module, logical_result::LogicalResult, pass::Pass, string_ref::StringRef,
+    Error,
 };
 use mlir_sys::{
     mlirPassManagerAddOwnedPass, mlirPassManagerCreate, mlirPassManagerDestroy,
@@ -52,8 +53,15 @@ impl<'c> Manager<'c> {
     }
 
     /// Runs passes added to a pass manager against a module.
-    pub fn run(&self, module: &mut Module) -> LogicalResult {
-        LogicalResult::from_raw(unsafe { mlirPassManagerRun(self.raw, module.to_raw()) })
+    pub fn run(&self, module: &mut Module) -> Result<(), Error> {
+        let result =
+            LogicalResult::from_raw(unsafe { mlirPassManagerRun(self.raw, module.to_raw()) });
+
+        if result.is_success() {
+            Ok(())
+        } else {
+            Err(Error::RunPass)
+        }
     }
 
     /// Converts a pass manager to an operation pass manager.
@@ -76,6 +84,7 @@ mod tests {
         ir::{Location, Module},
         pass::{self, transform::register_print_operation_stats},
         utility::{parse_pass_pipeline, register_all_dialects},
+        Error,
     };
     use indoc::indoc;
     use pretty_assertions::assert_eq;
@@ -121,7 +130,9 @@ mod tests {
         let manager = Manager::new(&context);
 
         manager.add_pass(pass::conversion::convert_func_to_llvm());
-        manager.run(&mut Module::new(Location::unknown(&context)));
+        manager
+            .run(&mut Module::new(Location::unknown(&context)))
+            .unwrap();
     }
 
     #[test]
@@ -145,7 +156,7 @@ mod tests {
         let manager = Manager::new(&context);
         manager.add_pass(pass::transform::print_operation_stats());
 
-        assert!(manager.run(&mut module).is_success());
+        assert_eq!(manager.run(&mut module), Ok(()));
     }
 
     #[test]
@@ -178,7 +189,7 @@ mod tests {
             .nested_under("func.func")
             .add_pass(pass::transform::print_operation_stats());
 
-        assert!(manager.run(&mut module).is_success());
+        assert_eq!(manager.run(&mut module), Ok(()));
 
         let manager = Manager::new(&context);
         manager
@@ -186,7 +197,7 @@ mod tests {
             .nested_under("func.func")
             .add_pass(pass::transform::print_operation_stats());
 
-        assert!(manager.run(&mut module).is_success());
+        assert_eq!(manager.run(&mut module), Ok(()));
     }
 
     #[test]
@@ -214,21 +225,25 @@ mod tests {
         let context = Context::new();
         let manager = Manager::new(&context);
 
-        assert!(parse_pass_pipeline(
-            manager.as_operation_pass_manager(),
-            "builtin.module(func.func(print-op-stats{json=false}),\
+        assert_eq!(
+            parse_pass_pipeline(
+                manager.as_operation_pass_manager(),
+                "builtin.module(func.func(print-op-stats{json=false}),\
                 func.func(print-op-stats{json=false}))"
-        )
-        .is_failure());
+            ),
+            Err(Error::ParsePassPipeline)
+        );
 
         register_print_operation_stats();
 
-        assert!(parse_pass_pipeline(
-            manager.as_operation_pass_manager(),
-            "builtin.module(func.func(print-op-stats{json=false}),\
+        assert_eq!(
+            parse_pass_pipeline(
+                manager.as_operation_pass_manager(),
+                "builtin.module(func.func(print-op-stats{json=false}),\
                 func.func(print-op-stats{json=false}))"
-        )
-        .is_success());
+            ),
+            Ok(())
+        );
 
         assert_eq!(
             manager.as_operation_pass_manager().to_string(),

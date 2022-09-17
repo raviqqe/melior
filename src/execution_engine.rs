@@ -1,4 +1,4 @@
-use crate::{ir::Module, logical_result::LogicalResult, string_ref::StringRef};
+use crate::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Error};
 use mlir_sys::{
     mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineInvokePacked,
     MlirExecutionEngine,
@@ -37,12 +37,18 @@ impl ExecutionEngine {
     /// This function modifies memory locations pointed by the `arguments`
     /// argument. If those pointers are invalid or misaligned, calling this
     /// function might result in undefined behavior.
-    pub unsafe fn invoke_packed(&self, name: &str, arguments: &mut [*mut ()]) -> LogicalResult {
-        LogicalResult::from_raw(mlirExecutionEngineInvokePacked(
+    pub unsafe fn invoke_packed(&self, name: &str, arguments: &mut [*mut ()]) -> Result<(), Error> {
+        let result = LogicalResult::from_raw(mlirExecutionEngineInvokePacked(
             self.raw,
             StringRef::from(name).to_raw(),
             arguments.as_mut_ptr() as *mut *mut c_void,
-        ))
+        ));
+
+        if result.is_success() {
+            Ok(())
+        } else {
+            Err(Error::InvokeFunction)
+        }
     }
 }
 
@@ -90,23 +96,25 @@ mod tests {
             .nested_under("func.func")
             .add_pass(pass::conversion::convert_arithmetic_to_llvm());
 
-        assert!(pass_manager.run(&mut module).is_success());
+        assert_eq!(pass_manager.run(&mut module), Ok(()));
 
         let engine = ExecutionEngine::new(&module, 2, &[]);
 
         let mut argument = 42;
         let mut result = -1;
 
-        assert!(unsafe {
-            engine.invoke_packed(
-                "add",
-                &mut [
-                    &mut argument as *mut i32 as *mut (),
-                    &mut result as *mut i32 as *mut (),
-                ],
-            )
-        }
-        .is_success());
+        assert_eq!(
+            unsafe {
+                engine.invoke_packed(
+                    "add",
+                    &mut [
+                        &mut argument as *mut i32 as *mut (),
+                        &mut result as *mut i32 as *mut (),
+                    ],
+                )
+            },
+            Ok(())
+        );
 
         assert_eq!(argument, 42);
         assert_eq!(result, 84);

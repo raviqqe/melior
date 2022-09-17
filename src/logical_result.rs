@@ -1,10 +1,12 @@
 use mlir_sys::MlirLogicalResult;
 
 /// A logical result of success or failure.
-pub struct LogicalResult {
+pub(crate) struct LogicalResult {
     raw: MlirLogicalResult,
 }
 
+// TODO Delete this and replace it with `bool`?
+#[allow(unused)]
 impl LogicalResult {
     /// Creates a success result.
     pub fn success() -> Self {
