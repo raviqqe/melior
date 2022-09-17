@@ -68,7 +68,7 @@ mod tests {
         let i32 = Type::integer(&context, 32);
 
         assert_eq!(
-            Type::llvm_pointer(i32, 0),
+            super::pointer(i32, 0),
             Type::parse(&context, "!llvm.ptr<i32>").unwrap()
         );
     }
@@ -79,7 +79,7 @@ mod tests {
         let i32 = Type::integer(&context, 32);
 
         assert_eq!(
-            Type::llvm_pointer(i32, 4),
+            super::pointer(i32, 4),
             Type::parse(&context, "!llvm.ptr<i32, 4>").unwrap()
         );
     }
@@ -89,7 +89,7 @@ mod tests {
         let context = create_context();
 
         assert_eq!(
-            Type::llvm_void(&context),
+            super::void(&context),
             Type::parse(&context, "!llvm.void").unwrap()
         );
     }
@@ -100,7 +100,7 @@ mod tests {
         let i32 = Type::integer(&context, 32);
 
         assert_eq!(
-            Type::llvm_array(i32, 4),
+            super::array(i32, 4),
             Type::parse(&context, "!llvm.array<4xi32>").unwrap()
         );
     }
@@ -113,7 +113,7 @@ mod tests {
         let i64 = Type::integer(&context, 64);
 
         assert_eq!(
-            Type::llvm_function(i8, &[i32, i64], false),
+            super::function(i8, &[i32, i64], false),
             Type::parse(&context, "!llvm.func<i8 (i32, i64)>").unwrap()
         );
     }
@@ -125,7 +125,7 @@ mod tests {
         let i64 = Type::integer(&context, 64);
 
         assert_eq!(
-            Type::llvm_struct(&context, &[i32, i64], false),
+            super::r#struct(&context, &[i32, i64], false),
             Type::parse(&context, "!llvm.struct<(i32, i64)>").unwrap()
         );
     }
@@ -137,7 +137,7 @@ mod tests {
         let i64 = Type::integer(&context, 64);
 
         assert_eq!(
-            Type::llvm_struct(&context, &[i32, i64], true),
+            super::r#struct(&context, &[i32, i64], true),
             Type::parse(&context, "!llvm.struct<packed (i32, i64)>").unwrap()
         );
     }
