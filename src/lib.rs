@@ -18,16 +18,9 @@
 //!
 //! ```rust
 //! use melior::{
-//!     attribute::Attribute,
-//!     block::Block,
 //!     context::Context,
 //!     dialect,
-//!     identifier::Identifier,
-//!     location::Location,
-//!     module::Module,
-//!     operation::{self, Operation},
-//!     region::Region,
-//!     r#type::Type,
+//!     ir::*,
 //!     utility::register_all_dialects,
 //! };
 //!
@@ -82,29 +75,22 @@
 //! assert!(module.as_operation().verify());
 //! ```
 
-pub mod attribute;
-pub mod block;
 pub mod context;
 pub mod dialect;
 pub mod error;
 pub mod execution_engine;
-pub mod identifier;
-pub mod location;
+pub mod ir;
 pub mod logical_result;
-pub mod module;
-pub mod operation;
 pub mod pass;
-pub mod region;
 pub mod string_ref;
-pub mod r#type;
 pub mod utility;
-pub mod value;
 
 #[cfg(test)]
 mod tests {
     use crate::{
-        attribute::Attribute, block::Block, context::Context, dialect, identifier::Identifier,
-        location::Location, module::Module, operation, r#type::Type, region::Region,
+        context::Context,
+        dialect,
+        ir::{operation, Attribute, Block, Identifier, Location, Module, Region, Type},
         utility::register_all_dialects,
     };
 

@@ -1,4 +1,4 @@
-use crate::{logical_result::LogicalResult, module::Module, string_ref::StringRef};
+use crate::{ir::Module, logical_result::LogicalResult, string_ref::StringRef};
 use mlir_sys::{
     mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineInvokePacked,
     MlirExecutionEngine,
@@ -44,8 +44,6 @@ impl ExecutionEngine {
             arguments.as_mut_ptr() as *mut *mut c_void,
         ))
     }
-
-    // TODO Add rest of the API.
 }
 
 impl Drop for ExecutionEngine {
@@ -59,9 +57,7 @@ mod tests {
     use super::*;
     use crate::{
         context::Context,
-        dialect,
-        module::Module,
-        pass,
+        dialect, pass,
         utility::{register_all_dialects, register_all_llvm_translations},
     };
 
