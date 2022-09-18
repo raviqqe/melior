@@ -42,14 +42,17 @@
 //!
 //!     let sum = block.append_operation(
 //!         operation::Builder::new("arith.addi", location)
-//!             .add_operands(&[*block.argument(0).unwrap(), *block.argument(1).unwrap()])
+//!             .add_operands(&[
+//!                 block.argument(0).unwrap().into(),
+//!                 block.argument(1).unwrap().into(),
+//!             ])
 //!             .add_results(&[integer_type])
 //!             .build(),
 //!     );
 //!
 //!     block.append_operation(
 //!         operation::Builder::new("func.return", Location::unknown(&context))
-//!             .add_operands(&[*sum.result(0).unwrap()])
+//!             .add_operands(&[sum.result(0).unwrap().into()])
 //!             .build(),
 //!     );
 //!
@@ -86,7 +89,10 @@ mod string_ref;
 pub mod utility;
 
 pub use self::{
-    context::Context, error::Error, execution_engine::ExecutionEngine, string_ref::StringRef,
+    context::{Context, ContextRef},
+    error::Error,
+    execution_engine::ExecutionEngine,
+    string_ref::StringRef,
 };
 
 #[cfg(test)]
@@ -138,14 +144,17 @@ mod tests {
 
             let sum = block.append_operation(
                 operation::Builder::new("arith.addi", location)
-                    .add_operands(&[*block.argument(0).unwrap(), *block.argument(1).unwrap()])
+                    .add_operands(&[
+                        block.argument(0).unwrap().into(),
+                        block.argument(1).unwrap().into(),
+                    ])
                     .add_results(&[integer_type])
                     .build(),
             );
 
             block.append_operation(
                 operation::Builder::new("func.return", Location::unknown(&context))
-                    .add_operands(&[*sum.result(0).unwrap()])
+                    .add_operands(&[sum.result(0).unwrap().into()])
                     .build(),
             );
 
@@ -206,8 +215,8 @@ mod tests {
             let dim = function_block.append_operation(
                 operation::Builder::new("memref.dim", location)
                     .add_operands(&[
-                        *function_block.argument(0).unwrap(),
-                        *zero.result(0).unwrap(),
+                        function_block.argument(0).unwrap().into(),
+                        zero.result(0).unwrap().into(),
                     ])
                     .add_results(&[index_type])
                     .build(),
@@ -232,8 +241,8 @@ mod tests {
                 let lhs = loop_block.append_operation(
                     operation::Builder::new("memref.load", location)
                         .add_operands(&[
-                            *function_block.argument(0).unwrap(),
-                            *loop_block.argument(0).unwrap(),
+                            function_block.argument(0).unwrap().into(),
+                            loop_block.argument(0).unwrap().into(),
                         ])
                         .add_results(&[f32_type])
                         .build(),
@@ -242,8 +251,8 @@ mod tests {
                 let rhs = loop_block.append_operation(
                     operation::Builder::new("memref.load", location)
                         .add_operands(&[
-                            *function_block.argument(1).unwrap(),
-                            *loop_block.argument(0).unwrap(),
+                            function_block.argument(1).unwrap().into(),
+                            loop_block.argument(0).unwrap().into(),
                         ])
                         .add_results(&[f32_type])
                         .build(),
@@ -251,7 +260,10 @@ mod tests {
 
                 let add = loop_block.append_operation(
                     operation::Builder::new("arith.addf", location)
-                        .add_operands(&[*lhs.result(0).unwrap(), *rhs.result(0).unwrap()])
+                        .add_operands(&[
+                            lhs.result(0).unwrap().into(),
+                            rhs.result(0).unwrap().into(),
+                        ])
                         .add_results(&[f32_type])
                         .build(),
                 );
@@ -259,9 +271,9 @@ mod tests {
                 loop_block.append_operation(
                     operation::Builder::new("memref.store", location)
                         .add_operands(&[
-                            *add.result(0).unwrap(),
-                            *function_block.argument(0).unwrap(),
-                            *loop_block.argument(0).unwrap(),
+                            add.result(0).unwrap().into(),
+                            function_block.argument(0).unwrap().into(),
+                            loop_block.argument(0).unwrap().into(),
                         ])
                         .build(),
                 );
@@ -277,9 +289,9 @@ mod tests {
 
                     operation::Builder::new("scf.for", location)
                         .add_operands(&[
-                            *zero.result(0).unwrap(),
-                            *dim.result(0).unwrap(),
-                            *one.result(0).unwrap(),
+                            zero.result(0).unwrap().into(),
+                            dim.result(0).unwrap().into(),
+                            one.result(0).unwrap().into(),
                         ])
                         .add_regions(vec![loop_region])
                 }

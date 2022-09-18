@@ -1,7 +1,7 @@
 //! IR objects and builders.
 
 mod attribute;
-mod block;
+pub mod block;
 mod identifier;
 mod location;
 mod module;
@@ -19,5 +19,5 @@ pub use self::{
     operation::{Operation, OperationRef},
     r#type::Type,
     region::{Region, RegionRef},
-    value::{BlockArgument, OperationResult, Value},
+    value::{Value, ValueLike},
 };
