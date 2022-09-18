@@ -20,7 +20,7 @@ use mlir_sys::{
 };
 use std::{
     ffi::c_void,
-    fmt::{Display, Formatter},
+    fmt::{Debug, Display, Formatter},
     marker::PhantomData,
     mem::forget,
     ops::Deref,
@@ -75,7 +75,7 @@ impl<'c> Deref for Operation<'c> {
 /// A reference to an operation.
 // TODO Should we split context lifetimes? Or, is it transitively proven that
 // 'c > 'a?
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub struct OperationRef<'a> {
     raw: MlirOperation,
     _reference: PhantomData<&'a Operation<'a>>,
@@ -207,6 +207,14 @@ impl<'a> Display for OperationRef<'a> {
     }
 }
 
+impl<'a> Debug for OperationRef<'a> {
+    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
+        writeln!(formatter, "OperationRef(")?;
+        Display::fmt(self, formatter)?;
+        write!(formatter, ")")
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -277,5 +285,30 @@ mod tests {
         let operation = Builder::new("foo", Location::unknown(&context)).build();
 
         operation.to_owned();
+    }
+
+    #[test]
+    fn display() {
+        let context = Context::new();
+
+        assert_eq!(
+            Builder::new("foo", Location::unknown(&context),)
+                .build()
+                .to_string(),
+            "\"foo\"() : () -> ()\n"
+        );
+    }
+
+    #[test]
+    fn debug() {
+        let context = Context::new();
+
+        assert_eq!(
+            format!(
+                "{:?}",
+                *Builder::new("foo", Location::unknown(&context)).build()
+            ),
+            "OperationRef(\n\"foo\"() : () -> ()\n)"
+        );
     }
 }
