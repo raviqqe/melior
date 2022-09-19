@@ -14,8 +14,10 @@ pub enum Error {
     InvokeFunction,
     OperationResultExpected(String),
     OperationResultPosition(String, usize),
-    RunPass,
     ParsePassPipeline,
+    RunPass,
+    TupleExpected(String),
+    TupleFieldPosition(String, usize),
 }
 
 impl Display for Error {
@@ -53,8 +55,16 @@ impl Display for Error {
                     position, operation
                 )
             }
-            Self::RunPass => write!(formatter, "failed to run pass"),
             Self::ParsePassPipeline => write!(formatter, "failed to parse pass pipeline"),
+            Self::RunPass => write!(formatter, "failed to run pass"),
+            Self::TupleExpected(r#type) => write!(formatter, "tuple expected: {}", r#type),
+            Self::TupleFieldPosition(r#type, position) => {
+                write!(
+                    formatter,
+                    "tuple field position {} out of range: {}",
+                    position, r#type
+                )
+            }
         }
     }
 }
