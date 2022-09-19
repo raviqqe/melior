@@ -1,14 +1,10 @@
 use super::Value;
 use crate::{
     ir::{OperationRef, ValueLike},
-    utility::print_callback,
     Error,
 };
-use mlir_sys::{mlirOpResultGetOwner, mlirOpResultGetResultNumber, mlirValuePrint, MlirValue};
-use std::{
-    ffi::c_void,
-    fmt::{self, Display, Formatter},
-};
+use mlir_sys::{mlirOpResultGetOwner, mlirOpResultGetResultNumber, MlirValue};
+use std::fmt::{self, Display, Formatter};
 
 /// An operation result.
 #[derive(Clone, Copy, Debug)]
@@ -24,33 +20,23 @@ impl<'a> ResultValue<'a> {
     pub fn owner(&self) -> OperationRef {
         unsafe { OperationRef::from_raw(mlirOpResultGetOwner(self.value.to_raw())) }
     }
-}
 
-impl<'a> ValueLike for ResultValue<'a> {
-    unsafe fn from_raw(value: MlirValue) -> Self {
+    pub(crate) unsafe fn from_raw(value: MlirValue) -> Self {
         Self {
             value: Value::from_raw(value),
         }
     }
+}
 
-    unsafe fn to_raw(&self) -> MlirValue {
+impl<'a> ValueLike for ResultValue<'a> {
+    fn to_raw(&self) -> MlirValue {
         self.value.to_raw()
     }
 }
 
 impl<'a> Display for ResultValue<'a> {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
-        let mut data = (formatter, Ok(()));
-
-        unsafe {
-            mlirValuePrint(
-                self.value.to_raw(),
-                Some(print_callback),
-                &mut data as *mut _ as *mut c_void,
-            );
-        }
-
-        data.1
+        Value::from(*self).fmt(formatter)
     }
 }
 

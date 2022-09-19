@@ -1,17 +1,12 @@
 use super::Value;
 use crate::{
-    ir::{BlockRef, Type, ValueLike},
-    utility::print_callback,
+    ir::{BlockRef, Type, TypeLike, ValueLike},
     Error,
 };
 use mlir_sys::{
-    mlirBlockArgumentGetArgNumber, mlirBlockArgumentGetOwner, mlirBlockArgumentSetType,
-    mlirValuePrint, MlirValue,
+    mlirBlockArgumentGetArgNumber, mlirBlockArgumentGetOwner, mlirBlockArgumentSetType, MlirValue,
 };
-use std::{
-    ffi::c_void,
-    fmt::{self, Display, Formatter},
-};
+use std::fmt::{self, Display, Formatter};
 
 /// A block argument.
 #[derive(Clone, Copy, Debug)]
@@ -31,33 +26,23 @@ impl<'a> Argument<'a> {
     pub fn set_type(&self, r#type: Type) {
         unsafe { mlirBlockArgumentSetType(self.value.to_raw(), r#type.to_raw()) }
     }
-}
 
-impl<'a> ValueLike for Argument<'a> {
-    unsafe fn from_raw(value: MlirValue) -> Self {
+    pub(crate) unsafe fn from_raw(value: MlirValue) -> Self {
         Self {
             value: Value::from_raw(value),
         }
     }
+}
 
-    unsafe fn to_raw(&self) -> MlirValue {
+impl<'a> ValueLike for Argument<'a> {
+    fn to_raw(&self) -> MlirValue {
         self.value.to_raw()
     }
 }
 
 impl<'a> Display for Argument<'a> {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
-        let mut data = (formatter, Ok(()));
-
-        unsafe {
-            mlirValuePrint(
-                self.value.to_raw(),
-                Some(print_callback),
-                &mut data as *mut _ as *mut c_void,
-            );
-        }
-
-        data.1
+        Value::from(*self).fmt(formatter)
     }
 }
 

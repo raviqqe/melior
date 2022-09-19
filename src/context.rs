@@ -4,8 +4,10 @@ use crate::{
 };
 use mlir_sys::{
     mlirContextAppendDialectRegistry, mlirContextCreate, mlirContextDestroy,
-    mlirContextGetNumRegisteredDialects, mlirContextGetOrLoadDialect,
-    mlirContextLoadAllAvailableDialects, MlirContext,
+    mlirContextEnableMultithreading, mlirContextEqual, mlirContextGetAllowUnregisteredDialects,
+    mlirContextGetNumLoadedDialects, mlirContextGetNumRegisteredDialects,
+    mlirContextGetOrLoadDialect, mlirContextIsRegisteredOperation,
+    mlirContextLoadAllAvailableDialects, mlirContextSetAllowUnregisteredDialects, MlirContext,
 };
 use std::{marker::PhantomData, ops::Deref};
 
@@ -60,6 +62,11 @@ impl<'a> ContextRef<'a> {
         unsafe { mlirContextGetNumRegisteredDialects(self.raw) as usize }
     }
 
+    /// Gets a number of loaded dialects.
+    pub fn loaded_dialect_count(&self) -> usize {
+        unsafe { mlirContextGetNumLoadedDialects(self.raw) as usize }
+    }
+
     /// Gets or loads a dialect.
     pub fn get_or_load_dialect(&self, name: &str) -> Dialect {
         unsafe {
@@ -80,6 +87,26 @@ impl<'a> ContextRef<'a> {
         unsafe { mlirContextLoadAllAvailableDialects(self.raw) }
     }
 
+    /// Enables multi-threading.
+    pub fn enable_multi_threading(&self, enabled: bool) {
+        unsafe { mlirContextEnableMultithreading(self.raw, enabled) }
+    }
+
+    /// Returns `true` if unregistered dialects are allowed.
+    pub fn allow_unregistered_dialects(&self) -> bool {
+        unsafe { mlirContextGetAllowUnregisteredDialects(self.raw) }
+    }
+
+    /// Set if unregistered dialects are allowed.
+    pub fn set_allow_unregistered_dialects(&self, allowed: bool) {
+        unsafe { mlirContextSetAllowUnregisteredDialects(self.raw, allowed) }
+    }
+
+    /// Returns `true` if a given operation is registered in a context.
+    pub fn is_registered_operation(&self, name: &str) -> bool {
+        unsafe { mlirContextIsRegisteredOperation(self.raw, StringRef::from(name).to_raw()) }
+    }
+
     pub(crate) unsafe fn to_raw(self) -> MlirContext {
         self.raw
     }
@@ -92,6 +119,14 @@ impl<'a> ContextRef<'a> {
     }
 }
 
+impl<'a> PartialEq for ContextRef<'a> {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { mlirContextEqual(self.raw, other.raw) }
+    }
+}
+
+impl<'a> Eq for ContextRef<'a> {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -102,9 +137,67 @@ mod tests {
     }
 
     #[test]
+    fn registered_dialect_count() {
+        let context = Context::new();
+
+        assert_eq!(context.registered_dialect_count(), 1);
+    }
+
+    #[test]
+    fn loaded_dialect_count() {
+        let context = Context::new();
+
+        assert_eq!(context.loaded_dialect_count(), 1);
+    }
+
+    #[test]
     fn append_dialect_registry() {
         let context = Context::new();
 
         context.append_dialect_registry(&dialect::Registry::new());
+    }
+
+    #[test]
+    fn is_registered_operation() {
+        let context = Context::new();
+
+        assert!(context.is_registered_operation("builtin.module"));
+    }
+
+    #[test]
+    fn is_not_registered_operation() {
+        let context = Context::new();
+
+        assert!(!context.is_registered_operation("func.func"));
+    }
+
+    #[test]
+    fn enable_multi_threading() {
+        let context = Context::new();
+
+        context.enable_multi_threading(true);
+    }
+
+    #[test]
+    fn disable_multi_threading() {
+        let context = Context::new();
+
+        context.enable_multi_threading(false);
+    }
+
+    #[test]
+    fn allow_unregistered_dialects() {
+        let context = Context::new();
+
+        assert!(!context.allow_unregistered_dialects());
+    }
+
+    #[test]
+    fn set_allow_unregistered_dialects() {
+        let context = Context::new();
+
+        context.set_allow_unregistered_dialects(true);
+
+        assert!(context.allow_unregistered_dialects());
     }
 }
