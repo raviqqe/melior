@@ -118,6 +118,7 @@ mod tests {
         context::Context,
         dialect,
         ir::{operation, Attribute, Block, Identifier, Location, Module, Region, Type},
+        pass::{self, Pass},
         utility::register_all_dialects,
     };
 
@@ -340,5 +341,44 @@ mod tests {
 
         assert!(module.as_operation().verify());
         insta::assert_display_snapshot!(module.as_operation());
+    }
+
+    #[test]
+    fn use_unloaded_dialect() {
+        let context = Context::new();
+
+        let location = Location::unknown(&context);
+        let mut module = Module::new(location);
+
+        let function = {
+            let region = Region::new();
+            let block = Block::new(&[]);
+
+            block.append_operation(
+                operation::Builder::new("func.return", Location::unknown(&context)).build(),
+            );
+
+            region.append_block(block);
+
+            operation::Builder::new("func.func", Location::unknown(&context))
+                .add_attributes(&[
+                    (
+                        Identifier::new(&context, "function_type"),
+                        Attribute::parse(&context, "() -> ()").unwrap(),
+                    ),
+                    (
+                        Identifier::new(&context, "sym_name"),
+                        Attribute::parse(&context, "\"nop\"").unwrap(),
+                    ),
+                ])
+                .add_regions(vec![region])
+                .build()
+        };
+
+        module.body().append_operation(function);
+
+        let manager = pass::Manager::new(&context);
+        manager.add_pass(pass::conversion::convert_func_to_llvm());
+        manager.run(&mut module).unwrap();
     }
 }
