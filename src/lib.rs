@@ -118,7 +118,7 @@ mod tests {
         context::Context,
         dialect,
         ir::{operation, Attribute, Block, Identifier, Location, Module, Region, Type},
-        pass::{self, Pass},
+        pass,
         utility::register_all_dialects,
     };
 
