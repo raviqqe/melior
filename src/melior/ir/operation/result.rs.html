@@ -163,7 +163,7 @@
         <span class="kw">let</span> <span class="ident">r#type</span> <span class="op">=</span> <span class="ident">Type::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;index&quot;</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">Block::new</span>(<span class="kw-2">&amp;</span>[(<span class="ident">r#type</span>, <span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>))]);
 
-        <span class="macro">assert_eq!</span>(<span class="ident">block</span>.<span class="ident">argument</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">owner</span>(), <span class="kw-2">*</span><span class="ident">block</span>);
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">block</span>.<span class="ident">argument</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">owner</span>(), <span class="kw-2">&amp;</span><span class="ident">block</span>);
     }
 }
 </code></pre></div>
