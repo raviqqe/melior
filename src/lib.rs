@@ -120,6 +120,7 @@ mod tests {
         ir::{operation, Attribute, Block, Identifier, Location, Module, Region, Type},
         pass,
         utility::register_all_dialects,
+        Error,
     };
 
     #[test]
@@ -167,13 +168,15 @@ mod tests {
                         block.argument(1).unwrap().into(),
                     ])
                     .add_results(&[integer_type])
-                    .build(),
+                    .build()
+                    .unwrap(),
             );
 
             block.append_operation(
                 operation::Builder::new("func.return", Location::unknown(&context))
                     .add_operands(&[sum.result(0).unwrap().into()])
-                    .build(),
+                    .build()
+                    .unwrap(),
             );
 
             region.append_block(block);
@@ -191,6 +194,7 @@ mod tests {
                 ])
                 .add_regions(vec![region])
                 .build()
+                .unwrap()
         };
 
         module.body().append_operation(function);
@@ -227,7 +231,8 @@ mod tests {
                         Identifier::new(&context, "value"),
                         Attribute::parse(&context, "0 : index").unwrap(),
                     )])
-                    .build(),
+                    .build()
+                    .unwrap(),
             );
 
             let dim = function_block.append_operation(
@@ -237,7 +242,8 @@ mod tests {
                         zero.result(0).unwrap().into(),
                     ])
                     .add_results(&[index_type])
-                    .build(),
+                    .build()
+                    .unwrap(),
             );
 
             let loop_block = Block::new(&[]);
@@ -250,7 +256,8 @@ mod tests {
                         Identifier::new(&context, "value"),
                         Attribute::parse(&context, "1 : index").unwrap(),
                     )])
-                    .build(),
+                    .build()
+                    .unwrap(),
             );
 
             {
@@ -263,7 +270,8 @@ mod tests {
                             loop_block.argument(0).unwrap().into(),
                         ])
                         .add_results(&[f32_type])
-                        .build(),
+                        .build()
+                        .unwrap(),
                 );
 
                 let rhs = loop_block.append_operation(
@@ -273,7 +281,8 @@ mod tests {
                             loop_block.argument(0).unwrap().into(),
                         ])
                         .add_results(&[f32_type])
-                        .build(),
+                        .build()
+                        .unwrap(),
                 );
 
                 let add = loop_block.append_operation(
@@ -283,7 +292,8 @@ mod tests {
                             rhs.result(0).unwrap().into(),
                         ])
                         .add_results(&[f32_type])
-                        .build(),
+                        .build()
+                        .unwrap(),
                 );
 
                 loop_block.append_operation(
@@ -293,10 +303,15 @@ mod tests {
                             function_block.argument(0).unwrap().into(),
                             loop_block.argument(0).unwrap().into(),
                         ])
-                        .build(),
+                        .build()
+                        .unwrap(),
                 );
 
-                loop_block.append_operation(operation::Builder::new("scf.yield", location).build());
+                loop_block.append_operation(
+                    operation::Builder::new("scf.yield", location)
+                        .build()
+                        .unwrap(),
+                );
             }
 
             function_block.append_operation(
@@ -313,11 +328,14 @@ mod tests {
                         ])
                         .add_regions(vec![loop_region])
                 }
-                .build(),
+                .build()
+                .unwrap(),
             );
 
             function_block.append_operation(
-                operation::Builder::new("func.return", Location::unknown(&context)).build(),
+                operation::Builder::new("func.return", Location::unknown(&context))
+                    .build()
+                    .unwrap(),
             );
 
             function_region.append_block(function_block);
@@ -335,6 +353,7 @@ mod tests {
                 ])
                 .add_regions(vec![function_region])
                 .build()
+                .unwrap()
         };
 
         module.body().append_operation(function);
@@ -347,38 +366,9 @@ mod tests {
     fn use_unloaded_dialect() {
         let context = Context::new();
 
-        let location = Location::unknown(&context);
-        let mut module = Module::new(location);
-
-        let function = {
-            let region = Region::new();
-            let block = Block::new(&[]);
-
-            block.append_operation(
-                operation::Builder::new("func.return", Location::unknown(&context)).build(),
-            );
-
-            region.append_block(block);
-
-            operation::Builder::new("func.func", Location::unknown(&context))
-                .add_attributes(&[
-                    (
-                        Identifier::new(&context, "function_type"),
-                        Attribute::parse(&context, "() -> ()").unwrap(),
-                    ),
-                    (
-                        Identifier::new(&context, "sym_name"),
-                        Attribute::parse(&context, "\"nop\"").unwrap(),
-                    ),
-                ])
-                .add_regions(vec![region])
-                .build()
-        };
-
-        module.body().append_operation(function);
-
-        let manager = pass::Manager::new(&context);
-        manager.add_pass(pass::conversion::convert_func_to_llvm());
-        manager.run(&mut module).unwrap();
+        assert_eq!(
+            operation::Builder::new("func.return", Location::unknown(&context)).build(),
+            Err(Error::UnregisteredOperation("func.return".into()))
+        );
     }
 }

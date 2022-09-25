@@ -88,9 +88,21 @@ mod tests {
         utility::register_all_dialects,
     };
 
+    fn create_context() -> Context {
+        let registry = dialect::Registry::new();
+        register_all_dialects(&registry);
+
+        let context = Context::new();
+
+        context.append_dialect_registry(&registry);
+        context.load_all_available_dialects();
+
+        context
+    }
+
     #[test]
     fn r#type() {
-        let context = Context::new();
+        let context = create_context();
         let location = Location::unknown(&context);
         let index_type = Type::parse(&context, "index").unwrap();
 
@@ -100,14 +112,15 @@ mod tests {
                 Identifier::new(&context, "value"),
                 Attribute::parse(&context, "0 : index").unwrap(),
             )])
-            .build();
+            .build()
+            .unwrap();
 
         assert_eq!(operation.result(0).unwrap().r#type(), index_type);
     }
 
     #[test]
     fn is_operation_result() {
-        let context = Context::new();
+        let context = create_context();
         let location = Location::unknown(&context);
         let r#type = Type::parse(&context, "index").unwrap();
 
@@ -117,14 +130,15 @@ mod tests {
                 Identifier::new(&context, "value"),
                 Attribute::parse(&context, "0 : index").unwrap(),
             )])
-            .build();
+            .build()
+            .unwrap();
 
         assert!(operation.result(0).unwrap().is_operation_result());
     }
 
     #[test]
     fn is_block_argument() {
-        let context = Context::new();
+        let context = create_context();
         let r#type = Type::parse(&context, "index").unwrap();
         let block = Block::new(&[(r#type, Location::unknown(&context))]);
 
@@ -133,7 +147,7 @@ mod tests {
 
     #[test]
     fn dump() {
-        let context = Context::new();
+        let context = create_context();
         let location = Location::unknown(&context);
         let index_type = Type::parse(&context, "index").unwrap();
 
@@ -143,14 +157,15 @@ mod tests {
                 Identifier::new(&context, "value"),
                 Attribute::parse(&context, "0 : index").unwrap(),
             )])
-            .build();
+            .build()
+            .unwrap();
 
         value.result(0).unwrap().dump();
     }
 
     #[test]
     fn equal() {
-        let context = Context::new();
+        let context = create_context();
         let location = Location::unknown(&context);
         let index_type = Type::parse(&context, "index").unwrap();
 
@@ -160,7 +175,8 @@ mod tests {
                 Identifier::new(&context, "value"),
                 Attribute::parse(&context, "0 : index").unwrap(),
             )])
-            .build();
+            .build()
+            .unwrap();
         let result = Value::from(operation.result(0).unwrap());
 
         assert_eq!(result, result);
@@ -168,7 +184,7 @@ mod tests {
 
     #[test]
     fn not_equal() {
-        let context = Context::new();
+        let context = create_context();
         let location = Location::unknown(&context);
         let index_type = Type::parse(&context, "index").unwrap();
 
@@ -180,6 +196,7 @@ mod tests {
                     Attribute::parse(&context, "0 : index").unwrap(),
                 )])
                 .build()
+                .unwrap()
         };
 
         assert_ne!(
@@ -190,8 +207,7 @@ mod tests {
 
     #[test]
     fn display() {
-        let context = Context::new();
-        context.load_all_available_dialects();
+        let context = create_context();
         let location = Location::unknown(&context);
         let index_type = Type::parse(&context, "index").unwrap();
 
@@ -201,22 +217,18 @@ mod tests {
                 Identifier::new(&context, "value"),
                 Attribute::parse(&context, "0 : index").unwrap(),
             )])
-            .build();
+            .build()
+            .unwrap();
 
         assert_eq!(
             operation.result(0).unwrap().to_string(),
-            "%0 = \"arith.constant\"() {value = 0 : index} : () -> index\n"
+            "%c0 = arith.constant 0 : index\n"
         );
     }
 
     #[test]
     fn display_with_dialect_loaded() {
-        let registry = dialect::Registry::new();
-        register_all_dialects(&registry);
-
-        let context = Context::new();
-        context.append_dialect_registry(&registry);
-        context.load_all_available_dialects();
+        let context = create_context();
 
         let location = Location::unknown(&context);
         let index_type = Type::parse(&context, "index").unwrap();
@@ -227,7 +239,8 @@ mod tests {
                 Identifier::new(&context, "value"),
                 Attribute::parse(&context, "0 : index").unwrap(),
             )])
-            .build();
+            .build()
+            .unwrap();
 
         assert_eq!(
             operation.result(0).unwrap().to_string(),
@@ -237,8 +250,7 @@ mod tests {
 
     #[test]
     fn debug() {
-        let context = Context::new();
-        context.load_all_available_dialects();
+        let context = create_context();
         let location = Location::unknown(&context);
         let index_type = Type::parse(&context, "index").unwrap();
 
@@ -248,11 +260,12 @@ mod tests {
                 Identifier::new(&context, "value"),
                 Attribute::parse(&context, "0 : index").unwrap(),
             )])
-            .build();
+            .build()
+            .unwrap();
 
         assert_eq!(
             format!("{:?}", Value::from(operation.result(0).unwrap())),
-            "Value(\n%0 = \"arith.constant\"() {value = 0 : index} : () -> index\n)"
+            "Value(\n%c0 = arith.constant 0 : index\n)"
         );
     }
 }

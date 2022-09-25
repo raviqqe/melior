@@ -238,7 +238,9 @@ mod tests {
 
     #[test]
     fn new() {
-        Builder::new("foo", Location::unknown(&Context::new())).build();
+        Builder::new("foo", Location::unknown(&Context::new()))
+            .build()
+            .unwrap();
     }
 
     #[test]
@@ -248,6 +250,7 @@ mod tests {
         assert_eq!(
             Builder::new("foo", Location::unknown(&context),)
                 .build()
+                .unwrap()
                 .name(),
             Identifier::new(&context, "foo")
         );
@@ -256,8 +259,11 @@ mod tests {
     #[test]
     fn block() {
         let block = Block::new(&[]);
-        let operation =
-            block.append_operation(Builder::new("foo", Location::unknown(&Context::new())).build());
+        let operation = block.append_operation(
+            Builder::new("foo", Location::unknown(&Context::new()))
+                .build()
+                .unwrap(),
+        );
 
         assert_eq!(operation.block().as_deref(), Some(&block));
     }
@@ -267,6 +273,7 @@ mod tests {
         assert_eq!(
             Builder::new("foo", Location::unknown(&Context::new()))
                 .build()
+                .unwrap()
                 .block(),
             None
         );
@@ -277,6 +284,7 @@ mod tests {
         assert_eq!(
             Builder::new("foo", Location::unknown(&Context::new()))
                 .build()
+                .unwrap()
                 .result(0)
                 .unwrap_err(),
             Error::OperationResultPosition("\"foo\"() : () -> ()\n".into(), 0)
@@ -287,6 +295,7 @@ mod tests {
     fn region_none() {
         assert!(Builder::new("foo", Location::unknown(&Context::new()),)
             .build()
+            .unwrap()
             .region(0)
             .is_none());
     }
@@ -294,7 +303,9 @@ mod tests {
     #[test]
     fn clone() {
         let context = Context::new();
-        let operation = Builder::new("foo", Location::unknown(&context)).build();
+        let operation = Builder::new("foo", Location::unknown(&context))
+            .build()
+            .unwrap();
 
         let _ = operation.clone();
     }
@@ -306,6 +317,7 @@ mod tests {
         assert_eq!(
             Builder::new("foo", Location::unknown(&context),)
                 .build()
+                .unwrap()
                 .to_string(),
             "\"foo\"() : () -> ()\n"
         );

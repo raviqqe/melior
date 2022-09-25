@@ -299,6 +299,18 @@ mod tests {
     };
     use pretty_assertions::assert_eq;
 
+    fn create_context() -> Context {
+        let registry = dialect::Registry::new();
+        register_all_dialects(&registry);
+
+        let context = Context::new();
+
+        context.append_dialect_registry(&registry);
+        context.load_all_available_dialects();
+
+        context
+    }
+
     #[test]
     fn new() {
         Block::new(&[]);
@@ -306,7 +318,7 @@ mod tests {
 
     #[test]
     fn argument() {
-        let context = Context::new();
+        let context = create_context();
         let r#type = Type::integer(&context, 64);
 
         assert_eq!(
@@ -348,7 +360,7 @@ mod tests {
 
     #[test]
     fn parent_operation() {
-        let context = Context::new();
+        let context = create_context();
         let module = Module::new(Location::unknown(&context));
 
         assert_eq!(
@@ -366,17 +378,13 @@ mod tests {
 
     #[test]
     fn terminator() {
-        let registry = dialect::Registry::new();
-        register_all_dialects(&registry);
-
-        let context = Context::new();
-        context.append_dialect_registry(&registry);
-        context.load_all_available_dialects();
-
+        let context = create_context();
         let block = Block::new(&[]);
 
         let operation = block.append_operation(
-            operation::Builder::new("func.return", Location::unknown(&context)).build(),
+            operation::Builder::new("func.return", Location::unknown(&context))
+                .build()
+                .unwrap(),
         );
 
         assert_eq!(block.terminator(), Some(operation));
@@ -389,11 +397,14 @@ mod tests {
 
     #[test]
     fn first_operation() {
-        let context = Context::new();
+        let context = create_context();
         let block = Block::new(&[]);
 
-        let operation = block
-            .append_operation(operation::Builder::new("foo", Location::unknown(&context)).build());
+        let operation = block.append_operation(
+            operation::Builder::new("arith.constant", Location::unknown(&context))
+                .build()
+                .unwrap(),
+        );
 
         assert_eq!(block.first_operation(), Some(operation));
     }
@@ -407,33 +418,44 @@ mod tests {
 
     #[test]
     fn append_operation() {
-        let context = Context::new();
+        let context = create_context();
         let block = Block::new(&[]);
 
-        block.append_operation(operation::Builder::new("foo", Location::unknown(&context)).build());
+        block.append_operation(
+            operation::Builder::new("arith.constant", Location::unknown(&context))
+                .build()
+                .unwrap(),
+        );
     }
 
     #[test]
     fn insert_operation() {
-        let context = Context::new();
+        let context = create_context();
         let block = Block::new(&[]);
 
         block.insert_operation(
             0,
-            operation::Builder::new("foo", Location::unknown(&context)).build(),
+            operation::Builder::new("arith.constant", Location::unknown(&context))
+                .build()
+                .unwrap(),
         );
     }
 
     #[test]
     fn insert_operation_after() {
-        let context = Context::new();
+        let context = create_context();
         let block = Block::new(&[]);
 
-        let first_operation = block
-            .append_operation(operation::Builder::new("foo", Location::unknown(&context)).build());
+        let first_operation = block.append_operation(
+            operation::Builder::new("arith.constant", Location::unknown(&context))
+                .build()
+                .unwrap(),
+        );
         let second_operation = block.insert_operation_after(
             first_operation,
-            operation::Builder::new("foo", Location::unknown(&context)).build(),
+            operation::Builder::new("arith.constant", Location::unknown(&context))
+                .build()
+                .unwrap(),
         );
 
         assert_eq!(block.first_operation(), Some(first_operation));
@@ -445,14 +467,19 @@ mod tests {
 
     #[test]
     fn insert_operation_before() {
-        let context = Context::new();
+        let context = create_context();
         let block = Block::new(&[]);
 
-        let second_operation = block
-            .append_operation(operation::Builder::new("foo", Location::unknown(&context)).build());
+        let second_operation = block.append_operation(
+            operation::Builder::new("arith.constant", Location::unknown(&context))
+                .build()
+                .unwrap(),
+        );
         let first_operation = block.insert_operation_before(
             second_operation,
-            operation::Builder::new("foo", Location::unknown(&context)).build(),
+            operation::Builder::new("arith.constant", Location::unknown(&context))
+                .build()
+                .unwrap(),
         );
 
         assert_eq!(block.first_operation(), Some(first_operation));

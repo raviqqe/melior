@@ -65,7 +65,8 @@ mod tests {
         let r#type = Type::parse(&context, "index").unwrap();
         let operation = operation::Builder::new("foo", Location::unknown(&context))
             .add_results(&[r#type])
-            .build();
+            .build()
+            .unwrap();
 
         assert_eq!(operation.result(0).unwrap().result_number(), 0);
     }

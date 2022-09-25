@@ -3,6 +3,7 @@ use crate::{
     ir::{Attribute, Block, Identifier, Location, Region, Type, TypeLike, Value, ValueLike},
     string_ref::StringRef,
     utility::into_raw_array,
+    Error,
 };
 use mlir_sys::{
     mlirNamedAttributeGet, mlirOperationCreate, mlirOperationStateAddAttributes,
@@ -118,8 +119,17 @@ impl<'c> Builder<'c> {
     }
 
     /// Builds an operation.
-    pub fn build(mut self) -> Operation<'c> {
-        unsafe { Operation::from_raw(mlirOperationCreate(&mut self.raw)) }
+    pub fn build(mut self) -> Result<Operation<'c>, Error> {
+        let operation = unsafe { Operation::from_raw(mlirOperationCreate(&mut self.raw)) };
+        let name = operation.name();
+        let name = name.as_string_ref();
+        let name = name.as_str()?;
+
+        if operation.context().is_registered_operation(name) {
+            Ok(operation)
+        } else {
+            Err(Error::UnregisteredOperation(name.into()))
+        }
     }
 }
 
@@ -191,6 +201,7 @@ mod tests {
                 .add_operands(&[argument, argument])
                 .enable_result_type_inference()
                 .build()
+                .unwrap()
                 .result(0)
                 .unwrap()
                 .r#type(),

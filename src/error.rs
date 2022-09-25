@@ -1,6 +1,7 @@
 use std::{
     error,
     fmt::{self, Display, Formatter},
+    str::Utf8Error,
 };
 
 /// A Melior error.
@@ -19,6 +20,8 @@ pub enum Error {
     RunPass,
     TupleExpected(String),
     TupleFieldPosition(String, usize),
+    UnregisteredOperation(String),
+    Utf8(Utf8Error),
 }
 
 impl Display for Error {
@@ -67,8 +70,18 @@ impl Display for Error {
                     position, r#type
                 )
             }
+            Self::UnregisteredOperation(name) => {
+                write!(formatter, "unregistered operation: {}", name)
+            }
+            Self::Utf8(error) => error.fmt(formatter),
         }
     }
 }
 
 impl error::Error for Error {}
+
+impl From<Utf8Error> for Error {
+    fn from(error: Utf8Error) -> Self {
+        Error::Utf8(error)
+    }
+}

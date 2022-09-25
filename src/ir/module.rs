@@ -82,7 +82,23 @@ impl<'c> Drop for Module<'c> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ir::{operation, Block, Region};
+    use crate::{
+        dialect,
+        ir::{operation, Block, Region},
+        utility::register_all_dialects,
+    };
+
+    fn create_context() -> Context {
+        let registry = dialect::Registry::new();
+        register_all_dialects(&registry);
+
+        let context = Context::new();
+
+        context.append_dialect_registry(&registry);
+        context.load_all_available_dialects();
+
+        context
+    }
 
     #[test]
     fn new() {
@@ -114,7 +130,8 @@ mod tests {
         let module = Module::from_operation(
             operation::Builder::new("builtin.module", Location::unknown(&context))
                 .add_regions(vec![region])
-                .build(),
+                .build()
+                .unwrap(),
         )
         .unwrap();
 
@@ -124,10 +141,12 @@ mod tests {
 
     #[test]
     fn from_operation_fail() {
-        let context = Context::new();
+        let context = create_context();
 
         assert!(Module::from_operation(
-            operation::Builder::new("func.func", Location::unknown(&context),).build()
+            operation::Builder::new("func.func", Location::unknown(&context),)
+                .build()
+                .unwrap()
         )
         .is_none());
     }
