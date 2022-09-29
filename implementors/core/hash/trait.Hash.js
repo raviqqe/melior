@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["melior"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.63.0/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"melior/ir/type/id/struct.Id.html\" title=\"struct melior::ir::type::id::Id\">Id</a>","synthetic":false,"types":["melior::ir::type::id::Id"]}];
+implementors["melior"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.64.0/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"melior/ir/type/id/struct.Id.html\" title=\"struct melior::ir::type::id::Id\">Id</a>","synthetic":false,"types":["melior::ir::type::id::Id"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
