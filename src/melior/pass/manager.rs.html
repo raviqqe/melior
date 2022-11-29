@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/pass/manager.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>manager.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/pass/manager.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>manager.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -252,174 +252,174 @@
 <span id="252">252</span>
 <span id="253">253</span>
 <span id="254">254</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::OperationManager</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">context::Context</span>, <span class="ident">ir::Module</span>, <span class="ident">logical_result::LogicalResult</span>, <span class="ident">pass::Pass</span>, <span class="ident">string_ref::StringRef</span>,
-    <span class="ident">Error</span>,
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::OperationManager;
+<span class="kw">use crate</span>::{
+    context::Context, ir::Module, logical_result::LogicalResult, pass::Pass, string_ref::StringRef,
+    Error,
 };
-<span class="kw">use</span> <span class="ident">mlir_sys</span>::{
-    <span class="ident">mlirPassManagerAddOwnedPass</span>, <span class="ident">mlirPassManagerCreate</span>, <span class="ident">mlirPassManagerDestroy</span>,
-    <span class="ident">mlirPassManagerEnableIRPrinting</span>, <span class="ident">mlirPassManagerEnableVerifier</span>,
-    <span class="ident">mlirPassManagerGetAsOpPassManager</span>, <span class="ident">mlirPassManagerGetNestedUnder</span>, <span class="ident">mlirPassManagerRun</span>,
-    <span class="ident">MlirPassManager</span>,
+<span class="kw">use </span>mlir_sys::{
+    mlirPassManagerAddOwnedPass, mlirPassManagerCreate, mlirPassManagerDestroy,
+    mlirPassManagerEnableIRPrinting, mlirPassManagerEnableVerifier,
+    mlirPassManagerGetAsOpPassManager, mlirPassManagerGetNestedUnder, mlirPassManagerRun,
+    MlirPassManager,
 };
-<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
+<span class="kw">use </span>std::marker::PhantomData;
 
-<span class="doccomment">/// A pass manager.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Manager</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-    <span class="ident">raw</span>: <span class="ident">MlirPassManager</span>,
-    <span class="ident">_context</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="ident">Context</span><span class="op">&gt;</span>,
+<span class="doccomment">/// A pass manager.
+</span><span class="kw">pub struct </span>Manager&lt;<span class="lifetime">&#39;c</span>&gt; {
+    raw: MlirPassManager,
+    _context: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> <span class="ident">Manager</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Creates a pass manager.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">raw</span>: <span class="kw">unsafe</span> { <span class="ident">mlirPassManagerCreate</span>(<span class="ident">context</span>.<span class="ident">to_raw</span>()) },
-            <span class="ident">_context</span>: <span class="ident">Default::default</span>(),
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Manager&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="doccomment">/// Creates a pass manager.
+    </span><span class="kw">pub fn </span>new(context: <span class="kw-2">&amp;</span>Context) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            raw: <span class="kw">unsafe </span>{ mlirPassManagerCreate(context.to_raw()) },
+            _context: Default::default(),
         }
     }
 
-    <span class="doccomment">/// Gets an operation pass manager for nested operations corresponding to a</span>
-    <span class="doccomment">/// given name.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">nested_under</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">OperationManager</span> {
-        <span class="kw">unsafe</span> {
-            <span class="ident">OperationManager::from_raw</span>(<span class="ident">mlirPassManagerGetNestedUnder</span>(
-                <span class="self">self</span>.<span class="ident">raw</span>,
-                <span class="ident">StringRef::from</span>(<span class="ident">name</span>).<span class="ident">to_raw</span>(),
+    <span class="doccomment">/// Gets an operation pass manager for nested operations corresponding to a
+    /// given name.
+    </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; OperationManager {
+        <span class="kw">unsafe </span>{
+            OperationManager::from_raw(mlirPassManagerGetNestedUnder(
+                <span class="self">self</span>.raw,
+                StringRef::from(name).to_raw(),
             ))
         }
     }
 
-    <span class="doccomment">/// Adds a pass.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_pass</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pass</span>: <span class="ident">Pass</span>) {
-        <span class="kw">unsafe</span> { <span class="ident">mlirPassManagerAddOwnedPass</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">pass</span>.<span class="ident">to_raw</span>()) }
+    <span class="doccomment">/// Adds a pass.
+    </span><span class="kw">pub fn </span>add_pass(<span class="kw-2">&amp;</span><span class="self">self</span>, pass: Pass) {
+        <span class="kw">unsafe </span>{ mlirPassManagerAddOwnedPass(<span class="self">self</span>.raw, pass.to_raw()) }
     }
 
-    <span class="doccomment">/// Enables a verifier.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enable_verifier</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">enabled</span>: <span class="ident">bool</span>) {
-        <span class="kw">unsafe</span> { <span class="ident">mlirPassManagerEnableVerifier</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">enabled</span>) }
+    <span class="doccomment">/// Enables a verifier.
+    </span><span class="kw">pub fn </span>enable_verifier(<span class="kw-2">&amp;</span><span class="self">self</span>, enabled: bool) {
+        <span class="kw">unsafe </span>{ mlirPassManagerEnableVerifier(<span class="self">self</span>.raw, enabled) }
     }
 
-    <span class="doccomment">/// Enables IR printing.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enable_ir_printing</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">unsafe</span> { <span class="ident">mlirPassManagerEnableIRPrinting</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Enables IR printing.
+    </span><span class="kw">pub fn </span>enable_ir_printing(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">unsafe </span>{ mlirPassManagerEnableIRPrinting(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Runs passes added to a pass manager against a module.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Module</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span>
-            <span class="ident">LogicalResult::from_raw</span>(<span class="kw">unsafe</span> { <span class="ident">mlirPassManagerRun</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">module</span>.<span class="ident">to_raw</span>()) });
+    <span class="doccomment">/// Runs passes added to a pass manager against a module.
+    </span><span class="kw">pub fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, module: <span class="kw-2">&amp;mut </span>Module) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+        <span class="kw">let </span>result =
+            LogicalResult::from_raw(<span class="kw">unsafe </span>{ mlirPassManagerRun(<span class="self">self</span>.raw, module.to_raw()) });
 
-        <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_success</span>() {
+        <span class="kw">if </span>result.is_success() {
             <span class="prelude-val">Ok</span>(())
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">Error::RunPass</span>)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Err</span>(Error::RunPass)
         }
     }
 
-    <span class="doccomment">/// Converts a pass manager to an operation pass manager.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_operation_pass_manager</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">OperationManager</span> {
-        <span class="kw">unsafe</span> { <span class="ident">OperationManager::from_raw</span>(<span class="ident">mlirPassManagerGetAsOpPassManager</span>(<span class="self">self</span>.<span class="ident">raw</span>)) }
+    <span class="doccomment">/// Converts a pass manager to an operation pass manager.
+    </span><span class="kw">pub fn </span>as_operation_pass_manager(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OperationManager {
+        <span class="kw">unsafe </span>{ OperationManager::from_raw(mlirPassManagerGetAsOpPassManager(<span class="self">self</span>.raw)) }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Manager</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">unsafe</span> { <span class="ident">mlirPassManagerDestroy</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Drop <span class="kw">for </span>Manager&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">unsafe </span>{ mlirPassManagerDestroy(<span class="self">self</span>.raw) }
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::{
-        <span class="ident">dialect</span>,
-        <span class="ident">ir</span>::{<span class="ident">Location</span>, <span class="ident">Module</span>},
-        <span class="ident">pass</span>::{<span class="self">self</span>, <span class="ident">transform::register_print_operation_stats</span>},
-        <span class="ident">utility</span>::{<span class="ident">parse_pass_pipeline</span>, <span class="ident">register_all_dialects</span>},
-        <span class="ident">Error</span>,
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use crate</span>::{
+        dialect,
+        ir::{Location, Module},
+        pass::{<span class="self">self</span>, transform::register_print_operation_stats},
+        utility::{parse_pass_pipeline, register_all_dialects},
+        Error,
     };
-    <span class="kw">use</span> <span class="ident">indoc::indoc</span>;
-    <span class="kw">use</span> <span class="ident">pretty_assertions::assert_eq</span>;
+    <span class="kw">use </span>indoc::indoc;
+    <span class="kw">use </span>pretty_assertions::assert_eq;
 
-    <span class="kw">fn</span> <span class="ident">register_all_upstream_dialects</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span>) {
-        <span class="kw">let</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">dialect::Registry::new</span>();
-        <span class="ident">register_all_dialects</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
-        <span class="ident">context</span>.<span class="ident">append_dialect_registry</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
+    <span class="kw">fn </span>register_all_upstream_dialects(context: <span class="kw-2">&amp;</span>Context) {
+        <span class="kw">let </span>registry = dialect::Registry::new();
+        register_all_dialects(<span class="kw-2">&amp;</span>registry);
+        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">new</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>new() {
+        <span class="kw">let </span>context = Context::new();
 
-        <span class="ident">Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        Manager::new(<span class="kw-2">&amp;</span>context);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">add_pass</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>add_pass() {
+        <span class="kw">let </span>context = Context::new();
 
-        <span class="ident">Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>).<span class="ident">add_pass</span>(<span class="ident">pass::conversion::convert_func_to_llvm</span>());
+        Manager::new(<span class="kw-2">&amp;</span>context).add_pass(pass::conversion::convert_func_to_llvm());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">enable_verifier</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>enable_verifier() {
+        <span class="kw">let </span>context = Context::new();
 
-        <span class="ident">Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>).<span class="ident">enable_verifier</span>(<span class="bool-val">true</span>);
+        Manager::new(<span class="kw-2">&amp;</span>context).enable_verifier(<span class="bool-val">true</span>);
     }
 
-    <span class="comment">// TODO Enable this test.</span>
-    <span class="comment">// #[test]</span>
-    <span class="comment">// fn enable_ir_printing() {</span>
-    <span class="comment">//     let context = Context::new();</span>
+    <span class="comment">// TODO Enable this test.
+    // #[test]
+    // fn enable_ir_printing() {
+    //     let context = Context::new();
 
-    <span class="comment">//     PassManager::new(&amp;context).enable_ir_printing();</span>
-    <span class="comment">// }</span>
+    //     PassManager::new(&amp;context).enable_ir_printing();
+    // }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">run</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="kw">let</span> <span class="ident">manager</span> <span class="op">=</span> <span class="ident">Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+    </span><span class="attribute">#[test]
+    </span><span class="kw">fn </span>run() {
+        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
 
-        <span class="ident">manager</span>.<span class="ident">add_pass</span>(<span class="ident">pass::conversion::convert_func_to_llvm</span>());
-        <span class="ident">manager</span>
-            .<span class="ident">run</span>(<span class="kw-2">&amp;mut</span> <span class="ident">Module::new</span>(<span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>)))
-            .<span class="ident">unwrap</span>();
+        manager.add_pass(pass::conversion::convert_func_to_llvm());
+        manager
+            .run(<span class="kw-2">&amp;mut </span>Module::new(Location::unknown(<span class="kw-2">&amp;</span>context)))
+            .unwrap();
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">run_on_function</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="ident">register_all_upstream_dialects</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>run_on_function() {
+        <span class="kw">let </span>context = Context::new();
+        register_all_upstream_dialects(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Module::parse</span>(
-            <span class="kw-2">&amp;</span><span class="ident">context</span>,
+        <span class="kw">let </span><span class="kw-2">mut </span>module = Module::parse(
+            <span class="kw-2">&amp;</span>context,
             <span class="macro">indoc!</span>(
                 <span class="string">&quot;
                 func.func @foo(%arg0 : i32) -&gt; i32 {
                     %res = arith.addi %arg0, %arg0 : i32
                     return %res : i32
                 }
-                &quot;</span>
-            ),
+                &quot;
+            </span>),
         )
-        .<span class="ident">unwrap</span>();
+        .unwrap();
 
-        <span class="kw">let</span> <span class="ident">manager</span> <span class="op">=</span> <span class="ident">Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
-        <span class="ident">manager</span>.<span class="ident">add_pass</span>(<span class="ident">pass::transform::print_operation_stats</span>());
+        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        manager.add_pass(pass::transform::print_operation_stats());
 
-        <span class="macro">assert_eq!</span>(<span class="ident">manager</span>.<span class="ident">run</span>(<span class="kw-2">&amp;mut</span> <span class="ident">module</span>), <span class="prelude-val">Ok</span>(()));
+        <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">run_on_function_in_nested_module</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="ident">register_all_upstream_dialects</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>run_on_function_in_nested_module() {
+        <span class="kw">let </span>context = Context::new();
+        register_all_upstream_dialects(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Module::parse</span>(
-            <span class="kw-2">&amp;</span><span class="ident">context</span>,
+        <span class="kw">let </span><span class="kw-2">mut </span>module = Module::parse(
+            <span class="kw-2">&amp;</span>context,
             <span class="macro">indoc!</span>(
                 <span class="string">&quot;
                 func.func @foo(%arg0 : i32) -&gt; i32 {
@@ -433,78 +433,78 @@
                         return %res : f32
                     }
                 }
-                &quot;</span>
-            ),
+                &quot;
+            </span>),
         )
-        .<span class="ident">unwrap</span>();
+        .unwrap();
 
-        <span class="kw">let</span> <span class="ident">manager</span> <span class="op">=</span> <span class="ident">Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
-        <span class="ident">manager</span>
-            .<span class="ident">nested_under</span>(<span class="string">&quot;func.func&quot;</span>)
-            .<span class="ident">add_pass</span>(<span class="ident">pass::transform::print_operation_stats</span>());
+        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        manager
+            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .add_pass(pass::transform::print_operation_stats());
 
-        <span class="macro">assert_eq!</span>(<span class="ident">manager</span>.<span class="ident">run</span>(<span class="kw-2">&amp;mut</span> <span class="ident">module</span>), <span class="prelude-val">Ok</span>(()));
+        <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
 
-        <span class="kw">let</span> <span class="ident">manager</span> <span class="op">=</span> <span class="ident">Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
-        <span class="ident">manager</span>
-            .<span class="ident">nested_under</span>(<span class="string">&quot;builtin.module&quot;</span>)
-            .<span class="ident">nested_under</span>(<span class="string">&quot;func.func&quot;</span>)
-            .<span class="ident">add_pass</span>(<span class="ident">pass::transform::print_operation_stats</span>());
+        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        manager
+            .nested_under(<span class="string">&quot;builtin.module&quot;</span>)
+            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .add_pass(pass::transform::print_operation_stats());
 
-        <span class="macro">assert_eq!</span>(<span class="ident">manager</span>.<span class="ident">run</span>(<span class="kw-2">&amp;mut</span> <span class="ident">module</span>), <span class="prelude-val">Ok</span>(()));
+        <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">print_pass_pipeline</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="kw">let</span> <span class="ident">manager</span> <span class="op">=</span> <span class="ident">Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
-        <span class="kw">let</span> <span class="ident">module_manager</span> <span class="op">=</span> <span class="ident">manager</span>.<span class="ident">nested_under</span>(<span class="string">&quot;builtin.module&quot;</span>);
-        <span class="kw">let</span> <span class="ident">function_manager</span> <span class="op">=</span> <span class="ident">module_manager</span>.<span class="ident">nested_under</span>(<span class="string">&quot;func.func&quot;</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>print_pass_pipeline() {
+        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>module_manager = manager.nested_under(<span class="string">&quot;builtin.module&quot;</span>);
+        <span class="kw">let </span>function_manager = module_manager.nested_under(<span class="string">&quot;func.func&quot;</span>);
 
-        <span class="ident">function_manager</span>.<span class="ident">add_pass</span>(<span class="ident">pass::transform::print_operation_stats</span>());
+        function_manager.add_pass(pass::transform::print_operation_stats());
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">manager</span>.<span class="ident">as_operation_pass_manager</span>().<span class="ident">to_string</span>(),
-            <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}))&quot;</span>
-        );
+            manager.as_operation_pass_manager().to_string(),
+            <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}))&quot;
+        </span>);
         <span class="macro">assert_eq!</span>(
-            <span class="ident">module_manager</span>.<span class="ident">to_string</span>(),
-            <span class="string">&quot;func.func(print-op-stats{json=false})&quot;</span>
-        );
-        <span class="macro">assert_eq!</span>(<span class="ident">function_manager</span>.<span class="ident">to_string</span>(), <span class="string">&quot;print-op-stats{json=false}&quot;</span>);
+            module_manager.to_string(),
+            <span class="string">&quot;func.func(print-op-stats{json=false})&quot;
+        </span>);
+        <span class="macro">assert_eq!</span>(function_manager.to_string(), <span class="string">&quot;print-op-stats{json=false}&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">parse_pass_pipeline_</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="kw">let</span> <span class="ident">manager</span> <span class="op">=</span> <span class="ident">Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>parse_pass_pipeline_() {
+        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">parse_pass_pipeline</span>(
-                <span class="ident">manager</span>.<span class="ident">as_operation_pass_manager</span>(),
+            parse_pass_pipeline(
+                manager.as_operation_pass_manager(),
                 <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}),\
-                func.func(print-op-stats{json=false}))&quot;</span>
-            ),
-            <span class="prelude-val">Err</span>(<span class="ident">Error::ParsePassPipeline</span>)
+                func.func(print-op-stats{json=false}))&quot;
+            </span>),
+            <span class="prelude-val">Err</span>(Error::ParsePassPipeline)
         );
 
-        <span class="ident">register_print_operation_stats</span>();
+        register_print_operation_stats();
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">parse_pass_pipeline</span>(
-                <span class="ident">manager</span>.<span class="ident">as_operation_pass_manager</span>(),
+            parse_pass_pipeline(
+                manager.as_operation_pass_manager(),
                 <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}),\
-                func.func(print-op-stats{json=false}))&quot;</span>
-            ),
+                func.func(print-op-stats{json=false}))&quot;
+            </span>),
             <span class="prelude-val">Ok</span>(())
         );
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">manager</span>.<span class="ident">as_operation_pass_manager</span>().<span class="ident">to_string</span>(),
+            manager.as_operation_pass_manager().to_string(),
             <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}),\
-            func.func(print-op-stats{json=false}))&quot;</span>
-        );
+            func.func(print-op-stats{json=false}))&quot;
+        </span>);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

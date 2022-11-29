@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/ir/attribute.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>attribute.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/ir/attribute.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>attribute.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -419,426 +419,426 @@
 <span id="419">419</span>
 <span id="420">420</span>
 <span id="421">421</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">r#type</span>, <span class="ident">Type</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">context</span>::{<span class="ident">Context</span>, <span class="ident">ContextRef</span>},
-    <span class="ident">string_ref::StringRef</span>,
-    <span class="ident">utility::print_callback</span>,
+</pre><pre class="rust"><code><span class="kw">use super</span>::{r#type, Type};
+<span class="kw">use crate</span>::{
+    context::{Context, ContextRef},
+    string_ref::StringRef,
+    utility::print_callback,
 };
-<span class="kw">use</span> <span class="ident">mlir_sys</span>::{
-    <span class="ident">mlirAttributeDump</span>, <span class="ident">mlirAttributeEqual</span>, <span class="ident">mlirAttributeGetContext</span>, <span class="ident">mlirAttributeGetNull</span>,
-    <span class="ident">mlirAttributeGetType</span>, <span class="ident">mlirAttributeGetTypeID</span>, <span class="ident">mlirAttributeIsAAffineMap</span>, <span class="ident">mlirAttributeIsAArray</span>,
-    <span class="ident">mlirAttributeIsABool</span>, <span class="ident">mlirAttributeIsADenseElements</span>, <span class="ident">mlirAttributeIsADenseFPElements</span>,
-    <span class="ident">mlirAttributeIsADenseIntElements</span>, <span class="ident">mlirAttributeIsADictionary</span>, <span class="ident">mlirAttributeIsAElements</span>,
-    <span class="ident">mlirAttributeIsAFloat</span>, <span class="ident">mlirAttributeIsAInteger</span>, <span class="ident">mlirAttributeIsAIntegerSet</span>,
-    <span class="ident">mlirAttributeIsAOpaque</span>, <span class="ident">mlirAttributeIsAOpaqueElements</span>, <span class="ident">mlirAttributeIsASparseElements</span>,
-    <span class="ident">mlirAttributeIsAString</span>, <span class="ident">mlirAttributeIsASymbolRef</span>, <span class="ident">mlirAttributeIsAType</span>, <span class="ident">mlirAttributeIsAUnit</span>,
-    <span class="ident">mlirAttributeParseGet</span>, <span class="ident">mlirAttributePrint</span>, <span class="ident">MlirAttribute</span>,
+<span class="kw">use </span>mlir_sys::{
+    mlirAttributeDump, mlirAttributeEqual, mlirAttributeGetContext, mlirAttributeGetNull,
+    mlirAttributeGetType, mlirAttributeGetTypeID, mlirAttributeIsAAffineMap, mlirAttributeIsAArray,
+    mlirAttributeIsABool, mlirAttributeIsADenseElements, mlirAttributeIsADenseFPElements,
+    mlirAttributeIsADenseIntElements, mlirAttributeIsADictionary, mlirAttributeIsAElements,
+    mlirAttributeIsAFloat, mlirAttributeIsAInteger, mlirAttributeIsAIntegerSet,
+    mlirAttributeIsAOpaque, mlirAttributeIsAOpaqueElements, mlirAttributeIsASparseElements,
+    mlirAttributeIsAString, mlirAttributeIsASymbolRef, mlirAttributeIsAType, mlirAttributeIsAUnit,
+    mlirAttributeParseGet, mlirAttributePrint, MlirAttribute,
 };
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">ffi::c_void</span>,
-    <span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Display</span>, <span class="ident">Formatter</span>},
-    <span class="ident">marker::PhantomData</span>,
+<span class="kw">use </span>std::{
+    ffi::c_void,
+    fmt::{<span class="self">self</span>, Debug, Display, Formatter},
+    marker::PhantomData,
 };
 
-<span class="doccomment">/// An attribute.</span>
-<span class="comment">// Attributes are always values but their internal storage is owned by contexts.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Attribute</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-    <span class="ident">raw</span>: <span class="ident">MlirAttribute</span>,
-    <span class="ident">_context</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="ident">Context</span><span class="op">&gt;</span>,
+<span class="doccomment">/// An attribute.
+</span><span class="comment">// Attributes are always values but their internal storage is owned by contexts.
+</span><span class="attribute">#[derive(Clone, Copy)]
+</span><span class="kw">pub struct </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    raw: MlirAttribute,
+    _context: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> <span class="ident">Attribute</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Parses an attribute.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="ident">Context</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> {
-            <span class="ident"><span class="self">Self</span>::from_option_raw</span>(<span class="ident">mlirAttributeParseGet</span>(
-                <span class="ident">context</span>.<span class="ident">to_raw</span>(),
-                <span class="ident">StringRef::from</span>(<span class="ident">source</span>).<span class="ident">to_raw</span>(),
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="doccomment">/// Parses an attribute.
+    </span><span class="kw">pub fn </span>parse(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, source: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">unsafe </span>{
+            <span class="self">Self</span>::from_option_raw(mlirAttributeParseGet(
+                context.to_raw(),
+                StringRef::from(source).to_raw(),
             ))
         }
     }
 
-    <span class="doccomment">/// Creates a null attribute.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">null</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirAttributeGetNull</span>()) }
+    <span class="doccomment">/// Creates a null attribute.
+    </span><span class="kw">pub fn </span>null() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirAttributeGetNull()) }
     }
 
-    <span class="doccomment">/// Gets a type.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">r#type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Type</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_null</span>() {
-            <span class="prelude-val">None</span>
-        } <span class="kw">else</span> {
-            <span class="kw">unsafe</span> { <span class="prelude-val">Some</span>(<span class="ident">Type::from_raw</span>(<span class="ident">mlirAttributeGetType</span>(<span class="self">self</span>.<span class="ident">raw</span>))) }
+    <span class="doccomment">/// Gets a type.
+    </span><span class="kw">pub fn </span>r#type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;&gt; {
+        <span class="kw">if </span><span class="self">self</span>.is_null() {
+            <span class="prelude-val">None
+        </span>} <span class="kw">else </span>{
+            <span class="kw">unsafe </span>{ <span class="prelude-val">Some</span>(Type::from_raw(mlirAttributeGetType(<span class="self">self</span>.raw))) }
         }
     }
 
-    <span class="doccomment">/// Gets a type ID.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">type_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">r#type</span><span class="ident">::Id</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_null</span>() {
-            <span class="prelude-val">None</span>
-        } <span class="kw">else</span> {
-            <span class="kw">unsafe</span> { <span class="prelude-val">Some</span>(<span class="ident">r#type</span><span class="ident">::Id::from_raw</span>(<span class="ident">mlirAttributeGetTypeID</span>(<span class="self">self</span>.<span class="ident">raw</span>))) }
+    <span class="doccomment">/// Gets a type ID.
+    </span><span class="kw">pub fn </span>type_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;r#type::Id&gt; {
+        <span class="kw">if </span><span class="self">self</span>.is_null() {
+            <span class="prelude-val">None
+        </span>} <span class="kw">else </span>{
+            <span class="kw">unsafe </span>{ <span class="prelude-val">Some</span>(r#type::Id::from_raw(mlirAttributeGetTypeID(<span class="self">self</span>.raw))) }
         }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is null.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_null</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">raw</span>.<span class="ident">ptr</span>.<span class="ident">is_null</span>()
+    <span class="doccomment">/// Returns `true` if an attribute is null.
+    </span><span class="kw">pub fn </span>is_null(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.raw.ptr.is_null()
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is a affine map.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_affine_map</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAAffineMap</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is a affine map.
+    </span><span class="kw">pub fn </span>is_affine_map(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAAffineMap(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is a array.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_array</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAArray</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is a array.
+    </span><span class="kw">pub fn </span>is_array(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAArray(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is a bool.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_bool</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsABool</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is a bool.
+    </span><span class="kw">pub fn </span>is_bool(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsABool(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is dense elements.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_dense_elements</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsADenseElements</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is dense elements.
+    </span><span class="kw">pub fn </span>is_dense_elements(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsADenseElements(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is dense integer elements.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_dense_integer_elements</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsADenseIntElements</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is dense integer elements.
+    </span><span class="kw">pub fn </span>is_dense_integer_elements(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsADenseIntElements(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is dense float elements.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_dense_float_elements</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsADenseFPElements</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is dense float elements.
+    </span><span class="kw">pub fn </span>is_dense_float_elements(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsADenseFPElements(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is a dictionary.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_dictionary</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsADictionary</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is a dictionary.
+    </span><span class="kw">pub fn </span>is_dictionary(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsADictionary(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is elements.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_elements</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAElements</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is elements.
+    </span><span class="kw">pub fn </span>is_elements(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAElements(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is a float.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAFloat</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is a float.
+    </span><span class="kw">pub fn </span>is_float(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAFloat(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is an integer.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_integer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAInteger</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is an integer.
+    </span><span class="kw">pub fn </span>is_integer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAInteger(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is an integer set.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_integer_set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAIntegerSet</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is an integer set.
+    </span><span class="kw">pub fn </span>is_integer_set(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAIntegerSet(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is opaque.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_opaque</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAOpaque</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is opaque.
+    </span><span class="kw">pub fn </span>is_opaque(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAOpaque(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is opaque elements.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_opaque_elements</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAOpaqueElements</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is opaque elements.
+    </span><span class="kw">pub fn </span>is_opaque_elements(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAOpaqueElements(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is sparse elements.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_sparse_elements</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsASparseElements</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is sparse elements.
+    </span><span class="kw">pub fn </span>is_sparse_elements(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsASparseElements(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is a string.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_string</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAString</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is a string.
+    </span><span class="kw">pub fn </span>is_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAString(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is a symbol.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_symbol</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsASymbolRef</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is a symbol.
+    </span><span class="kw">pub fn </span>is_symbol(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsASymbolRef(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is a type.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAType</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is a type.
+    </span><span class="kw">pub fn </span>is_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAType(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Returns `true` if an attribute is a unit.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_unit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="op">!</span><span class="self">self</span>.<span class="ident">is_null</span>() <span class="op">&amp;&amp;</span> <span class="kw">unsafe</span> { <span class="ident">mlirAttributeIsAUnit</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Returns `true` if an attribute is a unit.
+    </span><span class="kw">pub fn </span>is_unit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_null() &amp;&amp; <span class="kw">unsafe </span>{ mlirAttributeIsAUnit(<span class="self">self</span>.raw) }
     }
 
-    <span class="doccomment">/// Gets a context.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">context</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ContextRef</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> { <span class="ident">ContextRef::from_raw</span>(<span class="ident">mlirAttributeGetContext</span>(<span class="self">self</span>.<span class="ident">raw</span>)) }
+    <span class="doccomment">/// Gets a context.
+    </span><span class="kw">pub fn </span>context(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ContextRef&lt;<span class="lifetime">&#39;c</span>&gt; {
+        <span class="kw">unsafe </span>{ ContextRef::from_raw(mlirAttributeGetContext(<span class="self">self</span>.raw)) }
     }
 
-    <span class="doccomment">/// Dumps an attribute.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dump</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">unsafe</span> { <span class="ident">mlirAttributeDump</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+    <span class="doccomment">/// Dumps an attribute.
+    </span><span class="kw">pub fn </span>dump(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">unsafe </span>{ mlirAttributeDump(<span class="self">self</span>.raw) }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_raw</span>(<span class="ident">raw</span>: <span class="ident">MlirAttribute</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">raw</span>,
-            <span class="ident">_context</span>: <span class="ident">Default::default</span>(),
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(raw: MlirAttribute) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            raw,
+            _context: Default::default(),
         }
     }
 
-    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_option_raw</span>(<span class="ident">raw</span>: <span class="ident">MlirAttribute</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">raw</span>.<span class="ident">ptr</span>.<span class="ident">is_null</span>() {
-            <span class="prelude-val">None</span>
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Some</span>(<span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">raw</span>))
+    <span class="kw">unsafe fn </span>from_option_raw(raw: MlirAttribute) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">if </span>raw.ptr.is_null() {
+            <span class="prelude-val">None
+        </span>} <span class="kw">else </span>{
+            <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_raw(raw))
         }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">to_raw</span>(<span class="self">self</span>) -&gt; <span class="ident">MlirAttribute</span> {
-        <span class="self">self</span>.<span class="ident">raw</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>to_raw(<span class="self">self</span>) -&gt; MlirAttribute {
+        <span class="self">self</span>.raw
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Attribute</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">unsafe</span> { <span class="ident">mlirAttributeEqual</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">other</span>.<span class="ident">raw</span>) }
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; PartialEq <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="kw">unsafe </span>{ mlirAttributeEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">Attribute</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Eq <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {}
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Attribute</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">formatter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> (<span class="ident">formatter</span>, <span class="prelude-val">Ok</span>(()));
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Display <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
+        <span class="kw">let </span><span class="kw-2">mut </span>data = (formatter, <span class="prelude-val">Ok</span>(()));
 
-        <span class="kw">unsafe</span> {
-            <span class="ident">mlirAttributePrint</span>(
-                <span class="self">self</span>.<span class="ident">raw</span>,
-                <span class="prelude-val">Some</span>(<span class="ident">print_callback</span>),
-                <span class="kw-2">&amp;mut</span> <span class="ident">data</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw">_</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">c_void</span>,
+        <span class="kw">unsafe </span>{
+            mlirAttributePrint(
+                <span class="self">self</span>.raw,
+                <span class="prelude-val">Some</span>(print_callback),
+                <span class="kw-2">&amp;mut </span>data <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_ as </span><span class="kw-2">*mut </span>c_void,
             );
         }
 
-        <span class="ident">data</span>.<span class="number">1</span>
+        data.<span class="number">1
+    </span>}
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Debug <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
+        Display::fmt(<span class="self">self</span>, formatter)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Attribute</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">formatter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="ident">Display::fmt</span>(<span class="self">self</span>, <span class="ident">formatter</span>)
-    }
-}
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::ir::r#type::TypeLike;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ir</span>::<span class="ident">r#type</span><span class="ident">::TypeLike</span>;
-
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">parse</span>() {
-        <span class="kw">for</span> <span class="ident">attribute</span> <span class="kw">in</span> [<span class="string">&quot;unit&quot;</span>, <span class="string">&quot;i32&quot;</span>, <span class="string">r#&quot;&quot;foo&quot;&quot;#</span>] {
-            <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="ident">attribute</span>).<span class="ident">is_some</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>parse() {
+        <span class="kw">for </span>attribute <span class="kw">in </span>[<span class="string">&quot;unit&quot;</span>, <span class="string">&quot;i32&quot;</span>, <span class="string">r#&quot;&quot;foo&quot;&quot;#</span>] {
+            <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), attribute).is_some());
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">parse_none</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;z&quot;</span>).<span class="ident">is_none</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>parse_none() {
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;z&quot;</span>).is_none());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">null</span>() {
-        <span class="macro">assert_eq!</span>(<span class="ident">Attribute::null</span>().<span class="ident">to_string</span>(), <span class="string">&quot;&lt;&lt;NULL ATTRIBUTE&gt;&gt;&quot;</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>null() {
+        <span class="macro">assert_eq!</span>(Attribute::null().to_string(), <span class="string">&quot;&lt;&lt;NULL ATTRIBUTE&gt;&gt;&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">context</span>() {
-        <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;unit&quot;</span>).<span class="ident">unwrap</span>().<span class="ident">context</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>context() {
+        Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;unit&quot;</span>).unwrap().context();
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">r#type</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>r#type() {
+        <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;unit&quot;</span>).<span class="ident">unwrap</span>().<span class="ident">r#type</span>(),
-            <span class="prelude-val">Some</span>(<span class="ident">Type::none</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>))
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap().r#type(),
+            <span class="prelude-val">Some</span>(Type::none(<span class="kw-2">&amp;</span>context))
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">type_none</span>() {
-        <span class="macro">assert_eq!</span>(<span class="ident">Attribute::null</span>().<span class="ident">r#type</span>(), <span class="prelude-val">None</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>type_none() {
+        <span class="macro">assert_eq!</span>(Attribute::null().r#type(), <span class="prelude-val">None</span>);
     }
 
-    <span class="comment">// TODO Fix this.</span>
-    <span class="attribute">#[<span class="ident">ignore</span>]</span>
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">type_id</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="comment">// TODO Fix this.
+    </span><span class="attribute">#[ignore]
+    #[test]
+    </span><span class="kw">fn </span>type_id() {
+        <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;42 : index&quot;</span>).<span class="ident">unwrap</span>().<span class="ident">type_id</span>(),
-            <span class="prelude-val">Some</span>(<span class="ident">Type::index</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>).<span class="ident">id</span>())
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;42 : index&quot;</span>).unwrap().type_id(),
+            <span class="prelude-val">Some</span>(Type::index(<span class="kw-2">&amp;</span>context).id())
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_null</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::null</span>().<span class="ident">is_null</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_null() {
+        <span class="macro">assert!</span>(Attribute::null().is_null());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_array</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;[]&quot;</span>).<span class="ident">unwrap</span>().<span class="ident">is_array</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_array() {
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;[]&quot;</span>).unwrap().is_array());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_bool</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;false&quot;</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">is_bool</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_bool() {
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;false&quot;</span>)
+            .unwrap()
+            .is_bool());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_dense_elements</span>() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_dense_elements() {
         <span class="macro">assert!</span>(
-            <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;dense&lt;10&gt; : tensor&lt;2xi8&gt;&quot;</span>)
-                .<span class="ident">unwrap</span>()
-                .<span class="ident">is_dense_elements</span>()
+            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;dense&lt;10&gt; : tensor&lt;2xi8&gt;&quot;</span>)
+                .unwrap()
+                .is_dense_elements()
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_dense_integer_elements</span>() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_dense_integer_elements() {
         <span class="macro">assert!</span>(
-            <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;dense&lt;42&gt; : tensor&lt;42xi8&gt;&quot;</span>)
-                .<span class="ident">unwrap</span>()
-                .<span class="ident">is_dense_integer_elements</span>()
+            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;dense&lt;42&gt; : tensor&lt;42xi8&gt;&quot;</span>)
+                .unwrap()
+                .is_dense_integer_elements()
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_dense_float_elements</span>() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_dense_float_elements() {
         <span class="macro">assert!</span>(
-            <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;dense&lt;42.0&gt; : tensor&lt;42xf32&gt;&quot;</span>)
-                .<span class="ident">unwrap</span>()
-                .<span class="ident">is_dense_float_elements</span>()
+            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;dense&lt;42.0&gt; : tensor&lt;42xf32&gt;&quot;</span>)
+                .unwrap()
+                .is_dense_float_elements()
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_elements</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(
-            <span class="kw-2">&amp;</span><span class="ident">Context::new</span>(),
-            <span class="string">&quot;sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;&quot;</span>
-        )
-        .<span class="ident">unwrap</span>()
-        .<span class="ident">is_elements</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_elements() {
+        <span class="macro">assert!</span>(Attribute::parse(
+            <span class="kw-2">&amp;</span>Context::new(),
+            <span class="string">&quot;sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;&quot;
+        </span>)
+        .unwrap()
+        .is_elements());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_integer</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;42&quot;</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">is_integer</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_integer() {
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;42&quot;</span>)
+            .unwrap()
+            .is_integer());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_integer_set</span>() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_integer_set() {
         <span class="macro">assert!</span>(
-            <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;affine_set&lt;(d0) : (d0 - 2 &gt;= 0)&gt;&quot;</span>)
-                .<span class="ident">unwrap</span>()
-                .<span class="ident">is_integer_set</span>()
+            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;affine_set&lt;(d0) : (d0 - 2 &gt;= 0)&gt;&quot;</span>)
+                .unwrap()
+                .is_integer_set()
         );
     }
 
-    <span class="comment">// TODO Fix this.</span>
-    <span class="attribute">#[<span class="ident">ignore</span>]</span>
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_opaque</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;#foo&lt;\&quot;bar\&quot;&gt;&quot;</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">is_opaque</span>());
+    <span class="comment">// TODO Fix this.
+    </span><span class="attribute">#[ignore]
+    #[test]
+    </span><span class="kw">fn </span>is_opaque() {
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;#foo&lt;\&quot;bar\&quot;&gt;&quot;</span>)
+            .unwrap()
+            .is_opaque());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_sparse_elements</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(
-            <span class="kw-2">&amp;</span><span class="ident">Context::new</span>(),
-            <span class="string">&quot;sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;&quot;</span>
-        )
-        .<span class="ident">unwrap</span>()
-        .<span class="ident">is_sparse_elements</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_sparse_elements() {
+        <span class="macro">assert!</span>(Attribute::parse(
+            <span class="kw-2">&amp;</span>Context::new(),
+            <span class="string">&quot;sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;&quot;
+        </span>)
+        .unwrap()
+        .is_sparse_elements());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_string</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;\&quot;foo\&quot;&quot;</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">is_string</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_string() {
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;\&quot;foo\&quot;&quot;</span>)
+            .unwrap()
+            .is_string());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_type</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;index&quot;</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">is_type</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_type() {
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;index&quot;</span>)
+            .unwrap()
+            .is_type());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_unit</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;unit&quot;</span>).<span class="ident">unwrap</span>().<span class="ident">is_unit</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_unit() {
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;unit&quot;</span>).unwrap().is_unit());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_not_unit</span>() {
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Attribute::null</span>().<span class="ident">is_unit</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_not_unit() {
+        <span class="macro">assert!</span>(!Attribute::null().is_unit());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">is_symbol</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;@foo&quot;</span>)
-            .<span class="ident">unwrap</span>()
-            .<span class="ident">is_symbol</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>is_symbol() {
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;@foo&quot;</span>)
+            .unwrap()
+            .is_symbol());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">equal</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="kw">let</span> <span class="ident">attribute</span> <span class="op">=</span> <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;unit&quot;</span>).<span class="ident">unwrap</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>equal() {
+        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>attribute = Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap();
 
-        <span class="macro">assert_eq!</span>(<span class="ident">attribute</span>, <span class="ident">attribute</span>);
+        <span class="macro">assert_eq!</span>(attribute, attribute);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">not_equal</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>not_equal() {
+        <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_ne!</span>(
-            <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;unit&quot;</span>).<span class="ident">unwrap</span>(),
-            <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;42&quot;</span>).<span class="ident">unwrap</span>()
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap(),
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;42&quot;</span>).unwrap()
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">display</span>() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>display() {
         <span class="macro">assert_eq!</span>(
-            <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">Context::new</span>(), <span class="string">&quot;unit&quot;</span>)
-                .<span class="ident">unwrap</span>()
-                .<span class="ident">to_string</span>(),
-            <span class="string">&quot;unit&quot;</span>
-        );
+            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;unit&quot;</span>)
+                .unwrap()
+                .to_string(),
+            <span class="string">&quot;unit&quot;
+        </span>);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/dialect/handle.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>handle.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/dialect/handle.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>handle.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -141,148 +141,148 @@
 <span id="141">141</span>
 <span id="142">142</span>
 <span id="143">143</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Registry</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">context::Context</span>, <span class="ident">dialect::Dialect</span>, <span class="ident">string_ref::StringRef</span>};
-<span class="kw">use</span> <span class="ident">mlir_sys</span>::{
-    <span class="ident">mlirDialectHandleGetNamespace</span>, <span class="ident">mlirDialectHandleInsertDialect</span>, <span class="ident">mlirDialectHandleLoadDialect</span>,
-    <span class="ident">mlirDialectHandleRegisterDialect</span>, <span class="ident">mlirGetDialectHandle__async__</span>, <span class="ident">mlirGetDialectHandle__cf__</span>,
-    <span class="ident">mlirGetDialectHandle__func__</span>, <span class="ident">mlirGetDialectHandle__gpu__</span>, <span class="ident">mlirGetDialectHandle__linalg__</span>,
-    <span class="ident">mlirGetDialectHandle__llvm__</span>, <span class="ident">mlirGetDialectHandle__pdl__</span>, <span class="ident">mlirGetDialectHandle__quant__</span>,
-    <span class="ident">mlirGetDialectHandle__scf__</span>, <span class="ident">mlirGetDialectHandle__shape__</span>,
-    <span class="ident">mlirGetDialectHandle__sparse_tensor__</span>, <span class="ident">mlirGetDialectHandle__tensor__</span>, <span class="ident">MlirDialectHandle</span>,
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Registry;
+<span class="kw">use crate</span>::{context::Context, dialect::Dialect, string_ref::StringRef};
+<span class="kw">use </span>mlir_sys::{
+    mlirDialectHandleGetNamespace, mlirDialectHandleInsertDialect, mlirDialectHandleLoadDialect,
+    mlirDialectHandleRegisterDialect, mlirGetDialectHandle__async__, mlirGetDialectHandle__cf__,
+    mlirGetDialectHandle__func__, mlirGetDialectHandle__gpu__, mlirGetDialectHandle__linalg__,
+    mlirGetDialectHandle__llvm__, mlirGetDialectHandle__pdl__, mlirGetDialectHandle__quant__,
+    mlirGetDialectHandle__scf__, mlirGetDialectHandle__shape__,
+    mlirGetDialectHandle__sparse_tensor__, mlirGetDialectHandle__tensor__, MlirDialectHandle,
 };
 
-<span class="doccomment">/// A dialect handle.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Handle</span> {
-    <span class="ident">raw</span>: <span class="ident">MlirDialectHandle</span>,
+<span class="doccomment">/// A dialect handle.
+</span><span class="attribute">#[derive(Clone, Copy, Debug)]
+</span><span class="kw">pub struct </span>Handle {
+    raw: MlirDialectHandle,
 }
 
-<span class="kw">impl</span> <span class="ident">Handle</span> {
-    <span class="doccomment">/// Creates a `async` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">r#async</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__async__</span>()) }
+<span class="kw">impl </span>Handle {
+    <span class="doccomment">/// Creates a `async` dialect handle.
+    </span><span class="kw">pub fn </span>r#async() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__async__()) }
     }
 
-    <span class="doccomment">/// Creates a `cf` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cf</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__cf__</span>()) }
+    <span class="doccomment">/// Creates a `cf` dialect handle.
+    </span><span class="kw">pub fn </span>cf() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__cf__()) }
     }
 
-    <span class="doccomment">/// Creates a `func` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">func</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__func__</span>()) }
+    <span class="doccomment">/// Creates a `func` dialect handle.
+    </span><span class="kw">pub fn </span>func() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__func__()) }
     }
 
-    <span class="doccomment">/// Creates a `gpu` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gpu</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__gpu__</span>()) }
+    <span class="doccomment">/// Creates a `gpu` dialect handle.
+    </span><span class="kw">pub fn </span>gpu() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__gpu__()) }
     }
 
-    <span class="doccomment">/// Creates a `linalg` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">linalg</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__linalg__</span>()) }
+    <span class="doccomment">/// Creates a `linalg` dialect handle.
+    </span><span class="kw">pub fn </span>linalg() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__linalg__()) }
     }
 
-    <span class="doccomment">/// Creates a `llvm` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">llvm</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__llvm__</span>()) }
+    <span class="doccomment">/// Creates a `llvm` dialect handle.
+    </span><span class="kw">pub fn </span>llvm() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__llvm__()) }
     }
 
-    <span class="doccomment">/// Creates a `pdl` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pdl</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__pdl__</span>()) }
+    <span class="doccomment">/// Creates a `pdl` dialect handle.
+    </span><span class="kw">pub fn </span>pdl() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__pdl__()) }
     }
 
-    <span class="doccomment">/// Creates a `quant` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">quant</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__quant__</span>()) }
+    <span class="doccomment">/// Creates a `quant` dialect handle.
+    </span><span class="kw">pub fn </span>quant() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__quant__()) }
     }
 
-    <span class="doccomment">/// Creates a `scf` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">scf</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__scf__</span>()) }
+    <span class="doccomment">/// Creates a `scf` dialect handle.
+    </span><span class="kw">pub fn </span>scf() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__scf__()) }
     }
 
-    <span class="doccomment">/// Creates a `shape` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shape</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__shape__</span>()) }
+    <span class="doccomment">/// Creates a `shape` dialect handle.
+    </span><span class="kw">pub fn </span>shape() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__shape__()) }
     }
 
-    <span class="doccomment">/// Creates a `sparse_tensor` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sparse_tensor</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__sparse_tensor__</span>()) }
+    <span class="doccomment">/// Creates a `sparse_tensor` dialect handle.
+    </span><span class="kw">pub fn </span>sparse_tensor() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__sparse_tensor__()) }
     }
 
-    <span class="doccomment">/// Creates a `tensor` dialect handle.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tensor</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">unsafe</span> { <span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">mlirGetDialectHandle__tensor__</span>()) }
+    <span class="doccomment">/// Creates a `tensor` dialect handle.
+    </span><span class="kw">pub fn </span>tensor() -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__tensor__()) }
     }
 
-    <span class="doccomment">/// Gets a namespace.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">namespace</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">StringRef</span> {
-        <span class="kw">unsafe</span> { <span class="ident">StringRef::from_raw</span>(<span class="ident">mlirDialectHandleGetNamespace</span>(<span class="self">self</span>.<span class="ident">raw</span>)) }
+    <span class="doccomment">/// Gets a namespace.
+    </span><span class="kw">pub fn </span>namespace(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StringRef {
+        <span class="kw">unsafe </span>{ StringRef::from_raw(mlirDialectHandleGetNamespace(<span class="self">self</span>.raw)) }
     }
 
-    <span class="doccomment">/// Inserts a dialect into a dialect registry.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert_dialect</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="ident">Registry</span>) {
-        <span class="kw">unsafe</span> { <span class="ident">mlirDialectHandleInsertDialect</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">registry</span>.<span class="ident">to_raw</span>()) }
+    <span class="doccomment">/// Inserts a dialect into a dialect registry.
+    </span><span class="kw">pub fn </span>insert_dialect(<span class="kw-2">&amp;</span><span class="self">self</span>, registry: <span class="kw-2">&amp;</span>Registry) {
+        <span class="kw">unsafe </span>{ mlirDialectHandleInsertDialect(<span class="self">self</span>.raw, registry.to_raw()) }
     }
 
-    <span class="doccomment">/// Loads a dialect into a context.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_dialect</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c</span> <span class="ident">Context</span>) -&gt; <span class="ident">Dialect</span><span class="op">&lt;</span><span class="lifetime">&#39;c</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> { <span class="ident">Dialect::from_raw</span>(<span class="ident">mlirDialectHandleLoadDialect</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">context</span>.<span class="ident">to_raw</span>())) }
+    <span class="doccomment">/// Loads a dialect into a context.
+    </span><span class="kw">pub fn </span>load_dialect&lt;<span class="lifetime">&#39;c</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context) -&gt; Dialect&lt;<span class="lifetime">&#39;c</span>&gt; {
+        <span class="kw">unsafe </span>{ Dialect::from_raw(mlirDialectHandleLoadDialect(<span class="self">self</span>.raw, context.to_raw())) }
     }
 
-    <span class="doccomment">/// Registers a dialect into a context.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_dialect</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span>) {
-        <span class="kw">unsafe</span> { <span class="ident">mlirDialectHandleRegisterDialect</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">context</span>.<span class="ident">to_raw</span>()) }
+    <span class="doccomment">/// Registers a dialect into a context.
+    </span><span class="kw">pub fn </span>register_dialect(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span>Context) {
+        <span class="kw">unsafe </span>{ mlirDialectHandleRegisterDialect(<span class="self">self</span>.raw, context.to_raw()) }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_raw</span>(<span class="ident">handle</span>: <span class="ident">MlirDialectHandle</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">raw</span>: <span class="ident">handle</span> }
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(handle: MlirDialectHandle) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ raw: handle }
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">func</span>() {
-        <span class="ident">Handle::func</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>func() {
+        Handle::func();
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">llvm</span>() {
-        <span class="ident">Handle::llvm</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>llvm() {
+        Handle::llvm();
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">namespace</span>() {
-        <span class="ident">Handle::func</span>().<span class="ident">namespace</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>namespace() {
+        Handle::func().namespace();
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">insert_dialect</span>() {
-        <span class="kw">let</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">Registry::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>insert_dialect() {
+        <span class="kw">let </span>registry = Registry::new();
 
-        <span class="ident">Handle::func</span>().<span class="ident">insert_dialect</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
+        Handle::func().insert_dialect(<span class="kw-2">&amp;</span>registry);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">load_dialect</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>load_dialect() {
+        <span class="kw">let </span>context = Context::new();
 
-        <span class="ident">Handle::func</span>().<span class="ident">load_dialect</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        Handle::func().load_dialect(<span class="kw-2">&amp;</span>context);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">register_dialect</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>register_dialect() {
+        <span class="kw">let </span>context = Context::new();
 
-        <span class="ident">Handle::func</span>().<span class="ident">register_dialect</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        Handle::func().register_dialect(<span class="kw-2">&amp;</span>context);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

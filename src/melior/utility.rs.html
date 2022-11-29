@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/utility.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>utility.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../melior/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/utility.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>utility.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../melior/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -119,126 +119,126 @@
 <span id="119">119</span>
 <span id="120">120</span>
 <span id="121">121</span>
-</pre><pre class="rust"><code><span class="doccomment">//! Utility functions.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Utility functions.
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">context::Context</span>, <span class="ident">dialect</span>, <span class="ident">logical_result::LogicalResult</span>, <span class="ident">pass</span>, <span class="ident">string_ref::StringRef</span>, <span class="ident">Error</span>,
+</span><span class="kw">use crate</span>::{
+    context::Context, dialect, logical_result::LogicalResult, pass, string_ref::StringRef, Error,
 };
-<span class="kw">use</span> <span class="ident">mlir_sys</span>::{
-    <span class="ident">mlirParsePassPipeline</span>, <span class="ident">mlirRegisterAllDialects</span>, <span class="ident">mlirRegisterAllLLVMTranslations</span>,
-    <span class="ident">mlirRegisterAllPasses</span>, <span class="ident">MlirStringRef</span>,
+<span class="kw">use </span>mlir_sys::{
+    mlirParsePassPipeline, mlirRegisterAllDialects, mlirRegisterAllLLVMTranslations,
+    mlirRegisterAllPasses, MlirStringRef,
 };
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">ffi::c_void</span>,
-    <span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Formatter</span>},
-    <span class="ident">sync::Once</span>,
+<span class="kw">use </span>std::{
+    ffi::c_void,
+    fmt::{<span class="self">self</span>, Formatter},
+    sync::Once,
 };
 
-<span class="doccomment">/// Registers all dialects to a dialect registry.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_all_dialects</span>(<span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="ident">dialect::Registry</span>) {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterAllDialects</span>(<span class="ident">registry</span>.<span class="ident">to_raw</span>()) }
+<span class="doccomment">/// Registers all dialects to a dialect registry.
+</span><span class="kw">pub fn </span>register_all_dialects(registry: <span class="kw-2">&amp;</span>dialect::Registry) {
+    <span class="kw">unsafe </span>{ mlirRegisterAllDialects(registry.to_raw()) }
 }
 
-<span class="doccomment">/// Register all translations from other dialects to the `llvm` dialect.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_all_llvm_translations</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span>) {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterAllLLVMTranslations</span>(<span class="ident">context</span>.<span class="ident">to_raw</span>()) }
+<span class="doccomment">/// Register all translations from other dialects to the `llvm` dialect.
+</span><span class="kw">pub fn </span>register_all_llvm_translations(context: <span class="kw-2">&amp;</span>Context) {
+    <span class="kw">unsafe </span>{ mlirRegisterAllLLVMTranslations(context.to_raw()) }
 }
 
-<span class="doccomment">/// Register all passes.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_all_passes</span>() {
-    <span class="kw">static</span> <span class="ident">ONCE</span>: <span class="ident">Once</span> <span class="op">=</span> <span class="ident">Once::new</span>();
+<span class="doccomment">/// Register all passes.
+</span><span class="kw">pub fn </span>register_all_passes() {
+    <span class="kw">static </span>ONCE: Once = Once::new();
 
-    <span class="comment">// Multiple calls of `mlirRegisterAllPasses` seems to cause double free.</span>
-    <span class="ident">ONCE</span>.<span class="ident">call_once</span>(<span class="op">|</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">mlirRegisterAllPasses</span>() });
+    <span class="comment">// Multiple calls of `mlirRegisterAllPasses` seems to cause double free.
+    </span>ONCE.call_once(|| <span class="kw">unsafe </span>{ mlirRegisterAllPasses() });
 }
 
-<span class="doccomment">/// Parses a pass pipeline.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_pass_pipeline</span>(<span class="ident">manager</span>: <span class="ident">pass::OperationManager</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">LogicalResult::from_raw</span>(<span class="kw">unsafe</span> {
-        <span class="ident">mlirParsePassPipeline</span>(<span class="ident">manager</span>.<span class="ident">to_raw</span>(), <span class="ident">StringRef::from</span>(<span class="ident">source</span>).<span class="ident">to_raw</span>())
+<span class="doccomment">/// Parses a pass pipeline.
+</span><span class="kw">pub fn </span>parse_pass_pipeline(manager: pass::OperationManager, source: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+    <span class="kw">let </span>result = LogicalResult::from_raw(<span class="kw">unsafe </span>{
+        mlirParsePassPipeline(manager.to_raw(), StringRef::from(source).to_raw())
     });
 
-    <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_success</span>() {
+    <span class="kw">if </span>result.is_success() {
         <span class="prelude-val">Ok</span>(())
-    } <span class="kw">else</span> {
-        <span class="prelude-val">Err</span>(<span class="ident">Error::ParsePassPipeline</span>)
+    } <span class="kw">else </span>{
+        <span class="prelude-val">Err</span>(Error::ParsePassPipeline)
     }
 }
 
-<span class="comment">// TODO Use into_raw_parts.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">into_raw_array</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">xs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="kw-2">*mut</span> <span class="ident">T</span> {
-    <span class="ident">xs</span>.<span class="ident">leak</span>().<span class="ident">as_mut_ptr</span>()
+<span class="comment">// TODO Use into_raw_parts.
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>into_raw_array&lt;T&gt;(xs: Vec&lt;T&gt;) -&gt; <span class="kw-2">*mut </span>T {
+    xs.leak().as_mut_ptr()
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe</span> <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> <span class="kw">fn</span> <span class="ident">print_callback</span>(<span class="ident">string</span>: <span class="ident">MlirStringRef</span>, <span class="ident">data</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>) {
-    <span class="kw">let</span> (<span class="ident">formatter</span>, <span class="ident">result</span>) <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="kw-2">*</span>(<span class="ident">data</span> <span class="kw">as</span> <span class="kw-2">*mut</span> (<span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>, <span class="ident">fmt::Result</span>));
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>print_callback(string: MlirStringRef, data: <span class="kw-2">*mut </span>c_void) {
+    <span class="kw">let </span>(formatter, result) = <span class="kw-2">&amp;mut *</span>(data <span class="kw">as </span><span class="kw-2">*mut </span>(<span class="kw-2">&amp;mut </span>Formatter, fmt::Result));
 
-    <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_err</span>() {
+    <span class="kw">if </span>result.is_err() {
         <span class="kw">return</span>;
     }
 
-    <span class="kw-2">*</span><span class="ident">result</span> <span class="op">=</span> (<span class="op">|</span><span class="op">|</span> -&gt; <span class="ident">fmt::Result</span> {
+    <span class="kw-2">*</span>result = (|| -&gt; fmt::Result {
         <span class="macro">write!</span>(
-            <span class="ident">formatter</span>,
+            formatter,
             <span class="string">&quot;{}&quot;</span>,
-            <span class="ident">StringRef::from_raw</span>(<span class="ident">string</span>)
-                .<span class="ident">as_str</span>()
-                .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">fmt::Error</span>)<span class="question-mark">?</span>
-        )
+            StringRef::from_raw(string)
+                .as_str()
+                .map_err(|<span class="kw">_</span>| fmt::Error)<span class="question-mark">?
+        </span>)
     })();
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">register_dialects</span>() {
-        <span class="kw">let</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">dialect::Registry::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>register_dialects() {
+        <span class="kw">let </span>registry = dialect::Registry::new();
 
-        <span class="ident">register_all_dialects</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
+        register_all_dialects(<span class="kw-2">&amp;</span>registry);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">register_dialects_twice</span>() {
-        <span class="kw">let</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">dialect::Registry::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>register_dialects_twice() {
+        <span class="kw">let </span>registry = dialect::Registry::new();
 
-        <span class="ident">register_all_dialects</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
-        <span class="ident">register_all_dialects</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
+        register_all_dialects(<span class="kw-2">&amp;</span>registry);
+        register_all_dialects(<span class="kw-2">&amp;</span>registry);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">register_llvm_translations</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>register_llvm_translations() {
+        <span class="kw">let </span>context = Context::new();
 
-        <span class="ident">register_all_llvm_translations</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        register_all_llvm_translations(<span class="kw-2">&amp;</span>context);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">register_llvm_translations_twice</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>register_llvm_translations_twice() {
+        <span class="kw">let </span>context = Context::new();
 
-        <span class="ident">register_all_llvm_translations</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
-        <span class="ident">register_all_llvm_translations</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        register_all_llvm_translations(<span class="kw-2">&amp;</span>context);
+        register_all_llvm_translations(<span class="kw-2">&amp;</span>context);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">register_passes</span>() {
-        <span class="ident">register_all_passes</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>register_passes() {
+        register_all_passes();
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">register_passes_twice</span>() {
-        <span class="ident">register_all_passes</span>();
-        <span class="ident">register_all_passes</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>register_passes_twice() {
+        register_all_passes();
+        register_all_passes();
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">register_passes_many_times</span>() {
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">1000</span> {
-            <span class="ident">register_all_passes</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>register_passes_many_times() {
+        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">1000 </span>{
+            register_all_passes();
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

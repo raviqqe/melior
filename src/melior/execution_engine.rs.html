@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/execution_engine.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>execution_engine.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../melior/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/execution_engine.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>execution_engine.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../melior/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -120,86 +120,86 @@
 <span id="120">120</span>
 <span id="121">121</span>
 <span id="122">122</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">ir::Module</span>, <span class="ident">logical_result::LogicalResult</span>, <span class="ident">string_ref::StringRef</span>, <span class="ident">Error</span>};
-<span class="kw">use</span> <span class="ident">mlir_sys</span>::{
-    <span class="ident">mlirExecutionEngineCreate</span>, <span class="ident">mlirExecutionEngineDestroy</span>, <span class="ident">mlirExecutionEngineInvokePacked</span>,
-    <span class="ident">MlirExecutionEngine</span>,
+</pre><pre class="rust"><code><span class="kw">use crate</span>::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Error};
+<span class="kw">use </span>mlir_sys::{
+    mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineInvokePacked,
+    MlirExecutionEngine,
 };
-<span class="kw">use</span> <span class="ident">std::ffi::c_void</span>;
+<span class="kw">use </span>std::ffi::c_void;
 
-<span class="doccomment">/// An execution engine.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ExecutionEngine</span> {
-    <span class="ident">raw</span>: <span class="ident">MlirExecutionEngine</span>,
+<span class="doccomment">/// An execution engine.
+</span><span class="kw">pub struct </span>ExecutionEngine {
+    raw: MlirExecutionEngine,
 }
 
-<span class="kw">impl</span> <span class="ident">ExecutionEngine</span> {
-    <span class="doccomment">/// Creates an execution engine.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">module</span>: <span class="kw-2">&amp;</span><span class="ident">Module</span>, <span class="ident">optimization_level</span>: <span class="ident">usize</span>, <span class="ident">shared_library_paths</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">str</span>]) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">raw</span>: <span class="kw">unsafe</span> {
-                <span class="ident">mlirExecutionEngineCreate</span>(
-                    <span class="ident">module</span>.<span class="ident">to_raw</span>(),
-                    <span class="ident">optimization_level</span> <span class="kw">as</span> <span class="ident">i32</span>,
-                    <span class="ident">shared_library_paths</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">i32</span>,
-                    <span class="ident">shared_library_paths</span>
-                        .<span class="ident">iter</span>()
-                        .<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">string</span><span class="op">|</span> <span class="ident">StringRef::from</span>(<span class="ident">string</span>).<span class="ident">to_raw</span>())
-                        .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
-                        .<span class="ident">as_ptr</span>(),
+<span class="kw">impl </span>ExecutionEngine {
+    <span class="doccomment">/// Creates an execution engine.
+    </span><span class="kw">pub fn </span>new(module: <span class="kw-2">&amp;</span>Module, optimization_level: usize, shared_library_paths: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str]) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            raw: <span class="kw">unsafe </span>{
+                mlirExecutionEngineCreate(
+                    module.to_raw(),
+                    optimization_level <span class="kw">as </span>i32,
+                    shared_library_paths.len() <span class="kw">as </span>i32,
+                    shared_library_paths
+                        .iter()
+                        .map(|<span class="kw-2">&amp;</span>string| StringRef::from(string).to_raw())
+                        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+                        .as_ptr(),
                 )
             },
         }
     }
 
-    <span class="doccomment">/// Invokes a function in a module. The `arguments` argument includes</span>
-    <span class="doccomment">/// pointers to results of the function as well as arguments.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Safety</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This function modifies memory locations pointed by the `arguments`</span>
-    <span class="doccomment">/// argument. If those pointers are invalid or misaligned, calling this</span>
-    <span class="doccomment">/// function might result in undefined behavior.</span>
-    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">invoke_packed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">arguments</span>: <span class="kw-2">&amp;mut</span> [<span class="kw-2">*mut</span> ()]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">LogicalResult::from_raw</span>(<span class="ident">mlirExecutionEngineInvokePacked</span>(
-            <span class="self">self</span>.<span class="ident">raw</span>,
-            <span class="ident">StringRef::from</span>(<span class="ident">name</span>).<span class="ident">to_raw</span>(),
-            <span class="ident">arguments</span>.<span class="ident">as_mut_ptr</span>() <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="kw-2">*mut</span> <span class="ident">c_void</span>,
+    <span class="doccomment">/// Invokes a function in a module. The `arguments` argument includes
+    /// pointers to results of the function as well as arguments.
+    ///
+    /// # Safety
+    ///
+    /// This function modifies memory locations pointed by the `arguments`
+    /// argument. If those pointers are invalid or misaligned, calling this
+    /// function might result in undefined behavior.
+    </span><span class="kw">pub unsafe fn </span>invoke_packed(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str, arguments: <span class="kw-2">&amp;mut </span>[<span class="kw-2">*mut </span>()]) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+        <span class="kw">let </span>result = LogicalResult::from_raw(mlirExecutionEngineInvokePacked(
+            <span class="self">self</span>.raw,
+            StringRef::from(name).to_raw(),
+            arguments.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut *mut </span>c_void,
         ));
 
-        <span class="kw">if</span> <span class="ident">result</span>.<span class="ident">is_success</span>() {
+        <span class="kw">if </span>result.is_success() {
             <span class="prelude-val">Ok</span>(())
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">Error::InvokeFunction</span>)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Err</span>(Error::InvokeFunction)
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">ExecutionEngine</span> {
-    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">unsafe</span> { <span class="ident">mlirExecutionEngineDestroy</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+<span class="kw">impl </span>Drop <span class="kw">for </span>ExecutionEngine {
+    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">unsafe </span>{ mlirExecutionEngineDestroy(<span class="self">self</span>.raw) }
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::{
-        <span class="ident">context::Context</span>,
-        <span class="ident">dialect</span>, <span class="ident">pass</span>,
-        <span class="ident">utility</span>::{<span class="ident">register_all_dialects</span>, <span class="ident">register_all_llvm_translations</span>},
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use crate</span>::{
+        context::Context,
+        dialect, pass,
+        utility::{register_all_dialects, register_all_llvm_translations},
     };
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">invoke_packed</span>() {
-        <span class="kw">let</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">dialect::Registry::new</span>();
-        <span class="ident">register_all_dialects</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>invoke_packed() {
+        <span class="kw">let </span>registry = dialect::Registry::new();
+        register_all_dialects(<span class="kw-2">&amp;</span>registry);
 
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="ident">context</span>.<span class="ident">append_dialect_registry</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
-        <span class="ident">register_all_llvm_translations</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
+        <span class="kw">let </span>context = Context::new();
+        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
+        register_all_llvm_translations(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Module::parse</span>(
-            <span class="kw-2">&amp;</span><span class="ident">context</span>,
+        <span class="kw">let </span><span class="kw-2">mut </span>module = Module::parse(
+            <span class="kw-2">&amp;</span>context,
             <span class="string">r#&quot;
             module {
                 func.func @add(%arg0 : i32) -&gt; i32 attributes { llvm.emit_c_interface } {
@@ -209,38 +209,38 @@
             }
             &quot;#</span>,
         )
-        .<span class="ident">unwrap</span>();
+        .unwrap();
 
-        <span class="kw">let</span> <span class="ident">pass_manager</span> <span class="op">=</span> <span class="ident">pass::Manager::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
-        <span class="ident">pass_manager</span>.<span class="ident">add_pass</span>(<span class="ident">pass::conversion::convert_func_to_llvm</span>());
+        <span class="kw">let </span>pass_manager = pass::Manager::new(<span class="kw-2">&amp;</span>context);
+        pass_manager.add_pass(pass::conversion::convert_func_to_llvm());
 
-        <span class="ident">pass_manager</span>
-            .<span class="ident">nested_under</span>(<span class="string">&quot;func.func&quot;</span>)
-            .<span class="ident">add_pass</span>(<span class="ident">pass::conversion::convert_arithmetic_to_llvm</span>());
+        pass_manager
+            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .add_pass(pass::conversion::convert_arithmetic_to_llvm());
 
-        <span class="macro">assert_eq!</span>(<span class="ident">pass_manager</span>.<span class="ident">run</span>(<span class="kw-2">&amp;mut</span> <span class="ident">module</span>), <span class="prelude-val">Ok</span>(()));
+        <span class="macro">assert_eq!</span>(pass_manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
 
-        <span class="kw">let</span> <span class="ident">engine</span> <span class="op">=</span> <span class="ident">ExecutionEngine::new</span>(<span class="kw-2">&amp;</span><span class="ident">module</span>, <span class="number">2</span>, <span class="kw-2">&amp;</span>[]);
+        <span class="kw">let </span>engine = ExecutionEngine::new(<span class="kw-2">&amp;</span>module, <span class="number">2</span>, <span class="kw-2">&amp;</span>[]);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">argument</span> <span class="op">=</span> <span class="number">42</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="op">-</span><span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>argument = <span class="number">42</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>result = -<span class="number">1</span>;
 
         <span class="macro">assert_eq!</span>(
-            <span class="kw">unsafe</span> {
-                <span class="ident">engine</span>.<span class="ident">invoke_packed</span>(
+            <span class="kw">unsafe </span>{
+                engine.invoke_packed(
                     <span class="string">&quot;add&quot;</span>,
-                    <span class="kw-2">&amp;mut</span> [
-                        <span class="kw-2">&amp;mut</span> <span class="ident">argument</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="kw-2">*mut</span> (),
-                        <span class="kw-2">&amp;mut</span> <span class="ident">result</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="kw-2">*mut</span> (),
+                    <span class="kw-2">&amp;mut </span>[
+                        <span class="kw-2">&amp;mut </span>argument <span class="kw">as </span><span class="kw-2">*mut </span>i32 <span class="kw">as </span><span class="kw-2">*mut </span>(),
+                        <span class="kw-2">&amp;mut </span>result <span class="kw">as </span><span class="kw-2">*mut </span>i32 <span class="kw">as </span><span class="kw-2">*mut </span>(),
                     ],
                 )
             },
             <span class="prelude-val">Ok</span>(())
         );
 
-        <span class="macro">assert_eq!</span>(<span class="ident">argument</span>, <span class="number">42</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">result</span>, <span class="number">84</span>);
+        <span class="macro">assert_eq!</span>(argument, <span class="number">42</span>);
+        <span class="macro">assert_eq!</span>(result, <span class="number">84</span>);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

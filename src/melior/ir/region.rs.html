@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/ir/region.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>region.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/ir/region.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>region.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -195,202 +195,202 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Block</span>, <span class="ident">BlockRef</span>};
-<span class="kw">use</span> <span class="ident">mlir_sys</span>::{
-    <span class="ident">mlirRegionAppendOwnedBlock</span>, <span class="ident">mlirRegionCreate</span>, <span class="ident">mlirRegionDestroy</span>, <span class="ident">mlirRegionEqual</span>,
-    <span class="ident">mlirRegionGetFirstBlock</span>, <span class="ident">mlirRegionInsertOwnedBlockAfter</span>, <span class="ident">mlirRegionInsertOwnedBlockBefore</span>,
-    <span class="ident">MlirRegion</span>,
+</pre><pre class="rust"><code><span class="kw">use super</span>::{Block, BlockRef};
+<span class="kw">use </span>mlir_sys::{
+    mlirRegionAppendOwnedBlock, mlirRegionCreate, mlirRegionDestroy, mlirRegionEqual,
+    mlirRegionGetFirstBlock, mlirRegionInsertOwnedBlockAfter, mlirRegionInsertOwnedBlockBefore,
+    MlirRegion,
 };
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">marker::PhantomData</span>,
-    <span class="ident">mem</span>::{<span class="ident">forget</span>, <span class="ident">transmute</span>},
-    <span class="ident">ops::Deref</span>,
+<span class="kw">use </span>std::{
+    marker::PhantomData,
+    mem::{forget, transmute},
+    ops::Deref,
 };
 
-<span class="doccomment">/// A region.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Region</span> {
-    <span class="ident">raw</span>: <span class="ident">MlirRegion</span>,
+<span class="doccomment">/// A region.
+</span><span class="attribute">#[derive(Debug)]
+</span><span class="kw">pub struct </span>Region {
+    raw: MlirRegion,
 }
 
-<span class="kw">impl</span> <span class="ident">Region</span> {
-    <span class="doccomment">/// Creates a region.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">raw</span>: <span class="kw">unsafe</span> { <span class="ident">mlirRegionCreate</span>() },
+<span class="kw">impl </span>Region {
+    <span class="doccomment">/// Creates a region.
+    </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            raw: <span class="kw">unsafe </span>{ mlirRegionCreate() },
         }
     }
 
-    <span class="doccomment">/// Gets the first block in a region.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">first_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockRef</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">mlirRegionGetFirstBlock</span>(<span class="self">self</span>.<span class="ident">raw</span>);
+    <span class="doccomment">/// Gets the first block in a region.
+    </span><span class="kw">pub fn </span>first_block(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BlockRef&gt; {
+        <span class="kw">unsafe </span>{
+            <span class="kw">let </span>block = mlirRegionGetFirstBlock(<span class="self">self</span>.raw);
 
-            <span class="kw">if</span> <span class="ident">block</span>.<span class="ident">ptr</span>.<span class="ident">is_null</span>() {
-                <span class="prelude-val">None</span>
-            } <span class="kw">else</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">BlockRef::from_raw</span>(<span class="ident">block</span>))
+            <span class="kw">if </span>block.ptr.is_null() {
+                <span class="prelude-val">None
+            </span>} <span class="kw">else </span>{
+                <span class="prelude-val">Some</span>(BlockRef::from_raw(block))
             }
         }
     }
 
-    <span class="doccomment">/// Inserts a block after another block.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert_block_after</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">one</span>: <span class="ident">BlockRef</span>, <span class="ident">other</span>: <span class="ident">Block</span>) -&gt; <span class="ident">BlockRef</span> {
-        <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="ident">r#ref</span> <span class="op">=</span> <span class="ident">BlockRef::from_raw</span>(<span class="ident">other</span>.<span class="ident">to_raw</span>());
+    <span class="doccomment">/// Inserts a block after another block.
+    </span><span class="kw">pub fn </span>insert_block_after(<span class="kw-2">&amp;</span><span class="self">self</span>, one: BlockRef, other: Block) -&gt; BlockRef {
+        <span class="kw">unsafe </span>{
+            <span class="kw">let </span>r#ref = BlockRef::from_raw(other.to_raw());
 
-            <span class="ident">mlirRegionInsertOwnedBlockAfter</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">one</span>.<span class="ident">to_raw</span>(), <span class="ident">other</span>.<span class="ident">into_raw</span>());
+            mlirRegionInsertOwnedBlockAfter(<span class="self">self</span>.raw, one.to_raw(), other.into_raw());
 
-            <span class="ident">r#ref</span>
+            r#ref
         }
     }
 
-    <span class="doccomment">/// Inserts a block before another block.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert_block_before</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">one</span>: <span class="ident">BlockRef</span>, <span class="ident">other</span>: <span class="ident">Block</span>) -&gt; <span class="ident">BlockRef</span> {
-        <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="ident">r#ref</span> <span class="op">=</span> <span class="ident">BlockRef::from_raw</span>(<span class="ident">other</span>.<span class="ident">to_raw</span>());
+    <span class="doccomment">/// Inserts a block before another block.
+    </span><span class="kw">pub fn </span>insert_block_before(<span class="kw-2">&amp;</span><span class="self">self</span>, one: BlockRef, other: Block) -&gt; BlockRef {
+        <span class="kw">unsafe </span>{
+            <span class="kw">let </span>r#ref = BlockRef::from_raw(other.to_raw());
 
-            <span class="ident">mlirRegionInsertOwnedBlockBefore</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">one</span>.<span class="ident">to_raw</span>(), <span class="ident">other</span>.<span class="ident">into_raw</span>());
+            mlirRegionInsertOwnedBlockBefore(<span class="self">self</span>.raw, one.to_raw(), other.into_raw());
 
-            <span class="ident">r#ref</span>
+            r#ref
         }
     }
 
-    <span class="doccomment">/// Appends a block.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">append_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">block</span>: <span class="ident">Block</span>) -&gt; <span class="ident">BlockRef</span> {
-        <span class="kw">unsafe</span> {
-            <span class="kw">let</span> <span class="ident">r#ref</span> <span class="op">=</span> <span class="ident">BlockRef::from_raw</span>(<span class="ident">block</span>.<span class="ident">to_raw</span>());
+    <span class="doccomment">/// Appends a block.
+    </span><span class="kw">pub fn </span>append_block(<span class="kw-2">&amp;</span><span class="self">self</span>, block: Block) -&gt; BlockRef {
+        <span class="kw">unsafe </span>{
+            <span class="kw">let </span>r#ref = BlockRef::from_raw(block.to_raw());
 
-            <span class="ident">mlirRegionAppendOwnedBlock</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">block</span>.<span class="ident">into_raw</span>());
+            mlirRegionAppendOwnedBlock(<span class="self">self</span>.raw, block.into_raw());
 
-            <span class="ident">r#ref</span>
+            r#ref
         }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">into_raw</span>(<span class="self">self</span>) -&gt; <span class="ident">mlir_sys::MlirRegion</span> {
-        <span class="kw">let</span> <span class="ident">region</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">raw</span>;
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>into_raw(<span class="self">self</span>) -&gt; mlir_sys::MlirRegion {
+        <span class="kw">let </span>region = <span class="self">self</span>.raw;
 
-        <span class="ident">forget</span>(<span class="self">self</span>);
+        forget(<span class="self">self</span>);
 
-        <span class="ident">region</span>
+        region
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Region</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::new</span>()
+<span class="kw">impl </span>Default <span class="kw">for </span>Region {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new()
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Region</span> {
-    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">unsafe</span> { <span class="ident">mlirRegionDestroy</span>(<span class="self">self</span>.<span class="ident">raw</span>) }
+<span class="kw">impl </span>Drop <span class="kw">for </span>Region {
+    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">unsafe </span>{ mlirRegionDestroy(<span class="self">self</span>.raw) }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Region</span> {
-    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">unsafe</span> { <span class="ident">mlirRegionEqual</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">other</span>.<span class="ident">raw</span>) }
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>Region {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="kw">unsafe </span>{ mlirRegionEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">Region</span> {}
+<span class="kw">impl </span>Eq <span class="kw">for </span>Region {}
 
-<span class="doccomment">/// A reference to a region.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RegionRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">raw</span>: <span class="ident">MlirRegion</span>,
-    <span class="ident">_region</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Region</span><span class="op">&gt;</span>,
+<span class="doccomment">/// A reference to a region.
+</span><span class="attribute">#[derive(Clone, Copy, Debug)]
+</span><span class="kw">pub struct </span>RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+    raw: MlirRegion,
+    _region: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Region&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">RegionRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_raw</span>(<span class="ident">raw</span>: <span class="ident">MlirRegion</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">raw</span>,
-            <span class="ident">_region</span>: <span class="ident">Default::default</span>(),
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(raw: MlirRegion) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            raw,
+            _region: Default::default(),
         }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_option_raw</span>(<span class="ident">raw</span>: <span class="ident">MlirRegion</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">raw</span>.<span class="ident">ptr</span>.<span class="ident">is_null</span>() {
-            <span class="prelude-val">None</span>
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Some</span>(<span class="ident"><span class="self">Self</span>::from_raw</span>(<span class="ident">raw</span>))
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_option_raw(raw: MlirRegion) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">if </span>raw.ptr.is_null() {
+            <span class="prelude-val">None
+        </span>} <span class="kw">else </span>{
+            <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_raw(raw))
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Deref</span> <span class="kw">for</span> <span class="ident">RegionRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">Region</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">type </span>Target = Region;
 
-    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Target</span> {
-        <span class="kw">unsafe</span> { <span class="ident">transmute</span>(<span class="self">self</span>) }
+    <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
+        <span class="kw">unsafe </span>{ transmute(<span class="self">self</span>) }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">RegionRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">unsafe</span> { <span class="ident">mlirRegionEqual</span>(<span class="self">self</span>.<span class="ident">raw</span>, <span class="ident">other</span>.<span class="ident">raw</span>) }
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; PartialEq <span class="kw">for </span>RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="kw">unsafe </span>{ mlirRegionEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">RegionRef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Eq <span class="kw">for </span>RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {}
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">new</span>() {
-        <span class="ident">Region::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>new() {
+        Region::new();
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">first_block</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Region::new</span>().<span class="ident">first_block</span>().<span class="ident">is_none</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>first_block() {
+        <span class="macro">assert!</span>(Region::new().first_block().is_none());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">append_block</span>() {
-        <span class="kw">let</span> <span class="ident">region</span> <span class="op">=</span> <span class="ident">Region::new</span>();
-        <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">Block::new</span>(<span class="kw-2">&amp;</span>[]);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>append_block() {
+        <span class="kw">let </span>region = Region::new();
+        <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
-        <span class="ident">region</span>.<span class="ident">append_block</span>(<span class="ident">block</span>);
+        region.append_block(block);
 
-        <span class="macro">assert!</span>(<span class="ident">region</span>.<span class="ident">first_block</span>().<span class="ident">is_some</span>());
+        <span class="macro">assert!</span>(region.first_block().is_some());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">insert_block_after</span>() {
-        <span class="kw">let</span> <span class="ident">region</span> <span class="op">=</span> <span class="ident">Region::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>insert_block_after() {
+        <span class="kw">let </span>region = Region::new();
 
-        <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">region</span>.<span class="ident">append_block</span>(<span class="ident">Block::new</span>(<span class="kw-2">&amp;</span>[]));
-        <span class="ident">region</span>.<span class="ident">insert_block_after</span>(<span class="ident">block</span>, <span class="ident">Block::new</span>(<span class="kw-2">&amp;</span>[]));
+        <span class="kw">let </span>block = region.append_block(Block::new(<span class="kw-2">&amp;</span>[]));
+        region.insert_block_after(block, Block::new(<span class="kw-2">&amp;</span>[]));
 
-        <span class="macro">assert_eq!</span>(<span class="ident">region</span>.<span class="ident">first_block</span>(), <span class="prelude-val">Some</span>(<span class="ident">block</span>));
+        <span class="macro">assert_eq!</span>(region.first_block(), <span class="prelude-val">Some</span>(block));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">insert_block_before</span>() {
-        <span class="kw">let</span> <span class="ident">region</span> <span class="op">=</span> <span class="ident">Region::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>insert_block_before() {
+        <span class="kw">let </span>region = Region::new();
 
-        <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">region</span>.<span class="ident">append_block</span>(<span class="ident">Block::new</span>(<span class="kw-2">&amp;</span>[]));
-        <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">region</span>.<span class="ident">insert_block_before</span>(<span class="ident">block</span>, <span class="ident">Block::new</span>(<span class="kw-2">&amp;</span>[]));
+        <span class="kw">let </span>block = region.append_block(Block::new(<span class="kw-2">&amp;</span>[]));
+        <span class="kw">let </span>block = region.insert_block_before(block, Block::new(<span class="kw-2">&amp;</span>[]));
 
-        <span class="macro">assert_eq!</span>(<span class="ident">region</span>.<span class="ident">first_block</span>(), <span class="prelude-val">Some</span>(<span class="ident">block</span>));
+        <span class="macro">assert_eq!</span>(region.first_block(), <span class="prelude-val">Some</span>(block));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">equal</span>() {
-        <span class="kw">let</span> <span class="ident">region</span> <span class="op">=</span> <span class="ident">Region::new</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>equal() {
+        <span class="kw">let </span>region = Region::new();
 
-        <span class="macro">assert_eq!</span>(<span class="ident">region</span>, <span class="ident">region</span>);
+        <span class="macro">assert_eq!</span>(region, region);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">not_equal</span>() {
-        <span class="macro">assert_ne!</span>(<span class="ident">Region::new</span>(), <span class="ident">Region::new</span>());
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>not_equal() {
+        <span class="macro">assert_ne!</span>(Region::new(), Region::new());
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

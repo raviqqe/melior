@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../melior/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../melior/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -342,349 +342,349 @@
 <span id="342">342</span>
 <span id="343">343</span>
 <span id="344">344</span>
-</pre><pre class="rust"><code><span class="doccomment">//! Melior is the rustic MLIR bindings for Rust. It aims to provide a simple,</span>
-<span class="doccomment">//! safe, and complete API for MLIR with a reasonably sane ownership model</span>
-<span class="doccomment">//! represented by the type system in Rust.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! This crate is a wrapper of [the MLIR C API](https://mlir.llvm.org/docs/CAPI/).</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # Dependencies</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! [LLVM/MLIR 15](https://llvm.org/) needs to be installed on your system. On Linux and macOS, you can install it via [Homebrew](https://brew.sh).</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ```sh</span>
-<span class="doccomment">//! brew install llvm@15</span>
-<span class="doccomment">//! ```</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # Safety</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Although Melior aims to be completely safe, some part of the current API is</span>
-<span class="doccomment">//! not.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! - Access to operations, types, or attributes that belong to dialects not</span>
-<span class="doccomment">//!   loaded in contexts can lead to runtime errors or segmentation faults in</span>
-<span class="doccomment">//!   the worst case.</span>
-<span class="doccomment">//!   - Fix plan: Load all dialects by default on creation of contexts, and</span>
-<span class="doccomment">//!     provide unsafe constructors of contexts for advanced users.</span>
-<span class="doccomment">//! - IR object references returned from functions that move ownership of</span>
-<span class="doccomment">//!   arguments might get invalidated later.</span>
-<span class="doccomment">//!   - This is because we need to borrow `&amp;self` rather than `&amp;mut self` to</span>
-<span class="doccomment">//!     return such references.</span>
-<span class="doccomment">//!   - e.g. `Region::append_block()`</span>
-<span class="doccomment">//!   - Fix plan: Use dynamic check, such as `RefCell`, for the objects.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # Examples</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ## Building a function to add integers</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ```rust</span>
-<span class="doccomment">//! use melior::{</span>
-<span class="doccomment">//!     Context,</span>
-<span class="doccomment">//!     dialect,</span>
-<span class="doccomment">//!     ir::*,</span>
-<span class="doccomment">//!     utility::register_all_dialects,</span>
-<span class="doccomment">//! };</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! let registry = dialect::Registry::new();</span>
-<span class="doccomment">//! register_all_dialects(&amp;registry);</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! let context = Context::new();</span>
-<span class="doccomment">//! context.append_dialect_registry(&amp;registry);</span>
-<span class="doccomment">//! context.get_or_load_dialect(&quot;func&quot;);</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! let location = Location::unknown(&amp;context);</span>
-<span class="doccomment">//! let module = Module::new(location);</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! let integer_type = Type::integer(&amp;context, 64);</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! let function = {</span>
-<span class="doccomment">//!     let region = Region::new();</span>
-<span class="doccomment">//!     let block = Block::new(&amp;[(integer_type, location), (integer_type, location)]);</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!     let sum = block.append_operation(</span>
-<span class="doccomment">//!         operation::Builder::new(&quot;arith.addi&quot;, location)</span>
-<span class="doccomment">//!             .add_operands(&amp;[</span>
-<span class="doccomment">//!                 block.argument(0).unwrap().into(),</span>
-<span class="doccomment">//!                 block.argument(1).unwrap().into(),</span>
-<span class="doccomment">//!             ])</span>
-<span class="doccomment">//!             .add_results(&amp;[integer_type])</span>
-<span class="doccomment">//!             .build(),</span>
-<span class="doccomment">//!     );</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!     block.append_operation(</span>
-<span class="doccomment">//!         operation::Builder::new(&quot;func.return&quot;, Location::unknown(&amp;context))</span>
-<span class="doccomment">//!             .add_operands(&amp;[sum.result(0).unwrap().into()])</span>
-<span class="doccomment">//!             .build(),</span>
-<span class="doccomment">//!     );</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!     region.append_block(block);</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!     operation::Builder::new(&quot;func.func&quot;, Location::unknown(&amp;context))</span>
-<span class="doccomment">//!         .add_attributes(&amp;[</span>
-<span class="doccomment">//!             (</span>
-<span class="doccomment">//!                 Identifier::new(&amp;context, &quot;function_type&quot;),</span>
-<span class="doccomment">//!                 Attribute::parse(&amp;context, &quot;(i64, i64) -&gt; i64&quot;).unwrap(),</span>
-<span class="doccomment">//!             ),</span>
-<span class="doccomment">//!             (</span>
-<span class="doccomment">//!                 Identifier::new(&amp;context, &quot;sym_name&quot;),</span>
-<span class="doccomment">//!                 Attribute::parse(&amp;context, &quot;\&quot;add\&quot;&quot;).unwrap(),</span>
-<span class="doccomment">//!             ),</span>
-<span class="doccomment">//!         ])</span>
-<span class="doccomment">//!         .add_regions(vec![region])</span>
-<span class="doccomment">//!         .build()</span>
-<span class="doccomment">//! };</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! module.body().append_operation(function);</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! assert!(module.as_operation().verify());</span>
-<span class="doccomment">//! ```</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Melior is the rustic MLIR bindings for Rust. It aims to provide a simple,
+//! safe, and complete API for MLIR with a reasonably sane ownership model
+//! represented by the type system in Rust.
+//!
+//! This crate is a wrapper of [the MLIR C API](https://mlir.llvm.org/docs/CAPI/).
+//!
+//! # Dependencies
+//!
+//! [LLVM/MLIR 15](https://llvm.org/) needs to be installed on your system. On Linux and macOS, you can install it via [Homebrew](https://brew.sh).
+//!
+//! ```sh
+//! brew install llvm@15
+//! ```
+//!
+//! # Safety
+//!
+//! Although Melior aims to be completely safe, some part of the current API is
+//! not.
+//!
+//! - Access to operations, types, or attributes that belong to dialects not
+//!   loaded in contexts can lead to runtime errors or segmentation faults in
+//!   the worst case.
+//!   - Fix plan: Load all dialects by default on creation of contexts, and
+//!     provide unsafe constructors of contexts for advanced users.
+//! - IR object references returned from functions that move ownership of
+//!   arguments might get invalidated later.
+//!   - This is because we need to borrow `&amp;self` rather than `&amp;mut self` to
+//!     return such references.
+//!   - e.g. `Region::append_block()`
+//!   - Fix plan: Use dynamic check, such as `RefCell`, for the objects.
+//!
+//! # Examples
+//!
+//! ## Building a function to add integers
+//!
+//! ```rust
+//! use melior::{
+//!     Context,
+//!     dialect,
+//!     ir::*,
+//!     utility::register_all_dialects,
+//! };
+//!
+//! let registry = dialect::Registry::new();
+//! register_all_dialects(&amp;registry);
+//!
+//! let context = Context::new();
+//! context.append_dialect_registry(&amp;registry);
+//! context.get_or_load_dialect(&quot;func&quot;);
+//!
+//! let location = Location::unknown(&amp;context);
+//! let module = Module::new(location);
+//!
+//! let integer_type = Type::integer(&amp;context, 64);
+//!
+//! let function = {
+//!     let region = Region::new();
+//!     let block = Block::new(&amp;[(integer_type, location), (integer_type, location)]);
+//!
+//!     let sum = block.append_operation(
+//!         operation::Builder::new(&quot;arith.addi&quot;, location)
+//!             .add_operands(&amp;[
+//!                 block.argument(0).unwrap().into(),
+//!                 block.argument(1).unwrap().into(),
+//!             ])
+//!             .add_results(&amp;[integer_type])
+//!             .build(),
+//!     );
+//!
+//!     block.append_operation(
+//!         operation::Builder::new(&quot;func.return&quot;, Location::unknown(&amp;context))
+//!             .add_operands(&amp;[sum.result(0).unwrap().into()])
+//!             .build(),
+//!     );
+//!
+//!     region.append_block(block);
+//!
+//!     operation::Builder::new(&quot;func.func&quot;, Location::unknown(&amp;context))
+//!         .add_attributes(&amp;[
+//!             (
+//!                 Identifier::new(&amp;context, &quot;function_type&quot;),
+//!                 Attribute::parse(&amp;context, &quot;(i64, i64) -&gt; i64&quot;).unwrap(),
+//!             ),
+//!             (
+//!                 Identifier::new(&amp;context, &quot;sym_name&quot;),
+//!                 Attribute::parse(&amp;context, &quot;\&quot;add\&quot;&quot;).unwrap(),
+//!             ),
+//!         ])
+//!         .add_regions(vec![region])
+//!         .build()
+//! };
+//!
+//! module.body().append_operation(function);
+//!
+//! assert!(module.as_operation().verify());
+//! ```
 
-<span class="kw">mod</span> <span class="ident">context</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">dialect</span>;
-<span class="kw">mod</span> <span class="ident">error</span>;
-<span class="kw">mod</span> <span class="ident">execution_engine</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ir</span>;
-<span class="kw">mod</span> <span class="ident">logical_result</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pass</span>;
-<span class="kw">mod</span> <span class="ident">string_ref</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">utility</span>;
+</span><span class="kw">mod </span>context;
+<span class="kw">pub mod </span>dialect;
+<span class="kw">mod </span>error;
+<span class="kw">mod </span>execution_engine;
+<span class="kw">pub mod </span>ir;
+<span class="kw">mod </span>logical_result;
+<span class="kw">pub mod </span>pass;
+<span class="kw">mod </span>string_ref;
+<span class="kw">pub mod </span>utility;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::{
-    <span class="ident">context</span>::{<span class="ident">Context</span>, <span class="ident">ContextRef</span>},
-    <span class="ident">error::Error</span>,
-    <span class="ident">execution_engine::ExecutionEngine</span>,
-    <span class="ident">string_ref::StringRef</span>,
+<span class="kw">pub use </span><span class="self">self</span>::{
+    context::{Context, ContextRef},
+    error::Error,
+    execution_engine::ExecutionEngine,
+    string_ref::StringRef,
 };
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">crate</span>::{
-        <span class="ident">context::Context</span>,
-        <span class="ident">dialect</span>,
-        <span class="ident">ir</span>::{<span class="ident">operation</span>, <span class="ident">Attribute</span>, <span class="ident">Block</span>, <span class="ident">Identifier</span>, <span class="ident">Location</span>, <span class="ident">Module</span>, <span class="ident">Region</span>, <span class="ident">Type</span>},
-        <span class="ident">utility::register_all_dialects</span>,
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use crate</span>::{
+        context::Context,
+        dialect,
+        ir::{operation, Attribute, Block, Identifier, Location, Module, Region, Type},
+        utility::register_all_dialects,
     };
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">build_module</span>() {
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Module::new</span>(<span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>));
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>build_module() {
+        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>module = Module::new(Location::unknown(<span class="kw-2">&amp;</span>context));
 
-        <span class="macro">assert!</span>(<span class="ident">module</span>.<span class="ident">as_operation</span>().<span class="ident">verify</span>());
-        <span class="macro">insta::assert_display_snapshot!</span>(<span class="ident">module</span>.<span class="ident">as_operation</span>());
+        <span class="macro">assert!</span>(module.as_operation().verify());
+        <span class="macro">insta::assert_display_snapshot!</span>(module.as_operation());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">build_module_with_dialect</span>() {
-        <span class="kw">let</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">dialect::Registry::new</span>();
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="ident">context</span>.<span class="ident">append_dialect_registry</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
-        <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Module::new</span>(<span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>));
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>build_module_with_dialect() {
+        <span class="kw">let </span>registry = dialect::Registry::new();
+        <span class="kw">let </span>context = Context::new();
+        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
+        <span class="kw">let </span>module = Module::new(Location::unknown(<span class="kw-2">&amp;</span>context));
 
-        <span class="macro">assert!</span>(<span class="ident">module</span>.<span class="ident">as_operation</span>().<span class="ident">verify</span>());
-        <span class="macro">insta::assert_display_snapshot!</span>(<span class="ident">module</span>.<span class="ident">as_operation</span>());
+        <span class="macro">assert!</span>(module.as_operation().verify());
+        <span class="macro">insta::assert_display_snapshot!</span>(module.as_operation());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">build_add</span>() {
-        <span class="kw">let</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">dialect::Registry::new</span>();
-        <span class="ident">register_all_dialects</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>build_add() {
+        <span class="kw">let </span>registry = dialect::Registry::new();
+        register_all_dialects(<span class="kw-2">&amp;</span>registry);
 
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="ident">context</span>.<span class="ident">append_dialect_registry</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
-        <span class="ident">context</span>.<span class="ident">get_or_load_dialect</span>(<span class="string">&quot;func&quot;</span>);
+        <span class="kw">let </span>context = Context::new();
+        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
+        context.get_or_load_dialect(<span class="string">&quot;func&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">location</span> <span class="op">=</span> <span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
-        <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Module::new</span>(<span class="ident">location</span>);
+        <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>module = Module::new(location);
 
-        <span class="kw">let</span> <span class="ident">integer_type</span> <span class="op">=</span> <span class="ident">Type::integer</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="number">64</span>);
+        <span class="kw">let </span>integer_type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
 
-        <span class="kw">let</span> <span class="ident">function</span> <span class="op">=</span> {
-            <span class="kw">let</span> <span class="ident">region</span> <span class="op">=</span> <span class="ident">Region::new</span>();
-            <span class="kw">let</span> <span class="ident">block</span> <span class="op">=</span> <span class="ident">Block::new</span>(<span class="kw-2">&amp;</span>[(<span class="ident">integer_type</span>, <span class="ident">location</span>), (<span class="ident">integer_type</span>, <span class="ident">location</span>)]);
+        <span class="kw">let </span>function = {
+            <span class="kw">let </span>region = Region::new();
+            <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
 
-            <span class="kw">let</span> <span class="ident">sum</span> <span class="op">=</span> <span class="ident">block</span>.<span class="ident">append_operation</span>(
-                <span class="ident">operation::Builder::new</span>(<span class="string">&quot;arith.addi&quot;</span>, <span class="ident">location</span>)
-                    .<span class="ident">add_operands</span>(<span class="kw-2">&amp;</span>[
-                        <span class="ident">block</span>.<span class="ident">argument</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
-                        <span class="ident">block</span>.<span class="ident">argument</span>(<span class="number">1</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
+            <span class="kw">let </span>sum = block.append_operation(
+                operation::Builder::new(<span class="string">&quot;arith.addi&quot;</span>, location)
+                    .add_operands(<span class="kw-2">&amp;</span>[
+                        block.argument(<span class="number">0</span>).unwrap().into(),
+                        block.argument(<span class="number">1</span>).unwrap().into(),
                     ])
-                    .<span class="ident">add_results</span>(<span class="kw-2">&amp;</span>[<span class="ident">integer_type</span>])
-                    .<span class="ident">build</span>(),
+                    .add_results(<span class="kw-2">&amp;</span>[integer_type])
+                    .build(),
             );
 
-            <span class="ident">block</span>.<span class="ident">append_operation</span>(
-                <span class="ident">operation::Builder::new</span>(<span class="string">&quot;func.return&quot;</span>, <span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>))
-                    .<span class="ident">add_operands</span>(<span class="kw-2">&amp;</span>[<span class="ident">sum</span>.<span class="ident">result</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>()])
-                    .<span class="ident">build</span>(),
+            block.append_operation(
+                operation::Builder::new(<span class="string">&quot;func.return&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
+                    .add_operands(<span class="kw-2">&amp;</span>[sum.result(<span class="number">0</span>).unwrap().into()])
+                    .build(),
             );
 
-            <span class="ident">region</span>.<span class="ident">append_block</span>(<span class="ident">block</span>);
+            region.append_block(block);
 
-            <span class="ident">operation::Builder::new</span>(<span class="string">&quot;func.func&quot;</span>, <span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>))
-                .<span class="ident">add_attributes</span>(<span class="kw-2">&amp;</span>[
+            operation::Builder::new(<span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
+                .add_attributes(<span class="kw-2">&amp;</span>[
                     (
-                        <span class="ident">Identifier::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;function_type&quot;</span>),
-                        <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;(i64, i64) -&gt; i64&quot;</span>).<span class="ident">unwrap</span>(),
+                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;function_type&quot;</span>),
+                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(i64, i64) -&gt; i64&quot;</span>).unwrap(),
                     ),
                     (
-                        <span class="ident">Identifier::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;sym_name&quot;</span>),
-                        <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;\&quot;add\&quot;&quot;</span>).<span class="ident">unwrap</span>(),
+                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;sym_name&quot;</span>),
+                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;add\&quot;&quot;</span>).unwrap(),
                     ),
                 ])
-                .<span class="ident">add_regions</span>(<span class="macro">vec!</span>[<span class="ident">region</span>])
-                .<span class="ident">build</span>()
+                .add_regions(<span class="macro">vec!</span>[region])
+                .build()
         };
 
-        <span class="ident">module</span>.<span class="ident">body</span>().<span class="ident">append_operation</span>(<span class="ident">function</span>);
+        module.body().append_operation(function);
 
-        <span class="macro">assert!</span>(<span class="ident">module</span>.<span class="ident">as_operation</span>().<span class="ident">verify</span>());
-        <span class="macro">insta::assert_display_snapshot!</span>(<span class="ident">module</span>.<span class="ident">as_operation</span>());
+        <span class="macro">assert!</span>(module.as_operation().verify());
+        <span class="macro">insta::assert_display_snapshot!</span>(module.as_operation());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">build_sum</span>() {
-        <span class="kw">let</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">dialect::Registry::new</span>();
-        <span class="ident">register_all_dialects</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>build_sum() {
+        <span class="kw">let </span>registry = dialect::Registry::new();
+        register_all_dialects(<span class="kw-2">&amp;</span>registry);
 
-        <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context::new</span>();
-        <span class="ident">context</span>.<span class="ident">append_dialect_registry</span>(<span class="kw-2">&amp;</span><span class="ident">registry</span>);
-        <span class="ident">context</span>.<span class="ident">get_or_load_dialect</span>(<span class="string">&quot;func&quot;</span>);
-        <span class="ident">context</span>.<span class="ident">get_or_load_dialect</span>(<span class="string">&quot;memref&quot;</span>);
-        <span class="ident">context</span>.<span class="ident">get_or_load_dialect</span>(<span class="string">&quot;scf&quot;</span>);
+        <span class="kw">let </span>context = Context::new();
+        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
+        context.get_or_load_dialect(<span class="string">&quot;func&quot;</span>);
+        context.get_or_load_dialect(<span class="string">&quot;memref&quot;</span>);
+        context.get_or_load_dialect(<span class="string">&quot;scf&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">location</span> <span class="op">=</span> <span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>);
-        <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">Module::new</span>(<span class="ident">location</span>);
+        <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>module = Module::new(location);
 
-        <span class="kw">let</span> <span class="ident">memref_type</span> <span class="op">=</span> <span class="ident">Type::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;memref&lt;?xf32&gt;&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>memref_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;memref&lt;?xf32&gt;&quot;</span>).unwrap();
 
-        <span class="kw">let</span> <span class="ident">function</span> <span class="op">=</span> {
-            <span class="kw">let</span> <span class="ident">function_region</span> <span class="op">=</span> <span class="ident">Region::new</span>();
-            <span class="kw">let</span> <span class="ident">function_block</span> <span class="op">=</span> <span class="ident">Block::new</span>(<span class="kw-2">&amp;</span>[(<span class="ident">memref_type</span>, <span class="ident">location</span>), (<span class="ident">memref_type</span>, <span class="ident">location</span>)]);
-            <span class="kw">let</span> <span class="ident">index_type</span> <span class="op">=</span> <span class="ident">Type::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;index&quot;</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>function = {
+            <span class="kw">let </span>function_region = Region::new();
+            <span class="kw">let </span>function_block = Block::new(<span class="kw-2">&amp;</span>[(memref_type, location), (memref_type, location)]);
+            <span class="kw">let </span>index_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap();
 
-            <span class="kw">let</span> <span class="ident">zero</span> <span class="op">=</span> <span class="ident">function_block</span>.<span class="ident">append_operation</span>(
-                <span class="ident">operation::Builder::new</span>(<span class="string">&quot;arith.constant&quot;</span>, <span class="ident">location</span>)
-                    .<span class="ident">add_results</span>(<span class="kw-2">&amp;</span>[<span class="ident">index_type</span>])
-                    .<span class="ident">add_attributes</span>(<span class="kw-2">&amp;</span>[(
-                        <span class="ident">Identifier::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;value&quot;</span>),
-                        <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;0 : index&quot;</span>).<span class="ident">unwrap</span>(),
+            <span class="kw">let </span>zero = function_block.append_operation(
+                operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+                    .add_results(<span class="kw-2">&amp;</span>[index_type])
+                    .add_attributes(<span class="kw-2">&amp;</span>[(
+                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
+                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;0 : index&quot;</span>).unwrap(),
                     )])
-                    .<span class="ident">build</span>(),
+                    .build(),
             );
 
-            <span class="kw">let</span> <span class="ident">dim</span> <span class="op">=</span> <span class="ident">function_block</span>.<span class="ident">append_operation</span>(
-                <span class="ident">operation::Builder::new</span>(<span class="string">&quot;memref.dim&quot;</span>, <span class="ident">location</span>)
-                    .<span class="ident">add_operands</span>(<span class="kw-2">&amp;</span>[
-                        <span class="ident">function_block</span>.<span class="ident">argument</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
-                        <span class="ident">zero</span>.<span class="ident">result</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
+            <span class="kw">let </span>dim = function_block.append_operation(
+                operation::Builder::new(<span class="string">&quot;memref.dim&quot;</span>, location)
+                    .add_operands(<span class="kw-2">&amp;</span>[
+                        function_block.argument(<span class="number">0</span>).unwrap().into(),
+                        zero.result(<span class="number">0</span>).unwrap().into(),
                     ])
-                    .<span class="ident">add_results</span>(<span class="kw-2">&amp;</span>[<span class="ident">index_type</span>])
-                    .<span class="ident">build</span>(),
+                    .add_results(<span class="kw-2">&amp;</span>[index_type])
+                    .build(),
             );
 
-            <span class="kw">let</span> <span class="ident">loop_block</span> <span class="op">=</span> <span class="ident">Block::new</span>(<span class="kw-2">&amp;</span>[]);
-            <span class="ident">loop_block</span>.<span class="ident">add_argument</span>(<span class="ident">index_type</span>, <span class="ident">location</span>);
+            <span class="kw">let </span>loop_block = Block::new(<span class="kw-2">&amp;</span>[]);
+            loop_block.add_argument(index_type, location);
 
-            <span class="kw">let</span> <span class="ident">one</span> <span class="op">=</span> <span class="ident">function_block</span>.<span class="ident">append_operation</span>(
-                <span class="ident">operation::Builder::new</span>(<span class="string">&quot;arith.constant&quot;</span>, <span class="ident">location</span>)
-                    .<span class="ident">add_results</span>(<span class="kw-2">&amp;</span>[<span class="ident">index_type</span>])
-                    .<span class="ident">add_attributes</span>(<span class="kw-2">&amp;</span>[(
-                        <span class="ident">Identifier::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;value&quot;</span>),
-                        <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;1 : index&quot;</span>).<span class="ident">unwrap</span>(),
+            <span class="kw">let </span>one = function_block.append_operation(
+                operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+                    .add_results(<span class="kw-2">&amp;</span>[index_type])
+                    .add_attributes(<span class="kw-2">&amp;</span>[(
+                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
+                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;1 : index&quot;</span>).unwrap(),
                     )])
-                    .<span class="ident">build</span>(),
+                    .build(),
             );
 
             {
-                <span class="kw">let</span> <span class="ident">f32_type</span> <span class="op">=</span> <span class="ident">Type::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;f32&quot;</span>).<span class="ident">unwrap</span>();
+                <span class="kw">let </span>f32_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;f32&quot;</span>).unwrap();
 
-                <span class="kw">let</span> <span class="ident">lhs</span> <span class="op">=</span> <span class="ident">loop_block</span>.<span class="ident">append_operation</span>(
-                    <span class="ident">operation::Builder::new</span>(<span class="string">&quot;memref.load&quot;</span>, <span class="ident">location</span>)
-                        .<span class="ident">add_operands</span>(<span class="kw-2">&amp;</span>[
-                            <span class="ident">function_block</span>.<span class="ident">argument</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
-                            <span class="ident">loop_block</span>.<span class="ident">argument</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
+                <span class="kw">let </span>lhs = loop_block.append_operation(
+                    operation::Builder::new(<span class="string">&quot;memref.load&quot;</span>, location)
+                        .add_operands(<span class="kw-2">&amp;</span>[
+                            function_block.argument(<span class="number">0</span>).unwrap().into(),
+                            loop_block.argument(<span class="number">0</span>).unwrap().into(),
                         ])
-                        .<span class="ident">add_results</span>(<span class="kw-2">&amp;</span>[<span class="ident">f32_type</span>])
-                        .<span class="ident">build</span>(),
+                        .add_results(<span class="kw-2">&amp;</span>[f32_type])
+                        .build(),
                 );
 
-                <span class="kw">let</span> <span class="ident">rhs</span> <span class="op">=</span> <span class="ident">loop_block</span>.<span class="ident">append_operation</span>(
-                    <span class="ident">operation::Builder::new</span>(<span class="string">&quot;memref.load&quot;</span>, <span class="ident">location</span>)
-                        .<span class="ident">add_operands</span>(<span class="kw-2">&amp;</span>[
-                            <span class="ident">function_block</span>.<span class="ident">argument</span>(<span class="number">1</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
-                            <span class="ident">loop_block</span>.<span class="ident">argument</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
+                <span class="kw">let </span>rhs = loop_block.append_operation(
+                    operation::Builder::new(<span class="string">&quot;memref.load&quot;</span>, location)
+                        .add_operands(<span class="kw-2">&amp;</span>[
+                            function_block.argument(<span class="number">1</span>).unwrap().into(),
+                            loop_block.argument(<span class="number">0</span>).unwrap().into(),
                         ])
-                        .<span class="ident">add_results</span>(<span class="kw-2">&amp;</span>[<span class="ident">f32_type</span>])
-                        .<span class="ident">build</span>(),
+                        .add_results(<span class="kw-2">&amp;</span>[f32_type])
+                        .build(),
                 );
 
-                <span class="kw">let</span> <span class="ident">add</span> <span class="op">=</span> <span class="ident">loop_block</span>.<span class="ident">append_operation</span>(
-                    <span class="ident">operation::Builder::new</span>(<span class="string">&quot;arith.addf&quot;</span>, <span class="ident">location</span>)
-                        .<span class="ident">add_operands</span>(<span class="kw-2">&amp;</span>[
-                            <span class="ident">lhs</span>.<span class="ident">result</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
-                            <span class="ident">rhs</span>.<span class="ident">result</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
+                <span class="kw">let </span>add = loop_block.append_operation(
+                    operation::Builder::new(<span class="string">&quot;arith.addf&quot;</span>, location)
+                        .add_operands(<span class="kw-2">&amp;</span>[
+                            lhs.result(<span class="number">0</span>).unwrap().into(),
+                            rhs.result(<span class="number">0</span>).unwrap().into(),
                         ])
-                        .<span class="ident">add_results</span>(<span class="kw-2">&amp;</span>[<span class="ident">f32_type</span>])
-                        .<span class="ident">build</span>(),
+                        .add_results(<span class="kw-2">&amp;</span>[f32_type])
+                        .build(),
                 );
 
-                <span class="ident">loop_block</span>.<span class="ident">append_operation</span>(
-                    <span class="ident">operation::Builder::new</span>(<span class="string">&quot;memref.store&quot;</span>, <span class="ident">location</span>)
-                        .<span class="ident">add_operands</span>(<span class="kw-2">&amp;</span>[
-                            <span class="ident">add</span>.<span class="ident">result</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
-                            <span class="ident">function_block</span>.<span class="ident">argument</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
-                            <span class="ident">loop_block</span>.<span class="ident">argument</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
+                loop_block.append_operation(
+                    operation::Builder::new(<span class="string">&quot;memref.store&quot;</span>, location)
+                        .add_operands(<span class="kw-2">&amp;</span>[
+                            add.result(<span class="number">0</span>).unwrap().into(),
+                            function_block.argument(<span class="number">0</span>).unwrap().into(),
+                            loop_block.argument(<span class="number">0</span>).unwrap().into(),
                         ])
-                        .<span class="ident">build</span>(),
+                        .build(),
                 );
 
-                <span class="ident">loop_block</span>.<span class="ident">append_operation</span>(<span class="ident">operation::Builder::new</span>(<span class="string">&quot;scf.yield&quot;</span>, <span class="ident">location</span>).<span class="ident">build</span>());
+                loop_block.append_operation(operation::Builder::new(<span class="string">&quot;scf.yield&quot;</span>, location).build());
             }
 
-            <span class="ident">function_block</span>.<span class="ident">append_operation</span>(
+            function_block.append_operation(
                 {
-                    <span class="kw">let</span> <span class="ident">loop_region</span> <span class="op">=</span> <span class="ident">Region::new</span>();
+                    <span class="kw">let </span>loop_region = Region::new();
 
-                    <span class="ident">loop_region</span>.<span class="ident">append_block</span>(<span class="ident">loop_block</span>);
+                    loop_region.append_block(loop_block);
 
-                    <span class="ident">operation::Builder::new</span>(<span class="string">&quot;scf.for&quot;</span>, <span class="ident">location</span>)
-                        .<span class="ident">add_operands</span>(<span class="kw-2">&amp;</span>[
-                            <span class="ident">zero</span>.<span class="ident">result</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
-                            <span class="ident">dim</span>.<span class="ident">result</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
-                            <span class="ident">one</span>.<span class="ident">result</span>(<span class="number">0</span>).<span class="ident">unwrap</span>().<span class="ident">into</span>(),
+                    operation::Builder::new(<span class="string">&quot;scf.for&quot;</span>, location)
+                        .add_operands(<span class="kw-2">&amp;</span>[
+                            zero.result(<span class="number">0</span>).unwrap().into(),
+                            dim.result(<span class="number">0</span>).unwrap().into(),
+                            one.result(<span class="number">0</span>).unwrap().into(),
                         ])
-                        .<span class="ident">add_regions</span>(<span class="macro">vec!</span>[<span class="ident">loop_region</span>])
+                        .add_regions(<span class="macro">vec!</span>[loop_region])
                 }
-                .<span class="ident">build</span>(),
+                .build(),
             );
 
-            <span class="ident">function_block</span>.<span class="ident">append_operation</span>(
-                <span class="ident">operation::Builder::new</span>(<span class="string">&quot;func.return&quot;</span>, <span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>)).<span class="ident">build</span>(),
+            function_block.append_operation(
+                operation::Builder::new(<span class="string">&quot;func.return&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
             );
 
-            <span class="ident">function_region</span>.<span class="ident">append_block</span>(<span class="ident">function_block</span>);
+            function_region.append_block(function_block);
 
-            <span class="ident">operation::Builder::new</span>(<span class="string">&quot;func.func&quot;</span>, <span class="ident">Location::unknown</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>))
-                .<span class="ident">add_attributes</span>(<span class="kw-2">&amp;</span>[
+            operation::Builder::new(<span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
+                .add_attributes(<span class="kw-2">&amp;</span>[
                     (
-                        <span class="ident">Identifier::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;function_type&quot;</span>),
-                        <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;(memref&lt;?xf32&gt;, memref&lt;?xf32&gt;) -&gt; ()&quot;</span>).<span class="ident">unwrap</span>(),
+                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;function_type&quot;</span>),
+                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(memref&lt;?xf32&gt;, memref&lt;?xf32&gt;) -&gt; ()&quot;</span>).unwrap(),
                     ),
                     (
-                        <span class="ident">Identifier::new</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;sym_name&quot;</span>),
-                        <span class="ident">Attribute::parse</span>(<span class="kw-2">&amp;</span><span class="ident">context</span>, <span class="string">&quot;\&quot;sum\&quot;&quot;</span>).<span class="ident">unwrap</span>(),
+                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;sym_name&quot;</span>),
+                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;sum\&quot;&quot;</span>).unwrap(),
                     ),
                 ])
-                .<span class="ident">add_regions</span>(<span class="macro">vec!</span>[<span class="ident">function_region</span>])
-                .<span class="ident">build</span>()
+                .add_regions(<span class="macro">vec!</span>[function_region])
+                .build()
         };
 
-        <span class="ident">module</span>.<span class="ident">body</span>().<span class="ident">append_operation</span>(<span class="ident">function</span>);
+        module.body().append_operation(function);
 
-        <span class="macro">assert!</span>(<span class="ident">module</span>.<span class="ident">as_operation</span>().<span class="ident">verify</span>());
-        <span class="macro">insta::assert_display_snapshot!</span>(<span class="ident">module</span>.<span class="ident">as_operation</span>());
+        <span class="macro">assert!</span>(module.as_operation().verify());
+        <span class="macro">insta::assert_display_snapshot!</span>(module.as_operation());
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

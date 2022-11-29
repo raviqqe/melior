@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/pass/transform.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>transform.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/pass/transform.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>transform.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../melior/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../melior/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -90,97 +90,97 @@
 <span id="90">90</span>
 <span id="91">91</span>
 <span id="92">92</span>
-</pre><pre class="rust"><code><span class="doccomment">//! General transformation passes.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! General transformation passes.
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Pass</span>;
-<span class="kw">use</span> <span class="ident">mlir_sys</span>::{
-    <span class="ident">mlirCreateTransformsCSE</span>, <span class="ident">mlirCreateTransformsCanonicalizer</span>, <span class="ident">mlirCreateTransformsInliner</span>,
-    <span class="ident">mlirCreateTransformsPrintOpStats</span>, <span class="ident">mlirCreateTransformsSCCP</span>, <span class="ident">mlirCreateTransformsStripDebugInfo</span>,
-    <span class="ident">mlirCreateTransformsSymbolDCE</span>, <span class="ident">mlirCreateTransformsSymbolPrivatize</span>, <span class="ident">mlirRegisterTransformsCSE</span>,
-    <span class="ident">mlirRegisterTransformsCanonicalizer</span>, <span class="ident">mlirRegisterTransformsInliner</span>,
-    <span class="ident">mlirRegisterTransformsPrintOpStats</span>, <span class="ident">mlirRegisterTransformsSCCP</span>,
-    <span class="ident">mlirRegisterTransformsStripDebugInfo</span>, <span class="ident">mlirRegisterTransformsSymbolDCE</span>,
-    <span class="ident">mlirRegisterTransformsSymbolPrivatize</span>,
+</span><span class="kw">use </span><span class="kw">super</span>::Pass;
+<span class="kw">use </span>mlir_sys::{
+    mlirCreateTransformsCSE, mlirCreateTransformsCanonicalizer, mlirCreateTransformsInliner,
+    mlirCreateTransformsPrintOpStats, mlirCreateTransformsSCCP, mlirCreateTransformsStripDebugInfo,
+    mlirCreateTransformsSymbolDCE, mlirCreateTransformsSymbolPrivatize, mlirRegisterTransformsCSE,
+    mlirRegisterTransformsCanonicalizer, mlirRegisterTransformsInliner,
+    mlirRegisterTransformsPrintOpStats, mlirRegisterTransformsSCCP,
+    mlirRegisterTransformsStripDebugInfo, mlirRegisterTransformsSymbolDCE,
+    mlirRegisterTransformsSymbolPrivatize,
 };
 
-<span class="doccomment">/// Creates a pass to canonicalize IR.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">canonicalizer</span>() -&gt; <span class="ident">Pass</span> {
-    <span class="ident">Pass::from_raw_fn</span>(<span class="ident">mlirCreateTransformsCanonicalizer</span>)
+<span class="doccomment">/// Creates a pass to canonicalize IR.
+</span><span class="kw">pub fn </span>canonicalizer() -&gt; Pass {
+    Pass::from_raw_fn(mlirCreateTransformsCanonicalizer)
 }
 
-<span class="doccomment">/// Registers a pass to canonicalize IR.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_canonicalizer</span>() {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterTransformsCanonicalizer</span>() }
+<span class="doccomment">/// Registers a pass to canonicalize IR.
+</span><span class="kw">pub fn </span>register_canonicalizer() {
+    <span class="kw">unsafe </span>{ mlirRegisterTransformsCanonicalizer() }
 }
 
-<span class="doccomment">/// Creates a pass to eliminate common sub-expressions.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cse</span>() -&gt; <span class="ident">Pass</span> {
-    <span class="ident">Pass::from_raw_fn</span>(<span class="ident">mlirCreateTransformsCSE</span>)
+<span class="doccomment">/// Creates a pass to eliminate common sub-expressions.
+</span><span class="kw">pub fn </span>cse() -&gt; Pass {
+    Pass::from_raw_fn(mlirCreateTransformsCSE)
 }
 
-<span class="doccomment">/// Registers a pass to print operation stats.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_cse</span>() {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterTransformsCSE</span>() }
+<span class="doccomment">/// Registers a pass to print operation stats.
+</span><span class="kw">pub fn </span>register_cse() {
+    <span class="kw">unsafe </span>{ mlirRegisterTransformsCSE() }
 }
 
-<span class="doccomment">/// Creates a pass to inline function calls.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inliner</span>() -&gt; <span class="ident">Pass</span> {
-    <span class="ident">Pass::from_raw_fn</span>(<span class="ident">mlirCreateTransformsInliner</span>)
+<span class="doccomment">/// Creates a pass to inline function calls.
+</span><span class="kw">pub fn </span>inliner() -&gt; Pass {
+    Pass::from_raw_fn(mlirCreateTransformsInliner)
 }
 
-<span class="doccomment">/// Registers a pass to inline function calls.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_inliner</span>() {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterTransformsInliner</span>() }
+<span class="doccomment">/// Registers a pass to inline function calls.
+</span><span class="kw">pub fn </span>register_inliner() {
+    <span class="kw">unsafe </span>{ mlirRegisterTransformsInliner() }
 }
 
-<span class="doccomment">/// Creates a pass to propagate constants.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sccp</span>() -&gt; <span class="ident">Pass</span> {
-    <span class="ident">Pass::from_raw_fn</span>(<span class="ident">mlirCreateTransformsSCCP</span>)
+<span class="doccomment">/// Creates a pass to propagate constants.
+</span><span class="kw">pub fn </span>sccp() -&gt; Pass {
+    Pass::from_raw_fn(mlirCreateTransformsSCCP)
 }
 
-<span class="doccomment">/// Registers a pass to propagate constants.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_sccp</span>() {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterTransformsSCCP</span>() }
+<span class="doccomment">/// Registers a pass to propagate constants.
+</span><span class="kw">pub fn </span>register_sccp() {
+    <span class="kw">unsafe </span>{ mlirRegisterTransformsSCCP() }
 }
 
-<span class="doccomment">/// Creates a pass to strip debug information.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">strip_debug_info</span>() -&gt; <span class="ident">Pass</span> {
-    <span class="ident">Pass::from_raw_fn</span>(<span class="ident">mlirCreateTransformsStripDebugInfo</span>)
+<span class="doccomment">/// Creates a pass to strip debug information.
+</span><span class="kw">pub fn </span>strip_debug_info() -&gt; Pass {
+    Pass::from_raw_fn(mlirCreateTransformsStripDebugInfo)
 }
 
-<span class="doccomment">/// Registers a pass to strip debug information.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_strip_debug_info</span>() {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterTransformsStripDebugInfo</span>() }
+<span class="doccomment">/// Registers a pass to strip debug information.
+</span><span class="kw">pub fn </span>register_strip_debug_info() {
+    <span class="kw">unsafe </span>{ mlirRegisterTransformsStripDebugInfo() }
 }
 
-<span class="doccomment">/// Creates a pass to eliminate dead symbols.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">symbol_dce</span>() -&gt; <span class="ident">Pass</span> {
-    <span class="ident">Pass::from_raw_fn</span>(<span class="ident">mlirCreateTransformsSymbolDCE</span>)
+<span class="doccomment">/// Creates a pass to eliminate dead symbols.
+</span><span class="kw">pub fn </span>symbol_dce() -&gt; Pass {
+    Pass::from_raw_fn(mlirCreateTransformsSymbolDCE)
 }
 
-<span class="doccomment">/// Registers a pass to eliminate dead symbols.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_symbol_dce</span>() {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterTransformsSymbolDCE</span>() }
+<span class="doccomment">/// Registers a pass to eliminate dead symbols.
+</span><span class="kw">pub fn </span>register_symbol_dce() {
+    <span class="kw">unsafe </span>{ mlirRegisterTransformsSymbolDCE() }
 }
 
-<span class="doccomment">/// Creates a pass to mark all top-level symbols private.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">symbol_privatize</span>() -&gt; <span class="ident">Pass</span> {
-    <span class="ident">Pass::from_raw_fn</span>(<span class="ident">mlirCreateTransformsSymbolPrivatize</span>)
+<span class="doccomment">/// Creates a pass to mark all top-level symbols private.
+</span><span class="kw">pub fn </span>symbol_privatize() -&gt; Pass {
+    Pass::from_raw_fn(mlirCreateTransformsSymbolPrivatize)
 }
 
-<span class="doccomment">/// Registers a pass to mark all top-level symbols private.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_symbol_privatize</span>() {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterTransformsSymbolPrivatize</span>() }
+<span class="doccomment">/// Registers a pass to mark all top-level symbols private.
+</span><span class="kw">pub fn </span>register_symbol_privatize() {
+    <span class="kw">unsafe </span>{ mlirRegisterTransformsSymbolPrivatize() }
 }
 
-<span class="doccomment">/// Creates a pass to print operation statistics.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print_operation_stats</span>() -&gt; <span class="ident">Pass</span> {
-    <span class="ident">Pass::from_raw_fn</span>(<span class="ident">mlirCreateTransformsPrintOpStats</span>)
+<span class="doccomment">/// Creates a pass to print operation statistics.
+</span><span class="kw">pub fn </span>print_operation_stats() -&gt; Pass {
+    Pass::from_raw_fn(mlirCreateTransformsPrintOpStats)
 }
 
-<span class="doccomment">/// Registers a pass to print operation stats.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">register_print_operation_stats</span>() {
-    <span class="kw">unsafe</span> { <span class="ident">mlirRegisterTransformsPrintOpStats</span>() }
+<span class="doccomment">/// Registers a pass to print operation stats.
+</span><span class="kw">pub fn </span>register_print_operation_stats() {
+    <span class="kw">unsafe </span>{ mlirRegisterTransformsPrintOpStats() }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="melior" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>
