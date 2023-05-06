@@ -84,7 +84,6 @@ mod tests {
         ir::{Location, Module},
         pass::{self, transform::register_print_operation_stats},
         utility::{parse_pass_pipeline, register_all_dialects},
-        Error,
     };
     use indoc::indoc;
     use pretty_assertions::assert_eq;
@@ -204,8 +203,7 @@ mod tests {
     fn print_pass_pipeline() {
         let context = Context::new();
         let manager = Manager::new(&context);
-        let module_manager = manager.nested_under("builtin.module");
-        let function_manager = module_manager.nested_under("func.func");
+        let function_manager = manager.nested_under("func.func");
 
         function_manager.add_pass(pass::transform::print_operation_stats());
 
@@ -214,10 +212,9 @@ mod tests {
             "builtin.module(func.func(print-op-stats{json=false}))"
         );
         assert_eq!(
-            module_manager.to_string(),
+            function_manager.to_string(),
             "func.func(print-op-stats{json=false})"
         );
-        assert_eq!(function_manager.to_string(), "print-op-stats{json=false}");
     }
 
     #[test]
@@ -225,14 +222,12 @@ mod tests {
         let context = Context::new();
         let manager = Manager::new(&context);
 
-        assert_eq!(
-            parse_pass_pipeline(
-                manager.as_operation_pass_manager(),
-                "builtin.module(func.func(print-op-stats{json=false}),\
+        insta::assert_display_snapshot!(parse_pass_pipeline(
+            manager.as_operation_pass_manager(),
+            "builtin.module(func.func(print-op-stats{json=false}),\
                 func.func(print-op-stats{json=false}))"
-            ),
-            Err(Error::ParsePassPipeline)
-        );
+        )
+        .unwrap_err());
 
         register_print_operation_stats();
 

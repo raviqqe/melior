@@ -12,7 +12,12 @@ pub struct ExecutionEngine {
 
 impl ExecutionEngine {
     /// Creates an execution engine.
-    pub fn new(module: &Module, optimization_level: usize, shared_library_paths: &[&str]) -> Self {
+    pub fn new(
+        module: &Module,
+        optimization_level: usize,
+        shared_library_paths: &[&str],
+        enable_object_dump: bool,
+    ) -> Self {
         Self {
             raw: unsafe {
                 mlirExecutionEngineCreate(
@@ -24,6 +29,7 @@ impl ExecutionEngine {
                         .map(|&string| StringRef::from(string).to_raw())
                         .collect::<Vec<_>>()
                         .as_ptr(),
+                    enable_object_dump,
                 )
             },
         }
@@ -98,7 +104,7 @@ mod tests {
 
         assert_eq!(pass_manager.run(&mut module), Ok(()));
 
-        let engine = ExecutionEngine::new(&module, 2, &[]);
+        let engine = ExecutionEngine::new(&module, 2, &[], false);
 
         let mut argument = 42;
         let mut result = -1;
