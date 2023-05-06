@@ -247,11 +247,6 @@
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::OperationManager;
 <span class="kw">use crate</span>::{
     context::Context, ir::Module, logical_result::LogicalResult, pass::Pass, string_ref::StringRef,
@@ -338,7 +333,6 @@
         ir::{Location, Module},
         pass::{<span class="self">self</span>, transform::register_print_operation_stats},
         utility::{parse_pass_pipeline, register_all_dialects},
-        Error,
     };
     <span class="kw">use </span>indoc::indoc;
     <span class="kw">use </span>pretty_assertions::assert_eq;
@@ -458,8 +452,7 @@
     </span><span class="kw">fn </span>print_pass_pipeline() {
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
-        <span class="kw">let </span>module_manager = manager.nested_under(<span class="string">&quot;builtin.module&quot;</span>);
-        <span class="kw">let </span>function_manager = module_manager.nested_under(<span class="string">&quot;func.func&quot;</span>);
+        <span class="kw">let </span>function_manager = manager.nested_under(<span class="string">&quot;func.func&quot;</span>);
 
         function_manager.add_pass(pass::transform::print_operation_stats());
 
@@ -468,10 +461,9 @@
             <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}))&quot;
         </span>);
         <span class="macro">assert_eq!</span>(
-            module_manager.to_string(),
+            function_manager.to_string(),
             <span class="string">&quot;func.func(print-op-stats{json=false})&quot;
         </span>);
-        <span class="macro">assert_eq!</span>(function_manager.to_string(), <span class="string">&quot;print-op-stats{json=false}&quot;</span>);
     }
 
     <span class="attr">#[test]
@@ -479,14 +471,12 @@
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
 
-        <span class="macro">assert_eq!</span>(
-            parse_pass_pipeline(
-                manager.as_operation_pass_manager(),
-                <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}),\
+        <span class="macro">insta::assert_display_snapshot!</span>(parse_pass_pipeline(
+            manager.as_operation_pass_manager(),
+            <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}),\
                 func.func(print-op-stats{json=false}))&quot;
-            </span>),
-            <span class="prelude-val">Err</span>(Error::ParsePassPipeline)
-        );
+        </span>)
+        .unwrap_err());
 
         register_print_operation_stats();
 
