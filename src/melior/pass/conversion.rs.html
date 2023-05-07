@@ -42,6 +42,8 @@
 <a href="#42" id="42">42</a>
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Dialect conversion passes.
 
 </span><span class="kw">use </span><span class="kw">super</span>::Pass;
@@ -52,7 +54,9 @@
     mlirCreateConversionConvertMathToSPIRV,
 };
 
-<span class="doccomment">/// Creates a pass to convert the `arith` dialect to the `llvm` dialect.
+<span class="comment">// TODO Unify a naming convention.
+
+</span><span class="doccomment">/// Creates a pass to convert the `arith` dialect to the `llvm` dialect.
 </span><span class="kw">pub fn </span>convert_arithmetic_to_llvm() -&gt; Pass {
     Pass::from_raw_fn(mlirCreateConversionArithToLLVMConversionPass)
 }
