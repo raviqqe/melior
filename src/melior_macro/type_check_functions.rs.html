@@ -38,6 +38,12 @@
 <a href="#38" id="38">38</a>
 <a href="#39" id="39">39</a>
 <a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
 </pre><pre class="rust"><code><span class="kw">use </span>convert_case::{Case, Casing};
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>proc_macro2::Ident;
@@ -45,6 +51,7 @@
 <span class="kw">use </span>std::error::Error;
 
 <span class="kw">const </span>FLOAT_8E5M2_PATTERN: <span class="kw-2">&amp;</span>str = <span class="string">&quot;8_e_5_m_2&quot;</span>;
+<span class="kw">const </span>FLOAT_8E4M3_FN_PATTERN: <span class="kw-2">&amp;</span>str = <span class="string">&quot;8_e_4_m_3&quot;</span>;
 
 <span class="kw">pub fn </span>generate(identifiers: <span class="kw-2">&amp;</span>[Ident]) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>stream = TokenStream::new();
@@ -75,7 +82,12 @@
 <span class="kw">fn </span>map_type_name(name: <span class="kw-2">&amp;</span>str) -&gt; String {
     <span class="kw">match </span>name {
         <span class="string">&quot;bf_16&quot; </span>| <span class="string">&quot;f_16&quot; </span>| <span class="string">&quot;f_32&quot; </span>| <span class="string">&quot;f_64&quot; </span>=&gt; name.replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot;&quot;</span>),
-        name =&gt; name.replace(FLOAT_8E5M2_PATTERN, <span class="kw-2">&amp;</span>FLOAT_8E5M2_PATTERN.replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot;&quot;</span>)),
+        name =&gt; name
+            .replace(FLOAT_8E5M2_PATTERN, <span class="kw-2">&amp;</span>FLOAT_8E5M2_PATTERN.replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot;&quot;</span>))
+            .replace(
+                FLOAT_8E4M3_FN_PATTERN,
+                <span class="kw-2">&amp;</span>FLOAT_8E4M3_FN_PATTERN.replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot;&quot;</span>),
+            ),
     }
 }
 </code></pre></div>
