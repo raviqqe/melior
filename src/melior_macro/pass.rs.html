@@ -77,7 +77,7 @@
         );
 
         <span class="kw">let </span>function_name = Ident::new(<span class="kw-2">&amp;</span>name.to_case(Case::Snake), identifier.span());
-        <span class="kw">let </span>document = <span class="macro">format!</span>(<span class="string">&quot; Creates a pass of `{}`.&quot;</span>, name);
+        <span class="kw">let </span>document = <span class="macro">format!</span>(<span class="string">&quot; Creates a `{}` pass.&quot;</span>, name);
 
         stream.extend(TokenStream::from(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #document]
@@ -98,7 +98,7 @@
             <span class="kw-2">&amp;</span>(<span class="string">&quot;register_&quot;</span>.to_owned() + <span class="kw-2">&amp;</span>name.to_case(Case::Snake)),
             identifier.span(),
         );
-        <span class="kw">let </span>document = <span class="macro">format!</span>(<span class="string">&quot; Registers a pass of `{}`.&quot;</span>, name);
+        <span class="kw">let </span>document = <span class="macro">format!</span>(<span class="string">&quot; Registers a `{}` pass.&quot;</span>, name);
 
         stream.extend(TokenStream::from(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #document]
