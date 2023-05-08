@@ -1,8 +1,12 @@
 //! Passes and pass managers.
 
+pub mod r#async;
 pub mod conversion;
+pub mod gpu;
+pub mod linalg;
 mod manager;
 mod operation_manager;
+pub mod sparse_tensor;
 pub mod transform;
 
 pub use self::{manager::Manager, operation_manager::OperationManager};
