@@ -1,0 +1,5 @@
+[workspace]
+members = ["melior"]
+
+[profile.release]
+lto = true
