@@ -1,6 +1,6 @@
-//! Dialect conversion passes.
+//! Linalg passes.
 
-melior_macro::conversion_passes!(
+melior_macro::linalg_passes!(
     mlirCreateLinalgConvertElementwiseToLinalg,
     mlirCreateLinalgLinalgBufferize,
     mlirCreateLinalgLinalgDetensorize,

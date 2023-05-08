@@ -1,46 +1,86 @@
-use crate::ir::{operation::Builder, Location, Operation, Value};
+//! `arith` dialect
 
-/// Create a `arith.addi` operation.
-pub fn addi<'c>(lhs: Value, rhs: Value, location: Location<'c>) -> Operation<'c> {
-    binary_operator("arith.addi", lhs, rhs, location)
-}
+// spell-checker: disable
 
-pub fn subi<'c>(lhs: Value, rhs: Value, location: Location<'c>) -> Operation<'c> {
-    binary_operator("arith.subi", lhs, rhs, location)
-}
+melior_macro::arith_binary_operators!(
+    addf,
+    addi,
+    addui_extended,
+    andi,
+    ceildivsi,
+    ceildivui,
+    divf,
+    divsi,
+    divui,
+    floordivsi,
+    maxf,
+    maxsi,
+    maxui,
+    minf,
+    minsi,
+    minui,
+    mulf,
+    muli,
+    mulsi_extended,
+    mului_extended,
+    ori,
+    remf,
+    remsi,
+    remui,
+    shli,
+    shrsi,
+    shrui,
+    subf,
+    subi,
+    xori,
+);
 
-pub fn muli<'c>(lhs: Value, rhs: Value, location: Location<'c>) -> Operation<'c> {
-    binary_operator("arith.muli", lhs, rhs, location)
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        dialect::func,
+        ir::{Attribute, Block, Location, Module, Region, Type},
+        test::load_all_dialects,
+        Context,
+    };
 
-pub fn divi<'c>(lhs: Value, rhs: Value, location: Location<'c>) -> Operation<'c> {
-    binary_operator("arith.divi", lhs, rhs, location)
-}
+    #[test]
+    fn run_on_function_in_nested_module() {
+        let context = Context::new();
+        load_all_dialects(&context);
 
-pub fn addf<'c>(lhs: Value, rhs: Value, location: Location<'c>) -> Operation<'c> {
-    binary_operator("arith.addf", lhs, rhs, location)
-}
+        let location = Location::unknown(&context);
+        let module = Module::new(location);
 
-pub fn subf<'c>(lhs: Value, rhs: Value, location: Location<'c>) -> Operation<'c> {
-    binary_operator("arith.subf", lhs, rhs, location)
-}
+        let integer_type = Type::integer(&context, 64);
 
-pub fn mulf<'c>(lhs: Value, rhs: Value, location: Location<'c>) -> Operation<'c> {
-    binary_operator("arith.mulf", lhs, rhs, location)
-}
+        let function = {
+            let region = Region::new();
+            let block = Block::new(&[(integer_type, location), (integer_type, location)]);
 
-pub fn divf<'c>(lhs: Value, rhs: Value, location: Location<'c>) -> Operation<'c> {
-    binary_operator("arith.divf", lhs, rhs, location)
-}
+            let sum = block.append_operation(addi(
+                block.argument(0).unwrap().into(),
+                block.argument(1).unwrap().into(),
+                location,
+            ));
 
-fn binary_operator<'c>(
-    name: &str,
-    lhs: Value,
-    rhs: Value,
-    location: Location<'c>,
-) -> Operation<'c> {
-    Builder::new(name, location)
-        .add_operands(&[lhs, rhs])
-        .enable_result_type_inference()
-        .build()
+            block.append_operation(func::r#return(&[sum.result(0).unwrap().into()], location));
+
+            region.append_block(block);
+
+            func::func(
+                &context,
+                Attribute::parse(&context, "\"add\"").unwrap(),
+                Attribute::parse(&context, "(i64, i64) -> i64").unwrap(),
+                region,
+                Location::unknown(&context),
+            )
+        };
+
+        module.body().append_operation(function);
+
+        assert!(module.as_operation().verify());
+        insta::assert_display_snapshot!(module.as_operation());
+    }
 }

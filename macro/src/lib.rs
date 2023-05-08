@@ -1,3 +1,4 @@
+mod arith;
 mod parse;
 mod pass;
 mod type_check_functions;
@@ -7,6 +8,13 @@ use proc_macro::TokenStream;
 use quote::quote;
 use std::error::Error;
 use syn::parse_macro_input;
+
+#[proc_macro]
+pub fn arith_binary_operators(stream: TokenStream) -> TokenStream {
+    let identifiers = parse_macro_input!(stream as IdentifierList);
+
+    convert_result(arith::generate_binary_operators(identifiers.identifiers()))
+}
 
 #[proc_macro]
 pub fn type_check_functions(stream: TokenStream) -> TokenStream {
@@ -20,7 +28,7 @@ pub fn async_passes(stream: TokenStream) -> TokenStream {
     let identifiers = parse_macro_input!(stream as IdentifierList);
 
     convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix("Async").unwrap_or(name).into()
+        name.strip_prefix("Async").unwrap().into()
     }))
 }
 
@@ -29,7 +37,7 @@ pub fn conversion_passes(stream: TokenStream) -> TokenStream {
     let identifiers = parse_macro_input!(stream as IdentifierList);
 
     convert_result(pass::generate(identifiers.identifiers(), |mut name| {
-        name = name.strip_prefix("Conversion").unwrap_or(name);
+        name = name.strip_prefix("Conversion").unwrap();
         name = name.strip_prefix("Convert").unwrap_or(name);
         name.strip_suffix("ConversionPass").unwrap_or(name).into()
     }))
@@ -40,7 +48,7 @@ pub fn gpu_passes(stream: TokenStream) -> TokenStream {
     let identifiers = parse_macro_input!(stream as IdentifierList);
 
     convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix("GPU").unwrap_or(name).into()
+        name.strip_prefix("GPU").unwrap().into()
     }))
 }
 
@@ -49,7 +57,7 @@ pub fn transform_passes(stream: TokenStream) -> TokenStream {
     let identifiers = parse_macro_input!(stream as IdentifierList);
 
     convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix("Transforms").unwrap_or(name).into()
+        name.strip_prefix("Transforms").unwrap().into()
     }))
 }
 
@@ -58,7 +66,7 @@ pub fn linalg_passes(stream: TokenStream) -> TokenStream {
     let identifiers = parse_macro_input!(stream as IdentifierList);
 
     convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix("Linalg").unwrap_or(name).into()
+        name.strip_prefix("Linalg").unwrap().into()
     }))
 }
 
@@ -67,7 +75,7 @@ pub fn sparse_tensor_passes(stream: TokenStream) -> TokenStream {
     let identifiers = parse_macro_input!(stream as IdentifierList);
 
     convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix("SparseTensor").unwrap_or(name).into()
+        name.strip_prefix("SparseTensor").unwrap().into()
     }))
 }
 
