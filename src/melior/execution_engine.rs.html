@@ -224,7 +224,7 @@
         .unwrap();
 
         <span class="kw">let </span>pass_manager = pass::Manager::new(<span class="kw-2">&amp;</span>context);
-        pass_manager.add_pass(pass::conversion::convert_func_to_llvm());
+        pass_manager.add_pass(pass::conversion::func_to_llvm());
 
         pass_manager
             .nested_under(<span class="string">&quot;func.func&quot;</span>)

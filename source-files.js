@@ -1,7 +1,7 @@
 var sourcesIndex = JSON.parse('{\
 "convert_case":["",[],["case.rs","converter.rs","lib.rs","pattern.rs","segmentation.rs"]],\
 "melior":["",[["dialect",[["llvm",[],["type.rs"]]],["arith.rs","func.rs","handle.rs","llvm.rs","registry.rs"]],["ir",[["block",[],["argument.rs"]],["operation",[],["builder.rs","result.rs"]],["type",[["id",[],["allocator.rs"]]],["function.rs","id.rs","mem_ref.rs","tuple.rs","type_like.rs"]],["value",[],["value_like.rs"]]],["affine_map.rs","attribute.rs","block.rs","identifier.rs","location.rs","module.rs","operation.rs","region.rs","type.rs","value.rs"]],["pass",[],["conversion.rs","manager.rs","operation_manager.rs","transform.rs"]]],["context.rs","dialect.rs","error.rs","execution_engine.rs","ir.rs","lib.rs","logical_result.rs","pass.rs","string_ref.rs","utility.rs"]],\
-"melior_macro":["",[],["conversion_passes.rs","lib.rs","parse.rs","type_check_functions.rs"]],\
+"melior_macro":["",[],["lib.rs","parse.rs","pass.rs","type_check_functions.rs"]],\
 "mlir_sys":["",[],["lib.rs"]],\
 "once_cell":["",[],["imp_std.rs","lib.rs","race.rs"]],\
 "proc_macro2":["",[],["detection.rs","extra.rs","fallback.rs","lib.rs","marker.rs","parse.rs","rcvec.rs","wrapper.rs"]],\

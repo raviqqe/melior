@@ -331,7 +331,7 @@
     <span class="kw">use crate</span>::{
         dialect,
         ir::{Location, Module},
-        pass::{<span class="self">self</span>, transform::register_print_operation_stats},
+        pass::{<span class="self">self</span>, transform::register_print_op_stats},
         utility::{parse_pass_pipeline, register_all_dialects},
     };
     <span class="kw">use </span>indoc::indoc;
@@ -354,7 +354,7 @@
     </span><span class="kw">fn </span>add_pass() {
         <span class="kw">let </span>context = Context::new();
 
-        Manager::new(<span class="kw-2">&amp;</span>context).add_pass(pass::conversion::convert_func_to_llvm());
+        Manager::new(<span class="kw-2">&amp;</span>context).add_pass(pass::conversion::func_to_llvm());
     }
 
     <span class="attr">#[test]
@@ -377,7 +377,7 @@
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
 
-        manager.add_pass(pass::conversion::convert_func_to_llvm());
+        manager.add_pass(pass::conversion::func_to_llvm());
         manager
             .run(<span class="kw-2">&amp;mut </span>Module::new(Location::unknown(<span class="kw-2">&amp;</span>context)))
             .unwrap();
@@ -402,7 +402,7 @@
         .unwrap();
 
         <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
-        manager.add_pass(pass::transform::print_operation_stats());
+        manager.add_pass(pass::transform::print_op_stats());
 
         <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
     }
@@ -435,7 +435,7 @@
         <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
         manager
             .nested_under(<span class="string">&quot;func.func&quot;</span>)
-            .add_pass(pass::transform::print_operation_stats());
+            .add_pass(pass::transform::print_op_stats());
 
         <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
 
@@ -443,7 +443,7 @@
         manager
             .nested_under(<span class="string">&quot;builtin.module&quot;</span>)
             .nested_under(<span class="string">&quot;func.func&quot;</span>)
-            .add_pass(pass::transform::print_operation_stats());
+            .add_pass(pass::transform::print_op_stats());
 
         <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
     }
@@ -454,7 +454,7 @@
         <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>function_manager = manager.nested_under(<span class="string">&quot;func.func&quot;</span>);
 
-        function_manager.add_pass(pass::transform::print_operation_stats());
+        function_manager.add_pass(pass::transform::print_op_stats());
 
         <span class="macro">assert_eq!</span>(
             manager.as_operation_pass_manager().to_string(),
@@ -478,7 +478,7 @@
         </span>)
         .unwrap_err());
 
-        register_print_operation_stats();
+        register_print_op_stats();
 
         <span class="macro">assert_eq!</span>(
             parse_pass_pipeline(
