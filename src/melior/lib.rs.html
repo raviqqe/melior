@@ -334,14 +334,6 @@
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
 <a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
-<a href="#342" id="342">342</a>
-<a href="#343" id="343">343</a>
-<a href="#344" id="344">344</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Melior is the rustic MLIR bindings for Rust. It aims to provide a simple,
 //! safe, and complete API for MLIR with a reasonably sane ownership model
 //! represented by the type system in Rust.
@@ -447,6 +439,8 @@
 <span class="kw">mod </span>logical_result;
 <span class="kw">pub mod </span>pass;
 <span class="kw">mod </span>string_ref;
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>test;
 <span class="kw">pub mod </span>utility;
 
 <span class="kw">pub use </span><span class="self">self</span>::{
@@ -462,7 +456,7 @@
         context::Context,
         dialect,
         ir::{operation, Attribute, Block, Identifier, Location, Module, Region, Type},
-        utility::register_all_dialects,
+        test::load_all_dialects,
     };
 
     <span class="attr">#[test]
@@ -487,12 +481,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>build_add() {
-        <span class="kw">let </span>registry = dialect::Registry::new();
-        register_all_dialects(<span class="kw-2">&amp;</span>registry);
-
         <span class="kw">let </span>context = Context::new();
-        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
-        context.get_or_load_dialect(<span class="string">&quot;func&quot;</span>);
+        load_all_dialects(<span class="kw-2">&amp;</span>context);
 
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>module = Module::new(location);
@@ -544,14 +534,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>build_sum() {
-        <span class="kw">let </span>registry = dialect::Registry::new();
-        register_all_dialects(<span class="kw-2">&amp;</span>registry);
-
         <span class="kw">let </span>context = Context::new();
-        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
-        context.get_or_load_dialect(<span class="string">&quot;func&quot;</span>);
-        context.get_or_load_dialect(<span class="string">&quot;memref&quot;</span>);
-        context.get_or_load_dialect(<span class="string">&quot;scf&quot;</span>);
+        load_all_dialects(<span class="kw-2">&amp;</span>context);
 
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>module = Module::new(location);

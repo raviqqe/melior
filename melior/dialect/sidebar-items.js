@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["llvm"],"struct":["Dialect","Handle","Registry"]};
+window.SIDEBAR_ITEMS = {"mod":["arith","func","llvm"],"struct":["Dialect","Handle","Registry"]};

@@ -194,10 +194,6 @@
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
 <a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{
     context::Context,
     ir::{Attribute, Block, Identifier, Location, Region, Type, TypeLike, Value, ValueLike},
@@ -326,7 +322,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use crate</span>::{context::Context, dialect, ir::Block, utility::register_all_dialects};
+    <span class="kw">use crate</span>::{context::Context, ir::Block, test::load_all_dialects};
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>new() {
@@ -374,12 +370,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>enable_result_type_inference() {
-        <span class="kw">let </span>registry = dialect::Registry::new();
-        register_all_dialects(<span class="kw-2">&amp;</span>registry);
-
         <span class="kw">let </span>context = Context::new();
-        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
-        context.load_all_available_dialects();
+        load_all_dialects(<span class="kw-2">&amp;</span>context);
 
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>r#type = Type::index(<span class="kw-2">&amp;</span>context);

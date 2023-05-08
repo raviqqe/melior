@@ -498,11 +498,6 @@
 <a href="#498" id="498">498</a>
 <a href="#499" id="499">499</a>
 <a href="#500" id="500">500</a>
-<a href="#501" id="501">501</a>
-<a href="#502" id="502">502</a>
-<a href="#503" id="503">503</a>
-<a href="#504" id="504">504</a>
-<a href="#505" id="505">505</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Blocks.
 
 </span><span class="kw">mod </span>argument;
@@ -798,9 +793,8 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
-        dialect,
         ir::{operation, Module, Region, ValueLike},
-        utility::register_all_dialects,
+        test::load_all_dialects,
     };
     <span class="kw">use </span>pretty_assertions::assert_eq;
 
@@ -871,12 +865,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>terminator() {
-        <span class="kw">let </span>registry = dialect::Registry::new();
-        register_all_dialects(<span class="kw-2">&amp;</span>registry);
-
         <span class="kw">let </span>context = Context::new();
-        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
-        context.load_all_available_dialects();
+        load_all_dialects(<span class="kw-2">&amp;</span>context);
 
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
