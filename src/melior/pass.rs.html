@@ -24,6 +24,10 @@
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
 <a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Passes and pass managers.
 
 </span><span class="kw">pub mod </span>conversion;
@@ -48,6 +52,10 @@
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirPass {
         <span class="self">self</span>.raw
+    }
+
+    <span class="kw">pub fn </span>__private_from_raw_fn(create_raw: <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>() -&gt; MlirPass) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::from_raw_fn(create_raw)
     }
 }
 </code></pre></div>
