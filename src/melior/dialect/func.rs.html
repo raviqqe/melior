@@ -71,12 +71,9 @@
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-</pre><pre class="rust"><code><span class="kw">use crate</span>::{
+</pre><pre class="rust"><code><span class="doccomment">//! `func` dialect
+
+</span><span class="kw">use crate</span>::{
     ir::{operation::Builder, Attribute, Identifier, Location, Operation, Region, Value},
     Context,
 };
@@ -109,7 +106,6 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
-        dialect::arith::addi,
         ir::{Attribute, Block, Module, Type},
         test::load_all_dialects,
         Context,
@@ -127,22 +123,16 @@
 
         <span class="kw">let </span>function = {
             <span class="kw">let </span>region = Region::new();
-            <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
+            <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location)]);
 
-            <span class="kw">let </span>sum = block.append_operation(addi(
-                block.argument(<span class="number">0</span>).unwrap().into(),
-                block.argument(<span class="number">1</span>).unwrap().into(),
-                location,
-            ));
-
-            block.append_operation(r#return(<span class="kw-2">&amp;</span>[sum.result(<span class="number">0</span>).unwrap().into()], location));
+            block.append_operation(r#return(<span class="kw-2">&amp;</span>[block.argument(<span class="number">0</span>).unwrap().into()], location));
 
             region.append_block(block);
 
             func(
                 <span class="kw-2">&amp;</span>context,
                 Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;add\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(i64, i64) -&gt; i64&quot;</span>).unwrap(),
+                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(i64) -&gt; i64&quot;</span>).unwrap(),
                 region,
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )

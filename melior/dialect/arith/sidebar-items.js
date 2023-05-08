@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["addf","addi","divf","divi","mulf","muli","subf","subi"]};
+window.SIDEBAR_ITEMS = {"fn":["addf","addi","addui_extended","andi","ceildivsi","ceildivui","divf","divsi","divui","floordivsi","maxf","maxsi","maxui","minf","minsi","minui","mulf","muli","mulsi_extended","mului_extended","ori","remf","remsi","remui","shli","shrsi","shrui","subf","subi","xori"]};
