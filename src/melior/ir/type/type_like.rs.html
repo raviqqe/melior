@@ -137,28 +137,10 @@
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Id;
 <span class="kw">use </span><span class="kw">crate</span>::context::ContextRef;
 <span class="kw">use </span>mlir_sys::{
-    mlirIntegerTypeGetWidth, mlirTypeDump, mlirTypeGetContext, mlirTypeGetTypeID, mlirTypeIsABF16,
-    mlirTypeIsAF16, mlirTypeIsAF32, mlirTypeIsAF64, mlirTypeIsAFunction, mlirTypeIsAIndex,
-    mlirTypeIsAInteger, mlirTypeIsAMemRef, mlirTypeIsATuple, mlirTypeIsAVector, MlirType,
+    mlirIntegerTypeGetWidth, mlirTypeDump, mlirTypeGetContext, mlirTypeGetTypeID, MlirType,
 };
 
 <span class="doccomment">/// Trait for type-like types.
@@ -176,11 +158,6 @@
         <span class="kw">unsafe </span>{ Id::from_raw(mlirTypeGetTypeID(<span class="self">self</span>.to_raw())) }
     }
 
-    <span class="doccomment">/// Returns `true` if a type is integer.
-    </span><span class="kw">fn </span>is_integer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsAInteger(<span class="self">self</span>.to_raw()) }
-    }
-
     <span class="doccomment">/// Gets a bit width of an integer type.
     </span><span class="kw">fn </span>get_width(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
         <span class="kw">if </span><span class="self">self</span>.is_integer() {
@@ -190,55 +167,46 @@
         </span>}
     }
 
-    <span class="doccomment">/// Returns `true` if a type is index.
-    </span><span class="kw">fn </span>is_index(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsAIndex(<span class="self">self</span>.to_raw()) }
-    }
-
-    <span class="doccomment">/// Returns `true` if a type is bfloat16.
-    </span><span class="kw">fn </span>is_bfloat16(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsABF16(<span class="self">self</span>.to_raw()) }
-    }
-
-    <span class="doccomment">/// Returns `true` if a type is float16.
-    </span><span class="kw">fn </span>is_float16(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsAF16(<span class="self">self</span>.to_raw()) }
-    }
-
-    <span class="doccomment">/// Returns `true` if a type is float32.
-    </span><span class="kw">fn </span>is_float32(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsAF32(<span class="self">self</span>.to_raw()) }
-    }
-
-    <span class="doccomment">/// Returns `true` if a type is float64.
-    </span><span class="kw">fn </span>is_float64(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsAF64(<span class="self">self</span>.to_raw()) }
-    }
-
-    <span class="doccomment">/// Returns `true` if a type is a function.
-    </span><span class="kw">fn </span>is_function(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsAFunction(<span class="self">self</span>.to_raw()) }
-    }
-
-    <span class="doccomment">/// Returns `true` if a type is a memory reference.
-    </span><span class="kw">fn </span>is_mem_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsAMemRef(<span class="self">self</span>.to_raw()) }
-    }
-
-    <span class="doccomment">/// Returns `true` if a type is a tuple.
-    </span><span class="kw">fn </span>is_tuple(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsATuple(<span class="self">self</span>.to_raw()) }
-    }
-
-    <span class="doccomment">/// Returns `true` if a type is a vector.
-    </span><span class="kw">fn </span>is_vector(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirTypeIsAVector(<span class="self">self</span>.to_raw()) }
-    }
-
     <span class="doccomment">/// Dumps a type.
     </span><span class="kw">fn </span>dump(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">unsafe </span>{ mlirTypeDump(<span class="self">self</span>.to_raw()) }
     }
+
+    <span class="macro">melior_macro::type_check_functions!</span>(
+        mlirTypeIsAAnyQuantizedType,
+        mlirTypeIsABF16,
+        mlirTypeIsACalibratedQuantizedType,
+        mlirTypeIsAComplex,
+        mlirTypeIsAF16,
+        mlirTypeIsAF32,
+        mlirTypeIsAF64,
+        mlirTypeIsAFloat8E4M3FN,
+        mlirTypeIsAFloat8E5M2,
+        mlirTypeIsAFunction,
+        mlirTypeIsAIndex,
+        mlirTypeIsAInteger,
+        mlirTypeIsAMemRef,
+        mlirTypeIsANone,
+        mlirTypeIsAOpaque,
+        mlirTypeIsAPDLAttributeType,
+        mlirTypeIsAPDLOperationType,
+        mlirTypeIsAPDLRangeType,
+        mlirTypeIsAPDLType,
+        mlirTypeIsAPDLTypeType,
+        mlirTypeIsAPDLValueType,
+        mlirTypeIsAQuantizedType,
+        mlirTypeIsARankedTensor,
+        mlirTypeIsAShaped,
+        mlirTypeIsATensor,
+        mlirTypeIsATransformAnyOpType,
+        mlirTypeIsATransformOperationType,
+        mlirTypeIsATuple,
+        mlirTypeIsAUniformQuantizedPerAxisType,
+        mlirTypeIsAUniformQuantizedType,
+        mlirTypeIsAUnrankedMemRef,
+        mlirTypeIsAUnrankedTensor,
+        mlirTypeIsAVector,
+    );
 }
 
 <span class="attr">#[cfg(test)]

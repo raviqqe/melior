@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["conversion_passes"]};
+window.SIDEBAR_ITEMS = {"macro":["conversion_passes","type_check_functions"]};
