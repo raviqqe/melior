@@ -43,9 +43,11 @@
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
 <a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::ir::{operation::Builder, Location, Operation, Value};
 
-<span class="kw">pub fn </span>addi&lt;<span class="lifetime">&#39;c</span>&gt;(lhs: Value, rhs: Value, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="doccomment">/// Create a `arith.addi` operation.
+</span><span class="kw">pub fn </span>addi&lt;<span class="lifetime">&#39;c</span>&gt;(lhs: Value, rhs: Value, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     binary_operator(<span class="string">&quot;arith.addi&quot;</span>, lhs, rhs, location)
 }
 

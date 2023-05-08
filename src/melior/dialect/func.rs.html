@@ -74,12 +74,15 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{
     ir::{operation::Builder, Attribute, Identifier, Location, Operation, Region, Value},
     Context,
 };
 
-<span class="kw">pub fn </span>func&lt;<span class="lifetime">&#39;c</span>&gt;(
+<span class="doccomment">/// Create a `func.func` operation.
+</span><span class="kw">pub fn </span>func&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     name: Attribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     r#type: Attribute&lt;<span class="lifetime">&#39;c</span>&gt;,
@@ -95,7 +98,8 @@
         .build()
 }
 
-<span class="kw">pub fn </span>r#return&lt;<span class="lifetime">&#39;c</span>&gt;(operands: <span class="kw-2">&amp;</span>[Value], location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="doccomment">/// Create a `func.return` operation.
+</span><span class="kw">pub fn </span>r#return&lt;<span class="lifetime">&#39;c</span>&gt;(operands: <span class="kw-2">&amp;</span>[Value], location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     Builder::new(<span class="string">&quot;func.return&quot;</span>, location)
         .add_operands(operands)
         .build()
