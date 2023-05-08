@@ -23,4 +23,8 @@ impl Pass {
     pub(crate) unsafe fn to_raw(&self) -> MlirPass {
         self.raw
     }
+
+    pub fn __private_from_raw_fn(create_raw: unsafe extern "C" fn() -> MlirPass) -> Self {
+        Self::from_raw_fn(create_raw)
+    }
 }
