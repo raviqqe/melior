@@ -28,6 +28,7 @@
 <a href="#28" id="28">28</a>
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Passes and pass managers.
 
 </span><span class="kw">pub mod </span>conversion;
@@ -54,7 +55,8 @@
         <span class="self">self</span>.raw
     }
 
-    <span class="kw">pub fn </span>__private_from_raw_fn(create_raw: <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>() -&gt; MlirPass) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[doc(hidden)]
+    </span><span class="kw">pub fn </span>__private_from_raw_fn(create_raw: <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>() -&gt; MlirPass) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from_raw_fn(create_raw)
     }
 }
