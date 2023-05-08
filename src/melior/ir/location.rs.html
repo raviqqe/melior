@@ -211,7 +211,7 @@
     }
 
     <span class="doccomment">/// Creates a fused location.
-    </span><span class="kw">pub fn </span>fused(context: <span class="kw-2">&amp;</span>Context, locations: <span class="kw-2">&amp;</span>[<span class="self">Self</span>], attribute: Attribute) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>fused(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, locations: <span class="kw-2">&amp;</span>[<span class="self">Self</span>], attribute: Attribute) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_raw(mlirLocationFusedGet(
                 context.to_raw(),
@@ -223,7 +223,7 @@
     }
 
     <span class="doccomment">/// Creates a name location.
-    </span><span class="kw">pub fn </span>name(context: <span class="kw-2">&amp;</span>Context, name: <span class="kw-2">&amp;</span>str, child: Location) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>name(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, name: <span class="kw-2">&amp;</span>str, child: Location) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_raw(mlirLocationNameGet(
                 context.to_raw(),
@@ -234,7 +234,7 @@
     }
 
     <span class="doccomment">/// Creates an unknown location.
-    </span><span class="kw">pub fn </span>unknown(context: <span class="kw-2">&amp;</span>Context) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>unknown(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirLocationUnknownGet(context.to_raw())) }
     }
 
