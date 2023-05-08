@@ -27,21 +27,36 @@
 <a href="#27" id="27">27</a>
 <a href="#28" id="28">28</a>
 <a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
 </pre><pre class="rust"><code><span class="kw">use </span>convert_case::{Case, Casing};
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>proc_macro2::Ident;
 <span class="kw">use </span>quote::quote;
 <span class="kw">use </span>std::error::Error;
 
+<span class="kw">const </span>FLOAT_8E5M2_PATTERN: <span class="kw-2">&amp;</span>str = <span class="string">&quot;8_e_5_m_2&quot;</span>;
+
 <span class="kw">pub fn </span>generate(identifiers: <span class="kw-2">&amp;</span>[Ident]) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>stream = TokenStream::new();
 
     <span class="kw">for </span>identifier <span class="kw">in </span>identifiers {
-        <span class="kw">let </span>name = identifier
-            .to_string()
-            .strip_prefix(<span class="string">&quot;mlirTypeIsA&quot;</span>)
-            .unwrap()
-            .to_case(Case::Snake);
+        <span class="kw">let </span>name = map_type_name(
+            <span class="kw-2">&amp;</span>identifier
+                .to_string()
+                .strip_prefix(<span class="string">&quot;mlirTypeIsA&quot;</span>)
+                .unwrap()
+                .to_case(Case::Snake),
+        );
 
         <span class="kw">let </span>function_name = Ident::new(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;is_{}&quot;</span>, <span class="kw-2">&amp;</span>name), identifier.span());
         <span class="kw">let </span>document = <span class="macro">format!</span>(<span class="string">&quot; Returns `true` if a type is `{}`.&quot;</span>, name);
@@ -55,6 +70,13 @@
     }
 
     <span class="prelude-val">Ok</span>(stream)
+}
+
+<span class="kw">fn </span>map_type_name(name: <span class="kw-2">&amp;</span>str) -&gt; String {
+    <span class="kw">match </span>name {
+        <span class="string">&quot;bf_16&quot; </span>| <span class="string">&quot;f_16&quot; </span>| <span class="string">&quot;f_32&quot; </span>| <span class="string">&quot;f_64&quot; </span>=&gt; name.replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot;&quot;</span>),
+        name =&gt; name.replace(FLOAT_8E5M2_PATTERN, <span class="kw-2">&amp;</span>FLOAT_8E5M2_PATTERN.replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot;&quot;</span>)),
+    }
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="melior_macro" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
