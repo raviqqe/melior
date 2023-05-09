@@ -65,7 +65,7 @@
 <a href="#65" id="65">65</a>
 </pre><pre class="rust"><code><span class="kw">use super</span>::{Attribute, AttributeLike};
 <span class="kw">use crate</span>::{
-    ir::{Type, TypeLike},
+    ir::{r#type, TypeLike},
     Context, Error,
 };
 <span class="kw">use </span>mlir_sys::{mlirIntegerAttrGet, MlirAttribute};
@@ -84,7 +84,7 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Integer&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Creates an integer.
-    </span><span class="kw">pub fn </span>new(integer: i64, r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>new(integer: i64, r#type: r#type::Integer&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirIntegerAttrGet(r#type.to_raw(), integer)) }
     }
 
@@ -109,7 +109,7 @@
         <span class="kw">if </span>attribute.is_integer() {
             <span class="prelude-val">Ok</span>(<span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(attribute.to_raw()) })
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::TypedAttributeExpected(
+            <span class="prelude-val">Err</span>(Error::AttributeExpected(
                 <span class="string">&quot;integer&quot;</span>,
                 <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, attribute),
             ))

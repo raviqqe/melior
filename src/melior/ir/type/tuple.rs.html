@@ -191,7 +191,7 @@
         <span class="kw">if </span>r#type.is_tuple() {
             <span class="prelude-val">Ok</span>(<span class="self">Self </span>{ r#type })
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::TupleExpected(r#type.to_string()))
+            <span class="prelude-val">Err</span>(Error::TypeExpected(<span class="string">&quot;tuple&quot;</span>, r#type.to_string()))
         }
     }
 }

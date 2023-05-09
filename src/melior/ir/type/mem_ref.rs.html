@@ -260,7 +260,7 @@
         <span class="kw">if </span>r#type.is_mem_ref() {
             <span class="prelude-val">Ok</span>(<span class="self">Self </span>{ r#type })
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::MemRefExpected(r#type.to_string()))
+            <span class="prelude-val">Err</span>(Error::TypeExpected(<span class="string">&quot;mem ref&quot;</span>, r#type.to_string()))
         }
     }
 }
@@ -275,8 +275,8 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            Type::from(MemRef::new(Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">42</span>), <span class="kw-2">&amp;</span>[<span class="number">42</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>,)),
-            Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;memref&lt;42xi42&gt;&quot;</span>).unwrap()
+            Type::from(MemRef::new(Type::float64(<span class="kw-2">&amp;</span>context), <span class="kw-2">&amp;</span>[<span class="number">42</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>,)),
+            Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;memref&lt;42xf64&gt;&quot;</span>).unwrap()
         );
     }
 
@@ -285,7 +285,7 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            MemRef::new(Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">42</span>), <span class="kw-2">&amp;</span>[<span class="number">42</span>, <span class="number">42</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>,).layout(),
+            MemRef::new(Type::index(<span class="kw-2">&amp;</span>context), <span class="kw-2">&amp;</span>[<span class="number">42</span>, <span class="number">42</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>,).layout(),
             Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;affine_map&lt;(d0, d1) -&gt; (d0, d1)&gt;&quot;</span>).unwrap(),
         );
     }
@@ -295,7 +295,7 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            MemRef::new(Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">42</span>), <span class="kw-2">&amp;</span>[<span class="number">42</span>, <span class="number">42</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>,)
+            MemRef::new(Type::index(<span class="kw-2">&amp;</span>context), <span class="kw-2">&amp;</span>[<span class="number">42</span>, <span class="number">42</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>,)
                 .affine_map()
                 .to_string(),
             <span class="string">&quot;(d0, d1) -&gt; (d0, d1)&quot;
@@ -307,7 +307,7 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            MemRef::new(Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">42</span>), <span class="kw-2">&amp;</span>[<span class="number">42</span>, <span class="number">42</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).memory_space(),
+            MemRef::new(Type::index(<span class="kw-2">&amp;</span>context), <span class="kw-2">&amp;</span>[<span class="number">42</span>, <span class="number">42</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).memory_space(),
             <span class="prelude-val">None</span>,
         );
     }

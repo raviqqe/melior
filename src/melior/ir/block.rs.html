@@ -793,7 +793,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
-        ir::{operation, Module, Region, ValueLike},
+        ir::{operation, r#type, Module, Region, ValueLike},
         test::load_all_dialects,
     };
     <span class="kw">use </span>pretty_assertions::assert_eq;
@@ -806,7 +806,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>argument() {
         <span class="kw">let </span>context = Context::new();
-        <span class="kw">let </span>r#type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
+        <span class="kw">let </span>r#type = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
         <span class="macro">assert_eq!</span>(
             Block::new(<span class="kw-2">&amp;</span>[(r#type, Location::unknown(<span class="kw-2">&amp;</span>context))])

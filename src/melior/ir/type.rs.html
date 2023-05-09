@@ -279,50 +279,25 @@
 <a href="#279" id="279">279</a>
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-<a href="#293" id="293">293</a>
-<a href="#294" id="294">294</a>
-<a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
-<a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Types and type IDs.
 
 </span><span class="kw">mod </span>function;
 <span class="kw">pub mod </span>id;
+<span class="kw">mod </span>integer;
 <span class="kw">mod </span>mem_ref;
 <span class="kw">mod </span>tuple;
 <span class="kw">mod </span>type_like;
 
-<span class="kw">use </span><span class="self">self</span>::mem_ref::MemRef;
-<span class="kw">pub use </span><span class="self">self</span>::{function::Function, id::Id, tuple::Tuple, type_like::TypeLike};
+<span class="kw">pub use </span><span class="self">self</span>::{
+    function::Function, id::Id, integer::Integer, mem_ref::MemRef, tuple::Tuple,
+    type_like::TypeLike,
+};
 <span class="kw">use </span><span class="kw">super</span>::Location;
 <span class="kw">use crate</span>::{context::Context, string_ref::StringRef, utility::print_callback};
 <span class="kw">use </span>mlir_sys::{
     mlirBF16TypeGet, mlirF16TypeGet, mlirF32TypeGet, mlirF64TypeGet, mlirIndexTypeGet,
-    mlirIntegerTypeGet, mlirIntegerTypeSignedGet, mlirIntegerTypeUnsignedGet, mlirNoneTypeGet,
-    mlirTypeEqual, mlirTypeParseGet, mlirTypePrint, mlirVectorTypeGet, mlirVectorTypeGetChecked,
-    MlirType,
+    mlirNoneTypeGet, mlirTypeEqual, mlirTypeParseGet, mlirTypePrint, mlirVectorTypeGet,
+    mlirVectorTypeGetChecked, MlirType,
 };
 <span class="kw">use </span>std::{
     ffi::c_void,
@@ -372,21 +347,6 @@
     <span class="doccomment">/// Creates an index type.
     </span><span class="kw">pub fn </span>index(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirIndexTypeGet(context.to_raw())) }
-    }
-
-    <span class="doccomment">/// Creates an integer type.
-    </span><span class="kw">pub fn </span>integer(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, bits: u32) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirIntegerTypeGet(context.to_raw(), bits)) }
-    }
-
-    <span class="doccomment">/// Creates a signed integer type.
-    </span><span class="kw">pub fn </span>signed_integer(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, bits: u32) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirIntegerTypeSignedGet(context.to_raw(), bits)) }
-    }
-
-    <span class="doccomment">/// Creates an unsigned integer type.
-    </span><span class="kw">pub fn </span>unsigned_integer(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, bits: u32) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirIntegerTypeUnsignedGet(context.to_raw(), bits)) }
     }
 
     <span class="doccomment">/// Creates a none type.
@@ -481,6 +441,12 @@
     }
 }
 
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;Integer&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Type&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>from(integer: Integer&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(integer.to_raw()) }
+    }
+}
+
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;MemRef&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Type&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>from(mem_ref: MemRef&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mem_ref.to_raw()) }
@@ -507,28 +473,8 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">42</span>),
+            Type::from(Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">42</span>)),
             Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;i42&quot;</span>).unwrap()
-        );
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>signed_integer() {
-        <span class="kw">let </span>context = Context::new();
-
-        <span class="macro">assert_eq!</span>(
-            Type::signed_integer(<span class="kw-2">&amp;</span>context, <span class="number">42</span>),
-            Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;si42&quot;</span>).unwrap()
-        );
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>unsigned_integer() {
-        <span class="kw">let </span>context = Context::new();
-
-        <span class="macro">assert_eq!</span>(
-            Type::unsigned_integer(<span class="kw-2">&amp;</span>context, <span class="number">42</span>),
-            Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;ui42&quot;</span>).unwrap()
         );
     }
 
@@ -547,8 +493,8 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            Type::vector(<span class="kw-2">&amp;</span>[<span class="number">42</span>], Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">32</span>)),
-            Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;vector&lt;42xi32&gt;&quot;</span>).unwrap()
+            Type::vector(<span class="kw-2">&amp;</span>[<span class="number">42</span>], Type::float64(<span class="kw-2">&amp;</span>context)),
+            Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;vector&lt;42xf64&gt;&quot;</span>).unwrap()
         );
     }
 
@@ -557,7 +503,7 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            Type::vector(<span class="kw-2">&amp;</span>[<span class="number">0</span>], Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">32</span>)).to_string(),
+            Type::vector(<span class="kw-2">&amp;</span>[<span class="number">0</span>], Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into()).to_string(),
             <span class="string">&quot;vector&lt;0xi32&gt;&quot;
         </span>);
     }
@@ -570,7 +516,7 @@
             Type::vector_checked(
                 Location::unknown(<span class="kw-2">&amp;</span>context),
                 <span class="kw-2">&amp;</span>[<span class="number">42</span>],
-                Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">32</span>)
+                Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into()
             ),
             Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;vector&lt;42xi32&gt;&quot;</span>)
         );
@@ -597,21 +543,21 @@
     </span><span class="kw">fn </span>not_equal() {
         <span class="kw">let </span>context = Context::new();
 
-        <span class="macro">assert_ne!</span>(Type::index(<span class="kw-2">&amp;</span>context), Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">1</span>));
+        <span class="macro">assert_ne!</span>(Type::index(<span class="kw-2">&amp;</span>context), Type::float64(<span class="kw-2">&amp;</span>context));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>display() {
         <span class="kw">let </span>context = Context::new();
 
-        <span class="macro">assert_eq!</span>(Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">42</span>).to_string(), <span class="string">&quot;i42&quot;</span>);
+        <span class="macro">assert_eq!</span>(Type::index(<span class="kw-2">&amp;</span>context).to_string(), <span class="string">&quot;index&quot;</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>debug() {
         <span class="kw">let </span>context = Context::new();
 
-        <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">42</span>)), <span class="string">&quot;Type(i42)&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, Type::index(<span class="kw-2">&amp;</span>context)), <span class="string">&quot;Type(index)&quot;</span>);
     }
 }
 </code></pre></div>

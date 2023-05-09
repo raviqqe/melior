@@ -372,10 +372,10 @@
 //! let location = Location::unknown(&amp;context);
 //! let module = Module::new(location);
 //!
-//! let integer_type = Type::integer(&amp;context, 64);
+//! let index_type = Type::index(&amp;context);
 //!
 //! let function = {
-//!     let block = Block::new(&amp;[(integer_type, location), (integer_type, location)]);
+//!     let block = Block::new(&amp;[(index_type, location), (index_type, location)]);
 //!
 //!     let sum = block.append_operation(arith::addi(
 //!         block.argument(0).unwrap().into(),
@@ -391,7 +391,7 @@
 //!     func::func(
 //!         &amp;context,
 //!         Attribute::parse(&amp;context, &quot;\&quot;add\&quot;&quot;).unwrap(),
-//!         Attribute::parse(&amp;context, &quot;(i64, i64) -&gt; i64&quot;).unwrap(),  
+//!         Attribute::parse(&amp;context, &quot;(index, index) -&gt; index&quot;).unwrap(),  
 //!         region,
 //!         location,
 //!     )
@@ -426,7 +426,7 @@
     <span class="kw">use crate</span>::{
         context::Context,
         dialect,
-        ir::{operation, Attribute, Block, Identifier, Location, Module, Region, Type},
+        ir::{operation, r#type, Attribute, Block, Identifier, Location, Module, Region, Type},
         test::load_all_dialects,
     };
 
@@ -458,7 +458,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>module = Module::new(location);
 
-        <span class="kw">let </span>integer_type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
+        <span class="kw">let </span>integer_type = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
         <span class="kw">let </span>function = {
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);

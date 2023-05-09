@@ -45,10 +45,10 @@ context.load_all_available_dialects();
 <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
 <span class="kw">let </span>module = Module::new(location);
 
-<span class="kw">let </span>integer_type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
+<span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
 
 <span class="kw">let </span>function = {
-    <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
+    <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(index_type, location), (index_type, location)]);
 
     <span class="kw">let </span>sum = block.append_operation(arith::addi(
         block.argument(<span class="number">0</span>).unwrap().into(),
@@ -64,7 +64,7 @@ context.load_all_available_dialects();
     func::func(
         <span class="kw-2">&amp;</span>context,
         Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;add\&quot;&quot;</span>).unwrap(),
-        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(i64, i64) -&gt; i64&quot;</span>).unwrap(),  
+        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(index, index) -&gt; index&quot;</span>).unwrap(),  
         region,
         location,
     )

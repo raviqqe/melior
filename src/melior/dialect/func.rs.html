@@ -119,7 +119,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>module = Module::new(location);
 
-        <span class="kw">let </span>integer_type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
+        <span class="kw">let </span>integer_type = Type::index(<span class="kw-2">&amp;</span>context);
 
         <span class="kw">let </span>function = {
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location)]);
@@ -132,7 +132,7 @@
             func(
                 <span class="kw-2">&amp;</span>context,
                 Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;add\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(i64) -&gt; i64&quot;</span>).unwrap(),
+                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(index) -&gt; index&quot;</span>).unwrap(),
                 region,
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )

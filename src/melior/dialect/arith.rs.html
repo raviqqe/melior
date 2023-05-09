@@ -531,7 +531,7 @@
 </pre><pre class="rust"><code><span class="doccomment">//! `arith` dialect
 
 </span><span class="kw">use crate</span>::{
-    ir::{attribute, operation, Attribute, Identifier, Location, Operation, Type, Value},
+    ir::{attribute, operation, r#type, Attribute, Identifier, Location, Operation, Value},
     Context,
 };
 
@@ -616,7 +616,7 @@
     operation::Builder::new(name, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
             Identifier::new(context, <span class="string">&quot;predicate&quot;</span>),
-            attribute::Integer::new(predicate, Type::integer(context, <span class="number">64</span>)).into(),
+            attribute::Integer::new(predicate, r#type::Integer::new(context, <span class="number">64</span>)).into(),
         )])
         .add_operands(<span class="kw-2">&amp;</span>[lhs, rhs])
         .enable_result_type_inference()
@@ -749,7 +749,7 @@
                     Location::unknown(<span class="kw-2">&amp;</span>context),
                 )
             },
-            <span class="kw-2">&amp;</span>[Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>)],
+            <span class="kw-2">&amp;</span>[r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into()],
             <span class="string">&quot;(i64) -&gt; i64&quot;</span>,
         );
     }
@@ -798,7 +798,7 @@
         <span class="attr">#[test]
         </span><span class="kw">fn </span>compile_cmpi() {
             <span class="kw">let </span>context = create_context();
-            <span class="kw">let </span>integer_type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
+            <span class="kw">let </span>integer_type = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
             compile_operation(
                 <span class="kw-2">&amp;</span>context,
@@ -833,7 +833,7 @@
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
-                <span class="kw-2">&amp;</span>[Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>)],
+                <span class="kw-2">&amp;</span>[r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into()],
                 <span class="string">&quot;(i64) -&gt; f64&quot;</span>,
             );
         }
@@ -865,11 +865,11 @@
                 |block| {
                     extsi(
                         block.argument(<span class="number">0</span>).unwrap().into(),
-                        Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>),
+                        r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into(),
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
-                <span class="kw-2">&amp;</span>[Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">32</span>)],
+                <span class="kw-2">&amp;</span>[r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into()],
                 <span class="string">&quot;(i32) -&gt; i64&quot;</span>,
             );
         }
@@ -883,11 +883,11 @@
                 |block| {
                     extui(
                         block.argument(<span class="number">0</span>).unwrap().into(),
-                        Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>),
+                        r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into(),
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
-                <span class="kw-2">&amp;</span>[Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">32</span>)],
+                <span class="kw-2">&amp;</span>[r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into()],
                 <span class="string">&quot;(i32) -&gt; i64&quot;</span>,
             );
         }
@@ -901,7 +901,7 @@
                 |block| {
                     fptosi(
                         block.argument(<span class="number">0</span>).unwrap().into(),
-                        Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>),
+                        r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into(),
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
@@ -919,7 +919,7 @@
                 |block| {
                     fptoui(
                         block.argument(<span class="number">0</span>).unwrap().into(),
-                        Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>),
+                        r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into(),
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
@@ -937,7 +937,7 @@
                 |block| {
                     index_cast(
                         block.argument(<span class="number">0</span>).unwrap().into(),
-                        Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>),
+                        r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into(),
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
@@ -955,7 +955,7 @@
                 |block| {
                     index_castui(
                         block.argument(<span class="number">0</span>).unwrap().into(),
-                        Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>),
+                        r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into(),
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
@@ -977,7 +977,7 @@
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
-                <span class="kw-2">&amp;</span>[Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">32</span>)],
+                <span class="kw-2">&amp;</span>[r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into()],
                 <span class="string">&quot;(i32) -&gt; f64&quot;</span>,
             );
         }
@@ -991,11 +991,11 @@
                 |block| {
                     trunci(
                         block.argument(<span class="number">0</span>).unwrap().into(),
-                        Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">32</span>),
+                        r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into(),
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
-                <span class="kw-2">&amp;</span>[Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>)],
+                <span class="kw-2">&amp;</span>[r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into()],
                 <span class="string">&quot;(i64) -&gt; i32&quot;</span>,
             );
         }
@@ -1013,7 +1013,7 @@
                         Location::unknown(<span class="kw-2">&amp;</span>context),
                     )
                 },
-                <span class="kw-2">&amp;</span>[Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">32</span>)],
+                <span class="kw-2">&amp;</span>[r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into()],
                 <span class="string">&quot;(i32) -&gt; f64&quot;</span>,
             );
         }
@@ -1027,7 +1027,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>module = Module::new(location);
 
-        <span class="kw">let </span>integer_type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
+        <span class="kw">let </span>integer_type = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
         <span class="kw">let </span>function = {
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
