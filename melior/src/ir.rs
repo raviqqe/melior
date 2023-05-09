@@ -1,7 +1,7 @@
 //! IR objects and builders.
 
 mod affine_map;
-mod attribute;
+pub mod attribute;
 pub mod block;
 mod identifier;
 mod location;

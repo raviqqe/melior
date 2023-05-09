@@ -1,9 +1,11 @@
 //! `arith` dialect
 
 use crate::{
-    ir::{operation, Attribute, Identifier, Location, Operation},
+    ir::{attribute, operation, Attribute, Identifier, Location, Operation, Type, Value},
     Context,
 };
+
+// spell-checker: disable
 
 /// Creates an `arith.constant` operation.
 pub fn constant<'c>(
@@ -17,7 +19,79 @@ pub fn constant<'c>(
         .build()
 }
 
-// spell-checker: disable
+// `arith.cmpf` predicate
+pub enum CmpfPredicate {
+    False,
+    Oeq,
+    Ogt,
+    Oge,
+    Olt,
+    Ole,
+    One,
+    Ord,
+    Ueq,
+    Ugt,
+    Uge,
+    Ult,
+    Ule,
+    Une,
+    Uno,
+    True,
+}
+
+/// Creates an `arith.cmpf` operation.
+pub fn cmpf<'c>(
+    context: &'c Context,
+    predicate: CmpfPredicate,
+    lhs: Value,
+    rhs: Value,
+    location: Location<'c>,
+) -> Operation<'c> {
+    cmp(context, "arith.cmpf", predicate as i64, lhs, rhs, location)
+}
+
+// `arith.cmpi` predicate
+pub enum CmpiPredicate {
+    Eq,
+    Ne,
+    Slt,
+    Sle,
+    Sgt,
+    Sge,
+    Ult,
+    Ule,
+    Ugt,
+    Uge,
+}
+
+/// Creates an `arith.cmpi` operation.
+pub fn cmpi<'c>(
+    context: &'c Context,
+    predicate: CmpiPredicate,
+    lhs: Value,
+    rhs: Value,
+    location: Location<'c>,
+) -> Operation<'c> {
+    cmp(context, "arith.cmpi", predicate as i64, lhs, rhs, location)
+}
+
+fn cmp<'c>(
+    context: &'c Context,
+    name: &str,
+    predicate: i64,
+    lhs: Value,
+    rhs: Value,
+    location: Location<'c>,
+) -> Operation<'c> {
+    operation::Builder::new(name, location)
+        .add_attributes(&[(
+            Identifier::new(context, "predicate"),
+            attribute::Integer::new(predicate, Type::integer(context, 64)).into(),
+        )])
+        .add_operands(&[lhs, rhs])
+        .enable_result_type_inference()
+        .build()
+}
 
 melior_macro::binary_operations!(
     arith,
@@ -165,6 +239,52 @@ mod tests {
             &[Type::float64(&context)],
             "(f64) -> f64",
         );
+    }
+
+    mod cmp {
+        use super::*;
+
+        #[test]
+        fn compile_cmpf() {
+            let context = create_context();
+            let float_type = Type::float64(&context);
+
+            compile_operation(
+                &context,
+                |block| {
+                    cmpf(
+                        &context,
+                        CmpfPredicate::Oeq,
+                        block.argument(0).unwrap().into(),
+                        block.argument(1).unwrap().into(),
+                        Location::unknown(&context),
+                    )
+                },
+                &[float_type, float_type],
+                "(f64, f64) -> i1",
+            );
+        }
+
+        #[test]
+        fn compile_cmpi() {
+            let context = create_context();
+            let integer_type = Type::integer(&context, 64);
+
+            compile_operation(
+                &context,
+                |block| {
+                    cmpi(
+                        &context,
+                        CmpiPredicate::Eq,
+                        block.argument(0).unwrap().into(),
+                        block.argument(1).unwrap().into(),
+                        Location::unknown(&context),
+                    )
+                },
+                &[integer_type, integer_type],
+                "(i64, i64) -> i1",
+            );
+        }
     }
 
     mod typed_unary {
