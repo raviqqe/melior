@@ -93,6 +93,16 @@
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>operation;
 <span class="kw">mod </span>parse;
 <span class="kw">mod </span>pass;
@@ -105,6 +115,13 @@
 <span class="kw">use </span>syn::parse_macro_input;
 
 <span class="attr">#[proc_macro]
+</span><span class="kw">pub fn </span>binary_operations(stream: TokenStream) -&gt; TokenStream {
+    <span class="kw">let </span>set = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>DialectOperationSet);
+
+    convert_result(operation::generate_binary(set.dialect(), set.identifiers()))
+}
+
+<span class="attr">#[proc_macro]
 </span><span class="kw">pub fn </span>unary_operations(stream: TokenStream) -&gt; TokenStream {
     <span class="kw">let </span>set = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>DialectOperationSet);
 
@@ -112,10 +129,13 @@
 }
 
 <span class="attr">#[proc_macro]
-</span><span class="kw">pub fn </span>binary_operations(stream: TokenStream) -&gt; TokenStream {
+</span><span class="kw">pub fn </span>typed_unary_operations(stream: TokenStream) -&gt; TokenStream {
     <span class="kw">let </span>set = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>DialectOperationSet);
 
-    convert_result(operation::generate_binary(set.dialect(), set.identifiers()))
+    convert_result(operation::generate_typed_unary(
+        set.dialect(),
+        set.identifiers(),
+    ))
 }
 
 <span class="attr">#[proc_macro]
