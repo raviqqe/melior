@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["attribute","block","operation","type"],"struct":["AffineMap","Identifier","Location","Module","Region","RegionRef","Value"],"trait":["TypeLike","ValueLike"]};
+window.SIDEBAR_ITEMS = {"mod":["attribute","block","operation","type"],"struct":["AffineMap","Identifier","Location","Module","Region","RegionRef","Value"],"trait":["AttributeLike","TypeLike","ValueLike"]};
