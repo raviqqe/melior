@@ -27,7 +27,14 @@
 <a href="#27" id="27">27</a>
 <a href="#28" id="28">28</a>
 <a href="#29" id="29">29</a>
-</pre><pre class="rust"><code><span class="kw">use </span>convert_case::{Case, Casing};
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::utility::map_name;
+<span class="kw">use </span>convert_case::{Case, Casing};
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>proc_macro2::Ident;
 <span class="kw">use </span>quote::quote;
@@ -37,14 +44,19 @@
     <span class="kw">let </span><span class="kw-2">mut </span>stream = TokenStream::new();
 
     <span class="kw">for </span>identifier <span class="kw">in </span>identifiers {
-        <span class="kw">let </span>name = identifier
-            .to_string()
-            .strip_prefix(<span class="string">&quot;mlirAttributeIsA&quot;</span>)
-            .unwrap()
-            .to_case(Case::Snake);
+        <span class="kw">let </span>name = map_name(
+            <span class="kw-2">&amp;</span>identifier
+                .to_string()
+                .strip_prefix(<span class="string">&quot;mlirAttributeIsA&quot;</span>)
+                .unwrap()
+                .to_case(Case::Snake),
+        );
 
         <span class="kw">let </span>function_name = Ident::new(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;is_{}&quot;</span>, <span class="kw-2">&amp;</span>name), identifier.span());
-        <span class="kw">let </span>document = <span class="macro">format!</span>(<span class="string">&quot; Returns `true` if an attribute is `{}`.&quot;</span>, name);
+        <span class="kw">let </span>document = <span class="macro">format!</span>(
+            <span class="string">&quot; Returns `true` if an attribute is {}.&quot;</span>,
+            name.replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot; &quot;</span>)
+        );
 
         stream.extend(TokenStream::from(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #document]

@@ -32,52 +32,20 @@
 <a href="#32" id="32">32</a>
 <a href="#33" id="33">33</a>
 <a href="#34" id="34">34</a>
-<a href="#35" id="35">35</a>
-<a href="#36" id="36">36</a>
-<a href="#37" id="37">37</a>
-<a href="#38" id="38">38</a>
-<a href="#39" id="39">39</a>
-<a href="#40" id="40">40</a>
-<a href="#41" id="41">41</a>
-<a href="#42" id="42">42</a>
-<a href="#43" id="43">43</a>
-<a href="#44" id="44">44</a>
-<a href="#45" id="45">45</a>
-<a href="#46" id="46">46</a>
-<a href="#47" id="47">47</a>
-<a href="#48" id="48">48</a>
-<a href="#49" id="49">49</a>
-<a href="#50" id="50">50</a>
-<a href="#51" id="51">51</a>
-<a href="#52" id="52">52</a>
-<a href="#53" id="53">53</a>
-<a href="#54" id="54">54</a>
-<a href="#55" id="55">55</a>
-<a href="#56" id="56">56</a>
-<a href="#57" id="57">57</a>
-<a href="#58" id="58">58</a>
-<a href="#59" id="59">59</a>
-<a href="#60" id="60">60</a>
-<a href="#61" id="61">61</a>
-<a href="#62" id="62">62</a>
-<a href="#63" id="63">63</a>
-<a href="#64" id="64">64</a>
-</pre><pre class="rust"><code><span class="kw">use </span>convert_case::{Case, Casing};
-<span class="kw">use </span>once_cell::sync::Lazy;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::utility::map_name;
+<span class="kw">use </span>convert_case::{Case, Casing};
+
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>proc_macro2::Ident;
 <span class="kw">use </span>quote::quote;
-<span class="kw">use </span>regex::{Captures, Regex};
-<span class="kw">use </span>std::error::Error;
 
-<span class="kw">static </span>FLOAT_8_PATTERN: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">r#&quot;float_8_e_[0-9]_m_[0-9](_fn)?&quot;#</span>).unwrap());
+<span class="kw">use </span>std::error::Error;
 
 <span class="kw">pub fn </span>generate(identifiers: <span class="kw-2">&amp;</span>[Ident]) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>stream = TokenStream::new();
 
     <span class="kw">for </span>identifier <span class="kw">in </span>identifiers {
-        <span class="kw">let </span>name = map_type_name(
+        <span class="kw">let </span>name = map_name(
             <span class="kw-2">&amp;</span>identifier
                 .to_string()
                 .strip_prefix(<span class="string">&quot;mlirTypeIsA&quot;</span>)
@@ -86,7 +54,7 @@
         );
 
         <span class="kw">let </span>function_name = Ident::new(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;is_{}&quot;</span>, <span class="kw-2">&amp;</span>name), identifier.span());
-        <span class="kw">let </span>document = <span class="macro">format!</span>(<span class="string">&quot; Returns `true` if a type is `{}`.&quot;</span>, name);
+        <span class="kw">let </span>document = <span class="macro">format!</span>(<span class="string">&quot; Returns `true` if a type is {}.&quot;</span>, name.replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot; &quot;</span>));
 
         stream.extend(TokenStream::from(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #document]
@@ -97,34 +65,6 @@
     }
 
     <span class="prelude-val">Ok</span>(stream)
-}
-
-<span class="kw">fn </span>map_type_name(name: <span class="kw-2">&amp;</span>str) -&gt; String {
-    <span class="kw">match </span>name {
-        <span class="string">&quot;bf_16&quot; </span>| <span class="string">&quot;f_16&quot; </span>| <span class="string">&quot;f_32&quot; </span>| <span class="string">&quot;f_64&quot; </span>=&gt; name.replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot;&quot;</span>),
-        name =&gt; FLOAT_8_PATTERN
-            .replace(name, |captures: <span class="kw-2">&amp;</span>Captures| {
-                captures.get(<span class="number">0</span>).unwrap().as_str().replace(<span class="string">&#39;_&#39;</span>, <span class="string">&quot;&quot;</span>)
-            })
-            .to_string(),
-    }
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">mod </span>tests {
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>map_normal_type_name() {
-        <span class="macro">assert_eq!</span>(map_type_name(<span class="string">&quot;index&quot;</span>), <span class="string">&quot;index&quot;</span>);
-        <span class="macro">assert_eq!</span>(map_type_name(<span class="string">&quot;integer&quot;</span>), <span class="string">&quot;integer&quot;</span>);
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>map_float_type_name() {
-        <span class="macro">assert_eq!</span>(map_type_name(<span class="string">&quot;float_8_e_5_m_2&quot;</span>), <span class="string">&quot;float8e5m2&quot;</span>);
-        <span class="macro">assert_eq!</span>(map_type_name(<span class="string">&quot;float_8_e_4_m_3_fn&quot;</span>), <span class="string">&quot;float8e4m3fn&quot;</span>);
-    }
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="melior_macro" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
