@@ -509,7 +509,6 @@
         <span class="kw">let </span>location = Location::unknown(context);
         <span class="kw">let </span>module = Module::new(location);
 
-        <span class="kw">let </span>region = Region::new();
         <span class="kw">let </span>block = Block::new(
             <span class="kw-2">&amp;</span>block_argument_types
                 .iter()
@@ -526,6 +525,7 @@
             location,
         ));
 
+        <span class="kw">let </span>region = Region::new();
         region.append_block(block);
 
         <span class="kw">let </span>function = func::func(
@@ -790,7 +790,6 @@
         <span class="kw">let </span>integer_type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
 
         <span class="kw">let </span>function = {
-            <span class="kw">let </span>region = Region::new();
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
 
             <span class="kw">let </span>sum = block.append_operation(addi(
@@ -801,6 +800,7 @@
 
             block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[sum.result(<span class="number">0</span>).unwrap().into()], location));
 
+            <span class="kw">let </span>region = Region::new();
             region.append_block(block);
 
             func::func(

@@ -122,11 +122,11 @@
         <span class="kw">let </span>integer_type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
 
         <span class="kw">let </span>function = {
-            <span class="kw">let </span>region = Region::new();
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location)]);
 
             block.append_operation(r#return(<span class="kw-2">&amp;</span>[block.argument(<span class="number">0</span>).unwrap().into()], location));
 
+            <span class="kw">let </span>region = Region::new();
             region.append_block(block);
 
             func(

@@ -319,7 +319,6 @@
 <a href="#319" id="319">319</a>
 <a href="#320" id="320">320</a>
 <a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Melior is the rustic MLIR bindings for Rust. It aims to provide a simple,
 //! safe, and complete API for MLIR with a reasonably sane ownership model
 //! represented by the type system in Rust.
@@ -376,7 +375,6 @@
 //! let integer_type = Type::integer(&amp;context, 64);
 //!
 //! let function = {
-//!     let region = Region::new();
 //!     let block = Block::new(&amp;[(integer_type, location), (integer_type, location)]);
 //!
 //!     let sum = block.append_operation(arith::addi(
@@ -387,6 +385,7 @@
 //!
 //!     block.append_operation(func::r#return(&amp;[sum.result(0).unwrap().into()], location));
 //!
+//!     let region = Region::new();
 //!     region.append_block(block);
 //!
 //!     func::func(
@@ -462,7 +461,6 @@
         <span class="kw">let </span>integer_type = Type::integer(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
 
         <span class="kw">let </span>function = {
-            <span class="kw">let </span>region = Region::new();
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
 
             <span class="kw">let </span>sum = block.append_operation(
@@ -481,6 +479,7 @@
                     .build(),
             );
 
+            <span class="kw">let </span>region = Region::new();
             region.append_block(block);
 
             operation::Builder::new(<span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
@@ -515,7 +514,6 @@
         <span class="kw">let </span>memref_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;memref&lt;?xf32&gt;&quot;</span>).unwrap();
 
         <span class="kw">let </span>function = {
-            <span class="kw">let </span>function_region = Region::new();
             <span class="kw">let </span>function_block = Block::new(<span class="kw-2">&amp;</span>[(memref_type, location), (memref_type, location)]);
             <span class="kw">let </span>index_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap();
 
@@ -601,7 +599,6 @@
             function_block.append_operation(
                 {
                     <span class="kw">let </span>loop_region = Region::new();
-
                     loop_region.append_block(loop_block);
 
                     operation::Builder::new(<span class="string">&quot;scf.for&quot;</span>, location)
@@ -619,6 +616,7 @@
                 operation::Builder::new(<span class="string">&quot;func.return&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
             );
 
+            <span class="kw">let </span>function_region = Region::new();
             function_region.append_block(function_block);
 
             operation::Builder::new(<span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
