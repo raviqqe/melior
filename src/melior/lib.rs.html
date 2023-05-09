@@ -320,20 +320,6 @@
 <a href="#320" id="320">320</a>
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Melior is the rustic MLIR bindings for Rust. It aims to provide a simple,
 //! safe, and complete API for MLIR with a reasonably sane ownership model
 //! represented by the type system in Rust.
@@ -372,7 +358,7 @@
 //! ```rust
 //! use melior::{
 //!     Context,
-//!     dialect,
+//!     dialect::{self, arith, func},
 //!     ir::*,
 //!     utility::register_all_dialects,
 //! };
@@ -382,7 +368,7 @@
 //!
 //! let context = Context::new();
 //! context.append_dialect_registry(&amp;registry);
-//! context.get_or_load_dialect(&quot;func&quot;);
+//! context.load_all_available_dialects();
 //!
 //! let location = Location::unknown(&amp;context);
 //! let module = Module::new(location);
@@ -393,37 +379,23 @@
 //!     let region = Region::new();
 //!     let block = Block::new(&amp;[(integer_type, location), (integer_type, location)]);
 //!
-//!     let sum = block.append_operation(
-//!         operation::Builder::new(&quot;arith.addi&quot;, location)
-//!             .add_operands(&amp;[
-//!                 block.argument(0).unwrap().into(),
-//!                 block.argument(1).unwrap().into(),
-//!             ])
-//!             .add_results(&amp;[integer_type])
-//!             .build(),
-//!     );
+//!     let sum = block.append_operation(arith::addi(
+//!         block.argument(0).unwrap().into(),
+//!         block.argument(1).unwrap().into(),
+//!         location
+//!     ));
 //!
-//!     block.append_operation(
-//!         operation::Builder::new(&quot;func.return&quot;, Location::unknown(&amp;context))
-//!             .add_operands(&amp;[sum.result(0).unwrap().into()])
-//!             .build(),
-//!     );
+//!     block.append_operation(func::r#return(&amp;[sum.result(0).unwrap().into()], location));
 //!
 //!     region.append_block(block);
 //!
-//!     operation::Builder::new(&quot;func.func&quot;, Location::unknown(&amp;context))
-//!         .add_attributes(&amp;[
-//!             (
-//!                 Identifier::new(&amp;context, &quot;function_type&quot;),
-//!                 Attribute::parse(&amp;context, &quot;(i64, i64) -&gt; i64&quot;).unwrap(),
-//!             ),
-//!             (
-//!                 Identifier::new(&amp;context, &quot;sym_name&quot;),
-//!                 Attribute::parse(&amp;context, &quot;\&quot;add\&quot;&quot;).unwrap(),
-//!             ),
-//!         ])
-//!         .add_regions(vec![region])
-//!         .build()
+//!     func::func(
+//!         &amp;context,
+//!         Attribute::parse(&amp;context, &quot;\&quot;add\&quot;&quot;).unwrap(),
+//!         Attribute::parse(&amp;context, &quot;(i64, i64) -&gt; i64&quot;).unwrap(),  
+//!         region,
+//!         location,
+//!     )
 //! };
 //!
 //! module.body().append_operation(function);
