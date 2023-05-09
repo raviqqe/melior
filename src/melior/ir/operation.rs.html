@@ -360,12 +360,12 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Gets a context.
-    </span><span class="kw">pub fn </span>context(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ContextRef {
+    </span><span class="kw">pub fn </span>context(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ContextRef&lt;<span class="lifetime">&#39;c</span>&gt; {
         <span class="kw">unsafe </span>{ ContextRef::from_raw(mlirOperationGetContext(<span class="self">self</span>.raw)) }
     }
 
     <span class="doccomment">/// Gets a name.
-    </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Identifier {
+    </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Identifier&lt;<span class="lifetime">&#39;c</span>&gt; {
         <span class="kw">unsafe </span>{ Identifier::from_raw(mlirOperationGetName(<span class="self">self</span>.raw)) }
     }
 

@@ -116,7 +116,7 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; StringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Converts a string reference into a `str`.
-    </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Utf8Error&gt; {
+    </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, Utf8Error&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>bytes = slice::from_raw_parts(<span class="self">self</span>.raw.data <span class="kw">as </span><span class="kw-2">*mut </span>u8, <span class="self">self</span>.raw.length);
 
