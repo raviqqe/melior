@@ -1,8 +1,6 @@
 use super::Id;
 use crate::context::ContextRef;
-use mlir_sys::{
-    mlirIntegerTypeGetWidth, mlirTypeDump, mlirTypeGetContext, mlirTypeGetTypeID, MlirType,
-};
+use mlir_sys::{mlirTypeDump, mlirTypeGetContext, mlirTypeGetTypeID, MlirType};
 
 /// Trait for type-like types.
 pub trait TypeLike<'c> {
@@ -17,15 +15,6 @@ pub trait TypeLike<'c> {
     /// Gets an ID.
     fn id(&self) -> Id {
         unsafe { Id::from_raw(mlirTypeGetTypeID(self.to_raw())) }
-    }
-
-    /// Gets a bit width of an integer type.
-    fn get_width(&self) -> Option<usize> {
-        if self.is_integer() {
-            Some(unsafe { mlirIntegerTypeGetWidth(self.to_raw()) } as usize)
-        } else {
-            None
-        }
     }
 
     /// Dumps a type.
@@ -74,7 +63,10 @@ pub trait TypeLike<'c> {
 mod tests {
     use super::*;
     use crate::{
-        ir::{r#type::Function, Type},
+        ir::{
+            r#type::{Function, Integer},
+            Type,
+        },
         Context,
     };
 
@@ -94,14 +86,7 @@ mod tests {
     fn is_integer() {
         let context = Context::new();
 
-        assert!(Type::integer(&context, 64).is_integer());
-    }
-
-    #[test]
-    fn get_width() {
-        let context = Context::new();
-
-        assert_eq!(Type::integer(&context, 64).get_width(), Some(64));
+        assert!(Integer::new(&context, 64).is_integer());
     }
 
     #[test]
@@ -129,7 +114,7 @@ mod tests {
     fn is_vector() {
         let context = Context::new();
 
-        assert!(Type::vector(&[42], Type::integer(&context, 32)).is_vector());
+        assert!(Type::vector(&[42], Type::index(&context)).is_vector());
     }
 
     #[test]

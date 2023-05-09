@@ -103,7 +103,7 @@ impl<'c> TryFrom<Type<'c>> for MemRef<'c> {
         if r#type.is_mem_ref() {
             Ok(Self { r#type })
         } else {
-            Err(Error::MemRefExpected(r#type.to_string()))
+            Err(Error::TypeExpected("mem ref", r#type.to_string()))
         }
     }
 }
@@ -118,8 +118,8 @@ mod tests {
         let context = Context::new();
 
         assert_eq!(
-            Type::from(MemRef::new(Type::integer(&context, 42), &[42], None, None,)),
-            Type::parse(&context, "memref<42xi42>").unwrap()
+            Type::from(MemRef::new(Type::float64(&context), &[42], None, None,)),
+            Type::parse(&context, "memref<42xf64>").unwrap()
         );
     }
 
@@ -128,7 +128,7 @@ mod tests {
         let context = Context::new();
 
         assert_eq!(
-            MemRef::new(Type::integer(&context, 42), &[42, 42], None, None,).layout(),
+            MemRef::new(Type::index(&context), &[42, 42], None, None,).layout(),
             Attribute::parse(&context, "affine_map<(d0, d1) -> (d0, d1)>").unwrap(),
         );
     }
@@ -138,7 +138,7 @@ mod tests {
         let context = Context::new();
 
         assert_eq!(
-            MemRef::new(Type::integer(&context, 42), &[42, 42], None, None,)
+            MemRef::new(Type::index(&context), &[42, 42], None, None,)
                 .affine_map()
                 .to_string(),
             "(d0, d1) -> (d0, d1)"
@@ -150,7 +150,7 @@ mod tests {
         let context = Context::new();
 
         assert_eq!(
-            MemRef::new(Type::integer(&context, 42), &[42, 42], None, None).memory_space(),
+            MemRef::new(Type::index(&context), &[42, 42], None, None).memory_space(),
             None,
         );
     }

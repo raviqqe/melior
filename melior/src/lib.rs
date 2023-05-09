@@ -51,10 +51,10 @@
 //! let location = Location::unknown(&context);
 //! let module = Module::new(location);
 //!
-//! let integer_type = Type::integer(&context, 64);
+//! let index_type = Type::index(&context);
 //!
 //! let function = {
-//!     let block = Block::new(&[(integer_type, location), (integer_type, location)]);
+//!     let block = Block::new(&[(index_type, location), (index_type, location)]);
 //!
 //!     let sum = block.append_operation(arith::addi(
 //!         block.argument(0).unwrap().into(),
@@ -70,7 +70,7 @@
 //!     func::func(
 //!         &context,
 //!         Attribute::parse(&context, "\"add\"").unwrap(),
-//!         Attribute::parse(&context, "(i64, i64) -> i64").unwrap(),  
+//!         Attribute::parse(&context, "(index, index) -> index").unwrap(),  
 //!         region,
 //!         location,
 //!     )
@@ -105,7 +105,7 @@ mod tests {
     use crate::{
         context::Context,
         dialect,
-        ir::{operation, Attribute, Block, Identifier, Location, Module, Region, Type},
+        ir::{operation, r#type, Attribute, Block, Identifier, Location, Module, Region, Type},
         test::load_all_dialects,
     };
 
@@ -137,7 +137,7 @@ mod tests {
         let location = Location::unknown(&context);
         let module = Module::new(location);
 
-        let integer_type = Type::integer(&context, 64);
+        let integer_type = r#type::Integer::new(&context, 64).into();
 
         let function = {
             let block = Block::new(&[(integer_type, location), (integer_type, location)]);
