@@ -1,7 +1,8 @@
+mod attribute;
 mod operation;
 mod parse;
 mod pass;
-mod type_check_functions;
+mod r#type;
 
 use parse::{DialectOperationSet, IdentifierList};
 use proc_macro::TokenStream;
@@ -37,7 +38,14 @@ pub fn typed_unary_operations(stream: TokenStream) -> TokenStream {
 pub fn type_check_functions(stream: TokenStream) -> TokenStream {
     let identifiers = parse_macro_input!(stream as IdentifierList);
 
-    convert_result(type_check_functions::generate(identifiers.identifiers()))
+    convert_result(r#type::generate(identifiers.identifiers()))
+}
+
+#[proc_macro]
+pub fn attribute_check_functions(stream: TokenStream) -> TokenStream {
+    let identifiers = parse_macro_input!(stream as IdentifierList);
+
+    convert_result(attribute::generate(identifiers.identifiers()))
 }
 
 #[proc_macro]
