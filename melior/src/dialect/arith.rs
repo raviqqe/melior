@@ -57,6 +57,23 @@ melior_macro::binary_operations!(
 
 melior_macro::unary_operations!(arith, [negf, truncf]);
 
+melior_macro::typed_unary_operations!(
+    arith,
+    [
+        bitcast,
+        extf,
+        extsi,
+        extui,
+        fptosi,
+        fptoui,
+        index_cast,
+        index_castui,
+        sitofp,
+        trunci,
+        uitofp
+    ]
+);
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -116,7 +133,7 @@ mod tests {
     }
 
     #[test]
-    fn create_constant() {
+    fn compile_constant() {
         let context = create_context();
 
         compile_operation(
@@ -134,7 +151,7 @@ mod tests {
     }
 
     #[test]
-    fn create_negf() {
+    fn compile_negf() {
         let context = create_context();
 
         compile_operation(
@@ -150,8 +167,210 @@ mod tests {
         );
     }
 
+    mod typed_unary {
+        use super::*;
+
+        #[test]
+        fn compile_bitcast() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    bitcast(
+                        block.argument(0).unwrap().into(),
+                        Type::float64(&context),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::integer(&context, 64)],
+                "(i64) -> f64",
+            );
+        }
+
+        #[test]
+        fn compile_extf() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    extf(
+                        block.argument(0).unwrap().into(),
+                        Type::float64(&context),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::float32(&context)],
+                "(f32) -> f64",
+            );
+        }
+
+        #[test]
+        fn compile_extsi() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    extsi(
+                        block.argument(0).unwrap().into(),
+                        Type::integer(&context, 64),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::integer(&context, 32)],
+                "(i32) -> i64",
+            );
+        }
+
+        #[test]
+        fn compile_extui() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    extui(
+                        block.argument(0).unwrap().into(),
+                        Type::integer(&context, 64),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::integer(&context, 32)],
+                "(i32) -> i64",
+            );
+        }
+
+        #[test]
+        fn compile_fptosi() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    fptosi(
+                        block.argument(0).unwrap().into(),
+                        Type::integer(&context, 64),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::float32(&context)],
+                "(f32) -> i64",
+            );
+        }
+
+        #[test]
+        fn compile_fptoui() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    fptoui(
+                        block.argument(0).unwrap().into(),
+                        Type::integer(&context, 64),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::float32(&context)],
+                "(f32) -> i64",
+            );
+        }
+
+        #[test]
+        fn compile_index_cast() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    index_cast(
+                        block.argument(0).unwrap().into(),
+                        Type::integer(&context, 64),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::index(&context)],
+                "(index) -> i64",
+            );
+        }
+
+        #[test]
+        fn compile_index_castui() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    index_castui(
+                        block.argument(0).unwrap().into(),
+                        Type::integer(&context, 64),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::index(&context)],
+                "(index) -> i64",
+            );
+        }
+
+        #[test]
+        fn compile_sitofp() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    sitofp(
+                        block.argument(0).unwrap().into(),
+                        Type::float64(&context),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::integer(&context, 32)],
+                "(i32) -> f64",
+            );
+        }
+
+        #[test]
+        fn compile_trunci() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    trunci(
+                        block.argument(0).unwrap().into(),
+                        Type::integer(&context, 32),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::integer(&context, 64)],
+                "(i64) -> i32",
+            );
+        }
+
+        #[test]
+        fn compile_uitofp() {
+            let context = create_context();
+
+            compile_operation(
+                &context,
+                |block| {
+                    uitofp(
+                        block.argument(0).unwrap().into(),
+                        Type::float64(&context),
+                        Location::unknown(&context),
+                    )
+                },
+                &[Type::integer(&context, 32)],
+                "(i32) -> f64",
+            );
+        }
+    }
+
     #[test]
-    fn create_addi() {
+    fn compile_addi() {
         let context = Context::new();
         load_all_dialects(&context);
 
