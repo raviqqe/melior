@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["convert_case","melior","melior_macro","mlir_sys","once_cell","proc_macro2","quote","syn","unicode_ident","unicode_segmentation"];
+window.ALL_CRATES = ["aho_corasick","convert_case","melior","melior_macro","memchr","mlir_sys","once_cell","proc_macro2","quote","regex","regex_syntax","syn","unicode_ident","unicode_segmentation"];
