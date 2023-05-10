@@ -69,13 +69,14 @@ mod tests {
     use super::*;
     use crate::{
         context::Context,
-        dialect, pass,
+        dialect::DialectRegistry,
+        pass,
         utility::{register_all_dialects, register_all_llvm_translations},
     };
 
     #[test]
     fn invoke_packed() {
-        let registry = dialect::Registry::new();
+        let registry = DialectRegistry::new();
         register_all_dialects(&registry);
 
         let context = Context::new();
@@ -95,7 +96,7 @@ mod tests {
         )
         .unwrap();
 
-        let pass_manager = pass::Manager::new(&context);
+        let pass_manager = pass::PassManager::new(&context);
         pass_manager.add_pass(pass::conversion::func_to_llvm());
 
         pass_manager

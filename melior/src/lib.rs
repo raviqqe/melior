@@ -36,12 +36,12 @@
 //! ```rust
 //! use melior::{
 //!     Context,
-//!     dialect::{self, arith, func},
+//!     dialect::{self, arith, DialectRegistry, func},
 //!     ir::*,
 //!     utility::register_all_dialects,
 //! };
 //!
-//! let registry = dialect::Registry::new();
+//! let registry = DialectRegistry::new();
 //! register_all_dialects(&registry);
 //!
 //! let context = Context::new();
@@ -105,7 +105,10 @@ mod tests {
     use crate::{
         context::Context,
         dialect::{self, arith, func, scf},
-        ir::{attribute, operation, r#type, Attribute, Block, Location, Module, Region, Type},
+        ir::{
+            attribute::IntegerAttribute, operation::OperationBuilder, r#type::IntegerType,
+            Attribute, Block, Location, Module, Region, Type,
+        },
         test::load_all_dialects,
     };
 
@@ -120,7 +123,7 @@ mod tests {
 
     #[test]
     fn build_module_with_dialect() {
-        let registry = dialect::Registry::new();
+        let registry = dialect::DialectRegistry::new();
         let context = Context::new();
         context.append_dialect_registry(&registry);
         let module = Module::new(Location::unknown(&context));
@@ -137,7 +140,7 @@ mod tests {
         let location = Location::unknown(&context);
         let module = Module::new(location);
 
-        let integer_type = r#type::Integer::new(&context, 64).into();
+        let integer_type = IntegerType::new(&context, 64).into();
 
         let function = {
             let block = Block::new(&[(integer_type, location), (integer_type, location)]);
@@ -184,12 +187,12 @@ mod tests {
 
             let zero = function_block.append_operation(arith::constant(
                 &context,
-                attribute::Integer::new(0, Type::index(&context)).into(),
+                IntegerAttribute::new(0, Type::index(&context)).into(),
                 location,
             ));
 
             let dim = function_block.append_operation(
-                operation::Builder::new("memref.dim", location)
+                OperationBuilder::new("memref.dim", location)
                     .add_operands(&[
                         function_block.argument(0).unwrap().into(),
                         zero.result(0).unwrap().into(),
@@ -202,7 +205,7 @@ mod tests {
 
             let one = function_block.append_operation(arith::constant(
                 &context,
-                attribute::Integer::new(1, Type::index(&context)).into(),
+                IntegerAttribute::new(1, Type::index(&context)).into(),
                 location,
             ));
 
@@ -210,7 +213,7 @@ mod tests {
                 let f32_type = Type::float32(&context);
 
                 let lhs = loop_block.append_operation(
-                    operation::Builder::new("memref.load", location)
+                    OperationBuilder::new("memref.load", location)
                         .add_operands(&[
                             function_block.argument(0).unwrap().into(),
                             loop_block.argument(0).unwrap().into(),
@@ -220,7 +223,7 @@ mod tests {
                 );
 
                 let rhs = loop_block.append_operation(
-                    operation::Builder::new("memref.load", location)
+                    OperationBuilder::new("memref.load", location)
                         .add_operands(&[
                             function_block.argument(1).unwrap().into(),
                             loop_block.argument(0).unwrap().into(),
@@ -236,7 +239,7 @@ mod tests {
                 ));
 
                 loop_block.append_operation(
-                    operation::Builder::new("memref.store", location)
+                    OperationBuilder::new("memref.store", location)
                         .add_operands(&[
                             add.result(0).unwrap().into(),
                             function_block.argument(0).unwrap().into(),
