@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Allocator","Id"]};
+window.SIDEBAR_ITEMS = {"struct":["Allocator","TypeId"]};

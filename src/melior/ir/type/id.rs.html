@@ -43,25 +43,25 @@
 
 <span class="doccomment">/// A type ID.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>Id {
+</span><span class="kw">pub struct </span>TypeId {
     raw: MlirTypeID,
 }
 
-<span class="kw">impl </span>Id {
+<span class="kw">impl </span>TypeId {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(raw: MlirTypeID) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ raw }
     }
 }
 
-<span class="kw">impl </span>PartialEq <span class="kw">for </span>Id {
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>TypeId {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ mlirTypeIDEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl </span>Eq <span class="kw">for </span>Id {}
+<span class="kw">impl </span>Eq <span class="kw">for </span>TypeId {}
 
-<span class="kw">impl </span>Hash <span class="kw">for </span>Id {
+<span class="kw">impl </span>Hash <span class="kw">for </span>TypeId {
     <span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, hasher: <span class="kw-2">&amp;mut </span>H) {
         <span class="kw">unsafe </span>{
             mlirTypeIDHashValue(<span class="self">self</span>.raw).hash(hasher);
