@@ -13,15 +13,15 @@ pub fn generate(
     let mut stream = TokenStream::new();
 
     for identifier in identifiers {
-        let name = extract_pass_name(
-            identifier
-                .to_string()
-                .strip_prefix(CREATE_FUNCTION_PREFIX)
-                .unwrap(),
-        );
+        let name = identifier.to_string();
+        let foreign_name = name.strip_prefix(CREATE_FUNCTION_PREFIX).unwrap();
+        let pass_name = extract_pass_name(foreign_name);
 
-        let function_name = Ident::new(&name.to_case(Case::Snake), identifier.span());
-        let document = format!(" Creates a `{}` pass.", name);
+        let function_name = Ident::new(
+            &("create_".to_owned() + &pass_name.to_case(Case::Snake)),
+            identifier.span(),
+        );
+        let document = format!(" Creates a `{}` pass.", pass_name);
 
         stream.extend(TokenStream::from(quote! {
             #[doc = #document]
@@ -29,20 +29,16 @@ pub fn generate(
                 crate::pass::Pass::__private_from_raw_fn(mlir_sys::#identifier)
             }
         }));
-    }
 
-    for identifier in identifiers {
-        let name = identifier.to_string();
-        let name = name.strip_prefix(CREATE_FUNCTION_PREFIX).unwrap();
-
-        let foreign_function_name =
-            Ident::new(&("mlirRegister".to_owned() + name), identifier.span());
-        let name = extract_pass_name(name);
-        let function_name = Ident::new(
-            &("register_".to_owned() + &name.to_case(Case::Snake)),
+        let foreign_function_name = Ident::new(
+            &("mlirRegister".to_owned() + foreign_name),
             identifier.span(),
         );
-        let document = format!(" Registers a `{}` pass.", name);
+        let function_name = Ident::new(
+            &("register_".to_owned() + &pass_name.to_case(Case::Snake)),
+            identifier.span(),
+        );
+        let document = format!(" Registers a `{}` pass.", pass_name);
 
         stream.extend(TokenStream::from(quote! {
             #[doc = #document]
