@@ -1,39 +1,33 @@
 use super::{Attribute, AttributeLike};
 use crate::{
     ir::{Type, TypeLike},
-    Context, Error,
+    Error,
 };
 use mlir_sys::{mlirIntegerAttrGet, MlirAttribute};
-use std::{
-    fmt::{self, Debug, Display, Formatter},
-    marker::PhantomData,
-};
+use std::fmt::{self, Debug, Display, Formatter};
 
 /// An integer attribute.
-// Attributes are always values but their internal storage is owned by contexts.
 #[derive(Clone, Copy)]
 pub struct IntegerAttribute<'c> {
-    raw: MlirAttribute,
-    _context: PhantomData<&'c Context>,
+    attribute: Attribute<'c>,
 }
 
 impl<'c> IntegerAttribute<'c> {
-    /// Creates an integer.
+    /// Creates an integer attribute.
     pub fn new(integer: i64, r#type: Type<'c>) -> Self {
         unsafe { Self::from_raw(mlirIntegerAttrGet(r#type.to_raw(), integer)) }
     }
 
     unsafe fn from_raw(raw: MlirAttribute) -> Self {
         Self {
-            raw,
-            _context: Default::default(),
+            attribute: Attribute::from_raw(raw),
         }
     }
 }
 
 impl<'c> AttributeLike<'c> for IntegerAttribute<'c> {
     fn to_raw(&self) -> MlirAttribute {
-        self.raw
+        self.attribute.to_raw()
     }
 }
 
@@ -54,7 +48,7 @@ impl<'c> TryFrom<Attribute<'c>> for IntegerAttribute<'c> {
 
 impl<'c> Display for IntegerAttribute<'c> {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
-        Display::fmt(&Attribute::from(*self), formatter)
+        Display::fmt(&self.attribute, formatter)
     }
 }
 
