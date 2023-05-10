@@ -811,8 +811,8 @@
     <span class="kw">use crate</span>::{
         dialect::{arith, func},
         ir::{
-            attribute::{FloatAttribute, IntegerAttribute},
-            r#type::{IntegerType, Type},
+            attribute::{FloatAttribute, IntegerAttribute, StringAttribute, TypeAttribute},
+            r#type::{FunctionType, IntegerType, Type},
             Attribute, Block, Module,
         },
         test::load_all_dialects,
@@ -830,8 +830,8 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap(),
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;() -&gt; ()&quot;</span>).unwrap(),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
@@ -881,8 +881,8 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap(),
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;() -&gt; ()&quot;</span>).unwrap(),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
@@ -946,8 +946,8 @@
 
             module.body().append_operation(func::func(
                 <span class="kw-2">&amp;</span>context,
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;() -&gt; index&quot;</span>).unwrap(),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+                TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[index_type]).into()),
                 {
                     <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
@@ -1025,8 +1025,8 @@
 
             module.body().append_operation(func::func(
                 <span class="kw-2">&amp;</span>context,
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;() -&gt; ()&quot;</span>).unwrap(),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+                TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
                 {
                     <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
@@ -1076,8 +1076,8 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap(),
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;() -&gt; ()&quot;</span>).unwrap(),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
@@ -1151,8 +1151,8 @@
 
             module.body().append_operation(func::func(
                 <span class="kw-2">&amp;</span>context,
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;() -&gt; ()&quot;</span>).unwrap(),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+                TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
                 {
                     <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
@@ -1237,8 +1237,8 @@
 
             module.body().append_operation(func::func(
                 <span class="kw-2">&amp;</span>context,
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;() -&gt; ()&quot;</span>).unwrap(),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+                TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
                 {
                     <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
@@ -1322,8 +1322,8 @@
 
             module.body().append_operation(func::func(
                 <span class="kw-2">&amp;</span>context,
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;() -&gt; ()&quot;</span>).unwrap(),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+                TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
                 {
                     <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 

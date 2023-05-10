@@ -283,6 +283,14 @@
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
 <a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Melior is the rustic MLIR bindings for Rust. It aims to provide a simple,
 //! safe, and complete API for MLIR with a reasonably sane ownership model
 //! represented by the type system in Rust.
@@ -323,6 +331,7 @@
 //!     Context,
 //!     dialect::{self, arith, DialectRegistry, func},
 //!     ir::*,
+//!     ir::{attribute::{StringAttribute, TypeAttribute}, r#type::FunctionType},
 //!     utility::register_all_dialects,
 //! };
 //!
@@ -354,8 +363,8 @@
 //!
 //!     func::func(
 //!         &amp;context,
-//!         Attribute::parse(&amp;context, &quot;\&quot;add\&quot;&quot;).unwrap(),
-//!         Attribute::parse(&amp;context, &quot;(index, index) -&gt; index&quot;).unwrap(),  
+//!         StringAttribute::new(&amp;context, &quot;add&quot;),
+//!         TypeAttribute::new(FunctionType::new(&amp;context, &amp;[index_type, index_type], &amp;[index_type]).into()),  
 //!         region,
 //!         location,
 //!     )
@@ -391,8 +400,10 @@
         context::Context,
         dialect::{<span class="self">self</span>, arith, func, scf},
         ir::{
-            attribute::IntegerAttribute, operation::OperationBuilder, r#type::IntegerType,
-            Attribute, Block, Location, Module, Region, Type,
+            attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
+            operation::OperationBuilder,
+            r#type::{FunctionType, IntegerType},
+            Block, Location, Module, Region, Type,
         },
         test::load_all_dialects,
     };
@@ -443,8 +454,11 @@
 
             func::func(
                 <span class="kw-2">&amp;</span>context,
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;add\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(i64, i64) -&gt; i64&quot;</span>).unwrap(),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;add&quot;</span>),
+                TypeAttribute::new(
+                    FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type, integer_type], <span class="kw-2">&amp;</span>[integer_type])
+                        .into(),
+                ),
                 region,
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )
@@ -555,8 +569,10 @@
 
             func::func(
                 <span class="kw-2">&amp;</span>context,
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;sum\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(memref&lt;?xf32&gt;, memref&lt;?xf32&gt;) -&gt; ()&quot;</span>).unwrap(),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;sum&quot;</span>),
+                TypeAttribute::new(
+                    FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[memref_type, memref_type], <span class="kw-2">&amp;</span>[]).into(),
+                ),
                 function_region,
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )

@@ -71,25 +71,35 @@
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
 </pre><pre class="rust"><code><span class="doccomment">//! `func` dialect.
 
 </span><span class="kw">use crate</span>::{
-    ir::{operation::OperationBuilder, Attribute, Identifier, Location, Operation, Region, Value},
+    ir::{
+        attribute::{StringAttribute, TypeAttribute},
+        operation::OperationBuilder,
+        Identifier, Location, Operation, Region, Value,
+    },
     Context,
 };
 
 <span class="doccomment">/// Create a `func.func` operation.
 </span><span class="kw">pub fn </span>func&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    name: Attribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    r#type: Attribute&lt;<span class="lifetime">&#39;c</span>&gt;,
+    name: StringAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
+    r#type: TypeAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     region: Region,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;func.func&quot;</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[
-            (Identifier::new(context, <span class="string">&quot;sym_name&quot;</span>), name),
-            (Identifier::new(context, <span class="string">&quot;function_type&quot;</span>), r#type),
+            (Identifier::new(context, <span class="string">&quot;sym_name&quot;</span>), name.into()),
+            (Identifier::new(context, <span class="string">&quot;function_type&quot;</span>), r#type.into()),
         ])
         .add_regions(<span class="macro">vec!</span>[region])
         .build()
@@ -106,7 +116,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
-        ir::{Attribute, Block, Module, Type},
+        ir::{r#type::FunctionType, Block, Module, Type},
         test::load_all_dialects,
         Context,
     };
@@ -131,8 +141,10 @@
 
             func(
                 <span class="kw-2">&amp;</span>context,
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;add\&quot;&quot;</span>).unwrap(),
-                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(index) -&gt; index&quot;</span>).unwrap(),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;add&quot;</span>),
+                TypeAttribute::new(
+                    FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[integer_type]).into(),
+                ),
                 region,
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )
