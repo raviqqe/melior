@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["DiagnosticSeverity","Error"],"mod":["dialect","ir","pass","utility"],"struct":["Context","ContextRef","Diagnostic","DiagnosticHandlerId","ExecutionEngine","StringRef"]};
+window.SIDEBAR_ITEMS = {"enum":["Error"],"mod":["diagnostic","dialect","ir","pass","utility"],"struct":["Context","ContextRef","ExecutionEngine","StringRef"]};

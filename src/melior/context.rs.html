@@ -256,10 +256,10 @@
 <a href="#256" id="256">256</a>
 <a href="#257" id="257">257</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{
+    diagnostic::{Diagnostic, DiagnosticHandlerId},
     dialect::{Dialect, DialectRegistry},
     logical_result::LogicalResult,
     string_ref::StringRef,
-    Diagnostic, DiagnosticHandlerId,
 };
 <span class="kw">use </span>mlir_sys::{
     mlirContextAppendDialectRegistry, mlirContextAttachDiagnosticHandler, mlirContextCreate,
