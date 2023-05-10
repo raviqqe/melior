@@ -1,3 +1,5 @@
+//! Diagnostics.
+
 mod handler_id;
 mod severity;
 
