@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["condition","for","while","yield"]};
+window.SIDEBAR_ITEMS = {"fn":["condition","execute_region","for","if","index_switch","while","yield"]};

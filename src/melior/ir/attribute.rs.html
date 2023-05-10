@@ -291,13 +291,27 @@
 <a href="#291" id="291">291</a>
 <a href="#292" id="292">292</a>
 <a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Attributes.
 
 </span><span class="kw">mod </span>attribute_like;
+<span class="kw">mod </span>dense_i64_array;
 <span class="kw">mod </span>float;
 <span class="kw">mod </span>integer;
 
-<span class="kw">pub use </span><span class="self">self</span>::{attribute_like::AttributeLike, float::FloatAttribute, integer::IntegerAttribute};
+<span class="kw">pub use </span><span class="self">self</span>::{
+    attribute_like::AttributeLike, dense_i64_array::DenseI64ArrayAttribute, float::FloatAttribute,
+    integer::IntegerAttribute,
+};
 <span class="kw">use super</span>::{r#type, Type};
 <span class="kw">use crate</span>::{context::Context, string_ref::StringRef, utility::print_callback};
 <span class="kw">use </span>mlir_sys::{
@@ -387,6 +401,12 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Debug <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         Display::fmt(<span class="self">self</span>, formatter)
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;DenseI64ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>from(attribute: DenseI64ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(attribute.to_raw()) }
     }
 }
 

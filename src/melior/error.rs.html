@@ -71,6 +71,13 @@
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     error,
     fmt::{<span class="self">self</span>, Display, Formatter},
@@ -79,6 +86,7 @@
 <span class="doccomment">/// A Melior error.
 </span><span class="attr">#[derive(Debug, Eq, PartialEq)]
 </span><span class="kw">pub enum </span>Error {
+    ArrayElementPosition(String, usize),
     AttributeExpected(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, String),
     BlockArgumentExpected(String),
     BlockArgumentPosition(String, usize),
@@ -96,6 +104,12 @@
 <span class="kw">impl </span>Display <span class="kw">for </span>Error {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
+            <span class="self">Self</span>::ArrayElementPosition(array, position) =&gt; {
+                <span class="macro">write!</span>(
+                    formatter,
+                    <span class="string">&quot;array element position {position} out of bounds: {array}&quot;
+                </span>)
+            }
             <span class="self">Self</span>::AttributeExpected(r#type, attribute) =&gt; {
                 <span class="macro">write!</span>(formatter, <span class="string">&quot;{type} attribute expected: {attribute}&quot;</span>)
             }
@@ -105,16 +119,16 @@
             <span class="self">Self</span>::BlockArgumentPosition(block, position) =&gt; {
                 <span class="macro">write!</span>(
                     formatter,
-                    <span class="string">&quot;block argument position {position} out of range: {block}&quot;
+                    <span class="string">&quot;block argument position {position} out of bounds: {block}&quot;
                 </span>)
             }
             <span class="self">Self</span>::FunctionInputPosition(r#type, position) =&gt; <span class="macro">write!</span>(
                 formatter,
-                <span class="string">&quot;function input position {position} out of range: {type}&quot;
+                <span class="string">&quot;function input position {position} out of bounds: {type}&quot;
             </span>),
             <span class="self">Self</span>::FunctionResultPosition(r#type, position) =&gt; <span class="macro">write!</span>(
                 formatter,
-                <span class="string">&quot;function result position {position} out of range: {type}&quot;
+                <span class="string">&quot;function result position {position} out of bounds: {type}&quot;
             </span>),
             <span class="self">Self</span>::InvokeFunction =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to invoke JIT-compiled function&quot;</span>),
             <span class="self">Self</span>::OperationResultExpected(value) =&gt; {
@@ -123,7 +137,7 @@
             <span class="self">Self</span>::OperationResultPosition(operation, position) =&gt; {
                 <span class="macro">write!</span>(
                     formatter,
-                    <span class="string">&quot;operation result position {position} out of range: {operation}&quot;
+                    <span class="string">&quot;operation result position {position} out of bounds: {operation}&quot;
                 </span>)
             }
             <span class="self">Self</span>::ParsePassPipeline(message) =&gt; {
@@ -133,7 +147,7 @@
             <span class="self">Self</span>::TupleFieldPosition(r#type, position) =&gt; {
                 <span class="macro">write!</span>(
                     formatter,
-                    <span class="string">&quot;tuple field position {position} out of range: {type}&quot;
+                    <span class="string">&quot;tuple field position {position} out of bounds: {type}&quot;
                 </span>)
             }
             <span class="self">Self</span>::TypeExpected(r#type, actual) =&gt; {
