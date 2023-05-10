@@ -38,6 +38,7 @@
 //!     Context,
 //!     dialect::{self, arith, DialectRegistry, func},
 //!     ir::*,
+//!     ir::{attribute::{StringAttribute, TypeAttribute}, r#type::FunctionType},
 //!     utility::register_all_dialects,
 //! };
 //!
@@ -69,8 +70,8 @@
 //!
 //!     func::func(
 //!         &context,
-//!         Attribute::parse(&context, "\"add\"").unwrap(),
-//!         Attribute::parse(&context, "(index, index) -> index").unwrap(),  
+//!         StringAttribute::new(&context, "add"),
+//!         TypeAttribute::new(FunctionType::new(&context, &[index_type, index_type], &[index_type]).into()),  
 //!         region,
 //!         location,
 //!     )
@@ -106,8 +107,10 @@ mod tests {
         context::Context,
         dialect::{self, arith, func, scf},
         ir::{
-            attribute::IntegerAttribute, operation::OperationBuilder, r#type::IntegerType,
-            Attribute, Block, Location, Module, Region, Type,
+            attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
+            operation::OperationBuilder,
+            r#type::{FunctionType, IntegerType},
+            Block, Location, Module, Region, Type,
         },
         test::load_all_dialects,
     };
@@ -158,8 +161,11 @@ mod tests {
 
             func::func(
                 &context,
-                Attribute::parse(&context, "\"add\"").unwrap(),
-                Attribute::parse(&context, "(i64, i64) -> i64").unwrap(),
+                StringAttribute::new(&context, "add"),
+                TypeAttribute::new(
+                    FunctionType::new(&context, &[integer_type, integer_type], &[integer_type])
+                        .into(),
+                ),
                 region,
                 Location::unknown(&context),
             )
@@ -270,8 +276,10 @@ mod tests {
 
             func::func(
                 &context,
-                Attribute::parse(&context, "\"sum\"").unwrap(),
-                Attribute::parse(&context, "(memref<?xf32>, memref<?xf32>) -> ()").unwrap(),
+                StringAttribute::new(&context, "sum"),
+                TypeAttribute::new(
+                    FunctionType::new(&context, &[memref_type, memref_type], &[]).into(),
+                ),
                 function_region,
                 Location::unknown(&context),
             )
