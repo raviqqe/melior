@@ -616,7 +616,7 @@
     operation::Builder::new(name, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
             Identifier::new(context, <span class="string">&quot;predicate&quot;</span>),
-            attribute::Integer::new(predicate, r#type::Integer::new(context, <span class="number">64</span>)).into(),
+            attribute::Integer::new(predicate, r#type::Integer::new(context, <span class="number">64</span>).into()).into(),
         )])
         .add_operands(<span class="kw-2">&amp;</span>[lhs, rhs])
         .enable_result_type_inference()

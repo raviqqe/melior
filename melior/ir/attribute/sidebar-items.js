@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Attribute","Integer"],"trait":["AttributeLike"]};
+window.SIDEBAR_ITEMS = {"struct":["Attribute","Float","Integer"],"trait":["AttributeLike"]};

@@ -280,45 +280,6 @@
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
 <a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-<a href="#293" id="293">293</a>
-<a href="#294" id="294">294</a>
-<a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
-<a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Melior is the rustic MLIR bindings for Rust. It aims to provide a simple,
 //! safe, and complete API for MLIR with a reasonably sane ownership model
 //! represented by the type system in Rust.
@@ -425,8 +386,8 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use crate</span>::{
         context::Context,
-        dialect,
-        ir::{operation, r#type, Attribute, Block, Identifier, Location, Module, Region, Type},
+        dialect::{<span class="self">self</span>, arith, func, scf},
+        ir::{attribute, operation, r#type, Attribute, Block, Location, Module, Region, Type},
         test::load_all_dialects,
     };
 
@@ -463,38 +424,24 @@
         <span class="kw">let </span>function = {
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
 
-            <span class="kw">let </span>sum = block.append_operation(
-                operation::Builder::new(<span class="string">&quot;arith.addi&quot;</span>, location)
-                    .add_operands(<span class="kw-2">&amp;</span>[
-                        block.argument(<span class="number">0</span>).unwrap().into(),
-                        block.argument(<span class="number">1</span>).unwrap().into(),
-                    ])
-                    .add_results(<span class="kw-2">&amp;</span>[integer_type])
-                    .build(),
-            );
+            <span class="kw">let </span>sum = block.append_operation(arith::addi(
+                block.argument(<span class="number">0</span>).unwrap().into(),
+                block.argument(<span class="number">1</span>).unwrap().into(),
+                location,
+            ));
 
-            block.append_operation(
-                operation::Builder::new(<span class="string">&quot;func.return&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
-                    .add_operands(<span class="kw-2">&amp;</span>[sum.result(<span class="number">0</span>).unwrap().into()])
-                    .build(),
-            );
+            block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[sum.result(<span class="number">0</span>).unwrap().into()], location));
 
             <span class="kw">let </span>region = Region::new();
             region.append_block(block);
 
-            operation::Builder::new(<span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
-                .add_attributes(<span class="kw-2">&amp;</span>[
-                    (
-                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;function_type&quot;</span>),
-                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(i64, i64) -&gt; i64&quot;</span>).unwrap(),
-                    ),
-                    (
-                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;sym_name&quot;</span>),
-                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;add\&quot;&quot;</span>).unwrap(),
-                    ),
-                ])
-                .add_regions(<span class="macro">vec!</span>[region])
-                .build()
+            func::func(
+                <span class="kw-2">&amp;</span>context,
+                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;add\&quot;&quot;</span>).unwrap(),
+                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(i64, i64) -&gt; i64&quot;</span>).unwrap(),
+                region,
+                Location::unknown(<span class="kw-2">&amp;</span>context),
+            )
         };
 
         module.body().append_operation(function);
@@ -517,15 +464,11 @@
             <span class="kw">let </span>function_block = Block::new(<span class="kw-2">&amp;</span>[(memref_type, location), (memref_type, location)]);
             <span class="kw">let </span>index_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap();
 
-            <span class="kw">let </span>zero = function_block.append_operation(
-                operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
-                    .add_results(<span class="kw-2">&amp;</span>[index_type])
-                    .add_attributes(<span class="kw-2">&amp;</span>[(
-                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
-                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;0 : index&quot;</span>).unwrap(),
-                    )])
-                    .build(),
-            );
+            <span class="kw">let </span>zero = function_block.append_operation(arith::constant(
+                <span class="kw-2">&amp;</span>context,
+                attribute::Integer::new(<span class="number">0</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
+                location,
+            ));
 
             <span class="kw">let </span>dim = function_block.append_operation(
                 operation::Builder::new(<span class="string">&quot;memref.dim&quot;</span>, location)
@@ -537,21 +480,16 @@
                     .build(),
             );
 
-            <span class="kw">let </span>loop_block = Block::new(<span class="kw-2">&amp;</span>[]);
-            loop_block.add_argument(index_type, location);
+            <span class="kw">let </span>loop_block = Block::new(<span class="kw-2">&amp;</span>[(index_type, location)]);
 
-            <span class="kw">let </span>one = function_block.append_operation(
-                operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
-                    .add_results(<span class="kw-2">&amp;</span>[index_type])
-                    .add_attributes(<span class="kw-2">&amp;</span>[(
-                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
-                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;1 : index&quot;</span>).unwrap(),
-                    )])
-                    .build(),
-            );
+            <span class="kw">let </span>one = function_block.append_operation(arith::constant(
+                <span class="kw-2">&amp;</span>context,
+                attribute::Integer::new(<span class="number">1</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
+                location,
+            ));
 
             {
-                <span class="kw">let </span>f32_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;f32&quot;</span>).unwrap();
+                <span class="kw">let </span>f32_type = Type::float32(<span class="kw-2">&amp;</span>context);
 
                 <span class="kw">let </span>lhs = loop_block.append_operation(
                     operation::Builder::new(<span class="string">&quot;memref.load&quot;</span>, location)
@@ -573,15 +511,11 @@
                         .build(),
                 );
 
-                <span class="kw">let </span>add = loop_block.append_operation(
-                    operation::Builder::new(<span class="string">&quot;arith.addf&quot;</span>, location)
-                        .add_operands(<span class="kw-2">&amp;</span>[
-                            lhs.result(<span class="number">0</span>).unwrap().into(),
-                            rhs.result(<span class="number">0</span>).unwrap().into(),
-                        ])
-                        .add_results(<span class="kw-2">&amp;</span>[f32_type])
-                        .build(),
-                );
+                <span class="kw">let </span>add = loop_block.append_operation(arith::addf(
+                    lhs.result(<span class="number">0</span>).unwrap().into(),
+                    rhs.result(<span class="number">0</span>).unwrap().into(),
+                    location,
+                ));
 
                 loop_block.append_operation(
                     operation::Builder::new(<span class="string">&quot;memref.store&quot;</span>, location)
@@ -593,45 +527,33 @@
                         .build(),
                 );
 
-                loop_block.append_operation(operation::Builder::new(<span class="string">&quot;scf.yield&quot;</span>, location).build());
+                loop_block.append_operation(scf::r#yield(<span class="kw-2">&amp;</span>[], location));
             }
 
-            function_block.append_operation(
+            function_block.append_operation(scf::r#for(
+                zero.result(<span class="number">0</span>).unwrap().into(),
+                dim.result(<span class="number">0</span>).unwrap().into(),
+                one.result(<span class="number">0</span>).unwrap().into(),
                 {
                     <span class="kw">let </span>loop_region = Region::new();
                     loop_region.append_block(loop_block);
+                    loop_region
+                },
+                location,
+            ));
 
-                    operation::Builder::new(<span class="string">&quot;scf.for&quot;</span>, location)
-                        .add_operands(<span class="kw-2">&amp;</span>[
-                            zero.result(<span class="number">0</span>).unwrap().into(),
-                            dim.result(<span class="number">0</span>).unwrap().into(),
-                            one.result(<span class="number">0</span>).unwrap().into(),
-                        ])
-                        .add_regions(<span class="macro">vec!</span>[loop_region])
-                }
-                .build(),
-            );
-
-            function_block.append_operation(
-                operation::Builder::new(<span class="string">&quot;func.return&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
-            );
+            function_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
 
             <span class="kw">let </span>function_region = Region::new();
             function_region.append_block(function_block);
 
-            operation::Builder::new(<span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
-                .add_attributes(<span class="kw-2">&amp;</span>[
-                    (
-                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;function_type&quot;</span>),
-                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(memref&lt;?xf32&gt;, memref&lt;?xf32&gt;) -&gt; ()&quot;</span>).unwrap(),
-                    ),
-                    (
-                        Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;sym_name&quot;</span>),
-                        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;sum\&quot;&quot;</span>).unwrap(),
-                    ),
-                ])
-                .add_regions(<span class="macro">vec!</span>[function_region])
-                .build()
+            func::func(
+                <span class="kw-2">&amp;</span>context,
+                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;sum\&quot;&quot;</span>).unwrap(),
+                Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(memref&lt;?xf32&gt;, memref&lt;?xf32&gt;) -&gt; ()&quot;</span>).unwrap(),
+                function_region,
+                Location::unknown(<span class="kw-2">&amp;</span>context),
+            )
         };
 
         module.body().append_operation(function);
