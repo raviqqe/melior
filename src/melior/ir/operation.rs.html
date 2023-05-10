@@ -327,6 +327,14 @@
 <a href="#327" id="327">327</a>
 <a href="#328" id="328">328</a>
 <a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Operations and operation builders.
 
 </span><span class="kw">mod </span>builder;
@@ -378,15 +386,19 @@
     }
 
     <span class="doccomment">/// Gets a result at a position.
-    </span><span class="kw">pub fn </span>result(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize) -&gt; <span class="prelude-ty">Result</span>&lt;result::ResultValue, Error&gt; {
+    </span><span class="kw">pub fn </span>result(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;result::ResultValue, Error&gt; {
         <span class="kw">unsafe </span>{
-            <span class="kw">if </span>position &lt; <span class="self">self</span>.result_count() {
+            <span class="kw">if </span>index &lt; <span class="self">self</span>.result_count() {
                 <span class="prelude-val">Ok</span>(result::ResultValue::from_raw(mlirOperationGetResult(
                     <span class="self">self</span>.raw,
-                    position <span class="kw">as </span>isize,
+                    index <span class="kw">as </span>isize,
                 )))
             } <span class="kw">else </span>{
-                <span class="prelude-val">Err</span>(Error::OperationResultPosition(<span class="self">self</span>.to_string(), position))
+                <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
+                    name: <span class="string">&quot;operation result&quot;</span>,
+                    value: <span class="self">self</span>.to_string(),
+                    index,
+                })
             }
         }
     }
@@ -609,7 +621,11 @@
                 .build()
                 .result(<span class="number">0</span>)
                 .unwrap_err(),
-            Error::OperationResultPosition(<span class="string">&quot;\&quot;foo\&quot;() : () -&gt; ()\n&quot;</span>.into(), <span class="number">0</span>)
+            Error::PositionOutOfBounds {
+                name: <span class="string">&quot;operation result&quot;</span>,
+                value: <span class="string">&quot;\&quot;foo\&quot;() : () -&gt; ()\n&quot;</span>.into(),
+                index: <span class="number">0
+            </span>}
         );
     }
 

@@ -134,11 +134,11 @@
         <span class="kw">if </span>index &lt; <span class="self">self</span>.note_count() {
             <span class="prelude-val">Ok</span>(<span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirDiagnosticGetNote(<span class="self">self</span>.raw, index <span class="kw">as </span>isize)) })
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::PositionOutOfBounds(
-                <span class="string">&quot;diagnostic note&quot;</span>,
-                <span class="self">self</span>.to_string(),
+            <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
+                name: <span class="string">&quot;diagnostic note&quot;</span>,
+                value: <span class="self">self</span>.to_string(),
                 index,
-            ))
+            })
         }
     }
 

@@ -163,6 +163,22 @@
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::TypeLike;
 <span class="kw">use crate</span>::{ir::Type, utility::into_raw_array, Context, Error};
 <span class="kw">use </span>mlir_sys::{
@@ -193,30 +209,38 @@
     }
 
     <span class="doccomment">/// Gets an input at a position.
-    </span><span class="kw">pub fn </span>input(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;, Error&gt; {
-        <span class="kw">if </span>position &lt; <span class="self">self</span>.input_count() {
+    </span><span class="kw">pub fn </span>input(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;, Error&gt; {
+        <span class="kw">if </span>index &lt; <span class="self">self</span>.input_count() {
             <span class="kw">unsafe </span>{
                 <span class="prelude-val">Ok</span>(Type::from_raw(mlirFunctionTypeGetInput(
                     <span class="self">self</span>.r#type.to_raw(),
-                    position <span class="kw">as </span>isize,
+                    index <span class="kw">as </span>isize,
                 )))
             }
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::FunctionInputPosition(<span class="self">self</span>.to_string(), position))
+            <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
+                name: <span class="string">&quot;function input&quot;</span>,
+                value: <span class="self">self</span>.to_string(),
+                index,
+            })
         }
     }
 
     <span class="doccomment">/// Gets a result at a position.
-    </span><span class="kw">pub fn </span>result(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;, Error&gt; {
-        <span class="kw">if </span>position &lt; <span class="self">self</span>.result_count() {
+    </span><span class="kw">pub fn </span>result(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;, Error&gt; {
+        <span class="kw">if </span>index &lt; <span class="self">self</span>.result_count() {
             <span class="kw">unsafe </span>{
                 <span class="prelude-val">Ok</span>(Type::from_raw(mlirFunctionTypeGetResult(
                     <span class="self">self</span>.r#type.to_raw(),
-                    position <span class="kw">as </span>isize,
+                    index <span class="kw">as </span>isize,
                 )))
             }
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::FunctionResultPosition(<span class="self">self</span>.to_string(), position))
+            <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
+                name: <span class="string">&quot;function result&quot;</span>,
+                value: <span class="self">self</span>.to_string(),
+                index,
+            })
         }
     }
 
@@ -279,7 +303,11 @@
 
         <span class="macro">assert_eq!</span>(
             function.input(<span class="number">42</span>),
-            <span class="prelude-val">Err</span>(Error::FunctionInputPosition(function.to_string(), <span class="number">42</span>))
+            <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
+                name: <span class="string">&quot;function input&quot;</span>,
+                value: function.to_string(),
+                index: <span class="number">42
+            </span>})
         );
     }
 
@@ -302,7 +330,11 @@
 
         <span class="macro">assert_eq!</span>(
             function.result(<span class="number">42</span>),
-            <span class="prelude-val">Err</span>(Error::FunctionResultPosition(function.to_string(), <span class="number">42</span>))
+            <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
+                name: <span class="string">&quot;function result&quot;</span>,
+                value: function.to_string(),
+                index: <span class="number">42
+            </span>})
         );
     }
 

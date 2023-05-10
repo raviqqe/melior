@@ -102,6 +102,14 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::TypeLike;
 <span class="kw">use crate</span>::{ir::Type, utility::into_raw_array, Context, Error};
 <span class="kw">use </span>mlir_sys::{mlirTupleTypeGet, mlirTupleTypeGetNumTypes, mlirTupleTypeGetType, MlirType};
@@ -134,7 +142,11 @@
                 )))
             }
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::TupleFieldPosition(<span class="self">self</span>.to_string(), index))
+            <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
+                name: <span class="string">&quot;tuple field&quot;</span>,
+                value: <span class="self">self</span>.to_string(),
+                index,
+            })
         }
     }
 
@@ -197,7 +209,11 @@
 
         <span class="macro">assert_eq!</span>(
             tuple.r#type(<span class="number">42</span>),
-            <span class="prelude-val">Err</span>(Error::TupleFieldPosition(tuple.to_string(), <span class="number">42</span>))
+            <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
+                name: <span class="string">&quot;tuple field&quot;</span>,
+                value: tuple.to_string(),
+                index: <span class="number">42
+            </span>})
         );
     }
 
