@@ -102,35 +102,9 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
-<a href="#121" id="121">121</a>
-<a href="#122" id="122">122</a>
-<a href="#123" id="123">123</a>
-<a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
-<a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::TypeLike;
 <span class="kw">use crate</span>::{ir::Type, utility::into_raw_array, Context, Error};
 <span class="kw">use </span>mlir_sys::{mlirTupleTypeGet, mlirTupleTypeGetNumTypes, mlirTupleTypeGetType, MlirType};
-<span class="kw">use </span>std::fmt::{<span class="self">self</span>, Display, Formatter};
 
 <span class="doccomment">/// A tuple type.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
@@ -141,28 +115,26 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TupleType&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Creates a tuple type.
     </span><span class="kw">pub fn </span>new(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;]) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            r#type: <span class="kw">unsafe </span>{
-                Type::from_raw(mlirTupleTypeGet(
-                    context.to_raw(),
-                    types.len() <span class="kw">as </span>isize,
-                    into_raw_array(types.iter().map(|r#type| r#type.to_raw()).collect()),
-                ))
-            },
+        <span class="kw">unsafe </span>{
+            <span class="self">Self</span>::from_raw(mlirTupleTypeGet(
+                context.to_raw(),
+                types.len() <span class="kw">as </span>isize,
+                into_raw_array(types.iter().map(|r#type| r#type.to_raw()).collect()),
+            ))
         }
     }
 
     <span class="doccomment">/// Gets a field at a position.
-    </span><span class="kw">pub fn </span>r#type(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type, Error&gt; {
-        <span class="kw">if </span>position &lt; <span class="self">self</span>.type_count() {
+    </span><span class="kw">pub fn </span>r#type(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type, Error&gt; {
+        <span class="kw">if </span>index &lt; <span class="self">self</span>.type_count() {
             <span class="kw">unsafe </span>{
                 <span class="prelude-val">Ok</span>(Type::from_raw(mlirTupleTypeGetType(
                     <span class="self">self</span>.r#type.to_raw(),
-                    position <span class="kw">as </span>isize,
+                    index <span class="kw">as </span>isize,
                 )))
             }
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::TupleFieldPosition(<span class="self">self</span>.to_string(), position))
+            <span class="prelude-val">Err</span>(Error::TupleFieldPosition(<span class="self">self</span>.to_string(), index))
         }
     }
 
@@ -172,29 +144,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TypeLike&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>TupleType&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirType {
-        <span class="self">self</span>.r#type.to_raw()
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Display <span class="kw">for </span>TupleType&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
-        Type::from(<span class="kw-2">*</span><span class="self">self</span>).fmt(formatter)
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TryFrom&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>TupleType&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">type </span>Error = Error;
-
-    <span class="kw">fn </span>try_from(r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        <span class="kw">if </span>r#type.is_tuple() {
-            <span class="prelude-val">Ok</span>(<span class="self">Self </span>{ r#type })
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::TypeExpected(<span class="string">&quot;tuple&quot;</span>, r#type.to_string()))
-        }
-    }
-}
+<span class="macro">type_traits!</span>(TupleType, is_tuple, <span class="string">&quot;tuple&quot;</span>);
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
