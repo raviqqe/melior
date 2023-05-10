@@ -74,7 +74,7 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Manager;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::PassManager;
 <span class="kw">use crate</span>::{pass::Pass, string_ref::StringRef};
 <span class="kw">use </span>mlir_sys::{
     mlirOpPassManagerAddOwnedPass, mlirOpPassManagerGetNestedUnder, mlirPrintPassPipeline,
@@ -88,12 +88,12 @@
 
 <span class="doccomment">/// An operation pass manager.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>OperationManager&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">pub struct </span>OperationPassManager&lt;<span class="lifetime">&#39;a</span>&gt; {
     raw: MlirOpPassManager,
-    _parent: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Manager&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    _parent: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>PassManager&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationManager&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationPassManager&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Gets an operation pass manager for nested operations corresponding to a
     /// given name.
     </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
@@ -122,7 +122,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>OperationManager&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>OperationPassManager&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">let </span><span class="kw-2">mut </span>data = (formatter, <span class="prelude-val">Ok</span>(()));
 

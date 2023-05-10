@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["async","conversion","gpu","linalg","sparse_tensor","transform"],"struct":["Manager","OperationManager","Pass"]};
+window.SIDEBAR_ITEMS = {"mod":["async","conversion","gpu","linalg","sparse_tensor","transform"],"struct":["OperationPassManager","Pass","PassManager"]};

@@ -188,7 +188,7 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
         ir::{
-            r#type::{Function, Integer},
+            r#type::{FunctionType, IntegerType},
             Type,
         },
         Context,
@@ -210,7 +210,7 @@
     </span><span class="kw">fn </span>is_integer() {
         <span class="kw">let </span>context = Context::new();
 
-        <span class="macro">assert!</span>(Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).is_integer());
+        <span class="macro">assert!</span>(IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).is_integer());
     }
 
     <span class="attr">#[test]
@@ -224,14 +224,14 @@
     </span><span class="kw">fn </span>is_bfloat16() {
         <span class="kw">let </span>context = Context::new();
 
-        <span class="macro">assert!</span>(Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).is_function());
+        <span class="macro">assert!</span>(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).is_function());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_function() {
         <span class="kw">let </span>context = Context::new();
 
-        <span class="macro">assert!</span>(Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).is_function());
+        <span class="macro">assert!</span>(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).is_function());
     }
 
     <span class="attr">#[test]

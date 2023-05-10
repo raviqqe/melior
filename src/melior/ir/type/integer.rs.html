@@ -159,11 +159,11 @@
 
 <span class="doccomment">/// A integer type.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>Integer&lt;<span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub struct </span>IntegerType&lt;<span class="lifetime">&#39;c</span>&gt; {
     r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Integer&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; IntegerType&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Creates an integer type.
     </span><span class="kw">pub fn </span>new(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, bits: u32) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -208,19 +208,19 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TypeLike&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>Integer&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TypeLike&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>IntegerType&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirType {
         <span class="self">self</span>.r#type.to_raw()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Display <span class="kw">for </span>Integer&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Display <span class="kw">for </span>IntegerType&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         Type::from(<span class="kw-2">*</span><span class="self">self</span>).fmt(formatter)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TryFrom&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Integer&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TryFrom&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>IntegerType&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">type </span>Error = Error;
 
     <span class="kw">fn </span>try_from(r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
@@ -238,17 +238,17 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>new() {
-        <span class="macro">assert!</span>(Integer::new(<span class="kw-2">&amp;</span>Context::new(), <span class="number">64</span>).is_integer());
+        <span class="macro">assert!</span>(IntegerType::new(<span class="kw-2">&amp;</span>Context::new(), <span class="number">64</span>).is_integer());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>signed() {
-        <span class="macro">assert!</span>(Integer::signed(<span class="kw-2">&amp;</span>Context::new(), <span class="number">64</span>).is_integer());
+        <span class="macro">assert!</span>(IntegerType::signed(<span class="kw-2">&amp;</span>Context::new(), <span class="number">64</span>).is_integer());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>unsigned() {
-        <span class="macro">assert!</span>(Integer::unsigned(<span class="kw-2">&amp;</span>Context::new(), <span class="number">64</span>).is_integer());
+        <span class="macro">assert!</span>(IntegerType::unsigned(<span class="kw-2">&amp;</span>Context::new(), <span class="number">64</span>).is_integer());
     }
 
     <span class="attr">#[test]
@@ -256,7 +256,7 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            Type::from(Integer::signed(<span class="kw-2">&amp;</span>context, <span class="number">42</span>)),
+            Type::from(IntegerType::signed(<span class="kw-2">&amp;</span>context, <span class="number">42</span>)),
             Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;si42&quot;</span>).unwrap()
         );
     }
@@ -266,7 +266,7 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            Type::from(Integer::unsigned(<span class="kw-2">&amp;</span>context, <span class="number">42</span>)),
+            Type::from(IntegerType::unsigned(<span class="kw-2">&amp;</span>context, <span class="number">42</span>)),
             Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;ui42&quot;</span>).unwrap()
         );
     }
@@ -275,15 +275,15 @@
     </span><span class="kw">fn </span>get_width() {
         <span class="kw">let </span>context = Context::new();
 
-        <span class="macro">assert_eq!</span>(Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).width(), <span class="number">64</span>);
+        <span class="macro">assert_eq!</span>(IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).width(), <span class="number">64</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>check_sign() {
         <span class="kw">let </span>context = Context::new();
-        <span class="kw">let </span>signless = Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">42</span>);
-        <span class="kw">let </span>signed = Integer::signed(<span class="kw-2">&amp;</span>context, <span class="number">42</span>);
-        <span class="kw">let </span>unsigned = Integer::unsigned(<span class="kw-2">&amp;</span>context, <span class="number">42</span>);
+        <span class="kw">let </span>signless = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">42</span>);
+        <span class="kw">let </span>signed = IntegerType::signed(<span class="kw-2">&amp;</span>context, <span class="number">42</span>);
+        <span class="kw">let </span>unsigned = IntegerType::unsigned(<span class="kw-2">&amp;</span>context, <span class="number">42</span>);
 
         <span class="macro">assert!</span>(signless.is_signless());
         <span class="macro">assert!</span>(!signed.is_signless());

@@ -229,12 +229,12 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use crate</span>::{dialect, ir::r#type};
+    <span class="kw">use crate</span>::{dialect, ir::r#type::IntegerType};
 
     <span class="kw">fn </span>create_context() -&gt; Context {
         <span class="kw">let </span>context = Context::new();
 
-        dialect::Handle::llvm().register_dialect(<span class="kw-2">&amp;</span>context);
+        dialect::DialectHandle::llvm().register_dialect(<span class="kw-2">&amp;</span>context);
         context.get_or_load_dialect(<span class="string">&quot;llvm&quot;</span>);
 
         context
@@ -253,7 +253,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>pointer() {
         <span class="kw">let </span>context = create_context();
-        <span class="kw">let </span>i32 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
+        <span class="kw">let </span>i32 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
 
         <span class="macro">assert_eq!</span>(
             <span class="kw">super</span>::pointer(i32, <span class="number">0</span>),
@@ -264,7 +264,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>pointer_with_address_space() {
         <span class="kw">let </span>context = create_context();
-        <span class="kw">let </span>i32 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
+        <span class="kw">let </span>i32 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
 
         <span class="macro">assert_eq!</span>(
             <span class="kw">super</span>::pointer(i32, <span class="number">4</span>),
@@ -285,7 +285,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>array() {
         <span class="kw">let </span>context = create_context();
-        <span class="kw">let </span>i32 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
+        <span class="kw">let </span>i32 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
 
         <span class="macro">assert_eq!</span>(
             <span class="kw">super</span>::array(i32, <span class="number">4</span>),
@@ -296,9 +296,9 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>function() {
         <span class="kw">let </span>context = create_context();
-        <span class="kw">let </span>i8 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">8</span>).into();
-        <span class="kw">let </span>i32 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
-        <span class="kw">let </span>i64 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
+        <span class="kw">let </span>i8 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">8</span>).into();
+        <span class="kw">let </span>i32 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
+        <span class="kw">let </span>i64 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
         <span class="macro">assert_eq!</span>(
             <span class="kw">super</span>::function(i8, <span class="kw-2">&amp;</span>[i32, i64], <span class="bool-val">false</span>),
@@ -309,8 +309,8 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>r#struct() {
         <span class="kw">let </span>context = create_context();
-        <span class="kw">let </span>i32 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
-        <span class="kw">let </span>i64 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
+        <span class="kw">let </span>i32 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
+        <span class="kw">let </span>i64 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
         <span class="macro">assert_eq!</span>(
             <span class="kw">super</span>::r#struct(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[i32, i64], <span class="bool-val">false</span>),
@@ -321,8 +321,8 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>packed_struct() {
         <span class="kw">let </span>context = create_context();
-        <span class="kw">let </span>i32 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
-        <span class="kw">let </span>i64 = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
+        <span class="kw">let </span>i32 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
+        <span class="kw">let </span>i64 = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
         <span class="macro">assert_eq!</span>(
             <span class="kw">super</span>::r#struct(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[i32, i64], <span class="bool-val">true</span>),

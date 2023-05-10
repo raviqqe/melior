@@ -74,7 +74,7 @@
 </pre><pre class="rust"><code><span class="doccomment">//! `func` dialect.
 
 </span><span class="kw">use crate</span>::{
-    ir::{operation::Builder, Attribute, Identifier, Location, Operation, Region, Value},
+    ir::{operation::OperationBuilder, Attribute, Identifier, Location, Operation, Region, Value},
     Context,
 };
 
@@ -86,7 +86,7 @@
     region: Region,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    Builder::new(<span class="string">&quot;func.func&quot;</span>, location)
+    OperationBuilder::new(<span class="string">&quot;func.func&quot;</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[
             (Identifier::new(context, <span class="string">&quot;sym_name&quot;</span>), name),
             (Identifier::new(context, <span class="string">&quot;function_type&quot;</span>), r#type),
@@ -97,7 +97,7 @@
 
 <span class="doccomment">/// Create a `func.return` operation.
 </span><span class="kw">pub fn </span>r#return&lt;<span class="lifetime">&#39;c</span>&gt;(operands: <span class="kw-2">&amp;</span>[Value], location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    Builder::new(<span class="string">&quot;func.return&quot;</span>, location)
+    OperationBuilder::new(<span class="string">&quot;func.return&quot;</span>, location)
         .add_operands(operands)
         .build()
 }

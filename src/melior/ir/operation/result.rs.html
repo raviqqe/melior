@@ -137,14 +137,14 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use crate</span>::{
         context::Context,
-        ir::{operation, Block, Location, Type},
+        ir::{operation::OperationBuilder, Block, Location, Type},
     };
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>result_number() {
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>r#type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap();
-        <span class="kw">let </span>operation = operation::Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
+        <span class="kw">let </span>operation = OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
             .add_results(<span class="kw-2">&amp;</span>[r#type])
             .build();
 

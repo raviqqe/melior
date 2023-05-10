@@ -180,6 +180,12 @@
 <a href="#180" id="180">180</a>
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::TypeLike;
 <span class="kw">use crate</span>::{ir::Type, utility::into_raw_array, Context, Error};
 <span class="kw">use </span>mlir_sys::{
@@ -190,11 +196,11 @@
 
 <span class="doccomment">/// A function type.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>Function&lt;<span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub struct </span>FunctionType&lt;<span class="lifetime">&#39;c</span>&gt; {
     r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Function&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; FunctionType&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Creates a function type.
     </span><span class="kw">pub fn </span>new(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, inputs: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;], results: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -249,19 +255,19 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TypeLike&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>Function&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TypeLike&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>FunctionType&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirType {
         <span class="self">self</span>.r#type.to_raw()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Display <span class="kw">for </span>Function&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Display <span class="kw">for </span>FunctionType&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         Type::from(<span class="kw-2">*</span><span class="self">self</span>).fmt(formatter)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TryFrom&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Function&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TryFrom&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>FunctionType&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">type </span>Error = Error;
 
     <span class="kw">fn </span>try_from(r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
@@ -284,7 +290,7 @@
         <span class="kw">let </span>integer = Type::index(<span class="kw-2">&amp;</span>context);
 
         <span class="macro">assert_eq!</span>(
-            Type::from(Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer, integer], <span class="kw-2">&amp;</span>[integer])),
+            Type::from(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer, integer], <span class="kw-2">&amp;</span>[integer])),
             Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;(index, index) -&gt; index&quot;</span>).unwrap()
         );
     }
@@ -295,7 +301,7 @@
         <span class="kw">let </span>integer = Type::index(<span class="kw-2">&amp;</span>context);
 
         <span class="macro">assert_eq!</span>(
-            Type::from(Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[integer, integer])),
+            Type::from(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[integer, integer])),
             Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;() -&gt; (index, index)&quot;</span>).unwrap()
         );
     }
@@ -306,7 +312,7 @@
         <span class="kw">let </span>integer = Type::index(<span class="kw-2">&amp;</span>context);
 
         <span class="macro">assert_eq!</span>(
-            Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer], <span class="kw-2">&amp;</span>[]).input(<span class="number">0</span>),
+            FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer], <span class="kw-2">&amp;</span>[]).input(<span class="number">0</span>),
             <span class="prelude-val">Ok</span>(integer)
         );
     }
@@ -315,7 +321,7 @@
     </span><span class="kw">fn </span>input_error() {
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>integer = Type::index(<span class="kw-2">&amp;</span>context);
-        <span class="kw">let </span>function = Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer], <span class="kw-2">&amp;</span>[]);
+        <span class="kw">let </span>function = FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer], <span class="kw-2">&amp;</span>[]);
 
         <span class="macro">assert_eq!</span>(
             function.input(<span class="number">42</span>),
@@ -329,7 +335,7 @@
         <span class="kw">let </span>integer = Type::index(<span class="kw-2">&amp;</span>context);
 
         <span class="macro">assert_eq!</span>(
-            Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[integer]).result(<span class="number">0</span>),
+            FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[integer]).result(<span class="number">0</span>),
             <span class="prelude-val">Ok</span>(integer)
         );
     }
@@ -338,7 +344,7 @@
     </span><span class="kw">fn </span>result_error() {
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>integer = Type::index(<span class="kw-2">&amp;</span>context);
-        <span class="kw">let </span>function = Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[integer]);
+        <span class="kw">let </span>function = FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[integer]);
 
         <span class="macro">assert_eq!</span>(
             function.result(<span class="number">42</span>),
@@ -351,7 +357,10 @@
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>integer = Type::index(<span class="kw-2">&amp;</span>context);
 
-        <span class="macro">assert_eq!</span>(Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer], <span class="kw-2">&amp;</span>[]).input_count(), <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(
+            FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer], <span class="kw-2">&amp;</span>[]).input_count(),
+            <span class="number">1
+        </span>);
     }
 
     <span class="attr">#[test]
@@ -359,7 +368,10 @@
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>integer = Type::index(<span class="kw-2">&amp;</span>context);
 
-        <span class="macro">assert_eq!</span>(Function::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[integer]).result_count(), <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(
+            FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[integer]).result_count(),
+            <span class="number">1
+        </span>);
     }
 }
 </code></pre></div>

@@ -63,11 +63,11 @@
 
 <span class="doccomment">/// A dialect registry.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>Registry {
+</span><span class="kw">pub struct </span>DialectRegistry {
     raw: MlirDialectRegistry,
 }
 
-<span class="kw">impl </span>Registry {
+<span class="kw">impl </span>DialectRegistry {
     <span class="doccomment">/// Creates a dialect registry.
     </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -80,13 +80,13 @@
     }
 }
 
-<span class="kw">impl </span>Drop <span class="kw">for </span>Registry {
+<span class="kw">impl </span>Drop <span class="kw">for </span>DialectRegistry {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">unsafe </span>{ mlirDialectRegistryDestroy(<span class="self">self</span>.raw) };
     }
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>Registry {
+<span class="kw">impl </span>Default <span class="kw">for </span>DialectRegistry {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new()
     }
@@ -95,22 +95,22 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use crate</span>::{context::Context, dialect::Handle};
+    <span class="kw">use crate</span>::{context::Context, dialect::DialectHandle};
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>new() {
-        Registry::new();
+        DialectRegistry::new();
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>register_all_dialects() {
-        Registry::new();
+        DialectRegistry::new();
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>register_dialect() {
-        <span class="kw">let </span>registry = Registry::new();
-        Handle::func().insert_dialect(<span class="kw-2">&amp;</span>registry);
+        <span class="kw">let </span>registry = DialectRegistry::new();
+        DialectHandle::func().insert_dialect(<span class="kw-2">&amp;</span>registry);
 
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>count = context.registered_dialect_count();

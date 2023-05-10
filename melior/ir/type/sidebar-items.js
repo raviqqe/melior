@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["id"],"struct":["Function","Integer","MemRef","Tuple","Type"],"trait":["TypeLike"]};
+window.SIDEBAR_ITEMS = {"mod":["id"],"struct":["FunctionType","IntegerType","MemRefType","TupleType","Type"],"trait":["TypeLike"]};

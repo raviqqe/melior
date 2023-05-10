@@ -217,12 +217,12 @@
 <span class="kw">use </span><span class="kw">super</span>::Operation;
 
 <span class="doccomment">/// An operation builder.
-</span><span class="kw">pub struct </span>Builder&lt;<span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub struct </span>OperationBuilder&lt;<span class="lifetime">&#39;c</span>&gt; {
     raw: MlirOperationState,
     _context: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Builder&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; OperationBuilder&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Creates an operation builder.
     </span><span class="kw">pub fn </span>new(name: <span class="kw-2">&amp;</span>str, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -332,14 +332,14 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>new() {
-        Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>Context::new())).build();
+        OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>Context::new())).build();
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>add_results() {
         <span class="kw">let </span>context = Context::new();
 
-        Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
+        OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
             .add_results(<span class="kw-2">&amp;</span>[Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;i1&quot;</span>).unwrap()])
             .build();
     }
@@ -348,7 +348,7 @@
     </span><span class="kw">fn </span>add_regions() {
         <span class="kw">let </span>context = Context::new();
 
-        Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
+        OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
             .add_regions(<span class="macro">vec!</span>[Region::new()])
             .build();
     }
@@ -357,7 +357,7 @@
     </span><span class="kw">fn </span>add_successors() {
         <span class="kw">let </span>context = Context::new();
 
-        Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
+        OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
             .add_successors(<span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>Block::new(<span class="kw-2">&amp;</span>[])])
             .build();
     }
@@ -366,7 +366,7 @@
     </span><span class="kw">fn </span>add_attributes() {
         <span class="kw">let </span>context = Context::new();
 
-        Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
+        OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
             .add_attributes(<span class="kw-2">&amp;</span>[(
                 Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
                 Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap(),
@@ -385,7 +385,7 @@
         <span class="kw">let </span>argument = block.argument(<span class="number">0</span>).unwrap().into();
 
         <span class="macro">assert_eq!</span>(
-            Builder::new(<span class="string">&quot;arith.addi&quot;</span>, location)
+            OperationBuilder::new(<span class="string">&quot;arith.addi&quot;</span>, location)
                 .add_operands(<span class="kw-2">&amp;</span>[argument, argument])
                 .enable_result_type_inference()
                 .build()

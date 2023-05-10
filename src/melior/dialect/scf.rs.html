@@ -392,7 +392,7 @@
 <a href="#392" id="392">392</a>
 </pre><pre class="rust"><code><span class="doccomment">//! `scf` dialect.
 
-</span><span class="kw">use </span><span class="kw">crate</span>::ir::{operation::Builder, Location, Operation, Region, Type, Value};
+</span><span class="kw">use </span><span class="kw">crate</span>::ir::{operation::OperationBuilder, Location, Operation, Region, Type, Value};
 
 <span class="doccomment">/// Creates a `scf.condition` operation.
 </span><span class="kw">pub fn </span>condition&lt;<span class="lifetime">&#39;c</span>&gt;(
@@ -400,7 +400,7 @@
     values: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    Builder::new(<span class="string">&quot;scf.condition&quot;</span>, location)
+    OperationBuilder::new(<span class="string">&quot;scf.condition&quot;</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[condition])
         .add_operands(values)
         .build()
@@ -414,7 +414,7 @@
     region: Region,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    Builder::new(<span class="string">&quot;scf.for&quot;</span>, location)
+    OperationBuilder::new(<span class="string">&quot;scf.for&quot;</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[start, end, step])
         .add_regions(<span class="macro">vec!</span>[region])
         .build()
@@ -428,7 +428,7 @@
     after_region: Region,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    Builder::new(<span class="string">&quot;scf.while&quot;</span>, location)
+    OperationBuilder::new(<span class="string">&quot;scf.while&quot;</span>, location)
         .add_operands(initial_values)
         .add_results(result_types)
         .add_regions(<span class="macro">vec!</span>[before_region, after_region])
@@ -437,7 +437,7 @@
 
 <span class="doccomment">/// Creates a `scf.yield` operation.
 </span><span class="kw">pub fn </span>r#yield&lt;<span class="lifetime">&#39;c</span>&gt;(values: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>&gt;], location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    Builder::new(<span class="string">&quot;scf.yield&quot;</span>, location)
+    OperationBuilder::new(<span class="string">&quot;scf.yield&quot;</span>, location)
         .add_operands(values)
         .build()
 }
@@ -448,7 +448,7 @@
     <span class="kw">use crate</span>::{
         dialect::{arith, func},
         ir::{
-            attribute,
+            attribute::{FloatAttribute, IntegerAttribute},
             r#type::{<span class="self">self</span>, Type},
             Attribute, Block, Module,
         },
@@ -535,7 +535,7 @@
 
                 <span class="kw">let </span>initial = block.append_operation(arith::constant(
                     <span class="kw-2">&amp;</span>context,
-                    attribute::Integer::new(<span class="number">0</span>, index_type).into(),
+                    IntegerAttribute::new(<span class="number">0</span>, index_type).into(),
                     location,
                 ));
 
@@ -547,14 +547,14 @@
 
                         <span class="kw">let </span>condition = block.append_operation(arith::constant(
                             <span class="kw-2">&amp;</span>context,
-                            attribute::Integer::new(<span class="number">0</span>, r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">1</span>).into())
+                            IntegerAttribute::new(<span class="number">0</span>, r#type::IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">1</span>).into())
                                 .into(),
                             location,
                         ));
 
                         <span class="kw">let </span>result = block.append_operation(arith::constant(
                             <span class="kw-2">&amp;</span>context,
-                            attribute::Integer::new(<span class="number">42</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
+                            IntegerAttribute::new(<span class="number">42</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
                             location,
                         ));
 
@@ -573,7 +573,7 @@
 
                         <span class="kw">let </span>result = block.append_operation(arith::constant(
                             <span class="kw-2">&amp;</span>context,
-                            attribute::Integer::new(<span class="number">42</span>, index_type).into(),
+                            IntegerAttribute::new(<span class="number">42</span>, index_type).into(),
                             location,
                         ));
 
@@ -621,7 +621,7 @@
 
                 <span class="kw">let </span>initial = block.append_operation(arith::constant(
                     <span class="kw-2">&amp;</span>context,
-                    attribute::Integer::new(<span class="number">0</span>, index_type).into(),
+                    IntegerAttribute::new(<span class="number">0</span>, index_type).into(),
                     location,
                 ));
 
@@ -633,14 +633,14 @@
 
                         <span class="kw">let </span>condition = block.append_operation(arith::constant(
                             <span class="kw-2">&amp;</span>context,
-                            attribute::Integer::new(<span class="number">0</span>, r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">1</span>).into())
+                            IntegerAttribute::new(<span class="number">0</span>, r#type::IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">1</span>).into())
                                 .into(),
                             location,
                         ));
 
                         <span class="kw">let </span>result = block.append_operation(arith::constant(
                             <span class="kw-2">&amp;</span>context,
-                            attribute::Float::new(<span class="kw-2">&amp;</span>context, <span class="number">42.0</span>, float_type).into(),
+                            FloatAttribute::new(<span class="kw-2">&amp;</span>context, <span class="number">42.0</span>, float_type).into(),
                             location,
                         ));
 
@@ -659,7 +659,7 @@
 
                         <span class="kw">let </span>result = block.append_operation(arith::constant(
                             <span class="kw-2">&amp;</span>context,
-                            attribute::Integer::new(<span class="number">42</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
+                            IntegerAttribute::new(<span class="number">42</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
                             location,
                         ));
 
@@ -706,7 +706,7 @@
 
                 <span class="kw">let </span>initial = block.append_operation(arith::constant(
                     <span class="kw-2">&amp;</span>context,
-                    attribute::Integer::new(<span class="number">0</span>, index_type).into(),
+                    IntegerAttribute::new(<span class="number">0</span>, index_type).into(),
                     location,
                 ));
 
@@ -721,14 +721,14 @@
 
                         <span class="kw">let </span>condition = block.append_operation(arith::constant(
                             <span class="kw-2">&amp;</span>context,
-                            attribute::Integer::new(<span class="number">0</span>, r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">1</span>).into())
+                            IntegerAttribute::new(<span class="number">0</span>, r#type::IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">1</span>).into())
                                 .into(),
                             location,
                         ));
 
                         <span class="kw">let </span>result = block.append_operation(arith::constant(
                             <span class="kw-2">&amp;</span>context,
-                            attribute::Integer::new(<span class="number">42</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
+                            IntegerAttribute::new(<span class="number">42</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
                             location,
                         ));
 
@@ -750,7 +750,7 @@
 
                         <span class="kw">let </span>result = block.append_operation(arith::constant(
                             <span class="kw-2">&amp;</span>context,
-                            attribute::Integer::new(<span class="number">42</span>, index_type).into(),
+                            IntegerAttribute::new(<span class="number">42</span>, index_type).into(),
                             location,
                         ));
 

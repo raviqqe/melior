@@ -141,7 +141,7 @@
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Registry;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::DialectRegistry;
 <span class="kw">use crate</span>::{context::Context, dialect::Dialect, string_ref::StringRef};
 <span class="kw">use </span>mlir_sys::{
     mlirDialectHandleGetNamespace, mlirDialectHandleInsertDialect, mlirDialectHandleLoadDialect,
@@ -154,11 +154,11 @@
 
 <span class="doccomment">/// A dialect handle.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>Handle {
+</span><span class="kw">pub struct </span>DialectHandle {
     raw: MlirDialectHandle,
 }
 
-<span class="kw">impl </span>Handle {
+<span class="kw">impl </span>DialectHandle {
     <span class="doccomment">/// Creates a `async` dialect handle.
     </span><span class="kw">pub fn </span>r#async() -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirGetDialectHandle__async__()) }
@@ -225,7 +225,7 @@
     }
 
     <span class="doccomment">/// Inserts a dialect into a dialect registry.
-    </span><span class="kw">pub fn </span>insert_dialect(<span class="kw-2">&amp;</span><span class="self">self</span>, registry: <span class="kw-2">&amp;</span>Registry) {
+    </span><span class="kw">pub fn </span>insert_dialect(<span class="kw-2">&amp;</span><span class="self">self</span>, registry: <span class="kw-2">&amp;</span>DialectRegistry) {
         <span class="kw">unsafe </span>{ mlirDialectHandleInsertDialect(<span class="self">self</span>.raw, registry.to_raw()) }
     }
 
@@ -250,38 +250,38 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>func() {
-        Handle::func();
+        DialectHandle::func();
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>llvm() {
-        Handle::llvm();
+        DialectHandle::llvm();
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>namespace() {
-        Handle::func().namespace();
+        DialectHandle::func().namespace();
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>insert_dialect() {
-        <span class="kw">let </span>registry = Registry::new();
+        <span class="kw">let </span>registry = DialectRegistry::new();
 
-        Handle::func().insert_dialect(<span class="kw-2">&amp;</span>registry);
+        DialectHandle::func().insert_dialect(<span class="kw-2">&amp;</span>registry);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>load_dialect() {
         <span class="kw">let </span>context = Context::new();
 
-        Handle::func().load_dialect(<span class="kw-2">&amp;</span>context);
+        DialectHandle::func().load_dialect(<span class="kw-2">&amp;</span>context);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>register_dialect() {
         <span class="kw">let </span>context = Context::new();
 
-        Handle::func().register_dialect(<span class="kw-2">&amp;</span>context);
+        DialectHandle::func().register_dialect(<span class="kw-2">&amp;</span>context);
     }
 }
 </code></pre></div>

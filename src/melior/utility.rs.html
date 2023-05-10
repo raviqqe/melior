@@ -139,10 +139,12 @@
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Utility functions.
 
 </span><span class="kw">use crate</span>::{
-    context::Context, dialect, logical_result::LogicalResult, pass, string_ref::StringRef, Error,
+    context::Context, dialect::DialectRegistry, logical_result::LogicalResult, pass,
+    string_ref::StringRef, Error,
 };
 <span class="kw">use </span>mlir_sys::{
     mlirParsePassPipeline, mlirRegisterAllDialects, mlirRegisterAllLLVMTranslations,
@@ -155,7 +157,7 @@
 };
 
 <span class="doccomment">/// Registers all dialects to a dialect registry.
-</span><span class="kw">pub fn </span>register_all_dialects(registry: <span class="kw-2">&amp;</span>dialect::Registry) {
+</span><span class="kw">pub fn </span>register_all_dialects(registry: <span class="kw-2">&amp;</span>DialectRegistry) {
     <span class="kw">unsafe </span>{ mlirRegisterAllDialects(registry.to_raw()) }
 }
 
@@ -173,7 +175,7 @@
 }
 
 <span class="doccomment">/// Parses a pass pipeline.
-</span><span class="kw">pub fn </span>parse_pass_pipeline(manager: pass::OperationManager, source: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+</span><span class="kw">pub fn </span>parse_pass_pipeline(manager: pass::OperationPassManager, source: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>error_message = <span class="prelude-val">None</span>;
 
     <span class="kw">let </span>result = LogicalResult::from_raw(<span class="kw">unsafe </span>{
@@ -234,14 +236,14 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>register_dialects() {
-        <span class="kw">let </span>registry = dialect::Registry::new();
+        <span class="kw">let </span>registry = DialectRegistry::new();
 
         register_all_dialects(<span class="kw-2">&amp;</span>registry);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>register_dialects_twice() {
-        <span class="kw">let </span>registry = dialect::Registry::new();
+        <span class="kw">let </span>registry = DialectRegistry::new();
 
         register_all_dialects(<span class="kw-2">&amp;</span>registry);
         register_all_dialects(<span class="kw-2">&amp;</span>registry);

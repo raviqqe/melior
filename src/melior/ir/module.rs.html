@@ -216,7 +216,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::ir::{operation, Block, Region};
+    <span class="kw">use </span><span class="kw">crate</span>::ir::{operation::OperationBuilder, Block, Region};
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>new() {
@@ -246,7 +246,7 @@
         region.append_block(Block::new(<span class="kw-2">&amp;</span>[]));
 
         <span class="kw">let </span>module = Module::from_operation(
-            operation::Builder::new(<span class="string">&quot;builtin.module&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
+            OperationBuilder::new(<span class="string">&quot;builtin.module&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
                 .add_regions(<span class="macro">vec!</span>[region])
                 .build(),
         )
@@ -261,7 +261,7 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert!</span>(Module::from_operation(
-            operation::Builder::new(<span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context),).build()
+            OperationBuilder::new(<span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context),).build()
         )
         .is_none());
     }

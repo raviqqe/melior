@@ -210,7 +210,7 @@
 <a href="#210" id="210">210</a>
 <a href="#211" id="211">211</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{
-    dialect::{<span class="self">self</span>, Dialect},
+    dialect::{Dialect, DialectRegistry},
     string_ref::StringRef,
 };
 <span class="kw">use </span>mlir_sys::{
@@ -260,7 +260,7 @@
     }
 
     <span class="doccomment">/// Appends a dialect registry.
-    </span><span class="kw">pub fn </span>append_dialect_registry(<span class="kw-2">&amp;</span><span class="self">self</span>, registry: <span class="kw-2">&amp;</span>dialect::Registry) {
+    </span><span class="kw">pub fn </span>append_dialect_registry(<span class="kw-2">&amp;</span><span class="self">self</span>, registry: <span class="kw-2">&amp;</span>DialectRegistry) {
         <span class="kw">unsafe </span>{ mlirContextAppendDialectRegistry(<span class="self">self</span>.raw, registry.to_raw()) }
     }
 
@@ -373,7 +373,7 @@
     </span><span class="kw">fn </span>append_dialect_registry() {
         <span class="kw">let </span>context = Context::new();
 
-        context.append_dialect_registry(<span class="kw-2">&amp;</span>dialect::Registry::new());
+        context.append_dialect_registry(<span class="kw-2">&amp;</span>DialectRegistry::new());
     }
 
     <span class="attr">#[test]

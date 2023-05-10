@@ -247,7 +247,7 @@
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::OperationManager;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::OperationPassManager;
 <span class="kw">use crate</span>::{
     context::Context, ir::Module, logical_result::LogicalResult, pass::Pass, string_ref::StringRef,
     Error,
@@ -261,12 +261,12 @@
 <span class="kw">use </span>std::marker::PhantomData;
 
 <span class="doccomment">/// A pass manager.
-</span><span class="kw">pub struct </span>Manager&lt;<span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub struct </span>PassManager&lt;<span class="lifetime">&#39;c</span>&gt; {
     raw: MlirPassManager,
     _context: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Manager&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; PassManager&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Creates a pass manager.
     </span><span class="kw">pub fn </span>new(context: <span class="kw-2">&amp;</span>Context) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -277,9 +277,9 @@
 
     <span class="doccomment">/// Gets an operation pass manager for nested operations corresponding to a
     /// given name.
-    </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; OperationManager {
+    </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; OperationPassManager {
         <span class="kw">unsafe </span>{
-            OperationManager::from_raw(mlirPassManagerGetNestedUnder(
+            OperationPassManager::from_raw(mlirPassManagerGetNestedUnder(
                 <span class="self">self</span>.raw,
                 StringRef::from(name).to_raw(),
             ))
@@ -314,12 +314,12 @@
     }
 
     <span class="doccomment">/// Converts a pass manager to an operation pass manager.
-    </span><span class="kw">pub fn </span>as_operation_pass_manager(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OperationManager {
-        <span class="kw">unsafe </span>{ OperationManager::from_raw(mlirPassManagerGetAsOpPassManager(<span class="self">self</span>.raw)) }
+    </span><span class="kw">pub fn </span>as_operation_pass_manager(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OperationPassManager {
+        <span class="kw">unsafe </span>{ OperationPassManager::from_raw(mlirPassManagerGetAsOpPassManager(<span class="self">self</span>.raw)) }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Drop <span class="kw">for </span>Manager&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Drop <span class="kw">for </span>PassManager&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">unsafe </span>{ mlirPassManagerDestroy(<span class="self">self</span>.raw) }
     }
@@ -329,7 +329,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
-        dialect,
+        dialect::DialectRegistry,
         ir::{Location, Module},
         pass::{<span class="self">self</span>, transform::register_print_op_stats},
         utility::{parse_pass_pipeline, register_all_dialects},
@@ -338,7 +338,7 @@
     <span class="kw">use </span>pretty_assertions::assert_eq;
 
     <span class="kw">fn </span>register_all_upstream_dialects(context: <span class="kw-2">&amp;</span>Context) {
-        <span class="kw">let </span>registry = dialect::Registry::new();
+        <span class="kw">let </span>registry = DialectRegistry::new();
         register_all_dialects(<span class="kw-2">&amp;</span>registry);
         context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
     }
@@ -347,21 +347,21 @@
     </span><span class="kw">fn </span>new() {
         <span class="kw">let </span>context = Context::new();
 
-        Manager::new(<span class="kw-2">&amp;</span>context);
+        PassManager::new(<span class="kw-2">&amp;</span>context);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>add_pass() {
         <span class="kw">let </span>context = Context::new();
 
-        Manager::new(<span class="kw-2">&amp;</span>context).add_pass(pass::conversion::func_to_llvm());
+        PassManager::new(<span class="kw-2">&amp;</span>context).add_pass(pass::conversion::func_to_llvm());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>enable_verifier() {
         <span class="kw">let </span>context = Context::new();
 
-        Manager::new(<span class="kw-2">&amp;</span>context).enable_verifier(<span class="bool-val">true</span>);
+        PassManager::new(<span class="kw-2">&amp;</span>context).enable_verifier(<span class="bool-val">true</span>);
     }
 
     <span class="comment">// TODO Enable this test.
@@ -375,7 +375,7 @@
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>run() {
         <span class="kw">let </span>context = Context::new();
-        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
 
         manager.add_pass(pass::conversion::func_to_llvm());
         manager
@@ -401,7 +401,7 @@
         )
         .unwrap();
 
-        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
         manager.add_pass(pass::transform::print_op_stats());
 
         <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
@@ -432,14 +432,14 @@
         )
         .unwrap();
 
-        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
         manager
             .nested_under(<span class="string">&quot;func.func&quot;</span>)
             .add_pass(pass::transform::print_op_stats());
 
         <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
 
-        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
         manager
             .nested_under(<span class="string">&quot;builtin.module&quot;</span>)
             .nested_under(<span class="string">&quot;func.func&quot;</span>)
@@ -451,7 +451,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>print_pass_pipeline() {
         <span class="kw">let </span>context = Context::new();
-        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>function_manager = manager.nested_under(<span class="string">&quot;func.func&quot;</span>);
 
         function_manager.add_pass(pass::transform::print_op_stats());
@@ -469,7 +469,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>parse_pass_pipeline_() {
         <span class="kw">let </span>context = Context::new();
-        <span class="kw">let </span>manager = Manager::new(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
 
         <span class="macro">insta::assert_display_snapshot!</span>(parse_pass_pipeline(
             manager.as_operation_pass_manager(),

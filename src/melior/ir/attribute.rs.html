@@ -297,7 +297,7 @@
 <span class="kw">mod </span>float;
 <span class="kw">mod </span>integer;
 
-<span class="kw">pub use </span><span class="self">self</span>::{attribute_like::AttributeLike, float::Float, integer::Integer};
+<span class="kw">pub use </span><span class="self">self</span>::{attribute_like::AttributeLike, float::FloatAttribute, integer::IntegerAttribute};
 <span class="kw">use super</span>::{r#type, Type};
 <span class="kw">use crate</span>::{context::Context, string_ref::StringRef, utility::print_callback};
 <span class="kw">use </span>mlir_sys::{
@@ -390,14 +390,14 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;Float&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>from(attribute: Float&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;FloatAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>from(attribute: FloatAttribute&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(attribute.to_raw()) }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;Integer&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>from(attribute: Integer&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;IntegerAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>from(attribute: IntegerAttribute&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(attribute.to_raw()) }
     }
 }

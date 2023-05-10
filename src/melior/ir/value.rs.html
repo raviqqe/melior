@@ -337,7 +337,7 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
         context::Context,
-        ir::{operation, Attribute, Block, Identifier, Location},
+        ir::{operation::OperationBuilder, Attribute, Block, Identifier, Location},
         test::load_all_dialects,
     };
 
@@ -347,7 +347,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let </span>operation = operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+        <span class="kw">let </span>operation = OperationBuilder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
             .add_results(<span class="kw-2">&amp;</span>[index_type])
             .add_attributes(<span class="kw-2">&amp;</span>[(
                 Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
@@ -364,7 +364,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>r#type = Type::index(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let </span>operation = operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+        <span class="kw">let </span>operation = OperationBuilder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
             .add_results(<span class="kw-2">&amp;</span>[r#type])
             .add_attributes(<span class="kw-2">&amp;</span>[(
                 Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
@@ -390,7 +390,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let </span>value = operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+        <span class="kw">let </span>value = OperationBuilder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
             .add_results(<span class="kw-2">&amp;</span>[index_type])
             .add_attributes(<span class="kw-2">&amp;</span>[(
                 Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
@@ -407,7 +407,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let </span>operation = operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+        <span class="kw">let </span>operation = OperationBuilder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
             .add_results(<span class="kw-2">&amp;</span>[index_type])
             .add_attributes(<span class="kw-2">&amp;</span>[(
                 Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
@@ -426,7 +426,7 @@
         <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
 
         <span class="kw">let </span>operation = || {
-            operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+            OperationBuilder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
                 .add_results(<span class="kw-2">&amp;</span>[index_type])
                 .add_attributes(<span class="kw-2">&amp;</span>[(
                     Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
@@ -448,7 +448,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let </span>operation = operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+        <span class="kw">let </span>operation = OperationBuilder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
             .add_results(<span class="kw-2">&amp;</span>[index_type])
             .add_attributes(<span class="kw-2">&amp;</span>[(
                 Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
@@ -470,7 +470,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let </span>operation = operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+        <span class="kw">let </span>operation = OperationBuilder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
             .add_results(<span class="kw-2">&amp;</span>[index_type])
             .add_attributes(<span class="kw-2">&amp;</span>[(
                 Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),
@@ -492,7 +492,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
 
-        <span class="kw">let </span>operation = operation::Builder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
+        <span class="kw">let </span>operation = OperationBuilder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
             .add_results(<span class="kw-2">&amp;</span>[index_type])
             .add_attributes(<span class="kw-2">&amp;</span>[(
                 Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;value&quot;</span>),

@@ -280,6 +280,9 @@
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
 <a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Melior is the rustic MLIR bindings for Rust. It aims to provide a simple,
 //! safe, and complete API for MLIR with a reasonably sane ownership model
 //! represented by the type system in Rust.
@@ -318,12 +321,12 @@
 //! ```rust
 //! use melior::{
 //!     Context,
-//!     dialect::{self, arith, func},
+//!     dialect::{self, arith, DialectRegistry, func},
 //!     ir::*,
 //!     utility::register_all_dialects,
 //! };
 //!
-//! let registry = dialect::Registry::new();
+//! let registry = DialectRegistry::new();
 //! register_all_dialects(&amp;registry);
 //!
 //! let context = Context::new();
@@ -387,7 +390,10 @@
     <span class="kw">use crate</span>::{
         context::Context,
         dialect::{<span class="self">self</span>, arith, func, scf},
-        ir::{attribute, operation, r#type, Attribute, Block, Location, Module, Region, Type},
+        ir::{
+            attribute::IntegerAttribute, operation::OperationBuilder, r#type::IntegerType,
+            Attribute, Block, Location, Module, Region, Type,
+        },
         test::load_all_dialects,
     };
 
@@ -402,7 +408,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>build_module_with_dialect() {
-        <span class="kw">let </span>registry = dialect::Registry::new();
+        <span class="kw">let </span>registry = dialect::DialectRegistry::new();
         <span class="kw">let </span>context = Context::new();
         context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
         <span class="kw">let </span>module = Module::new(Location::unknown(<span class="kw-2">&amp;</span>context));
@@ -419,7 +425,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>module = Module::new(location);
 
-        <span class="kw">let </span>integer_type = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
+        <span class="kw">let </span>integer_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
         <span class="kw">let </span>function = {
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
@@ -466,12 +472,12 @@
 
             <span class="kw">let </span>zero = function_block.append_operation(arith::constant(
                 <span class="kw-2">&amp;</span>context,
-                attribute::Integer::new(<span class="number">0</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
+                IntegerAttribute::new(<span class="number">0</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
                 location,
             ));
 
             <span class="kw">let </span>dim = function_block.append_operation(
-                operation::Builder::new(<span class="string">&quot;memref.dim&quot;</span>, location)
+                OperationBuilder::new(<span class="string">&quot;memref.dim&quot;</span>, location)
                     .add_operands(<span class="kw-2">&amp;</span>[
                         function_block.argument(<span class="number">0</span>).unwrap().into(),
                         zero.result(<span class="number">0</span>).unwrap().into(),
@@ -484,7 +490,7 @@
 
             <span class="kw">let </span>one = function_block.append_operation(arith::constant(
                 <span class="kw-2">&amp;</span>context,
-                attribute::Integer::new(<span class="number">1</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
+                IntegerAttribute::new(<span class="number">1</span>, Type::index(<span class="kw-2">&amp;</span>context)).into(),
                 location,
             ));
 
@@ -492,7 +498,7 @@
                 <span class="kw">let </span>f32_type = Type::float32(<span class="kw-2">&amp;</span>context);
 
                 <span class="kw">let </span>lhs = loop_block.append_operation(
-                    operation::Builder::new(<span class="string">&quot;memref.load&quot;</span>, location)
+                    OperationBuilder::new(<span class="string">&quot;memref.load&quot;</span>, location)
                         .add_operands(<span class="kw-2">&amp;</span>[
                             function_block.argument(<span class="number">0</span>).unwrap().into(),
                             loop_block.argument(<span class="number">0</span>).unwrap().into(),
@@ -502,7 +508,7 @@
                 );
 
                 <span class="kw">let </span>rhs = loop_block.append_operation(
-                    operation::Builder::new(<span class="string">&quot;memref.load&quot;</span>, location)
+                    OperationBuilder::new(<span class="string">&quot;memref.load&quot;</span>, location)
                         .add_operands(<span class="kw-2">&amp;</span>[
                             function_block.argument(<span class="number">1</span>).unwrap().into(),
                             loop_block.argument(<span class="number">0</span>).unwrap().into(),
@@ -518,7 +524,7 @@
                 ));
 
                 loop_block.append_operation(
-                    operation::Builder::new(<span class="string">&quot;memref.store&quot;</span>, location)
+                    OperationBuilder::new(<span class="string">&quot;memref.store&quot;</span>, location)
                         .add_operands(<span class="kw-2">&amp;</span>[
                             add.result(<span class="number">0</span>).unwrap().into(),
                             function_block.argument(<span class="number">0</span>).unwrap().into(),

@@ -793,7 +793,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
-        ir::{operation, r#type, Module, Region, ValueLike},
+        ir::{operation::OperationBuilder, r#type::IntegerType, Module, Region, ValueLike},
         test::load_all_dialects,
     };
     <span class="kw">use </span>pretty_assertions::assert_eq;
@@ -806,7 +806,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>argument() {
         <span class="kw">let </span>context = Context::new();
-        <span class="kw">let </span>r#type = r#type::Integer::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
+        <span class="kw">let </span>r#type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
         <span class="macro">assert_eq!</span>(
             Block::new(<span class="kw-2">&amp;</span>[(r#type, Location::unknown(<span class="kw-2">&amp;</span>context))])
@@ -871,7 +871,7 @@
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
         <span class="kw">let </span>operation = block.append_operation(
-            operation::Builder::new(<span class="string">&quot;func.return&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
+            OperationBuilder::new(<span class="string">&quot;func.return&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
         );
 
         <span class="macro">assert_eq!</span>(block.terminator(), <span class="prelude-val">Some</span>(operation));
@@ -888,7 +888,7 @@
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
         <span class="kw">let </span>operation = block
-            .append_operation(operation::Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build());
+            .append_operation(OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build());
 
         <span class="macro">assert_eq!</span>(block.first_operation(), <span class="prelude-val">Some</span>(operation));
     }
@@ -905,7 +905,7 @@
         <span class="kw">let </span>context = Context::new();
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
-        block.append_operation(operation::Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build());
+        block.append_operation(OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build());
     }
 
     <span class="attr">#[test]
@@ -915,7 +915,7 @@
 
         block.insert_operation(
             <span class="number">0</span>,
-            operation::Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
+            OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
         );
     }
 
@@ -925,10 +925,10 @@
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
         <span class="kw">let </span>first_operation = block
-            .append_operation(operation::Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build());
+            .append_operation(OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build());
         <span class="kw">let </span>second_operation = block.insert_operation_after(
             first_operation,
-            operation::Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
+            OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
         );
 
         <span class="macro">assert_eq!</span>(block.first_operation(), <span class="prelude-val">Some</span>(first_operation));
@@ -944,10 +944,10 @@
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
         <span class="kw">let </span>second_operation = block
-            .append_operation(operation::Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build());
+            .append_operation(OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build());
         <span class="kw">let </span>first_operation = block.insert_operation_before(
             second_operation,
-            operation::Builder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
+            OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build(),
         );
 
         <span class="macro">assert_eq!</span>(block.first_operation(), <span class="prelude-val">Some</span>(first_operation));

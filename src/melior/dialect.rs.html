@@ -83,7 +83,7 @@
 <span class="kw">mod </span>registry;
 <span class="kw">pub mod </span>scf;
 
-<span class="kw">pub use </span><span class="self">self</span>::{handle::Handle, registry::Registry};
+<span class="kw">pub use </span><span class="self">self</span>::{handle::DialectHandle, registry::DialectRegistry};
 <span class="kw">use crate</span>::{
     context::{Context, ContextRef},
     string_ref::StringRef,
@@ -135,8 +135,8 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            Handle::func().load_dialect(<span class="kw-2">&amp;</span>context),
-            Handle::func().load_dialect(<span class="kw-2">&amp;</span>context)
+            DialectHandle::func().load_dialect(<span class="kw-2">&amp;</span>context),
+            DialectHandle::func().load_dialect(<span class="kw-2">&amp;</span>context)
         );
     }
 
@@ -145,8 +145,8 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_ne!</span>(
-            Handle::func().load_dialect(<span class="kw-2">&amp;</span>context),
-            Handle::llvm().load_dialect(<span class="kw-2">&amp;</span>context)
+            DialectHandle::func().load_dialect(<span class="kw-2">&amp;</span>context),
+            DialectHandle::llvm().load_dialect(<span class="kw-2">&amp;</span>context)
         );
     }
 }

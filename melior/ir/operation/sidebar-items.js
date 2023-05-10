@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Builder","Operation","OperationRef","ResultValue"]};
+window.SIDEBAR_ITEMS = {"struct":["Operation","OperationBuilder","OperationRef","ResultValue"]};
