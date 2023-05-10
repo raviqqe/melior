@@ -226,11 +226,11 @@
         .unwrap();
 
         <span class="kw">let </span>pass_manager = pass::PassManager::new(<span class="kw-2">&amp;</span>context);
-        pass_manager.add_pass(pass::conversion::func_to_llvm());
+        pass_manager.add_pass(pass::conversion::create_func_to_llvm());
 
         pass_manager
             .nested_under(<span class="string">&quot;func.func&quot;</span>)
-            .add_pass(pass::conversion::arith_to_llvm());
+            .add_pass(pass::conversion::create_arith_to_llvm());
 
         <span class="macro">assert_eq!</span>(pass_manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
 
