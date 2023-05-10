@@ -193,7 +193,7 @@
     }
 
     <span class="doccomment">/// Gets an input at a position.
-    </span><span class="kw">pub fn </span>input(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type, Error&gt; {
+    </span><span class="kw">pub fn </span>input(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;, Error&gt; {
         <span class="kw">if </span>position &lt; <span class="self">self</span>.input_count() {
             <span class="kw">unsafe </span>{
                 <span class="prelude-val">Ok</span>(Type::from_raw(mlirFunctionTypeGetInput(
@@ -207,7 +207,7 @@
     }
 
     <span class="doccomment">/// Gets a result at a position.
-    </span><span class="kw">pub fn </span>result(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type, Error&gt; {
+    </span><span class="kw">pub fn </span>result(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Type&lt;<span class="lifetime">&#39;c</span>&gt;, Error&gt; {
         <span class="kw">if </span>position &lt; <span class="self">self</span>.result_count() {
             <span class="kw">unsafe </span>{
                 <span class="prelude-val">Ok</span>(Type::from_raw(mlirFunctionTypeGetResult(
