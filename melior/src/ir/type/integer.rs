@@ -14,7 +14,7 @@ pub struct Integer<'c> {
 }
 
 impl<'c> Integer<'c> {
-    /// Creates a integer type.
+    /// Creates an integer type.
     pub fn new(context: &'c Context, bits: u32) -> Self {
         Self {
             r#type: unsafe { Type::from_raw(mlirIntegerTypeGet(context.to_raw(), bits)) },
