@@ -267,27 +267,6 @@
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Types and type IDs.
 
 </span><span class="attr">#[macro_use]
@@ -447,35 +426,14 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;FunctionType&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Type&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>from(function: FunctionType&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(function.to_raw()) }
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;IntegerType&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Type&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>from(integer: IntegerType&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(integer.to_raw()) }
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;MemRefType&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Type&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>from(mem_ref: MemRefType&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mem_ref.to_raw()) }
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;RankedTensorType&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Type&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>from(tensor: RankedTensorType&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(tensor.to_raw()) }
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;TupleType&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Type&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>from(tuple: TupleType&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(tuple.to_raw()) }
-    }
-}
+<span class="macro">from_raw_subtypes!</span>(
+    Type,
+    FunctionType,
+    IntegerType,
+    MemRefType,
+    RankedTensorType,
+    TupleType
+);
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {

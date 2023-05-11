@@ -291,6 +291,8 @@
 <a href="#291" id="291">291</a>
 <a href="#292" id="292">292</a>
 <a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Melior is the rustic MLIR bindings for Rust. It aims to provide a simple,
 //! safe, and complete API for MLIR with a reasonably sane ownership model
 //! represented by the type system in Rust.
@@ -374,7 +376,9 @@
 //! assert!(module.as_operation().verify());
 //! ```
 
-</span><span class="kw">mod </span>context;
+</span><span class="attr">#[macro_use]
+</span><span class="kw">mod </span>r#macro;
+<span class="kw">mod </span>context;
 <span class="kw">pub mod </span>diagnostic;
 <span class="kw">pub mod </span>dialect;
 <span class="kw">mod </span>error;
