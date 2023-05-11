@@ -386,10 +386,10 @@
     }
 
     <span class="doccomment">/// Gets a result at a position.
-    </span><span class="kw">pub fn </span>result(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;result::ResultValue, Error&gt; {
+    </span><span class="kw">pub fn </span>result(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;ResultValue, Error&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">if </span>index &lt; <span class="self">self</span>.result_count() {
-                <span class="prelude-val">Ok</span>(result::ResultValue::from_raw(mlirOperationGetResult(
+                <span class="prelude-val">Ok</span>(ResultValue::from_raw(mlirOperationGetResult(
                     <span class="self">self</span>.raw,
                     index <span class="kw">as </span>isize,
                 )))
@@ -408,7 +408,7 @@
         <span class="kw">unsafe </span>{ mlirOperationGetNumResults(<span class="self">self</span>.raw) <span class="kw">as </span>usize }
     }
 
-    <span class="doccomment">/// Gets a result at an index.
+    <span class="doccomment">/// Gets a region at a position.
     </span><span class="kw">pub fn </span>region(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;RegionRef&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">if </span>index &lt; <span class="self">self</span>.region_count() {
