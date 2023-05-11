@@ -153,8 +153,8 @@
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_raw(mlirMemRefTypeGet(
                 r#type.to_raw(),
-                dimensions.len() <span class="kw">as </span>isize,
-                dimensions.as_ptr() <span class="kw">as </span><span class="kw-2">*const </span>i64,
+                dimensions.len() <span class="kw">as _</span>,
+                dimensions.as_ptr() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>,
                 layout.unwrap_or_else(|| Attribute::null()).to_raw(),
                 memory_space.unwrap_or_else(|| Attribute::null()).to_raw(),
             ))

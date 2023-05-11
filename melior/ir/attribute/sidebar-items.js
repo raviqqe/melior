@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Attribute","DenseI64ArrayAttribute","FlatSymbolRefAttribute","FloatAttribute","IntegerAttribute","StringAttribute","TypeAttribute"],"trait":["AttributeLike"]};
+window.SIDEBAR_ITEMS = {"struct":["Attribute","DenseI32ArrayAttribute","DenseI64ArrayAttribute","FlatSymbolRefAttribute","FloatAttribute","IntegerAttribute","StringAttribute","TypeAttribute"],"trait":["AttributeLike"]};

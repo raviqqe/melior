@@ -324,11 +324,20 @@
 <a href="#324" id="324">324</a>
 <a href="#325" id="325">325</a>
 <a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Attributes.
 
 </span><span class="attr">#[macro_use]
 </span><span class="kw">mod </span>r#macro;
 <span class="kw">mod </span>attribute_like;
+<span class="kw">mod </span>dense_i32_array;
 <span class="kw">mod </span>dense_i64_array;
 <span class="kw">mod </span>flat_symbol_ref;
 <span class="kw">mod </span>float;
@@ -337,9 +346,10 @@
 <span class="kw">mod </span>r#type;
 
 <span class="kw">pub use </span><span class="self">self</span>::{
-    attribute_like::AttributeLike, dense_i64_array::DenseI64ArrayAttribute,
-    flat_symbol_ref::FlatSymbolRefAttribute, float::FloatAttribute, integer::IntegerAttribute,
-    r#type::TypeAttribute, string::StringAttribute,
+    attribute_like::AttributeLike, dense_i32_array::DenseI32ArrayAttribute,
+    dense_i64_array::DenseI64ArrayAttribute, flat_symbol_ref::FlatSymbolRefAttribute,
+    float::FloatAttribute, integer::IntegerAttribute, r#type::TypeAttribute,
+    string::StringAttribute,
 };
 <span class="kw">use crate</span>::{context::Context, string_ref::StringRef, utility::print_callback};
 <span class="kw">use </span>mlir_sys::{
@@ -429,6 +439,12 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Debug <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         Display::fmt(<span class="self">self</span>, formatter)
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;DenseI32ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>from(attribute: DenseI32ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(attribute.to_raw()) }
     }
 }
 
