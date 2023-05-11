@@ -316,20 +316,30 @@
 <a href="#316" id="316">316</a>
 <a href="#317" id="317">317</a>
 <a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Attributes.
 
 </span><span class="attr">#[macro_use]
 </span><span class="kw">mod </span>r#macro;
 <span class="kw">mod </span>attribute_like;
 <span class="kw">mod </span>dense_i64_array;
+<span class="kw">mod </span>flat_symbol_ref;
 <span class="kw">mod </span>float;
 <span class="kw">mod </span>integer;
 <span class="kw">mod </span>string;
 <span class="kw">mod </span>r#type;
 
 <span class="kw">pub use </span><span class="self">self</span>::{
-    attribute_like::AttributeLike, dense_i64_array::DenseI64ArrayAttribute, float::FloatAttribute,
-    integer::IntegerAttribute, r#type::TypeAttribute, string::StringAttribute,
+    attribute_like::AttributeLike, dense_i64_array::DenseI64ArrayAttribute,
+    flat_symbol_ref::FlatSymbolRefAttribute, float::FloatAttribute, integer::IntegerAttribute,
+    r#type::TypeAttribute, string::StringAttribute,
 };
 <span class="kw">use crate</span>::{context::Context, string_ref::StringRef, utility::print_callback};
 <span class="kw">use </span>mlir_sys::{
@@ -424,6 +434,12 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;DenseI64ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>from(attribute: DenseI64ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(attribute.to_raw()) }
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;FlatSymbolRefAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>from(attribute: FlatSymbolRefAttribute&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(attribute.to_raw()) }
     }
 }

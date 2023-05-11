@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["func","return"]};
+window.SIDEBAR_ITEMS = {"fn":["call","call_indirect","constant","func","return"]};
