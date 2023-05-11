@@ -2,7 +2,10 @@
 
 use crate::{
     ir::{
-        attribute::{DenseI32ArrayAttribute, IntegerAttribute, StringAttribute, TypeAttribute},
+        attribute::{
+            DenseI32ArrayAttribute, FlatSymbolRefAttribute, IntegerAttribute, StringAttribute,
+            TypeAttribute,
+        },
         operation::OperationBuilder,
         r#type::MemRefType,
         Attribute, Identifier, Location, Operation, Value,
@@ -88,6 +91,22 @@ pub fn dim<'c>(value: Value, index: Value, location: Location<'c>) -> Operation<
     OperationBuilder::new("memref.dim", location)
         .add_operands(&[value, index])
         .enable_result_type_inference()
+        .build()
+}
+
+/// Create a `memref.get_global` operation.
+pub fn get_global<'c>(
+    context: &'c Context,
+    name: &str,
+    r#type: MemRefType<'c>,
+    location: Location<'c>,
+) -> Operation<'c> {
+    OperationBuilder::new("memref.get_global", location)
+        .add_attributes(&[(
+            Identifier::new(context, "name"),
+            FlatSymbolRefAttribute::new(context, name).into(),
+        )])
+        .add_results(&[r#type.into()])
         .build()
 }
 
@@ -323,6 +342,45 @@ mod tests {
                 location,
             ));
         })
+    }
+
+    #[test]
+    fn compile_get_global() {
+        let context = create_test_context();
+        let location = Location::unknown(&context);
+        let module = Module::new(location);
+        let mem_ref_type = MemRefType::new(Type::index(&context), &[], None, None);
+
+        module.body().append_operation(global(
+            &context,
+            "foo",
+            None,
+            mem_ref_type,
+            None,
+            false,
+            None,
+            location,
+        ));
+
+        module.body().append_operation(func::func(
+            &context,
+            StringAttribute::new(&context, "bar"),
+            TypeAttribute::new(FunctionType::new(&context, &[], &[]).into()),
+            {
+                let block = Block::new(&[]);
+
+                block.append_operation(get_global(&context, "foo", mem_ref_type, location));
+                block.append_operation(func::r#return(&[], location));
+
+                let region = Region::new();
+                region.append_block(block);
+                region
+            },
+            location,
+        ));
+
+        assert!(module.as_operation().verify());
+        insta::assert_display_snapshot!(module.as_operation());
     }
 
     #[test]
