@@ -4,14 +4,16 @@
 mod r#macro;
 mod attribute_like;
 mod dense_i64_array;
+mod flat_symbol_ref;
 mod float;
 mod integer;
 mod string;
 mod r#type;
 
 pub use self::{
-    attribute_like::AttributeLike, dense_i64_array::DenseI64ArrayAttribute, float::FloatAttribute,
-    integer::IntegerAttribute, r#type::TypeAttribute, string::StringAttribute,
+    attribute_like::AttributeLike, dense_i64_array::DenseI64ArrayAttribute,
+    flat_symbol_ref::FlatSymbolRefAttribute, float::FloatAttribute, integer::IntegerAttribute,
+    r#type::TypeAttribute, string::StringAttribute,
 };
 use crate::{context::Context, string_ref::StringRef, utility::print_callback};
 use mlir_sys::{
@@ -106,6 +108,12 @@ impl<'c> Debug for Attribute<'c> {
 
 impl<'c> From<DenseI64ArrayAttribute<'c>> for Attribute<'c> {
     fn from(attribute: DenseI64ArrayAttribute<'c>) -> Self {
+        unsafe { Self::from_raw(attribute.to_raw()) }
+    }
+}
+
+impl<'c> From<FlatSymbolRefAttribute<'c>> for Attribute<'c> {
+    fn from(attribute: FlatSymbolRefAttribute<'c>) -> Self {
         unsafe { Self::from_raw(attribute.to_raw()) }
     }
 }
