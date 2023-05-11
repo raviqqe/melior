@@ -79,6 +79,14 @@ fn allocate<'c>(
     builder.add_results(&[r#type.into()]).build()
 }
 
+/// Create a `memref.cast` operation.
+pub fn cast<'c>(value: Value, r#type: MemRefType<'c>, location: Location<'c>) -> Operation<'c> {
+    OperationBuilder::new("memref.cast", location)
+        .add_operands(&[value])
+        .add_results(&[r#type.into()])
+        .build()
+}
+
 /// Create a `memref.dealloc` operation.
 pub fn dealloc<'c>(value: Value, location: Location<'c>) -> Operation<'c> {
     OperationBuilder::new("memref.dealloc", location)
@@ -310,6 +318,32 @@ mod tests {
                 &[],
                 &[],
                 None,
+                location,
+            ));
+        })
+    }
+
+    #[test]
+    fn compile_cast() {
+        let context = create_test_context();
+        let location = Location::unknown(&context);
+
+        compile_operation("cast", &context, |block| {
+            let memref = block.append_operation(alloca(
+                &context,
+                MemRefType::new(Type::float64(&context), &[42], None, None),
+                &[],
+                &[],
+                None,
+                location,
+            ));
+
+            block.append_operation(cast(
+                memref.result(0).unwrap().into(),
+                Type::parse(&context, "memref<?xf64>")
+                    .unwrap()
+                    .try_into()
+                    .unwrap(),
                 location,
             ));
         })
