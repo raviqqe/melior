@@ -31,7 +31,7 @@ mod tests {
             attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
             operation::OperationBuilder,
             r#type::{FunctionType, IntegerType},
-            Block, Location, Module, Region, Type,
+            Block, Location, Module, Region, Type, Value,
         },
         test::load_all_dialects,
     };
@@ -207,6 +207,59 @@ mod tests {
         };
 
         module.body().append_operation(function);
+
+        assert!(module.as_operation().verify());
+        insta::assert_display_snapshot!(module.as_operation());
+    }
+
+    #[test]
+    fn return_value_from_function() {
+        let context = Context::new();
+        load_all_dialects(&context);
+
+        let location = Location::unknown(&context);
+        let module = Module::new(location);
+
+        let integer_type = IntegerType::new(&context, 64).into();
+
+        fn compile_add<'a>(
+            context: &Context,
+            block: &'a Block,
+            lhs: Value<'a>,
+            rhs: Value<'a>,
+        ) -> Value<'a> {
+            block
+                .append_operation(arith::addi(lhs, rhs, Location::unknown(context)))
+                .result(0)
+                .unwrap()
+                .into()
+        }
+
+        module.body().append_operation(func::func(
+            &context,
+            StringAttribute::new(&context, "add"),
+            TypeAttribute::new(
+                FunctionType::new(&context, &[integer_type, integer_type], &[integer_type]).into(),
+            ),
+            {
+                let block = Block::new(&[(integer_type, location), (integer_type, location)]);
+
+                block.append_operation(func::r#return(
+                    &[compile_add(
+                        &context,
+                        &block,
+                        block.argument(0).unwrap().into(),
+                        block.argument(1).unwrap().into(),
+                    )],
+                    location,
+                ));
+
+                let region = Region::new();
+                region.append_block(block);
+                region
+            },
+            Location::unknown(&context),
+        ));
 
         assert!(module.as_operation().verify());
         insta::assert_display_snapshot!(module.as_operation());

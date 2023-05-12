@@ -11,6 +11,7 @@ use crate::{
     Error,
 };
 use core::fmt;
+use core::mem::{forget, transmute};
 use mlir_sys::{
     mlirOperationClone, mlirOperationDestroy, mlirOperationDump, mlirOperationEqual,
     mlirOperationGetBlock, mlirOperationGetContext, mlirOperationGetName,
@@ -22,7 +23,6 @@ use std::{
     ffi::c_void,
     fmt::{Debug, Display, Formatter},
     marker::PhantomData,
-    mem::{forget, transmute},
     ops::Deref,
 };
 
@@ -72,15 +72,19 @@ impl<'c> Operation<'c> {
     }
 
     /// Gets a region at a position.
-    pub fn region(&self, index: usize) -> Option<RegionRef> {
+    pub fn region(&self, index: usize) -> Result<RegionRef, Error> {
         unsafe {
             if index < self.region_count() {
-                Some(RegionRef::from_raw(mlirOperationGetRegion(
+                Ok(RegionRef::from_raw(mlirOperationGetRegion(
                     self.raw,
                     index as isize,
                 )))
             } else {
-                None
+                Err(Error::PositionOutOfBounds {
+                    name: "region",
+                    value: self.to_string(),
+                    index,
+                })
             }
         }
     }
@@ -183,6 +187,13 @@ pub struct OperationRef<'a> {
 }
 
 impl<'a> OperationRef<'a> {
+    /// Gets a result at a position.
+    pub fn result(self, index: usize) -> Result<OperationResult<'a>, Error> {
+        // As we can't deref OperationRef<'a> into `&'a Operation`, we forcibly cast its
+        // lifetime here to extend it from the lifetime of `ObjectRef<'a>` itself into `'a`.
+        unsafe { transmute(self.deref().result(index)) }
+    }
+
     pub(crate) unsafe fn to_raw(self) -> MlirOperation {
         self.raw
     }
@@ -294,11 +305,15 @@ mod tests {
 
     #[test]
     fn region_none() {
-        assert!(
+        assert_eq!(
             OperationBuilder::new("foo", Location::unknown(&Context::new()),)
                 .build()
-                .region(0)
-                .is_none()
+                .region(0),
+            Err(Error::PositionOutOfBounds {
+                name: "region",
+                value: "\"foo\"() : () -> ()\n".into(),
+                index: 0
+            })
         );
     }
 
