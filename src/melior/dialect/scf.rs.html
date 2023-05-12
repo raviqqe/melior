@@ -799,7 +799,7 @@
 }
 
 <span class="doccomment">/// Creates a `scf.yield` operation.
-</span><span class="kw">pub fn </span>r#yield&lt;<span class="lifetime">&#39;c</span>&gt;(values: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>&gt;], location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub fn </span>r#yield&lt;<span class="lifetime">&#39;c</span>&gt;(values: <span class="kw-2">&amp;</span>[Value], location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;scf.yield&quot;</span>, location)
         .add_operands(values)
         .build()
