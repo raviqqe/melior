@@ -103,14 +103,24 @@ impl<'c> Type<'c> {
         }
     }
 
-    pub(crate) unsafe fn from_raw(raw: MlirType) -> Self {
+    /// Creates a type from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirType) -> Self {
         Self {
             raw,
             _context: Default::default(),
         }
     }
 
-    pub(crate) unsafe fn from_option_raw(raw: MlirType) -> Option<Self> {
+    /// Creates an optional type from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_option_raw(raw: MlirType) -> Option<Self> {
         if raw.ptr.is_null() {
             None
         } else {

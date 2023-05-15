@@ -47,7 +47,12 @@ impl<'c> Diagnostic<'c> {
         }
     }
 
-    pub(crate) unsafe fn from_raw(raw: MlirDiagnostic) -> Self {
+    /// Creates a diagnostic from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirDiagnostic) -> Self {
         Self {
             raw,
             phantom: Default::default(),

@@ -57,14 +57,24 @@ impl<'c> Attribute<'c> {
         unsafe { Self::from_raw(mlirAttributeGetNull()) }
     }
 
-    pub(crate) unsafe fn from_raw(raw: MlirAttribute) -> Self {
+    /// Creates an attribute from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirAttribute) -> Self {
         Self {
             raw,
             _context: Default::default(),
         }
     }
 
-    pub(crate) unsafe fn from_option_raw(raw: MlirAttribute) -> Option<Self> {
+    /// Creates an optional attribute from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_option_raw(raw: MlirAttribute) -> Option<Self> {
         if raw.ptr.is_null() {
             None
         } else {

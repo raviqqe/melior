@@ -67,14 +67,20 @@ impl<'c> Location<'c> {
         unsafe { ContextRef::from_raw(mlirLocationGetContext(self.raw)) }
     }
 
-    pub(crate) unsafe fn from_raw(raw: MlirLocation) -> Self {
+    /// Creates a location from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirLocation) -> Self {
         Self {
             raw,
             _context: Default::default(),
         }
     }
 
-    pub(crate) unsafe fn to_raw(self) -> MlirLocation {
+    /// Converts a location into a raw object.
+    pub fn to_raw(self) -> MlirLocation {
         self.raw
     }
 }

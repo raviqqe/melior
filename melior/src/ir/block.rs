@@ -183,14 +183,20 @@ impl<'c> Block<'c> {
         unsafe { BlockRef::from_option_raw(mlirBlockGetNextInRegion(self.raw)) }
     }
 
-    pub(crate) unsafe fn from_raw(raw: MlirBlock) -> Self {
+    /// Creates a block from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirBlock) -> Self {
         Self {
             raw,
             _context: Default::default(),
         }
     }
 
-    pub(crate) unsafe fn into_raw(self) -> MlirBlock {
+    /// Converts a block into a raw object.
+    pub fn into_raw(self) -> MlirBlock {
         let block = self.raw;
 
         forget(self);
@@ -198,7 +204,8 @@ impl<'c> Block<'c> {
         block
     }
 
-    pub(crate) unsafe fn to_raw(&self) -> MlirBlock {
+    /// Converts a block into a raw object.
+    pub fn to_raw(&self) -> MlirBlock {
         self.raw
     }
 }
@@ -249,14 +256,24 @@ pub struct BlockRef<'a> {
 }
 
 impl<'c> BlockRef<'c> {
-    pub(crate) unsafe fn from_raw(raw: MlirBlock) -> Self {
+    /// Creates a block reference from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirBlock) -> Self {
         Self {
             raw,
             _reference: Default::default(),
         }
     }
 
-    pub(crate) unsafe fn from_option_raw(raw: MlirBlock) -> Option<Self> {
+    /// Creates an optional block reference from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_option_raw(raw: MlirBlock) -> Option<Self> {
         if raw.ptr.is_null() {
             None
         } else {

@@ -13,7 +13,12 @@ pub struct TypeId {
 }
 
 impl TypeId {
-    pub(crate) unsafe fn from_raw(raw: MlirTypeID) -> Self {
+    /// Creates a type ID from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirTypeID) -> Self {
         Self { raw }
     }
 }

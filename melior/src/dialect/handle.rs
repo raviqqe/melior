@@ -96,7 +96,12 @@ impl DialectHandle {
         unsafe { mlirDialectHandleRegisterDialect(self.raw, context.to_raw()) }
     }
 
-    pub(crate) unsafe fn from_raw(handle: MlirDialectHandle) -> Self {
+    /// Creates a dialect handle from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(handle: MlirDialectHandle) -> Self {
         Self { raw: handle }
     }
 }

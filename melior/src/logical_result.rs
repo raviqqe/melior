@@ -32,11 +32,13 @@ impl LogicalResult {
         self.raw.value == 0
     }
 
-    pub(crate) fn from_raw(result: MlirLogicalResult) -> Self {
+    /// Creates a logical result from a raw object.
+    pub fn from_raw(result: MlirLogicalResult) -> Self {
         Self { raw: result }
     }
 
-    pub(crate) fn to_raw(self) -> MlirLogicalResult {
+    /// Converts a logical result into a raw object.
+    pub fn to_raw(self) -> MlirLogicalResult {
         self.raw
     }
 }

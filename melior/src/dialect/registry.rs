@@ -14,7 +14,8 @@ impl DialectRegistry {
         }
     }
 
-    pub(crate) unsafe fn to_raw(&self) -> MlirDialectRegistry {
+    /// Converts a dialect registry into a raw object.
+    pub fn to_raw(&self) -> MlirDialectRegistry {
         self.raw
     }
 }

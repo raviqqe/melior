@@ -117,14 +117,20 @@ impl<'c> Operation<'c> {
         unsafe { mlirOperationDump(self.raw) }
     }
 
-    pub(crate) unsafe fn from_raw(raw: MlirOperation) -> Self {
+    /// Creates an operation from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirOperation) -> Self {
         Self {
             raw,
             _context: Default::default(),
         }
     }
 
-    pub(crate) unsafe fn into_raw(self) -> MlirOperation {
+    /// Converts an operation into a raw object.
+    pub fn into_raw(self) -> MlirOperation {
         let operation = self.raw;
 
         forget(self);
@@ -135,7 +141,7 @@ impl<'c> Operation<'c> {
 
 impl<'c> Clone for Operation<'c> {
     fn clone(&self) -> Self {
-        unsafe { Operation::from_raw(mlirOperationClone(self.raw)) }
+        unsafe { Self::from_raw(mlirOperationClone(self.raw)) }
     }
 }
 
@@ -194,18 +200,29 @@ impl<'a> OperationRef<'a> {
         unsafe { transmute(self.deref().result(index)) }
     }
 
-    pub(crate) unsafe fn to_raw(self) -> MlirOperation {
+    /// Converts an operation reference into a raw object.
+    pub fn to_raw(self) -> MlirOperation {
         self.raw
     }
 
-    pub(crate) unsafe fn from_raw(raw: MlirOperation) -> Self {
+    /// Creates an operation reference from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirOperation) -> Self {
         Self {
             raw,
             _reference: Default::default(),
         }
     }
 
-    pub(crate) unsafe fn from_option_raw(raw: MlirOperation) -> Option<Self> {
+    /// Creates an optional operation reference from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_option_raw(raw: MlirOperation) -> Option<Self> {
         if raw.ptr.is_null() {
             None
         } else {
