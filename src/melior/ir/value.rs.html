@@ -242,6 +242,11 @@
 <a href="#242" id="242">242</a>
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>value_like;
 
 <span class="kw">pub use </span><span class="self">self</span>::value_like::ValueLike;
@@ -264,7 +269,12 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(value: MlirValue) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a value from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_raw(value: MlirValue) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             raw: value,
             _parent: Default::default(),

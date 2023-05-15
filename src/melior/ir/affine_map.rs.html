@@ -67,6 +67,11 @@
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{
     context::{Context, ContextRef},
     utility::print_callback,
@@ -99,7 +104,12 @@
         <span class="kw">unsafe </span>{ mlirAffineMapDump(<span class="self">self</span>.raw) }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(raw: MlirAffineMap) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates an affine map from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_raw(raw: MlirAffineMap) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             raw,
             _context: Default::default(),

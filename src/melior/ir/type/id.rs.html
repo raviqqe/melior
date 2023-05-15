@@ -33,6 +33,11 @@
 <a href="#33" id="33">33</a>
 <a href="#34" id="34">34</a>
 <a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Type IDs and allocators
 
 </span><span class="kw">mod </span>allocator;
@@ -48,7 +53,12 @@
 }
 
 <span class="kw">impl </span>TypeId {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(raw: MlirTypeID) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a type ID from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_raw(raw: MlirTypeID) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ raw }
     }
 }

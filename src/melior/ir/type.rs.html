@@ -267,6 +267,16 @@
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Types and type IDs.
 
 </span><span class="attr">#[macro_use]
@@ -372,14 +382,24 @@
         }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(raw: MlirType) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a type from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_raw(raw: MlirType) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             raw,
             _context: Default::default(),
         }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_option_raw(raw: MlirType) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+    <span class="doccomment">/// Creates an optional type from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_option_raw(raw: MlirType) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">if </span>raw.ptr.is_null() {
             <span class="prelude-val">None
         </span>} <span class="kw">else </span>{

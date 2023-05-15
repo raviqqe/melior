@@ -141,6 +141,11 @@
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::DialectRegistry;
 <span class="kw">use crate</span>::{context::Context, dialect::Dialect, string_ref::StringRef};
 <span class="kw">use </span>mlir_sys::{
@@ -239,7 +244,12 @@
         <span class="kw">unsafe </span>{ mlirDialectHandleRegisterDialect(<span class="self">self</span>.raw, context.to_raw()) }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(handle: MlirDialectHandle) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a dialect handle from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_raw(handle: MlirDialectHandle) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ raw: handle }
     }
 }

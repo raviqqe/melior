@@ -74,7 +74,7 @@
         stream.extend(TokenStream::from(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #document]
             </span><span class="kw">pub fn </span>#function_name() -&gt; <span class="kw">crate</span>::pass::Pass {
-                <span class="kw">crate</span>::pass::Pass::__private_from_raw_fn(mlir_sys::#name)
+                <span class="kw">unsafe </span>{ <span class="kw">crate</span>::pass::Pass::__private_from_raw_fn(mlir_sys::#name) }
             }
         }));
 

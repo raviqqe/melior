@@ -33,6 +33,12 @@
 <a href="#33" id="33">33</a>
 <a href="#34" id="34">34</a>
 <a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Passes and pass managers.
 
 </span><span class="kw">pub mod </span>r#async;
@@ -53,18 +59,24 @@
 }
 
 <span class="kw">impl </span>Pass {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_raw_fn(create_raw: <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>() -&gt; MlirPass) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a pass from a raw function.
+    ///
+    /// # Safety
+    ///
+    /// A raw function must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_raw_fn(create_raw: <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>() -&gt; MlirPass) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             raw: <span class="kw">unsafe </span>{ create_raw() },
         }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirPass {
+    <span class="doccomment">/// Converts a pass into a raw object.
+    </span><span class="kw">pub fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirPass {
         <span class="self">self</span>.raw
     }
 
     <span class="attr">#[doc(hidden)]
-    </span><span class="kw">pub fn </span>__private_from_raw_fn(create_raw: <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>() -&gt; MlirPass) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub unsafe fn </span>__private_from_raw_fn(create_raw: <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>() -&gt; MlirPass) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from_raw_fn(create_raw)
     }
 }

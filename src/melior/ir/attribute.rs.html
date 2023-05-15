@@ -303,6 +303,16 @@
 <a href="#303" id="303">303</a>
 <a href="#304" id="304">304</a>
 <a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Attributes.
 
 </span><span class="attr">#[macro_use]
@@ -362,14 +372,24 @@
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirAttributeGetNull()) }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(raw: MlirAttribute) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates an attribute from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_raw(raw: MlirAttribute) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             raw,
             _context: Default::default(),
         }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_option_raw(raw: MlirAttribute) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+    <span class="doccomment">/// Creates an optional attribute from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_option_raw(raw: MlirAttribute) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">if </span>raw.ptr.is_null() {
             <span class="prelude-val">None
         </span>} <span class="kw">else </span>{

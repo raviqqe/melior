@@ -79,6 +79,13 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Value;
 <span class="kw">use crate</span>::{
     ir::{OperationRef, ValueLike},
@@ -94,15 +101,22 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationResult&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>result_number(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+    <span class="doccomment">/// Gets a result number.
+    </span><span class="kw">pub fn </span>result_number(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="kw">unsafe </span>{ mlirOpResultGetResultNumber(<span class="self">self</span>.value.to_raw()) <span class="kw">as </span>usize }
     }
 
-    <span class="kw">pub fn </span>owner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OperationRef {
+    <span class="doccomment">/// Gets an owner operation.
+    </span><span class="kw">pub fn </span>owner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; OperationRef {
         <span class="kw">unsafe </span>{ OperationRef::from_raw(mlirOpResultGetOwner(<span class="self">self</span>.value.to_raw())) }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>from_raw(value: MlirValue) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates an operation result from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub unsafe fn </span>from_raw(value: MlirValue) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             value: Value::from_raw(value),
         }

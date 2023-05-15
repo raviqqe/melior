@@ -59,6 +59,7 @@
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
 <a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
 </pre><pre class="rust"><code><span class="kw">use </span>mlir_sys::{mlirDialectRegistryCreate, mlirDialectRegistryDestroy, MlirDialectRegistry};
 
 <span class="doccomment">/// A dialect registry.
@@ -75,7 +76,8 @@
         }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirDialectRegistry {
+    <span class="doccomment">/// Converts a dialect registry into a raw object.
+    </span><span class="kw">pub fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirDialectRegistry {
         <span class="self">self</span>.raw
     }
 }
