@@ -367,6 +367,9 @@
 <a href="#367" id="367">367</a>
 <a href="#368" id="368">368</a>
 <a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Operations and operation builders.
 
 </span><span class="kw">mod </span>builder;
@@ -379,8 +382,10 @@
     utility::print_callback,
     Error,
 };
-<span class="kw">use </span>core::fmt;
-<span class="kw">use </span>core::mem::{forget, transmute};
+<span class="kw">use </span>core::{
+    fmt,
+    mem::{forget, transmute},
+};
 <span class="kw">use </span>mlir_sys::{
     mlirOperationClone, mlirOperationDestroy, mlirOperationDump, mlirOperationEqual,
     mlirOperationGetBlock, mlirOperationGetContext, mlirOperationGetName,
@@ -565,7 +570,8 @@
     <span class="doccomment">/// Gets a result at a position.
     </span><span class="kw">pub fn </span>result(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;OperationResult&lt;<span class="lifetime">&#39;a</span>&gt;, Error&gt; {
         <span class="comment">// As we can&#39;t deref OperationRef&lt;&#39;a&gt; into `&amp;&#39;a Operation`, we forcibly cast its
-        // lifetime here to extend it from the lifetime of `ObjectRef&lt;&#39;a&gt;` itself into `&#39;a`.
+        // lifetime here to extend it from the lifetime of `ObjectRef&lt;&#39;a&gt;` itself into
+        // `&#39;a`.
         </span><span class="kw">unsafe </span>{ transmute(<span class="self">self</span>.deref().result(index)) }
     }
 

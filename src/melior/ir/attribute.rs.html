@@ -313,10 +313,13 @@
 <a href="#313" id="313">313</a>
 <a href="#314" id="314">314</a>
 <a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Attributes.
 
 </span><span class="attr">#[macro_use]
 </span><span class="kw">mod </span>r#macro;
+<span class="kw">mod </span>array;
 <span class="kw">mod </span>attribute_like;
 <span class="kw">mod </span>dense_elements;
 <span class="kw">mod </span>dense_i32_array;
@@ -328,7 +331,7 @@
 <span class="kw">mod </span>r#type;
 
 <span class="kw">pub use </span><span class="self">self</span>::{
-    attribute_like::AttributeLike, dense_elements::DenseElementsAttribute,
+    array::ArrayAttribute, attribute_like::AttributeLike, dense_elements::DenseElementsAttribute,
     dense_i32_array::DenseI32ArrayAttribute, dense_i64_array::DenseI64ArrayAttribute,
     flat_symbol_ref::FlatSymbolRefAttribute, float::FloatAttribute, integer::IntegerAttribute,
     r#type::TypeAttribute, string::StringAttribute,
@@ -436,6 +439,7 @@
 
 <span class="macro">from_raw_subtypes!</span>(
     Attribute,
+    ArrayAttribute,
     DenseElementsAttribute,
     DenseI32ArrayAttribute,
     DenseI64ArrayAttribute,
