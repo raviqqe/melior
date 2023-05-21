@@ -256,6 +256,8 @@
 <a href="#256" id="256">256</a>
 <a href="#257" id="257">257</a>
 <a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
 </pre><pre class="rust"><code><span class="doccomment">//! `index` dialect.
 
 </span><span class="kw">use </span><span class="kw">super</span>::arith::CmpiPredicate;
@@ -375,6 +377,7 @@
             StringAttribute::new(context, <span class="string">&quot;foo&quot;</span>),
             TypeAttribute::new(function_type.into()),
             region,
+            <span class="kw-2">&amp;</span>[],
             Location::unknown(context),
         );
 
@@ -504,6 +507,7 @@
                         .into(),
                 ),
                 region,
+                <span class="kw-2">&amp;</span>[],
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )
         };

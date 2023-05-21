@@ -590,6 +590,8 @@
 <a href="#590" id="590">590</a>
 <a href="#591" id="591">591</a>
 <a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
 </pre><pre class="rust"><code><span class="doccomment">//! `arith` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -796,6 +798,7 @@
             StringAttribute::new(context, <span class="string">&quot;foo&quot;</span>),
             TypeAttribute::new(function_type.into()),
             region,
+            <span class="kw-2">&amp;</span>[],
             Location::unknown(context),
         );
 
@@ -1172,6 +1175,7 @@
                         .into(),
                 ),
                 region,
+                <span class="kw-2">&amp;</span>[],
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )
         };

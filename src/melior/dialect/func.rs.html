@@ -194,6 +194,11 @@
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
 <a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
 </pre><pre class="rust"><code><span class="doccomment">//! `func` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -201,7 +206,7 @@
         attribute::{FlatSymbolRefAttribute, StringAttribute, TypeAttribute},
         operation::OperationBuilder,
         r#type::FunctionType,
-        Identifier, Location, Operation, Region, Value,
+        Attribute, Identifier, Location, Operation, Region, Value,
     },
     Context,
 };
@@ -250,6 +255,7 @@
     name: StringAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     r#type: TypeAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     region: Region,
+    attributes: <span class="kw-2">&amp;</span>[(Identifier&lt;<span class="lifetime">&#39;c</span>&gt;, Attribute&lt;<span class="lifetime">&#39;c</span>&gt;)],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;func.func&quot;</span>, location)
@@ -257,6 +263,7 @@
             (Identifier::new(context, <span class="string">&quot;sym_name&quot;</span>), name.into()),
             (Identifier::new(context, <span class="string">&quot;function_type&quot;</span>), r#type.into()),
         ])
+        .add_attributes(attributes)
         .add_regions(<span class="macro">vec!</span>[region])
         .build()
 }
@@ -303,6 +310,7 @@
                 StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
                 TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
                 region,
+                <span class="kw-2">&amp;</span>[],
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )
         };
@@ -345,6 +353,7 @@
                 StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
                 TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
                 region,
+                <span class="kw-2">&amp;</span>[],
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )
         };
@@ -380,6 +389,7 @@
                     FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[integer_type]).into(),
                 ),
                 region,
+                <span class="kw-2">&amp;</span>[],
                 Location::unknown(<span class="kw-2">&amp;</span>context),
             )
         };
