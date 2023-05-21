@@ -127,10 +127,15 @@
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Error};
 <span class="kw">use </span>mlir_sys::{
-    mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineInvokePacked,
-    MlirExecutionEngine,
+    mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineDumpToObjectFile,
+    mlirExecutionEngineInvokePacked, MlirExecutionEngine,
 };
 <span class="kw">use </span>std::ffi::c_void;
 
@@ -184,6 +189,11 @@
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(Error::InvokeFunction)
         }
+    }
+
+    <span class="doccomment">/// Dumps a module to an object file.
+    </span><span class="kw">pub fn </span>dump_to_object_file(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) {
+        <span class="kw">unsafe </span>{ mlirExecutionEngineDumpToObjectFile(<span class="self">self</span>.raw, StringRef::from(path).to_raw()) }
     }
 }
 
