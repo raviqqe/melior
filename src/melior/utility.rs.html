@@ -140,6 +140,20 @@
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Utility functions.
 
 </span><span class="kw">use crate</span>::{
@@ -219,7 +233,7 @@
         <span class="kw">return</span>;
     }
 
-    <span class="kw-2">*</span>result = (|| -&gt; fmt::Result {
+    <span class="kw-2">*</span>result = (|| {
         <span class="macro">write!</span>(
             formatter,
             <span class="string">&quot;{}&quot;</span>,
@@ -227,6 +241,20 @@
                 .as_str()
                 .map_err(|<span class="kw">_</span>| fmt::Error)<span class="question-mark">?
         </span>)
+    })();
+}
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>print_string_callback(string: MlirStringRef, data: <span class="kw-2">*mut </span>c_void) {
+    <span class="kw">let </span>(writer, result) = <span class="kw-2">&amp;mut *</span>(data <span class="kw">as </span><span class="kw-2">*mut </span>(String, <span class="prelude-ty">Result</span>&lt;(), Error&gt;));
+
+    <span class="kw">if </span>result.is_err() {
+        <span class="kw">return</span>;
+    }
+
+    <span class="kw-2">*</span>result = (|| {
+        writer.push_str(StringRef::from_raw(string).as_str()<span class="question-mark">?</span>);
+
+        <span class="prelude-val">Ok</span>(())
     })();
 }
 
