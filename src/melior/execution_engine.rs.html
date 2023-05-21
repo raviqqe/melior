@@ -132,6 +132,25 @@
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Error};
 <span class="kw">use </span>mlir_sys::{
     mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineDumpToObjectFile,
@@ -206,21 +225,11 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use crate</span>::{
-        context::Context,
-        dialect::DialectRegistry,
-        pass,
-        utility::{register_all_dialects, register_all_llvm_translations},
-    };
+    <span class="kw">use crate</span>::{pass, test::create_test_context};
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>invoke_packed() {
-        <span class="kw">let </span>registry = DialectRegistry::new();
-        register_all_dialects(<span class="kw-2">&amp;</span>registry);
-
-        <span class="kw">let </span>context = Context::new();
-        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
-        register_all_llvm_translations(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="kw">let </span><span class="kw-2">mut </span>module = Module::parse(
             <span class="kw-2">&amp;</span>context,
@@ -264,6 +273,35 @@
 
         <span class="macro">assert_eq!</span>(argument, <span class="number">42</span>);
         <span class="macro">assert_eq!</span>(result, <span class="number">84</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>dump_to_object_file() {
+        <span class="kw">let </span>context = create_test_context();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>module = Module::parse(
+            <span class="kw-2">&amp;</span>context,
+            <span class="string">r#&quot;
+            module {
+                func.func @add(%arg0 : i32) -&gt; i32 {
+                    %res = arith.addi %arg0, %arg0 : i32
+                    return %res : i32
+                }
+            }
+            &quot;#</span>,
+        )
+        .unwrap();
+
+        <span class="kw">let </span>pass_manager = pass::PassManager::new(<span class="kw-2">&amp;</span>context);
+        pass_manager.add_pass(pass::conversion::create_func_to_llvm());
+
+        pass_manager
+            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .add_pass(pass::conversion::create_arith_to_llvm());
+
+        <span class="macro">assert_eq!</span>(pass_manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
+
+        ExecutionEngine::new(<span class="kw-2">&amp;</span>module, <span class="number">2</span>, <span class="kw-2">&amp;</span>[], <span class="bool-val">true</span>).dump_to_object_file(<span class="string">&quot;/tmp/melior/test.o&quot;</span>);
     }
 }
 </code></pre></div>
