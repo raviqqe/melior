@@ -1,7 +1,7 @@
 use crate::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Error};
 use mlir_sys::{
-    mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineInvokePacked,
-    MlirExecutionEngine,
+    mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineDumpToObjectFile,
+    mlirExecutionEngineInvokePacked, MlirExecutionEngine,
 };
 use std::ffi::c_void;
 
@@ -55,6 +55,11 @@ impl ExecutionEngine {
         } else {
             Err(Error::InvokeFunction)
         }
+    }
+
+    /// Dumps a module to an object file.
+    pub fn dump_to_object_file(&self, path: &str) {
+        unsafe { mlirExecutionEngineDumpToObjectFile(self.raw, StringRef::from(path).to_raw()) }
     }
 }
 
