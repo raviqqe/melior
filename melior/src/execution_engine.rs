@@ -72,21 +72,11 @@ impl Drop for ExecutionEngine {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        context::Context,
-        dialect::DialectRegistry,
-        pass,
-        utility::{register_all_dialects, register_all_llvm_translations},
-    };
+    use crate::{pass, test::create_test_context};
 
     #[test]
     fn invoke_packed() {
-        let registry = DialectRegistry::new();
-        register_all_dialects(&registry);
-
-        let context = Context::new();
-        context.append_dialect_registry(&registry);
-        register_all_llvm_translations(&context);
+        let context = create_test_context();
 
         let mut module = Module::parse(
             &context,
@@ -130,5 +120,34 @@ mod tests {
 
         assert_eq!(argument, 42);
         assert_eq!(result, 84);
+    }
+
+    #[test]
+    fn dump_to_object_file() {
+        let context = create_test_context();
+
+        let mut module = Module::parse(
+            &context,
+            r#"
+            module {
+                func.func @add(%arg0 : i32) -> i32 {
+                    %res = arith.addi %arg0, %arg0 : i32
+                    return %res : i32
+                }
+            }
+            "#,
+        )
+        .unwrap();
+
+        let pass_manager = pass::PassManager::new(&context);
+        pass_manager.add_pass(pass::conversion::create_func_to_llvm());
+
+        pass_manager
+            .nested_under("func.func")
+            .add_pass(pass::conversion::create_arith_to_llvm());
+
+        assert_eq!(pass_manager.run(&mut module), Ok(()));
+
+        ExecutionEngine::new(&module, 2, &[], true).dump_to_object_file("/tmp/melior/test.o");
     }
 }
