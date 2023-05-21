@@ -1,13 +1,16 @@
 //! Operations and operation builders.
 
 mod builder;
+mod printing_flags;
 mod result;
 
-pub use self::{builder::OperationBuilder, result::OperationResult};
+pub use self::{
+    builder::OperationBuilder, printing_flags::OperationPrintingFlags, result::OperationResult,
+};
 use super::{BlockRef, Identifier, RegionRef, Value};
 use crate::{
     context::{Context, ContextRef},
-    utility::print_callback,
+    utility::{print_callback, print_string_callback},
     Error,
 };
 use core::{
@@ -18,8 +21,8 @@ use mlir_sys::{
     mlirOperationClone, mlirOperationDestroy, mlirOperationDump, mlirOperationEqual,
     mlirOperationGetBlock, mlirOperationGetContext, mlirOperationGetName,
     mlirOperationGetNextInBlock, mlirOperationGetNumRegions, mlirOperationGetNumResults,
-    mlirOperationGetRegion, mlirOperationGetResult, mlirOperationPrint, mlirOperationVerify,
-    MlirOperation,
+    mlirOperationGetRegion, mlirOperationGetResult, mlirOperationPrint,
+    mlirOperationPrintWithFlags, mlirOperationVerify, MlirOperation,
 };
 use std::{
     ffi::c_void,
@@ -117,6 +120,24 @@ impl<'c> Operation<'c> {
     /// Dumps an operation.
     pub fn dump(&self) {
         unsafe { mlirOperationDump(self.raw) }
+    }
+
+    /// Prints an operation with flags.
+    pub fn to_string_with_flags(&self, flags: OperationPrintingFlags) -> Result<String, Error> {
+        let mut data = (String::new(), Ok::<_, Error>(()));
+
+        unsafe {
+            mlirOperationPrintWithFlags(
+                self.raw,
+                flags.to_raw(),
+                Some(print_string_callback),
+                &mut data as *mut _ as *mut _,
+            );
+        }
+
+        data.1?;
+
+        Ok(data.0)
     }
 
     /// Creates an operation from a raw object.
@@ -367,6 +388,24 @@ mod tests {
                 OperationBuilder::new("foo", Location::unknown(&context)).build()
             ),
             "Operation(\n\"foo\"() : () -> ()\n)"
+        );
+    }
+
+    #[test]
+    fn to_string_with_flags() {
+        let context = Context::new();
+
+        assert_eq!(
+            OperationBuilder::new("foo", Location::unknown(&context))
+                .build()
+                .to_string_with_flags(
+                    OperationPrintingFlags::new()
+                        .elide_large_elements_attributes(100)
+                        .enable_debug_info(true, true)
+                        .print_generic_operation_form()
+                        .use_local_scope()
+                ),
+            Ok("\"foo\"() : () -> () [unknown]".into())
         );
     }
 }
