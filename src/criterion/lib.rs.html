@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/criterion-0.4.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../criterion/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/criterion-0.5.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../criterion/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1442,6 +1442,77 @@
 <a href="#1442" id="1442">1442</a>
 <a href="#1443" id="1443">1443</a>
 <a href="#1444" id="1444">1444</a>
+<a href="#1445" id="1445">1445</a>
+<a href="#1446" id="1446">1446</a>
+<a href="#1447" id="1447">1447</a>
+<a href="#1448" id="1448">1448</a>
+<a href="#1449" id="1449">1449</a>
+<a href="#1450" id="1450">1450</a>
+<a href="#1451" id="1451">1451</a>
+<a href="#1452" id="1452">1452</a>
+<a href="#1453" id="1453">1453</a>
+<a href="#1454" id="1454">1454</a>
+<a href="#1455" id="1455">1455</a>
+<a href="#1456" id="1456">1456</a>
+<a href="#1457" id="1457">1457</a>
+<a href="#1458" id="1458">1458</a>
+<a href="#1459" id="1459">1459</a>
+<a href="#1460" id="1460">1460</a>
+<a href="#1461" id="1461">1461</a>
+<a href="#1462" id="1462">1462</a>
+<a href="#1463" id="1463">1463</a>
+<a href="#1464" id="1464">1464</a>
+<a href="#1465" id="1465">1465</a>
+<a href="#1466" id="1466">1466</a>
+<a href="#1467" id="1467">1467</a>
+<a href="#1468" id="1468">1468</a>
+<a href="#1469" id="1469">1469</a>
+<a href="#1470" id="1470">1470</a>
+<a href="#1471" id="1471">1471</a>
+<a href="#1472" id="1472">1472</a>
+<a href="#1473" id="1473">1473</a>
+<a href="#1474" id="1474">1474</a>
+<a href="#1475" id="1475">1475</a>
+<a href="#1476" id="1476">1476</a>
+<a href="#1477" id="1477">1477</a>
+<a href="#1478" id="1478">1478</a>
+<a href="#1479" id="1479">1479</a>
+<a href="#1480" id="1480">1480</a>
+<a href="#1481" id="1481">1481</a>
+<a href="#1482" id="1482">1482</a>
+<a href="#1483" id="1483">1483</a>
+<a href="#1484" id="1484">1484</a>
+<a href="#1485" id="1485">1485</a>
+<a href="#1486" id="1486">1486</a>
+<a href="#1487" id="1487">1487</a>
+<a href="#1488" id="1488">1488</a>
+<a href="#1489" id="1489">1489</a>
+<a href="#1490" id="1490">1490</a>
+<a href="#1491" id="1491">1491</a>
+<a href="#1492" id="1492">1492</a>
+<a href="#1493" id="1493">1493</a>
+<a href="#1494" id="1494">1494</a>
+<a href="#1495" id="1495">1495</a>
+<a href="#1496" id="1496">1496</a>
+<a href="#1497" id="1497">1497</a>
+<a href="#1498" id="1498">1498</a>
+<a href="#1499" id="1499">1499</a>
+<a href="#1500" id="1500">1500</a>
+<a href="#1501" id="1501">1501</a>
+<a href="#1502" id="1502">1502</a>
+<a href="#1503" id="1503">1503</a>
+<a href="#1504" id="1504">1504</a>
+<a href="#1505" id="1505">1505</a>
+<a href="#1506" id="1506">1506</a>
+<a href="#1507" id="1507">1507</a>
+<a href="#1508" id="1508">1508</a>
+<a href="#1509" id="1509">1509</a>
+<a href="#1510" id="1510">1510</a>
+<a href="#1511" id="1511">1511</a>
+<a href="#1512" id="1512">1512</a>
+<a href="#1513" id="1513">1513</a>
+<a href="#1514" id="1514">1514</a>
+<a href="#1515" id="1515">1515</a>
 </pre><pre class="rust"><code><span class="doccomment">//! A statistics-driven micro-benchmarking library written in Rust.
 //!
 //! This crate is a microbenchmarking library which aims to provide strong
@@ -1480,10 +1551,8 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">extern crate </span>quickcheck;
 
+<span class="kw">use </span>is_terminal::IsTerminal;
 <span class="kw">use </span>regex::Regex;
-
-<span class="attr">#[macro_use]
-</span><span class="kw">extern crate </span>lazy_static;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;real_blackbox&quot;</span>)]
 </span><span class="kw">extern crate </span>test;
@@ -1523,6 +1592,7 @@
 <span class="kw">use </span>std::collections::HashSet;
 <span class="kw">use </span>std::default::Default;
 <span class="kw">use </span>std::env;
+<span class="kw">use </span>std::io::stdout;
 <span class="kw">use </span>std::net::TcpStream;
 <span class="kw">use </span>std::path::{Path, PathBuf};
 <span class="kw">use </span>std::process::Command;
@@ -1530,6 +1600,7 @@
 <span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>criterion_plot::{Version, VersionError};
+<span class="kw">use </span>once_cell::sync::Lazy;
 
 <span class="kw">use </span><span class="kw">crate</span>::benchmark::BenchmarkConfig;
 <span class="kw">use </span><span class="kw">crate</span>::connection::Connection;
@@ -1547,53 +1618,47 @@
 <span class="kw">pub use </span><span class="kw">crate</span>::bencher::Bencher;
 <span class="kw">pub use </span><span class="kw">crate</span>::benchmark_group::{BenchmarkGroup, BenchmarkId};
 
-<span class="macro">lazy_static! </span>{
-    <span class="kw">static </span><span class="kw-2">ref </span>DEBUG_ENABLED: bool = std::env::var_os(<span class="string">&quot;CRITERION_DEBUG&quot;</span>).is_some();
-    <span class="kw">static </span><span class="kw-2">ref </span>GNUPLOT_VERSION: <span class="prelude-ty">Result</span>&lt;Version, VersionError&gt; = criterion_plot::version();
-    <span class="kw">static </span><span class="kw-2">ref </span>DEFAULT_PLOTTING_BACKEND: PlottingBackend = {
-        <span class="kw">if </span><span class="macro">cfg!</span>(feature = <span class="string">&quot;html_reports&quot;</span>) {
-            <span class="kw">match </span><span class="kw-2">&amp;*</span>GNUPLOT_VERSION {
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; PlottingBackend::Gnuplot,
-                <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="kw">match </span>e {
-                        VersionError::Exec(<span class="kw">_</span>) =&gt; <span class="macro">eprintln!</span>(<span class="string">&quot;Gnuplot not found, using plotters backend&quot;</span>),
-                        e =&gt; <span class="macro">eprintln!</span>(
-                            <span class="string">&quot;Gnuplot not found or not usable, using plotters backend\n{}&quot;</span>,
-                            e
-                        ),
-                    };
-                    PlottingBackend::Plotters
-                }
-            }
-        } <span class="kw">else </span>{
-            PlottingBackend::None
+<span class="kw">static </span>DEBUG_ENABLED: Lazy&lt;bool&gt; = Lazy::new(|| std::env::var_os(<span class="string">&quot;CRITERION_DEBUG&quot;</span>).is_some());
+<span class="kw">static </span>GNUPLOT_VERSION: Lazy&lt;<span class="prelude-ty">Result</span>&lt;Version, VersionError&gt;&gt; = Lazy::new(criterion_plot::version);
+<span class="kw">static </span>DEFAULT_PLOTTING_BACKEND: Lazy&lt;PlottingBackend&gt; = Lazy::new(|| <span class="kw">match </span><span class="kw-2">&amp;*</span>GNUPLOT_VERSION {
+    <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; PlottingBackend::Gnuplot,
+    <span class="attr">#[cfg(feature = <span class="string">&quot;plotters&quot;</span>)]
+    </span><span class="prelude-val">Err</span>(e) =&gt; {
+        <span class="kw">match </span>e {
+            VersionError::Exec(<span class="kw">_</span>) =&gt; <span class="macro">eprintln!</span>(<span class="string">&quot;Gnuplot not found, using plotters backend&quot;</span>),
+            e =&gt; <span class="macro">eprintln!</span>(
+                <span class="string">&quot;Gnuplot not found or not usable, using plotters backend\n{}&quot;</span>,
+                e
+            ),
+        };
+        PlottingBackend::Plotters
+    }
+    <span class="attr">#[cfg(not(feature = <span class="string">&quot;plotters&quot;</span>))]
+    </span><span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; PlottingBackend::None,
+});
+<span class="kw">static </span>CARGO_CRITERION_CONNECTION: Lazy&lt;<span class="prelude-ty">Option</span>&lt;Mutex&lt;Connection&gt;&gt;&gt; =
+    Lazy::new(|| <span class="kw">match </span>std::env::var(<span class="string">&quot;CARGO_CRITERION_PORT&quot;</span>) {
+        <span class="prelude-val">Ok</span>(port_str) =&gt; {
+            <span class="kw">let </span>port: u16 = port_str.parse().ok()<span class="question-mark">?</span>;
+            <span class="kw">let </span>stream = TcpStream::connect((<span class="string">&quot;localhost&quot;</span>, port)).ok()<span class="question-mark">?</span>;
+            <span class="prelude-val">Some</span>(Mutex::new(Connection::new(stream).ok()<span class="question-mark">?</span>))
         }
-    };
-    <span class="kw">static </span><span class="kw-2">ref </span>CARGO_CRITERION_CONNECTION: <span class="prelude-ty">Option</span>&lt;Mutex&lt;Connection&gt;&gt; = {
-        <span class="kw">match </span>std::env::var(<span class="string">&quot;CARGO_CRITERION_PORT&quot;</span>) {
-            <span class="prelude-val">Ok</span>(port_str) =&gt; {
-                <span class="kw">let </span>port: u16 = port_str.parse().ok()<span class="question-mark">?</span>;
-                <span class="kw">let </span>stream = TcpStream::connect((<span class="string">&quot;localhost&quot;</span>, port)).ok()<span class="question-mark">?</span>;
-                <span class="prelude-val">Some</span>(Mutex::new(Connection::new(stream).ok()<span class="question-mark">?</span>))
-            }
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
-        }
-    };
-    <span class="kw">static </span><span class="kw-2">ref </span>DEFAULT_OUTPUT_DIRECTORY: PathBuf = {
-        <span class="comment">// Set criterion home to (in descending order of preference):
-        // - $CRITERION_HOME (cargo-criterion sets this, but other users could as well)
-        // - $CARGO_TARGET_DIR/criterion
-        // - the cargo target dir from `cargo metadata`
-        // - ./target/criterion
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(value) = env::var_os(<span class="string">&quot;CRITERION_HOME&quot;</span>) {
-            PathBuf::from(value)
-        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(path) = cargo_target_directory() {
-            path.join(<span class="string">&quot;criterion&quot;</span>)
-        } <span class="kw">else </span>{
-            PathBuf::from(<span class="string">&quot;target/criterion&quot;</span>)
-        }
-    };
-}
+        <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
+    });
+<span class="kw">static </span>DEFAULT_OUTPUT_DIRECTORY: Lazy&lt;PathBuf&gt; = Lazy::new(|| {
+    <span class="comment">// Set criterion home to (in descending order of preference):
+    // - $CRITERION_HOME (cargo-criterion sets this, but other users could as well)
+    // - $CARGO_TARGET_DIR/criterion
+    // - the cargo target dir from `cargo metadata`
+    // - ./target/criterion
+    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(value) = env::var_os(<span class="string">&quot;CRITERION_HOME&quot;</span>) {
+        PathBuf::from(value)
+    } <span class="kw">else if let </span><span class="prelude-val">Some</span>(path) = cargo_target_directory() {
+        path.join(<span class="string">&quot;criterion&quot;</span>)
+    } <span class="kw">else </span>{
+        PathBuf::from(<span class="string">&quot;target/criterion&quot;</span>)
+    }
+});
 
 <span class="kw">fn </span>debug_enabled() -&gt; bool {
     <span class="kw-2">*</span>DEBUG_ENABLED
@@ -1739,9 +1804,9 @@
 <span class="kw">impl </span>PlottingBackend {
     <span class="kw">fn </span>create_plotter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>Plotter&gt;&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            PlottingBackend::Gnuplot =&gt; <span class="prelude-val">Some</span>(Box::new(Gnuplot::default())),
+            PlottingBackend::Gnuplot =&gt; <span class="prelude-val">Some</span>(Box::&lt;Gnuplot&gt;::default()),
             <span class="attr">#[cfg(feature = <span class="string">&quot;plotters&quot;</span>)]
-            </span>PlottingBackend::Plotters =&gt; <span class="prelude-val">Some</span>(Box::new(PlottersBackend::default())),
+            </span>PlottingBackend::Plotters =&gt; <span class="prelude-val">Some</span>(Box::&lt;PlottersBackend&gt;::default()),
             <span class="attr">#[cfg(not(feature = <span class="string">&quot;plotters&quot;</span>))]
             </span>PlottingBackend::Plotters =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Criterion was built without plotters support.&quot;</span>),
             PlottingBackend::None =&gt; <span class="prelude-val">None</span>,
@@ -1755,7 +1820,7 @@
     <span class="doccomment">/// Run benchmarks normally.
     </span>Benchmark,
     <span class="doccomment">/// List all benchmarks but do not run them.
-    </span>List,
+    </span>List(ListFormat),
     <span class="doccomment">/// Run benchmarks once to verify that they work, but otherwise do not measure them.
     </span>Test,
     <span class="doccomment">/// Iterate benchmarks for a given length of time but do not analyze or report on them.
@@ -1765,6 +1830,39 @@
     <span class="kw">pub fn </span>is_benchmark(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="macro">matches!</span>(<span class="self">self</span>, Mode::Benchmark)
     }
+
+    <span class="kw">pub fn </span>is_terse(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, Mode::List(ListFormat::Terse))
+    }
+}
+
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="doccomment">/// Enum representing the list format.
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>ListFormat {
+    <span class="doccomment">/// The regular, default format.
+    </span>Pretty,
+    <span class="doccomment">/// The terse format, where nothing other than the name of the test and &quot;: benchmark&quot; at the end
+    /// is printed out.
+    </span>Terse,
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>ListFormat {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Pretty
+    }
+}
+
+<span class="doccomment">/// Benchmark filtering support.
+</span><span class="attr">#[derive(Clone, Debug)]
+</span><span class="kw">pub enum </span>BenchmarkFilter {
+    <span class="doccomment">/// Run all benchmarks.
+    </span>AcceptAll,
+    <span class="doccomment">/// Run benchmarks matching this regex.
+    </span>Regex(Regex),
+    <span class="doccomment">/// Run the benchmark matching this string exactly.
+    </span>Exact(String),
+    <span class="doccomment">/// Do not run any benchmarks.
+    </span>RejectAll,
 }
 
 <span class="doccomment">/// The benchmark manager
@@ -1783,7 +1881,7 @@
 /// benchmark.
 </span><span class="kw">pub struct </span>Criterion&lt;M: Measurement = WallTime&gt; {
     config: BenchmarkConfig,
-    filter: <span class="prelude-ty">Option</span>&lt;Regex&gt;,
+    filter: BenchmarkFilter,
     report: Reports,
     output_directory: PathBuf,
     baseline_directory: String,
@@ -1809,7 +1907,7 @@
         .map(PathBuf::from)
         .or_else(|| {
             <span class="kw">let </span>output = Command::new(env::var_os(<span class="string">&quot;CARGO&quot;</span>)<span class="question-mark">?</span>)
-                .args(<span class="kw-2">&amp;</span>[<span class="string">&quot;metadata&quot;</span>, <span class="string">&quot;--format-version&quot;</span>, <span class="string">&quot;1&quot;</span>])
+                .args([<span class="string">&quot;metadata&quot;</span>, <span class="string">&quot;--format-version&quot;</span>, <span class="string">&quot;1&quot;</span>])
                 .output()
                 .ok()<span class="question-mark">?</span>;
             <span class="kw">let </span>metadata: Metadata = serde_json::from_slice(<span class="kw-2">&amp;</span>output.stdout).ok()<span class="question-mark">?</span>;
@@ -1851,7 +1949,7 @@
                 sampling_mode: SamplingMode::Auto,
                 quick_mode: <span class="bool-val">false</span>,
             },
-            filter: <span class="prelude-val">None</span>,
+            filter: BenchmarkFilter::AcceptAll,
             report: reports,
             baseline_directory: <span class="string">&quot;base&quot;</span>.to_owned(),
             baseline: Baseline::Save,
@@ -2112,6 +2210,8 @@
     <span class="attr">#[must_use]
     </span><span class="doccomment">/// Filters the benchmarks. Only benchmarks with names that contain the
     /// given string will be executed.
+    ///
+    /// This overwrites [`Self::with_benchmark_filter`].
     </span><span class="kw">pub fn </span>with_filter&lt;S: Into&lt;String&gt;&gt;(<span class="kw-2">mut </span><span class="self">self</span>, filter: S) -&gt; Criterion&lt;M&gt; {
         <span class="kw">let </span>filter_text = filter.into();
         <span class="kw">let </span>filter = Regex::new(<span class="kw-2">&amp;</span>filter_text).unwrap_or_else(|err| {
@@ -2120,7 +2220,16 @@
                 filter_text, err
             )
         });
-        <span class="self">self</span>.filter = <span class="prelude-val">Some</span>(filter);
+        <span class="self">self</span>.filter = BenchmarkFilter::Regex(filter);
+
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Only run benchmarks specified by the given filter.
+    ///
+    /// This overwrites [`Self::with_filter`].
+    </span><span class="kw">pub fn </span>with_benchmark_filter(<span class="kw-2">mut </span><span class="self">self</span>, filter: BenchmarkFilter) -&gt; Criterion&lt;M&gt; {
+        <span class="self">self</span>.filter = filter;
 
         <span class="self">self
     </span>}
@@ -2174,7 +2283,7 @@
     </span><span class="attr">#[must_use]
     #[cfg_attr(feature = <span class="string">&quot;cargo-clippy&quot;</span>, allow(clippy::cognitive_complexity))]
     </span><span class="kw">pub fn </span>configure_from_args(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; Criterion&lt;M&gt; {
-        <span class="kw">use </span>clap::{Arg, Command};
+        <span class="kw">use </span>clap::{value_parser, Arg, Command};
         <span class="kw">let </span>matches = Command::new(<span class="string">&quot;Criterion Benchmark&quot;</span>)
             .arg(Arg::new(<span class="string">&quot;FILTER&quot;</span>)
                 .help(<span class="string">&quot;Skip benchmarks whose names do not contain FILTER.&quot;</span>)
@@ -2183,21 +2292,23 @@
                 .short(<span class="string">&#39;c&#39;</span>)
                 .long(<span class="string">&quot;color&quot;</span>)
                 .alias(<span class="string">&quot;colour&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .possible_values(<span class="kw-2">&amp;</span>[<span class="string">&quot;auto&quot;</span>, <span class="string">&quot;always&quot;</span>, <span class="string">&quot;never&quot;</span>])
+                .value_parser([<span class="string">&quot;auto&quot;</span>, <span class="string">&quot;always&quot;</span>, <span class="string">&quot;never&quot;</span>])
                 .default_value(<span class="string">&quot;auto&quot;</span>)
                 .help(<span class="string">&quot;Configure coloring of output. always = always colorize output, never = never colorize output, auto = colorize output if output is a tty and compiled for unix.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;verbose&quot;</span>)
                 .short(<span class="string">&#39;v&#39;</span>)
                 .long(<span class="string">&quot;verbose&quot;</span>)
+                .num_args(<span class="number">0</span>)
                 .help(<span class="string">&quot;Print additional statistical information.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;quiet&quot;</span>)
                 .long(<span class="string">&quot;quiet&quot;</span>)
+                .num_args(<span class="number">0</span>)
                 .conflicts_with(<span class="string">&quot;verbose&quot;</span>)
                 .help(<span class="string">&quot;Print only the benchmark results.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;noplot&quot;</span>)
                 .short(<span class="string">&#39;n&#39;</span>)
                 .long(<span class="string">&quot;noplot&quot;</span>)
+                .num_args(<span class="number">0</span>)
                 .help(<span class="string">&quot;Disable plot and HTML generation.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;save-baseline&quot;</span>)
                 .short(<span class="string">&#39;s&#39;</span>)
@@ -2206,97 +2317,115 @@
                 .help(<span class="string">&quot;Save results under a named baseline.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;discard-baseline&quot;</span>)
                 .long(<span class="string">&quot;discard-baseline&quot;</span>)
-                .conflicts_with_all(<span class="kw-2">&amp;</span>[<span class="string">&quot;save-baseline&quot;</span>, <span class="string">&quot;baseline&quot;</span>, <span class="string">&quot;baseline-lenient&quot;</span>])
+                .num_args(<span class="number">0</span>)
+                .conflicts_with_all([<span class="string">&quot;save-baseline&quot;</span>, <span class="string">&quot;baseline&quot;</span>, <span class="string">&quot;baseline-lenient&quot;</span>])
                 .help(<span class="string">&quot;Discard benchmark results.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;baseline&quot;</span>)
                 .short(<span class="string">&#39;b&#39;</span>)
                 .long(<span class="string">&quot;baseline&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .conflicts_with_all(<span class="kw-2">&amp;</span>[<span class="string">&quot;save-baseline&quot;</span>, <span class="string">&quot;baseline-lenient&quot;</span>])
+                .conflicts_with_all([<span class="string">&quot;save-baseline&quot;</span>, <span class="string">&quot;baseline-lenient&quot;</span>])
                 .help(<span class="string">&quot;Compare to a named baseline. If any benchmarks do not have the specified baseline this command fails.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;baseline-lenient&quot;</span>)
                 .long(<span class="string">&quot;baseline-lenient&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .conflicts_with_all(<span class="kw-2">&amp;</span>[<span class="string">&quot;save-baseline&quot;</span>, <span class="string">&quot;baseline&quot;</span>])
+                .conflicts_with_all([<span class="string">&quot;save-baseline&quot;</span>, <span class="string">&quot;baseline&quot;</span>])
                 .help(<span class="string">&quot;Compare to a named baseline. If any benchmarks do not have the specified baseline then just those benchmarks are not compared against the baseline while every other benchmark is compared against the baseline.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;list&quot;</span>)
                 .long(<span class="string">&quot;list&quot;</span>)
+                .num_args(<span class="number">0</span>)
                 .help(<span class="string">&quot;List all benchmarks&quot;</span>)
-                .conflicts_with_all(<span class="kw-2">&amp;</span>[<span class="string">&quot;test&quot;</span>, <span class="string">&quot;profile-time&quot;</span>]))
+                .conflicts_with_all([<span class="string">&quot;test&quot;</span>, <span class="string">&quot;profile-time&quot;</span>]))
+            .arg(Arg::new(<span class="string">&quot;format&quot;</span>)
+                .long(<span class="string">&quot;format&quot;</span>)
+                .value_parser([<span class="string">&quot;pretty&quot;</span>, <span class="string">&quot;terse&quot;</span>])
+                .default_value(<span class="string">&quot;pretty&quot;</span>)
+                <span class="comment">// Note that libtest&#39;s --format also works during test execution, but criterion
+                // doesn&#39;t support that at the moment.
+                </span>.help(<span class="string">&quot;Output formatting&quot;</span>))
+            .arg(Arg::new(<span class="string">&quot;ignored&quot;</span>)
+                .long(<span class="string">&quot;ignored&quot;</span>)
+                .num_args(<span class="number">0</span>)
+                .help(<span class="string">&quot;List or run ignored benchmarks (currently means skip all benchmarks)&quot;</span>))
+            .arg(Arg::new(<span class="string">&quot;exact&quot;</span>)
+                .long(<span class="string">&quot;exact&quot;</span>)
+                .num_args(<span class="number">0</span>)
+                .help(<span class="string">&quot;Run benchmarks that exactly match the provided filter&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;profile-time&quot;</span>)
                 .long(<span class="string">&quot;profile-time&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
+                .value_parser(<span class="macro">value_parser!</span>(f64))
                 .help(<span class="string">&quot;Iterate each benchmark for approximately the given number of seconds, doing no analysis and without storing the results. Useful for running the benchmarks in a profiler.&quot;</span>)
-                .conflicts_with_all(<span class="kw-2">&amp;</span>[<span class="string">&quot;test&quot;</span>, <span class="string">&quot;list&quot;</span>]))
+                .conflicts_with_all([<span class="string">&quot;test&quot;</span>, <span class="string">&quot;list&quot;</span>]))
             .arg(Arg::new(<span class="string">&quot;load-baseline&quot;</span>)
                  .long(<span class="string">&quot;load-baseline&quot;</span>)
-                 .takes_value(<span class="bool-val">true</span>)
                  .conflicts_with(<span class="string">&quot;profile-time&quot;</span>)
                  .requires(<span class="string">&quot;baseline&quot;</span>)
                  .help(<span class="string">&quot;Load a previous baseline instead of sampling new data.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;sample-size&quot;</span>)
                 .long(<span class="string">&quot;sample-size&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .help(<span class="kw-2">&amp;*</span><span class="macro">format!</span>(<span class="string">&quot;Changes the default size of the sample for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.sample_size)))
+                .value_parser(<span class="macro">value_parser!</span>(usize))
+                .help(<span class="macro">format!</span>(<span class="string">&quot;Changes the default size of the sample for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.sample_size)))
             .arg(Arg::new(<span class="string">&quot;warm-up-time&quot;</span>)
                 .long(<span class="string">&quot;warm-up-time&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .help(<span class="kw-2">&amp;*</span><span class="macro">format!</span>(<span class="string">&quot;Changes the default warm up time for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.warm_up_time.as_secs())))
+                .value_parser(<span class="macro">value_parser!</span>(f64))
+                .help(<span class="macro">format!</span>(<span class="string">&quot;Changes the default warm up time for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.warm_up_time.as_secs())))
             .arg(Arg::new(<span class="string">&quot;measurement-time&quot;</span>)
                 .long(<span class="string">&quot;measurement-time&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .help(<span class="kw-2">&amp;*</span><span class="macro">format!</span>(<span class="string">&quot;Changes the default measurement time for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.measurement_time.as_secs())))
+                .value_parser(<span class="macro">value_parser!</span>(f64))
+                .help(<span class="macro">format!</span>(<span class="string">&quot;Changes the default measurement time for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.measurement_time.as_secs())))
             .arg(Arg::new(<span class="string">&quot;nresamples&quot;</span>)
                 .long(<span class="string">&quot;nresamples&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .help(<span class="kw-2">&amp;*</span><span class="macro">format!</span>(<span class="string">&quot;Changes the default number of resamples for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.nresamples)))
+                .value_parser(<span class="macro">value_parser!</span>(usize))
+                .help(<span class="macro">format!</span>(<span class="string">&quot;Changes the default number of resamples for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.nresamples)))
             .arg(Arg::new(<span class="string">&quot;noise-threshold&quot;</span>)
                 .long(<span class="string">&quot;noise-threshold&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .help(<span class="kw-2">&amp;*</span><span class="macro">format!</span>(<span class="string">&quot;Changes the default noise threshold for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.noise_threshold)))
+                .value_parser(<span class="macro">value_parser!</span>(f64))
+                .help(<span class="macro">format!</span>(<span class="string">&quot;Changes the default noise threshold for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.noise_threshold)))
             .arg(Arg::new(<span class="string">&quot;confidence-level&quot;</span>)
                 .long(<span class="string">&quot;confidence-level&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .help(<span class="kw-2">&amp;*</span><span class="macro">format!</span>(<span class="string">&quot;Changes the default confidence level for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.confidence_level)))
+                .value_parser(<span class="macro">value_parser!</span>(f64))
+                .help(<span class="macro">format!</span>(<span class="string">&quot;Changes the default confidence level for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.confidence_level)))
             .arg(Arg::new(<span class="string">&quot;significance-level&quot;</span>)
                 .long(<span class="string">&quot;significance-level&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .help(<span class="kw-2">&amp;*</span><span class="macro">format!</span>(<span class="string">&quot;Changes the default significance level for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.significance_level)))
+                .value_parser(<span class="macro">value_parser!</span>(f64))
+                .help(<span class="macro">format!</span>(<span class="string">&quot;Changes the default significance level for this run. [default: {}]&quot;</span>, <span class="self">self</span>.config.significance_level)))
             .arg(Arg::new(<span class="string">&quot;quick&quot;</span>)
                 .long(<span class="string">&quot;quick&quot;</span>)
+                .num_args(<span class="number">0</span>)
                 .conflicts_with(<span class="string">&quot;sample-size&quot;</span>)
-                .help(<span class="kw-2">&amp;*</span><span class="macro">format!</span>(<span class="string">&quot;Benchmark only until the significance level has been reached [default: {}]&quot;</span>, <span class="self">self</span>.config.quick_mode)))
+                .help(<span class="macro">format!</span>(<span class="string">&quot;Benchmark only until the significance level has been reached [default: {}]&quot;</span>, <span class="self">self</span>.config.quick_mode)))
             .arg(Arg::new(<span class="string">&quot;test&quot;</span>)
                 .hide(<span class="bool-val">true</span>)
                 .long(<span class="string">&quot;test&quot;</span>)
+                .num_args(<span class="number">0</span>)
                 .help(<span class="string">&quot;Run the benchmarks once, to verify that they execute successfully, but do not measure or report the results.&quot;</span>)
-                .conflicts_with_all(<span class="kw-2">&amp;</span>[<span class="string">&quot;list&quot;</span>, <span class="string">&quot;profile-time&quot;</span>]))
+                .conflicts_with_all([<span class="string">&quot;list&quot;</span>, <span class="string">&quot;profile-time&quot;</span>]))
             .arg(Arg::new(<span class="string">&quot;bench&quot;</span>)
                 .hide(<span class="bool-val">true</span>)
-                .long(<span class="string">&quot;bench&quot;</span>))
+                .long(<span class="string">&quot;bench&quot;</span>)
+                .num_args(<span class="number">0</span>))
             .arg(Arg::new(<span class="string">&quot;plotting-backend&quot;</span>)
                  .long(<span class="string">&quot;plotting-backend&quot;</span>)
-                 .takes_value(<span class="bool-val">true</span>)
-                 .possible_values(<span class="kw-2">&amp;</span>[<span class="string">&quot;gnuplot&quot;</span>, <span class="string">&quot;plotters&quot;</span>])
+                 .value_parser([<span class="string">&quot;gnuplot&quot;</span>, <span class="string">&quot;plotters&quot;</span>])
                  .help(<span class="string">&quot;Set the plotting backend. By default, Criterion.rs will use the gnuplot backend if gnuplot is available, or the plotters backend if it isn&#39;t.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;output-format&quot;</span>)
                 .long(<span class="string">&quot;output-format&quot;</span>)
-                .takes_value(<span class="bool-val">true</span>)
-                .possible_values(<span class="kw-2">&amp;</span>[<span class="string">&quot;criterion&quot;</span>, <span class="string">&quot;bencher&quot;</span>])
+                .value_parser([<span class="string">&quot;criterion&quot;</span>, <span class="string">&quot;bencher&quot;</span>])
                 .default_value(<span class="string">&quot;criterion&quot;</span>)
                 .help(<span class="string">&quot;Change the CLI output format. By default, Criterion.rs will use its own format. If output format is set to &#39;bencher&#39;, Criterion.rs will print output in a format that resembles the &#39;bencher&#39; crate.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;nocapture&quot;</span>)
                 .long(<span class="string">&quot;nocapture&quot;</span>)
+                .num_args(<span class="number">0</span>)
                 .hide(<span class="bool-val">true</span>)
                 .help(<span class="string">&quot;Ignored, but added for compatibility with libtest.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;show-output&quot;</span>)
                 .long(<span class="string">&quot;show-output&quot;</span>)
-                .hidden(<span class="bool-val">true</span>)
+                .num_args(<span class="number">0</span>)
+                .hide(<span class="bool-val">true</span>)
                 .help(<span class="string">&quot;Ignored, but added for compatibility with libtest.&quot;</span>))
             .arg(Arg::new(<span class="string">&quot;version&quot;</span>)
-                .hidden(<span class="bool-val">true</span>)
+                .hide(<span class="bool-val">true</span>)
                 .short(<span class="string">&#39;V&#39;</span>)
-                .long(<span class="string">&quot;version&quot;</span>))
+                .long(<span class="string">&quot;version&quot;</span>)
+                .num_args(<span class="number">0</span>))
             .after_help(<span class="string">&quot;
 This executable is a Criterion.rs benchmark.
 See https://github.com/bheisler/criterion.rs for more details.
@@ -2313,53 +2442,62 @@ https://bheisler.github.io/criterion.rs/book/faq.html
             .get_matches();
 
         <span class="kw">if </span><span class="self">self</span>.connection.is_some() {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(color) = matches.value_of(<span class="string">&quot;color&quot;</span>) {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(color) = matches.get_one::&lt;String&gt;(<span class="string">&quot;color&quot;</span>) {
                 <span class="kw">if </span>color != <span class="string">&quot;auto&quot; </span>{
                     <span class="macro">eprintln!</span>(<span class="string">&quot;Warning: --color will be ignored when running with cargo-criterion. Use `cargo criterion --color {} -- &lt;args&gt;` instead.&quot;</span>, color);
                 }
             }
-            <span class="kw">if </span>matches.is_present(<span class="string">&quot;verbose&quot;</span>) {
+            <span class="kw">if </span>matches.get_flag(<span class="string">&quot;verbose&quot;</span>) {
                 <span class="macro">eprintln!</span>(<span class="string">&quot;Warning: --verbose will be ignored when running with cargo-criterion. Use `cargo criterion --output-format verbose -- &lt;args&gt;` instead.&quot;</span>);
             }
-            <span class="kw">if </span>matches.is_present(<span class="string">&quot;noplot&quot;</span>) {
+            <span class="kw">if </span>matches.get_flag(<span class="string">&quot;noplot&quot;</span>) {
                 <span class="macro">eprintln!</span>(<span class="string">&quot;Warning: --noplot will be ignored when running with cargo-criterion. Use `cargo criterion --plotting-backend disabled -- &lt;args&gt;` instead.&quot;</span>);
             }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(backend) = matches.value_of(<span class="string">&quot;plotting-backend&quot;</span>) {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(backend) = matches.get_one::&lt;String&gt;(<span class="string">&quot;plotting-backend&quot;</span>) {
                 <span class="macro">eprintln!</span>(<span class="string">&quot;Warning: --plotting-backend will be ignored when running with cargo-criterion. Use `cargo criterion --plotting-backend {} -- &lt;args&gt;` instead.&quot;</span>, backend);
             }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(format) = matches.value_of(<span class="string">&quot;output-format&quot;</span>) {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(format) = matches.get_one::&lt;String&gt;(<span class="string">&quot;output-format&quot;</span>) {
                 <span class="kw">if </span>format != <span class="string">&quot;criterion&quot; </span>{
                     <span class="macro">eprintln!</span>(<span class="string">&quot;Warning: --output-format will be ignored when running with cargo-criterion. Use `cargo criterion --output-format {} -- &lt;args&gt;` instead.&quot;</span>, format);
                 }
             }
 
-            <span class="kw">if </span>matches.is_present(<span class="string">&quot;baseline&quot;</span>)
+            <span class="kw">if </span>matches.contains_id(<span class="string">&quot;baseline&quot;</span>)
                 || matches
-                    .value_of(<span class="string">&quot;save-baseline&quot;</span>)
-                    .map(|base| base != <span class="string">&quot;base&quot;</span>)
-                    .unwrap_or(<span class="bool-val">false</span>)
-                || matches.is_present(<span class="string">&quot;load-baseline&quot;</span>)
+                    .get_one::&lt;String&gt;(<span class="string">&quot;save-baseline&quot;</span>)
+                    .map_or(<span class="bool-val">false</span>, |base| base != <span class="string">&quot;base&quot;</span>)
+                || matches.contains_id(<span class="string">&quot;load-baseline&quot;</span>)
             {
                 <span class="macro">eprintln!</span>(<span class="string">&quot;Error: baselines are not supported when running with cargo-criterion.&quot;</span>);
                 std::process::exit(<span class="number">1</span>);
             }
         }
 
-        <span class="kw">let </span>bench = matches.is_present(<span class="string">&quot;bench&quot;</span>);
-        <span class="kw">let </span>test = matches.is_present(<span class="string">&quot;test&quot;</span>);
+        <span class="kw">let </span>bench = matches.get_flag(<span class="string">&quot;bench&quot;</span>);
+        <span class="kw">let </span>test = matches.get_flag(<span class="string">&quot;test&quot;</span>);
         <span class="kw">let </span>test_mode = <span class="kw">match </span>(bench, test) {
             (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; <span class="bool-val">true</span>,   <span class="comment">// cargo bench -- --test should run tests
             </span>(<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; <span class="bool-val">false</span>, <span class="comment">// cargo bench should run benchmarks
             </span>(<span class="bool-val">false</span>, <span class="kw">_</span>) =&gt; <span class="bool-val">true</span>,     <span class="comment">// cargo test --benches should run tests
         </span>};
 
-        <span class="self">self</span>.mode = <span class="kw">if </span>test_mode {
+        <span class="self">self</span>.mode = <span class="kw">if </span>matches.get_flag(<span class="string">&quot;list&quot;</span>) {
+            <span class="kw">let </span>list_format = <span class="kw">match </span>matches
+                .get_one::&lt;String&gt;(<span class="string">&quot;format&quot;</span>)
+                .expect(<span class="string">&quot;a default value was provided for this&quot;</span>)
+                .as_str()
+            {
+                <span class="string">&quot;pretty&quot; </span>=&gt; ListFormat::Pretty,
+                <span class="string">&quot;terse&quot; </span>=&gt; ListFormat::Terse,
+                other =&gt; <span class="macro">unreachable!</span>(
+                    <span class="string">&quot;unrecognized value for --format that isn&#39;t part of possible-values: {}&quot;</span>,
+                    other
+                ),
+            };
+            Mode::List(list_format)
+        } <span class="kw">else if </span>test_mode {
             Mode::Test
-        } <span class="kw">else if </span>matches.is_present(<span class="string">&quot;list&quot;</span>) {
-            Mode::List
-        } <span class="kw">else if </span>matches.is_present(<span class="string">&quot;profile-time&quot;</span>) {
-            <span class="kw">let </span>num_seconds = matches.value_of_t_or_exit(<span class="string">&quot;profile-time&quot;</span>);
-
+        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>num_seconds) = matches.get_one(<span class="string">&quot;profile-time&quot;</span>) {
             <span class="kw">if </span>num_seconds &lt; <span class="number">1.0 </span>{
                 <span class="macro">eprintln!</span>(<span class="string">&quot;Profile time must be at least one second.&quot;</span>);
                 std::process::exit(<span class="number">1</span>);
@@ -2375,11 +2513,27 @@ https://bheisler.github.io/criterion.rs/book/faq.html
             <span class="self">self</span>.connection = <span class="prelude-val">None</span>;
         }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(filter) = matches.value_of(<span class="string">&quot;FILTER&quot;</span>) {
-            <span class="self">self </span>= <span class="self">self</span>.with_filter(filter);
-        }
+        <span class="kw">let </span>filter = <span class="kw">if </span>matches.get_flag(<span class="string">&quot;ignored&quot;</span>) {
+            <span class="comment">// --ignored overwrites any name-based filters passed in.
+            </span>BenchmarkFilter::RejectAll
+        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(filter) = matches.get_one::&lt;String&gt;(<span class="string">&quot;FILTER&quot;</span>) {
+            <span class="kw">if </span>matches.get_flag(<span class="string">&quot;exact&quot;</span>) {
+                BenchmarkFilter::Exact(filter.to_owned())
+            } <span class="kw">else </span>{
+                <span class="kw">let </span>regex = Regex::new(filter).unwrap_or_else(|err| {
+                    <span class="macro">panic!</span>(
+                        <span class="string">&quot;Unable to parse &#39;{}&#39; as a regular expression: {}&quot;</span>,
+                        filter, err
+                    )
+                });
+                BenchmarkFilter::Regex(regex)
+            }
+        } <span class="kw">else </span>{
+            BenchmarkFilter::AcceptAll
+        };
+        <span class="self">self </span>= <span class="self">self</span>.with_benchmark_filter(filter);
 
-        <span class="kw">match </span>matches.value_of(<span class="string">&quot;plotting-backend&quot;</span>) {
+        <span class="kw">match </span>matches.get_one(<span class="string">&quot;plotting-backend&quot;</span>).map(String::as_str) {
             <span class="comment">// Use plotting_backend() here to re-use the panic behavior if Gnuplot is not available.
             </span><span class="prelude-val">Some</span>(<span class="string">&quot;gnuplot&quot;</span>) =&gt; <span class="self">self </span>= <span class="self">self</span>.plotting_backend(PlottingBackend::Gnuplot),
             <span class="prelude-val">Some</span>(<span class="string">&quot;plotters&quot;</span>) =&gt; <span class="self">self </span>= <span class="self">self</span>.plotting_backend(PlottingBackend::Plotters),
@@ -2387,22 +2541,22 @@ https://bheisler.github.io/criterion.rs/book/faq.html
             <span class="prelude-val">None </span>=&gt; {}
         }
 
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;noplot&quot;</span>) {
+        <span class="kw">if </span>matches.get_flag(<span class="string">&quot;noplot&quot;</span>) {
             <span class="self">self </span>= <span class="self">self</span>.without_plots();
         }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = matches.value_of(<span class="string">&quot;save-baseline&quot;</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = matches.get_one::&lt;String&gt;(<span class="string">&quot;save-baseline&quot;</span>) {
             <span class="self">self</span>.baseline = Baseline::Save;
             <span class="self">self</span>.baseline_directory = dir.to_owned()
         }
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;discard-baseline&quot;</span>) {
+        <span class="kw">if </span>matches.get_flag(<span class="string">&quot;discard-baseline&quot;</span>) {
             <span class="self">self</span>.baseline = Baseline::Discard;
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = matches.value_of(<span class="string">&quot;baseline&quot;</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = matches.get_one::&lt;String&gt;(<span class="string">&quot;baseline&quot;</span>) {
             <span class="self">self</span>.baseline = Baseline::CompareStrict;
             <span class="self">self</span>.baseline_directory = dir.to_owned();
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = matches.value_of(<span class="string">&quot;baseline-lenient&quot;</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = matches.get_one::&lt;String&gt;(<span class="string">&quot;baseline-lenient&quot;</span>) {
             <span class="self">self</span>.baseline = Baseline::CompareLenient;
             <span class="self">self</span>.baseline_directory = dir.to_owned();
         }
@@ -2414,24 +2568,24 @@ https://bheisler.github.io/criterion.rs/book/faq.html
             <span class="self">self</span>.report.csv_enabled = <span class="bool-val">false</span>;
             <span class="self">self</span>.report.html = <span class="prelude-val">None</span>;
         } <span class="kw">else </span>{
-            <span class="kw">match </span>matches.value_of(<span class="string">&quot;output-format&quot;</span>) {
+            <span class="kw">match </span>matches.get_one(<span class="string">&quot;output-format&quot;</span>).map(String::as_str) {
                 <span class="prelude-val">Some</span>(<span class="string">&quot;bencher&quot;</span>) =&gt; {
                     <span class="self">self</span>.report.bencher_enabled = <span class="bool-val">true</span>;
                     <span class="self">self</span>.report.cli_enabled = <span class="bool-val">false</span>;
                 }
                 <span class="kw">_ </span>=&gt; {
-                    <span class="kw">let </span>verbose = matches.is_present(<span class="string">&quot;verbose&quot;</span>);
+                    <span class="kw">let </span>verbose = matches.get_flag(<span class="string">&quot;verbose&quot;</span>);
                     <span class="kw">let </span>verbosity = <span class="kw">if </span>verbose {
                         CliVerbosity::Verbose
-                    } <span class="kw">else if </span>matches.is_present(<span class="string">&quot;quiet&quot;</span>) {
+                    } <span class="kw">else if </span>matches.get_flag(<span class="string">&quot;quiet&quot;</span>) {
                         CliVerbosity::Quiet
                     } <span class="kw">else </span>{
                         CliVerbosity::Normal
                     };
-                    <span class="kw">let </span>stdout_isatty = atty::is(atty::Stream::Stdout);
+                    <span class="kw">let </span>stdout_isatty = stdout().is_terminal();
                     <span class="kw">let </span><span class="kw-2">mut </span>enable_text_overwrite = stdout_isatty &amp;&amp; !verbose &amp;&amp; !debug_enabled();
                     <span class="kw">let </span>enable_text_coloring;
-                    <span class="kw">match </span>matches.value_of(<span class="string">&quot;color&quot;</span>) {
+                    <span class="kw">match </span>matches.get_one(<span class="string">&quot;color&quot;</span>).map(String::as_str) {
                         <span class="prelude-val">Some</span>(<span class="string">&quot;always&quot;</span>) =&gt; {
                             enable_text_coloring = <span class="bool-val">true</span>;
                         }
@@ -2449,62 +2603,48 @@ https://bheisler.github.io/criterion.rs/book/faq.html
             };
         }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = matches.value_of(<span class="string">&quot;load-baseline&quot;</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = matches.get_one::&lt;String&gt;(<span class="string">&quot;load-baseline&quot;</span>) {
             <span class="self">self</span>.load_baseline = <span class="prelude-val">Some</span>(dir.to_owned());
         }
 
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;sample-size&quot;</span>) {
-            <span class="kw">let </span>num_size = matches.value_of_t_or_exit(<span class="string">&quot;sample-size&quot;</span>);
-
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>num_size) = matches.get_one(<span class="string">&quot;sample-size&quot;</span>) {
             <span class="macro">assert!</span>(num_size &gt;= <span class="number">10</span>);
             <span class="self">self</span>.config.sample_size = num_size;
         }
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;warm-up-time&quot;</span>) {
-            <span class="kw">let </span>num_seconds = matches.value_of_t_or_exit(<span class="string">&quot;warm-up-time&quot;</span>);
-
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>num_seconds) = matches.get_one(<span class="string">&quot;warm-up-time&quot;</span>) {
             <span class="kw">let </span>dur = std::time::Duration::from_secs_f64(num_seconds);
             <span class="macro">assert!</span>(dur.as_nanos() &gt; <span class="number">0</span>);
 
             <span class="self">self</span>.config.warm_up_time = dur;
         }
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;measurement-time&quot;</span>) {
-            <span class="kw">let </span>num_seconds = matches.value_of_t_or_exit(<span class="string">&quot;measurement-time&quot;</span>);
-
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>num_seconds) = matches.get_one(<span class="string">&quot;measurement-time&quot;</span>) {
             <span class="kw">let </span>dur = std::time::Duration::from_secs_f64(num_seconds);
             <span class="macro">assert!</span>(dur.as_nanos() &gt; <span class="number">0</span>);
 
             <span class="self">self</span>.config.measurement_time = dur;
         }
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;nresamples&quot;</span>) {
-            <span class="kw">let </span>num_resamples = matches.value_of_t_or_exit(<span class="string">&quot;nresamples&quot;</span>);
-
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>num_resamples) = matches.get_one(<span class="string">&quot;nresamples&quot;</span>) {
             <span class="macro">assert!</span>(num_resamples &gt; <span class="number">0</span>);
 
             <span class="self">self</span>.config.nresamples = num_resamples;
         }
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;noise-threshold&quot;</span>) {
-            <span class="kw">let </span>num_noise_threshold = matches.value_of_t_or_exit(<span class="string">&quot;noise-threshold&quot;</span>);
-
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>num_noise_threshold) = matches.get_one(<span class="string">&quot;noise-threshold&quot;</span>) {
             <span class="macro">assert!</span>(num_noise_threshold &gt; <span class="number">0.0</span>);
 
             <span class="self">self</span>.config.noise_threshold = num_noise_threshold;
         }
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;confidence-level&quot;</span>) {
-            <span class="kw">let </span>num_confidence_level = matches.value_of_t_or_exit(<span class="string">&quot;confidence-level&quot;</span>);
-
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>num_confidence_level) = matches.get_one(<span class="string">&quot;confidence-level&quot;</span>) {
             <span class="macro">assert!</span>(num_confidence_level &gt; <span class="number">0.0 </span>&amp;&amp; num_confidence_level &lt; <span class="number">1.0</span>);
 
             <span class="self">self</span>.config.confidence_level = num_confidence_level;
         }
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;significance-level&quot;</span>) {
-            <span class="kw">let </span>num_significance_level = matches.value_of_t_or_exit(<span class="string">&quot;significance-level&quot;</span>);
-
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>num_significance_level) = matches.get_one(<span class="string">&quot;significance-level&quot;</span>) {
             <span class="macro">assert!</span>(num_significance_level &gt; <span class="number">0.0 </span>&amp;&amp; num_significance_level &lt; <span class="number">1.0</span>);
 
             <span class="self">self</span>.config.significance_level = num_significance_level;
         }
 
-        <span class="kw">if </span>matches.is_present(<span class="string">&quot;quick&quot;</span>) {
+        <span class="kw">if </span>matches.get_flag(<span class="string">&quot;quick&quot;</span>) {
             <span class="self">self</span>.config.quick_mode = <span class="bool-val">true</span>;
         }
 
@@ -2513,8 +2653,10 @@ https://bheisler.github.io/criterion.rs/book/faq.html
 
     <span class="kw">fn </span>filter_matches(<span class="kw-2">&amp;</span><span class="self">self</span>, id: <span class="kw-2">&amp;</span>str) -&gt; bool {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.filter {
-            <span class="prelude-val">Some</span>(regex) =&gt; regex.is_match(id),
-            <span class="prelude-val">None </span>=&gt; <span class="bool-val">true</span>,
+            BenchmarkFilter::AcceptAll =&gt; <span class="bool-val">true</span>,
+            BenchmarkFilter::Regex(regex) =&gt; regex.is_match(id),
+            BenchmarkFilter::Exact(exact) =&gt; id == exact,
+            BenchmarkFilter::RejectAll =&gt; <span class="bool-val">false</span>,
         }
     }
 
@@ -2798,7 +2940,7 @@ https://bheisler.github.io/criterion.rs/book/faq.html
                     }
                 }
 
-                (<span class="number">1</span>..(n + <span class="number">1</span>) <span class="kw">as </span>u64).map(|a| a * d).collect::&lt;Vec&lt;u64&gt;&gt;()
+                (<span class="number">1</span>..(n + <span class="number">1</span>)).map(|a| a * d).collect::&lt;Vec&lt;u64&gt;&gt;()
             }
             ActualSamplingMode::Flat =&gt; {
                 <span class="kw">let </span>n = sample_count;
