@@ -33,6 +33,7 @@
     "rocdl",
     "rustc",
     "sccp",
+    "sigabrt",
     "signless",
     "sparsification",
     "spirv",
@@ -40,7 +41,6 @@
     "strided",
     "tosa",
     "unranked",
-    "vulkan",
-    "SIGABRT"
+    "vulkan"
   ]
 }
