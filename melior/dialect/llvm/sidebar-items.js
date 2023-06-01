@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["extract_value","get_element_ptr","get_element_ptr_dynamic","insert_value","load","store","undef"],"mod":["type"],"struct":["LoadStoreOptions"]};
+window.SIDEBAR_ITEMS = {"fn":["extract_value","func","get_element_ptr","get_element_ptr_dynamic","insert_value","load","return","store","undef"],"mod":["attributes","type"],"struct":["LoadStoreOptions"]};
