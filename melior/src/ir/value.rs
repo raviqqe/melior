@@ -204,7 +204,7 @@ mod tests {
     }
 
     #[test]
-    fn display_with_reigistered_dialect() {
+    fn display_with_registered_dialect() {
         let context = create_test_context();
 
         let location = Location::unknown(&context);
