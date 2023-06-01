@@ -244,6 +244,7 @@
 <a href="#244" id="244">244</a>
 <a href="#245" id="245">245</a>
 <a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>value_like;
 
 <span class="kw">pub use </span><span class="self">self</span>::value_like::ValueLike;
@@ -325,6 +326,7 @@
     <span class="kw">use crate</span>::{
         ir::{operation::OperationBuilder, Attribute, Block, Identifier, Location},
         test::create_test_context,
+        Context,
     };
 
     <span class="attr">#[test]
@@ -428,8 +430,8 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>display() {
-        <span class="kw">let </span>context = create_test_context();
+    </span><span class="kw">fn </span>display_with_unregistered_dialect() {
+        <span class="kw">let </span>context = Context::new();
 
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
@@ -444,12 +446,12 @@
 
         <span class="macro">assert_eq!</span>(
             operation.result(<span class="number">0</span>).unwrap().to_string(),
-            <span class="string">&quot;%c0 = arith.constant 0 : index\n&quot;
+            <span class="string">&quot;%0 = \&quot;arith.constant\&quot;() {value = 0 : index} : () -&gt; index\n&quot;
         </span>);
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>display_with_dialect_loaded() {
+    </span><span class="kw">fn </span>display_with_registered_dialect() {
         <span class="kw">let </span>context = create_test_context();
 
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
