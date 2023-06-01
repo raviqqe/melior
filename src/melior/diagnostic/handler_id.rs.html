@@ -35,12 +35,12 @@
     /// # Safety
     ///
     /// A raw object must be valid.
-    </span><span class="kw">pub unsafe fn </span>from_raw(raw: MlirDiagnosticHandlerID) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub const unsafe fn </span>from_raw(raw: MlirDiagnosticHandlerID) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ raw }
     }
 
     <span class="doccomment">/// Converts a diagnostic handler ID into a raw object.
-    </span><span class="kw">pub fn </span>to_raw(<span class="self">self</span>) -&gt; MlirDiagnosticHandlerID {
+    </span><span class="kw">pub const fn </span>to_raw(<span class="self">self</span>) -&gt; MlirDiagnosticHandlerID {
         <span class="self">self</span>.raw
     }
 }

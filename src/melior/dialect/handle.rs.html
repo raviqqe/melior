@@ -249,7 +249,7 @@
     /// # Safety
     ///
     /// A raw object must be valid.
-    </span><span class="kw">pub unsafe fn </span>from_raw(handle: MlirDialectHandle) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub const unsafe fn </span>from_raw(handle: MlirDialectHandle) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ raw: handle }
     }
 }
