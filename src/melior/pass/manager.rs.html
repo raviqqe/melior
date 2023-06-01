@@ -239,14 +239,6 @@
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::OperationPassManager;
 <span class="kw">use crate</span>::{
     context::Context, ir::Module, logical_result::LogicalResult, pass::Pass, string_ref::StringRef,
@@ -329,37 +321,31 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
-        dialect::DialectRegistry,
         ir::{Location, Module},
         pass::{<span class="self">self</span>, transform::register_print_op_stats},
-        utility::{parse_pass_pipeline, register_all_dialects},
+        test::create_test_context,
+        utility::parse_pass_pipeline,
     };
     <span class="kw">use </span>indoc::indoc;
     <span class="kw">use </span>pretty_assertions::assert_eq;
 
-    <span class="kw">fn </span>register_all_upstream_dialects(context: <span class="kw-2">&amp;</span>Context) {
-        <span class="kw">let </span>registry = DialectRegistry::new();
-        register_all_dialects(<span class="kw-2">&amp;</span>registry);
-        context.append_dialect_registry(<span class="kw-2">&amp;</span>registry);
-    }
-
     <span class="attr">#[test]
     </span><span class="kw">fn </span>new() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         PassManager::new(<span class="kw-2">&amp;</span>context);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>add_pass() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         PassManager::new(<span class="kw-2">&amp;</span>context).add_pass(pass::conversion::create_func_to_llvm());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>enable_verifier() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         PassManager::new(<span class="kw-2">&amp;</span>context).enable_verifier(<span class="bool-val">true</span>);
     }
@@ -374,7 +360,7 @@
 
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>run() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
 
         manager.add_pass(pass::conversion::create_func_to_llvm());
@@ -385,8 +371,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>run_on_function() {
-        <span class="kw">let </span>context = Context::new();
-        register_all_upstream_dialects(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="kw">let </span><span class="kw-2">mut </span>module = Module::parse(
             <span class="kw-2">&amp;</span>context,
@@ -409,8 +394,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>run_on_function_in_nested_module() {
-        <span class="kw">let </span>context = Context::new();
-        register_all_upstream_dialects(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="kw">let </span><span class="kw-2">mut </span>module = Module::parse(
             <span class="kw-2">&amp;</span>context,
@@ -450,7 +434,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>print_pass_pipeline() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>function_manager = manager.nested_under(<span class="string">&quot;func.func&quot;</span>);
 

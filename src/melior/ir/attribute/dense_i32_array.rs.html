@@ -78,10 +78,12 @@
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
 </pre><pre class="rust"><code><span class="kw">use super</span>::{Attribute, AttributeLike};
 <span class="kw">use crate</span>::{Context, Error};
 <span class="kw">use </span>mlir_sys::{
-    mlirArrayAttrGetNumElements, mlirDenseI32ArrayGet, mlirDenseI32ArrayGetElement, MlirAttribute,
+    mlirDenseArrayGetNumElements, mlirDenseI32ArrayGet, mlirDenseI32ArrayGetElement, MlirAttribute,
 };
 
 <span class="doccomment">/// A dense i32 array attribute.
@@ -104,7 +106,7 @@
 
     <span class="doccomment">/// Gets a length.
     </span><span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        (<span class="kw">unsafe </span>{ mlirArrayAttrGetNumElements(<span class="self">self</span>.attribute.to_raw()) }) <span class="kw">as </span>usize
+        (<span class="kw">unsafe </span>{ mlirDenseArrayGetNumElements(<span class="self">self</span>.attribute.to_raw()) }) <span class="kw">as </span>usize
     }
 
     <span class="doccomment">/// Checks if an array is empty.
@@ -134,11 +136,13 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use </span><span class="kw">crate</span>::test::create_test_context;
+
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>element() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>attribute = DenseI32ArrayAttribute::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
 
         <span class="macro">assert_eq!</span>(attribute.element(<span class="number">0</span>).unwrap(), <span class="number">1</span>);
@@ -152,7 +156,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>len() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>attribute = DenseI32ArrayAttribute::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);
 
         <span class="macro">assert_eq!</span>(attribute.len(), <span class="number">3</span>);

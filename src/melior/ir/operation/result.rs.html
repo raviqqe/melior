@@ -86,6 +86,8 @@
 <a href="#86" id="86">86</a>
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Value;
 <span class="kw">use crate</span>::{
     ir::{OperationRef, ValueLike},
@@ -150,13 +152,15 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use crate</span>::{
-        context::Context,
         ir::{operation::OperationBuilder, Block, Location, Type},
+        test::create_test_context,
     };
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>result_number() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
+        context.set_allow_unregistered_dialects(<span class="bool-val">true</span>);
+
         <span class="kw">let </span>r#type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap();
         <span class="kw">let </span>operation = OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
             .add_results(<span class="kw-2">&amp;</span>[r#type])
@@ -167,7 +171,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>owner() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>r#type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap();
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(r#type, Location::unknown(<span class="kw-2">&amp;</span>context))]);
 

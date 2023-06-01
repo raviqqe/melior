@@ -91,6 +91,9 @@
 <a href="#91" id="91">91</a>
 <a href="#92" id="92">92</a>
 <a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
 </pre><pre class="rust"><code><span class="kw">use super</span>::{Attribute, AttributeLike};
 <span class="kw">use crate</span>::{Context, Error};
 <span class="kw">use </span>mlir_sys::{
@@ -148,13 +151,16 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span><span class="kw">crate</span>::ir::{attribute::IntegerAttribute, r#type::IntegerType, Type};
+    <span class="kw">use crate</span>::{
+        ir::{attribute::IntegerAttribute, r#type::IntegerType, Type},
+        test::create_test_context,
+    };
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>element() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>r#type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
         <span class="kw">let </span>attributes = [
             IntegerAttribute::new(<span class="number">1</span>, r#type).into(),
@@ -175,7 +181,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>len() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>attribute = ArrayAttribute::new(
             <span class="kw-2">&amp;</span>context,
             <span class="kw-2">&amp;</span>[IntegerAttribute::new(<span class="number">1</span>, Type::index(<span class="kw-2">&amp;</span>context)).into()],

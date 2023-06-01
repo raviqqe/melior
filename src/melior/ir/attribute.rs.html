@@ -315,6 +315,13 @@
 <a href="#315" id="315">315</a>
 <a href="#316" id="316">316</a>
 <a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Attributes.
 
 </span><span class="attr">#[macro_use]
@@ -453,23 +460,33 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::ir::{Type, TypeLike};
+    <span class="kw">use crate</span>::{
+        ir::{Type, TypeLike},
+        test::create_test_context,
+    };
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>parse() {
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">for </span>attribute <span class="kw">in </span>[<span class="string">&quot;unit&quot;</span>, <span class="string">&quot;i32&quot;</span>, <span class="string">r#&quot;&quot;foo&quot;&quot;#</span>] {
-            <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), attribute).is_some());
+            <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, attribute).is_some());
         }
     }
 
     <span class="attr">#[test]
+    #[ignore = <span class="string">&quot;Big warning message on llvm with assertions on&quot;</span>]
     </span><span class="kw">fn </span>parse_none() {
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;z&quot;</span>).is_none());
+        <span class="comment">// Note: this test will print a warning if LLVM was compiled with asserts.
+        // `&lt;mlir_parser_buffer&gt;:1:1: error: expected attribute value
+        // z
+        // ^`
+        </span><span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;z&quot;</span>).is_none());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>context() {
-        Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;unit&quot;</span>).unwrap().context();
+        <span class="kw">let </span>context = create_test_context();
+        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap().context();
     }
 
     <span class="attr">#[test]
@@ -496,47 +513,45 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_array() {
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;[]&quot;</span>).unwrap().is_array());
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;[]&quot;</span>).unwrap().is_array());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_bool() {
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;false&quot;</span>)
-            .unwrap()
-            .is_bool());
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;false&quot;</span>).unwrap().is_bool());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_dense_elements() {
-        <span class="macro">assert!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;dense&lt;10&gt; : tensor&lt;2xi8&gt;&quot;</span>)
-                .unwrap()
-                .is_dense_elements()
-        );
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;dense&lt;10&gt; : tensor&lt;2xi8&gt;&quot;</span>)
+            .unwrap()
+            .is_dense_elements());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_dense_int_elements() {
-        <span class="macro">assert!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;dense&lt;42&gt; : tensor&lt;42xi8&gt;&quot;</span>)
-                .unwrap()
-                .is_dense_int_elements()
-        );
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;dense&lt;42&gt; : tensor&lt;42xi8&gt;&quot;</span>)
+            .unwrap()
+            .is_dense_int_elements());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_dense_fp_elements() {
-        <span class="macro">assert!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;dense&lt;42.0&gt; : tensor&lt;42xf32&gt;&quot;</span>)
-                .unwrap()
-                .is_dense_fp_elements()
-        );
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;dense&lt;42.0&gt; : tensor&lt;42xf32&gt;&quot;</span>)
+            .unwrap()
+            .is_dense_fp_elements());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_elements() {
+        <span class="kw">let </span>context = create_test_context();
         <span class="macro">assert!</span>(Attribute::parse(
-            <span class="kw-2">&amp;</span>Context::new(),
+            <span class="kw-2">&amp;</span>context,
             <span class="string">&quot;sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;&quot;
         </span>)
         .unwrap()
@@ -545,15 +560,15 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_integer() {
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;42&quot;</span>)
-            .unwrap()
-            .is_integer());
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;42&quot;</span>).unwrap().is_integer());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_integer_set() {
+        <span class="kw">let </span>context = create_test_context();
         <span class="macro">assert!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;affine_set&lt;(d0) : (d0 - 2 &gt;= 0)&gt;&quot;</span>)
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;affine_set&lt;(d0) : (d0 - 2 &gt;= 0)&gt;&quot;</span>)
                 .unwrap()
                 .is_integer_set()
         );
@@ -563,15 +578,17 @@
     </span><span class="attr">#[ignore]
     #[test]
     </span><span class="kw">fn </span>is_opaque() {
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;#foo&lt;\&quot;bar\&quot;&gt;&quot;</span>)
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;#foo&lt;\&quot;bar\&quot;&gt;&quot;</span>)
             .unwrap()
             .is_opaque());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_sparse_elements() {
+        <span class="kw">let </span>context = create_test_context();
         <span class="macro">assert!</span>(Attribute::parse(
-            <span class="kw-2">&amp;</span>Context::new(),
+            <span class="kw-2">&amp;</span>context,
             <span class="string">&quot;sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;&quot;
         </span>)
         .unwrap()
@@ -580,33 +597,31 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_string() {
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;\&quot;foo\&quot;&quot;</span>)
-            .unwrap()
-            .is_string());
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap().is_string());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_type() {
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;index&quot;</span>)
-            .unwrap()
-            .is_type());
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap().is_type());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_unit() {
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;unit&quot;</span>).unwrap().is_unit());
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap().is_unit());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_symbol() {
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;@foo&quot;</span>)
-            .unwrap()
-            .is_symbol_ref());
+        <span class="kw">let </span>context = create_test_context();
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;@foo&quot;</span>).unwrap().is_symbol_ref());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>equal() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>attribute = Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap();
 
         <span class="macro">assert_eq!</span>(attribute, attribute);
@@ -614,7 +629,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>not_equal() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_ne!</span>(
             Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap(),
@@ -624,10 +639,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>display() {
+        <span class="kw">let </span>context = create_test_context();
         <span class="macro">assert_eq!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;unit&quot;</span>)
-                .unwrap()
-                .to_string(),
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap().to_string(),
             <span class="string">&quot;unit&quot;
         </span>);
     }

@@ -248,12 +248,12 @@
             attribute::IntegerAttribute,
             r#type::{IntegerType, MemRefType},
         },
-        Context,
+        test::create_test_context,
     };
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>i32_element() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>integer_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into();
         <span class="kw">let </span>attribute = DenseElementsAttribute::new(
             MemRefType::new(integer_type, <span class="kw-2">&amp;</span>[<span class="number">3</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).into(),
@@ -276,7 +276,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>i64_element() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>integer_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
         <span class="kw">let </span>attribute = DenseElementsAttribute::new(
             MemRefType::new(integer_type, <span class="kw-2">&amp;</span>[<span class="number">3</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).into(),
@@ -299,7 +299,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>len() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>integer_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
         <span class="kw">let </span>attribute = DenseElementsAttribute::new(
             MemRefType::new(integer_type, <span class="kw-2">&amp;</span>[<span class="number">3</span>], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).into(),

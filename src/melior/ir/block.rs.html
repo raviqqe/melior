@@ -523,6 +523,10 @@
 <a href="#523" id="523">523</a>
 <a href="#524" id="524">524</a>
 <a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Blocks.
 
 </span><span class="kw">mod </span>argument;
@@ -840,7 +844,7 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
         ir::{operation::OperationBuilder, r#type::IntegerType, Module, Region, ValueLike},
-        test::load_all_dialects,
+        test::create_test_context,
     };
     <span class="kw">use </span>pretty_assertions::assert_eq;
 
@@ -851,7 +855,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>argument() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>r#type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
         <span class="macro">assert_eq!</span>(
@@ -897,7 +901,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>parent_operation() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>module = Module::new(Location::unknown(<span class="kw-2">&amp;</span>context));
 
         <span class="macro">assert_eq!</span>(
@@ -915,8 +919,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>terminator() {
-        <span class="kw">let </span>context = Context::new();
-        load_all_dialects(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
@@ -934,7 +937,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>first_operation() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
+        context.set_allow_unregistered_dialects(<span class="bool-val">true</span>);
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
         <span class="kw">let </span>operation = block
@@ -952,7 +956,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>append_operation() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
+        context.set_allow_unregistered_dialects(<span class="bool-val">true</span>);
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
         block.append_operation(OperationBuilder::new(<span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context)).build());
@@ -960,7 +965,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>insert_operation() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
+        context.set_allow_unregistered_dialects(<span class="bool-val">true</span>);
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
         block.insert_operation(
@@ -971,7 +977,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>insert_operation_after() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
+        context.set_allow_unregistered_dialects(<span class="bool-val">true</span>);
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
         <span class="kw">let </span>first_operation = block
@@ -990,7 +997,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>insert_operation_before() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
+        context.set_allow_unregistered_dialects(<span class="bool-val">true</span>);
         <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
 
         <span class="kw">let </span>second_operation = block

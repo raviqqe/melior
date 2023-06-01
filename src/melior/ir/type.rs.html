@@ -277,6 +277,10 @@
 <a href="#277" id="277">277</a>
 <a href="#278" id="278">278</a>
 <a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Types and type IDs.
 
 </span><span class="attr">#[macro_use]
@@ -457,16 +461,19 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use </span><span class="kw">crate</span>::test::create_test_context;
+
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>new() {
-        Type::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;f32&quot;</span>);
+        <span class="kw">let </span>context = create_test_context();
+        Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;f32&quot;</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>integer() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_eq!</span>(
             Type::from(IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">42</span>)),
@@ -476,7 +483,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>index() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_eq!</span>(
             Type::index(<span class="kw-2">&amp;</span>context),
@@ -486,7 +493,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>vector() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_eq!</span>(
             Type::vector(<span class="kw-2">&amp;</span>[<span class="number">42</span>], Type::float64(<span class="kw-2">&amp;</span>context)),
@@ -495,8 +502,9 @@
     }
 
     <span class="attr">#[test]
+    #[ignore = <span class="string">&quot;SIGABRT on llvm with assertions on&quot;</span>]
     </span><span class="kw">fn </span>vector_with_invalid_dimension() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_eq!</span>(
             Type::vector(<span class="kw-2">&amp;</span>[<span class="number">0</span>], IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">32</span>).into()).to_string(),
@@ -506,7 +514,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>vector_checked() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_eq!</span>(
             Type::vector_checked(
@@ -520,7 +528,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>vector_checked_fail() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_eq!</span>(
             Type::vector_checked(Location::unknown(<span class="kw-2">&amp;</span>context), <span class="kw-2">&amp;</span>[<span class="number">0</span>], Type::index(<span class="kw-2">&amp;</span>context)),
@@ -530,28 +538,28 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>equal() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_eq!</span>(Type::index(<span class="kw-2">&amp;</span>context), Type::index(<span class="kw-2">&amp;</span>context));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>not_equal() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_ne!</span>(Type::index(<span class="kw-2">&amp;</span>context), Type::float64(<span class="kw-2">&amp;</span>context));
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>display() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_eq!</span>(Type::index(<span class="kw-2">&amp;</span>context).to_string(), <span class="string">&quot;index&quot;</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>debug() {
-        <span class="kw">let </span>context = Context::new();
+        <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, Type::index(<span class="kw-2">&amp;</span>context)), <span class="string">&quot;Type(index)&quot;</span>);
     }
