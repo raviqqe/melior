@@ -657,72 +657,12 @@
 <a href="#657" id="657">657</a>
 <a href="#658" id="658">658</a>
 <a href="#659" id="659">659</a>
-<a href="#660" id="660">660</a>
-<a href="#661" id="661">661</a>
-<a href="#662" id="662">662</a>
-<a href="#663" id="663">663</a>
-<a href="#664" id="664">664</a>
-<a href="#665" id="665">665</a>
-<a href="#666" id="666">666</a>
-<a href="#667" id="667">667</a>
-<a href="#668" id="668">668</a>
-<a href="#669" id="669">669</a>
-<a href="#670" id="670">670</a>
-<a href="#671" id="671">671</a>
-<a href="#672" id="672">672</a>
-<a href="#673" id="673">673</a>
-<a href="#674" id="674">674</a>
-<a href="#675" id="675">675</a>
-<a href="#676" id="676">676</a>
-<a href="#677" id="677">677</a>
-<a href="#678" id="678">678</a>
-<a href="#679" id="679">679</a>
-<a href="#680" id="680">680</a>
-<a href="#681" id="681">681</a>
-<a href="#682" id="682">682</a>
-<a href="#683" id="683">683</a>
-<a href="#684" id="684">684</a>
-<a href="#685" id="685">685</a>
-<a href="#686" id="686">686</a>
-<a href="#687" id="687">687</a>
-<a href="#688" id="688">688</a>
-<a href="#689" id="689">689</a>
-<a href="#690" id="690">690</a>
-<a href="#691" id="691">691</a>
-<a href="#692" id="692">692</a>
-<a href="#693" id="693">693</a>
-<a href="#694" id="694">694</a>
-<a href="#695" id="695">695</a>
-<a href="#696" id="696">696</a>
-<a href="#697" id="697">697</a>
-<a href="#698" id="698">698</a>
-<a href="#699" id="699">699</a>
-<a href="#700" id="700">700</a>
-<a href="#701" id="701">701</a>
-<a href="#702" id="702">702</a>
-<a href="#703" id="703">703</a>
-<a href="#704" id="704">704</a>
-<a href="#705" id="705">705</a>
-<a href="#706" id="706">706</a>
-<a href="#707" id="707">707</a>
-<a href="#708" id="708">708</a>
-<a href="#709" id="709">709</a>
-<a href="#710" id="710">710</a>
-<a href="#711" id="711">711</a>
-<a href="#712" id="712">712</a>
-<a href="#713" id="713">713</a>
-<a href="#714" id="714">714</a>
-<a href="#715" id="715">715</a>
-<a href="#716" id="716">716</a>
-<a href="#717" id="717">717</a>
-<a href="#718" id="718">718</a>
 </pre><pre class="rust"><code><span class="doccomment">//! `llvm` dialect.
 
 </span><span class="kw">use crate</span>::{
     ir::{
         attribute::{
-            ArrayAttribute, DenseI32ArrayAttribute, DenseI64ArrayAttribute, IntegerAttribute,
-            StringAttribute, TypeAttribute,
+            DenseI32ArrayAttribute, DenseI64ArrayAttribute, StringAttribute, TypeAttribute,
         },
         operation::OperationBuilder,
         Attribute, Identifier, Location, Operation, Region, Type, Value,
@@ -730,7 +670,9 @@
     Context,
 };
 
+<span class="kw">pub use </span>load_store_options::<span class="kw-2">*</span>;
 <span class="kw">pub mod </span>attributes;
+<span class="kw">mod </span>load_store_options;
 <span class="kw">pub mod </span>r#type;
 
 <span class="comment">// spell-checker: disable
@@ -828,61 +770,6 @@
     OperationBuilder::new(<span class="string">&quot;llvm.mlir.poison&quot;</span>, location)
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-}
-
-<span class="attr">#[derive(Debug, Default)]
-</span><span class="kw">pub struct </span>LoadStoreOptions&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">pub </span>align: <span class="prelude-ty">Option</span>&lt;IntegerAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
-    <span class="kw">pub </span>volatile: bool,
-    <span class="kw">pub </span>nontemporal: bool,
-    <span class="kw">pub </span>access_groups: <span class="prelude-ty">Option</span>&lt;ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
-    <span class="kw">pub </span>alias_scopes: <span class="prelude-ty">Option</span>&lt;ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
-    <span class="kw">pub </span>noalias_scopes: <span class="prelude-ty">Option</span>&lt;ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
-    <span class="kw">pub </span>tbaa: <span class="prelude-ty">Option</span>&lt;ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; LoadStoreOptions&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">fn </span>into_attributes(<span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context) -&gt; Vec&lt;(Identifier&lt;<span class="lifetime">&#39;c</span>&gt;, Attribute&lt;<span class="lifetime">&#39;c</span>&gt;)&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>attributes = Vec::with_capacity(<span class="number">7</span>);
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(align) = <span class="self">self</span>.align {
-            attributes.push((Identifier::new(context, <span class="string">&quot;alignment&quot;</span>), align.into()));
-        }
-
-        <span class="kw">if </span><span class="self">self</span>.volatile {
-            attributes.push((
-                Identifier::new(context, <span class="string">&quot;volatile_&quot;</span>),
-                Attribute::unit(context),
-            ));
-        }
-
-        <span class="kw">if </span><span class="self">self</span>.nontemporal {
-            attributes.push((
-                Identifier::new(context, <span class="string">&quot;nontemporal&quot;</span>),
-                Attribute::unit(context),
-            ));
-        }
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(alias_scopes) = <span class="self">self</span>.alias_scopes {
-            attributes.push((
-                Identifier::new(context, <span class="string">&quot;alias_scopes&quot;</span>),
-                alias_scopes.into(),
-            ));
-        }
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(noalias_scopes) = <span class="self">self</span>.noalias_scopes {
-            attributes.push((
-                Identifier::new(context, <span class="string">&quot;noalias_scopes&quot;</span>),
-                noalias_scopes.into(),
-            ));
-        }
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(tbaa) = <span class="self">self</span>.tbaa {
-            attributes.push((Identifier::new(context, <span class="string">&quot;tbaa&quot;</span>), tbaa.into()));
-        }
-
-        attributes
-    }
 }
 
 <span class="doccomment">/// Creates a `llvm.store` operation.
@@ -1332,15 +1219,10 @@
                     block.argument(<span class="number">1</span>).unwrap().into(),
                     block.argument(<span class="number">0</span>).unwrap().into(),
                     location,
-                    LoadStoreOptions {
-                        align: <span class="prelude-val">Some</span>(IntegerAttribute::new(<span class="number">4</span>, integer_type)),
-                        volatile: <span class="bool-val">true</span>,
-                        nontemporal: <span class="bool-val">true</span>,
-                        access_groups: <span class="prelude-val">None</span>,
-                        alias_scopes: <span class="prelude-val">None</span>,
-                        noalias_scopes: <span class="prelude-val">None</span>,
-                        tbaa: <span class="prelude-val">None</span>,
-                    },
+                    LoadStoreOptions::new()
+                        .align(<span class="prelude-val">Some</span>(IntegerAttribute::new(<span class="number">4</span>, integer_type)))
+                        .volatile(<span class="bool-val">true</span>)
+                        .nontemporal(<span class="bool-val">true</span>),
                 ));
 
                 block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
