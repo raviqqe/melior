@@ -79,6 +79,7 @@ mod tests {
     use crate::{
         ir::{operation::OperationBuilder, Attribute, Block, Identifier, Location},
         test::create_test_context,
+        Context,
     };
 
     #[test]
@@ -182,8 +183,8 @@ mod tests {
     }
 
     #[test]
-    fn display() {
-        let context = create_test_context();
+    fn display_with_unregistered_dialect() {
+        let context = Context::new();
 
         let location = Location::unknown(&context);
         let index_type = Type::index(&context);
@@ -198,12 +199,12 @@ mod tests {
 
         assert_eq!(
             operation.result(0).unwrap().to_string(),
-            "%c0 = arith.constant 0 : index\n"
+            "%0 = \"arith.constant\"() {value = 0 : index} : () -> index\n"
         );
     }
 
     #[test]
-    fn display_with_dialect_loaded() {
+    fn display_with_reigistered_dialect() {
         let context = create_test_context();
 
         let location = Location::unknown(&context);
