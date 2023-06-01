@@ -675,6 +675,47 @@
 <a href="#675" id="675">675</a>
 <a href="#676" id="676">676</a>
 <a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
 </pre><pre class="rust"><code><span class="doccomment">//! `llvm` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -775,9 +816,16 @@
         .build()
 }
 
-<span class="doccomment">/// Creates a `llvm.undef` operation.
+<span class="doccomment">/// Creates a `llvm.mlir.undef` operation.
 </span><span class="kw">pub fn </span>undef&lt;<span class="lifetime">&#39;c</span>&gt;(result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.undef&quot;</span>, location)
+    OperationBuilder::new(<span class="string">&quot;llvm.mlir.undef&quot;</span>, location)
+        .add_results(<span class="kw-2">&amp;</span>[result_type])
+        .build()
+}
+
+<span class="doccomment">/// Creates a `llvm.mlir.poison` operation.
+</span><span class="kw">pub fn </span>poison&lt;<span class="lifetime">&#39;c</span>&gt;(result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+    OperationBuilder::new(<span class="string">&quot;llvm.mlir.poison&quot;</span>, location)
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
 }
@@ -851,7 +899,7 @@
         .build()
 }
 
-<span class="comment">// Creates a `llvm.load` operation.
+<span class="doccomment">/// Creates a `llvm.load` operation.
 </span><span class="kw">pub fn </span>load&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     addr: Value,
@@ -1132,6 +1180,40 @@
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(struct_type, location)]);
 
                 block.append_operation(undef(struct_type, location));
+
+                block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
+
+                <span class="kw">let </span>region = Region::new();
+                region.append_block(block);
+                region
+            },
+            <span class="kw-2">&amp;</span>[],
+            location,
+        ));
+
+        convert_module(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;mut </span>module);
+
+        <span class="macro">assert!</span>(module.as_operation().verify());
+        <span class="macro">insta::assert_display_snapshot!</span>(module.as_operation());
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>compile_poison() {
+        <span class="kw">let </span>context = create_test_context();
+
+        <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span><span class="kw-2">mut </span>module = Module::new(location);
+        <span class="kw">let </span>struct_type =
+            r#type::r#struct(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into()], <span class="bool-val">false</span>);
+
+        module.body().append_operation(func::func(
+            <span class="kw-2">&amp;</span>context,
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[struct_type], <span class="kw-2">&amp;</span>[]).into()),
+            {
+                <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(struct_type, location)]);
+
+                block.append_operation(poison(struct_type, location));
 
                 block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
 
