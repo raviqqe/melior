@@ -3,8 +3,7 @@
 use crate::{
     ir::{
         attribute::{
-            ArrayAttribute, DenseI32ArrayAttribute, DenseI64ArrayAttribute, IntegerAttribute,
-            StringAttribute, TypeAttribute,
+            DenseI32ArrayAttribute, DenseI64ArrayAttribute, StringAttribute, TypeAttribute,
         },
         operation::OperationBuilder,
         Attribute, Identifier, Location, Operation, Region, Type, Value,
@@ -12,7 +11,9 @@ use crate::{
     Context,
 };
 
+pub use load_store_options::*;
 pub mod attributes;
+mod load_store_options;
 pub mod r#type;
 
 // spell-checker: disable
@@ -110,61 +111,6 @@ pub fn poison<'c>(result_type: Type<'c>, location: Location<'c>) -> Operation<'c
     OperationBuilder::new("llvm.mlir.poison", location)
         .add_results(&[result_type])
         .build()
-}
-
-#[derive(Debug, Default)]
-pub struct LoadStoreOptions<'c> {
-    pub align: Option<IntegerAttribute<'c>>,
-    pub volatile: bool,
-    pub nontemporal: bool,
-    pub access_groups: Option<ArrayAttribute<'c>>,
-    pub alias_scopes: Option<ArrayAttribute<'c>>,
-    pub noalias_scopes: Option<ArrayAttribute<'c>>,
-    pub tbaa: Option<ArrayAttribute<'c>>,
-}
-
-impl<'c> LoadStoreOptions<'c> {
-    fn into_attributes(self, context: &'c Context) -> Vec<(Identifier<'c>, Attribute<'c>)> {
-        let mut attributes = Vec::with_capacity(7);
-
-        if let Some(align) = self.align {
-            attributes.push((Identifier::new(context, "alignment"), align.into()));
-        }
-
-        if self.volatile {
-            attributes.push((
-                Identifier::new(context, "volatile_"),
-                Attribute::unit(context),
-            ));
-        }
-
-        if self.nontemporal {
-            attributes.push((
-                Identifier::new(context, "nontemporal"),
-                Attribute::unit(context),
-            ));
-        }
-
-        if let Some(alias_scopes) = self.alias_scopes {
-            attributes.push((
-                Identifier::new(context, "alias_scopes"),
-                alias_scopes.into(),
-            ));
-        }
-
-        if let Some(noalias_scopes) = self.noalias_scopes {
-            attributes.push((
-                Identifier::new(context, "noalias_scopes"),
-                noalias_scopes.into(),
-            ));
-        }
-
-        if let Some(tbaa) = self.tbaa {
-            attributes.push((Identifier::new(context, "tbaa"), tbaa.into()));
-        }
-
-        attributes
-    }
 }
 
 /// Creates a `llvm.store` operation.
@@ -614,15 +560,10 @@ mod tests {
                     block.argument(1).unwrap().into(),
                     block.argument(0).unwrap().into(),
                     location,
-                    LoadStoreOptions {
-                        align: Some(IntegerAttribute::new(4, integer_type)),
-                        volatile: true,
-                        nontemporal: true,
-                        access_groups: None,
-                        alias_scopes: None,
-                        noalias_scopes: None,
-                        tbaa: None,
-                    },
+                    LoadStoreOptions::new()
+                        .align(Some(IntegerAttribute::new(4, integer_type)))
+                        .volatile(true)
+                        .nontemporal(true),
                 ));
 
                 block.append_operation(func::r#return(&[], location));
