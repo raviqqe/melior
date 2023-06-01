@@ -150,7 +150,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Big warning message on llvm with assertions on"]
     fn parse_none() {
         // Note: this test will print a warning if LLVM was compiled with asserts.
         // `<mlir_parser_buffer>:1:1: error: expected attribute value
