@@ -12,15 +12,17 @@ use std::{
 
 /// A region.
 #[derive(Debug)]
-pub struct Region {
+pub struct Region<'c> {
     raw: MlirRegion,
+    _block: PhantomData<Block<'c>>,
 }
 
-impl Region {
+impl<'c> Region<'c> {
     /// Creates a region.
     pub fn new() -> Self {
         Self {
             raw: unsafe { mlirRegionCreate() },
+            _block: Default::default(),
         }
     }
 
@@ -38,7 +40,7 @@ impl Region {
     }
 
     /// Inserts a block after another block.
-    pub fn insert_block_after(&self, one: BlockRef, other: Block) -> BlockRef {
+    pub fn insert_block_after(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef {
         unsafe {
             let r#ref = BlockRef::from_raw(other.to_raw());
 
@@ -80,34 +82,34 @@ impl Region {
     }
 }
 
-impl Default for Region {
+impl<'c> Default for Region<'c> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Drop for Region {
+impl<'c> Drop for Region<'c> {
     fn drop(&mut self) {
         unsafe { mlirRegionDestroy(self.raw) }
     }
 }
 
-impl PartialEq for Region {
+impl<'c> PartialEq for Region<'c> {
     fn eq(&self, other: &Self) -> bool {
         unsafe { mlirRegionEqual(self.raw, other.raw) }
     }
 }
 
-impl Eq for Region {}
+impl<'c> Eq for Region<'c> {}
 
 /// A reference to a region.
 #[derive(Clone, Copy, Debug)]
-pub struct RegionRef<'a> {
+pub struct RegionRef<'c, 'a> {
     raw: MlirRegion,
-    _region: PhantomData<&'a Region>,
+    _region: PhantomData<&'a Region<'c>>,
 }
 
-impl<'a> RegionRef<'a> {
+impl<'c, 'a> RegionRef<'c, 'a> {
     /// Creates a region from a raw object.
     ///
     /// # Safety
@@ -134,21 +136,21 @@ impl<'a> RegionRef<'a> {
     }
 }
 
-impl<'a> Deref for RegionRef<'a> {
-    type Target = Region;
+impl<'c, 'a> Deref for RegionRef<'c, 'a> {
+    type Target = Region<'c>;
 
     fn deref(&self) -> &Self::Target {
         unsafe { transmute(self) }
     }
 }
 
-impl<'a> PartialEq for RegionRef<'a> {
+impl<'c, 'a> PartialEq for RegionRef<'c, 'a> {
     fn eq(&self, other: &Self) -> bool {
         unsafe { mlirRegionEqual(self.raw, other.raw) }
     }
 }
 
-impl<'a> Eq for RegionRef<'a> {}
+impl<'c, 'a> Eq for RegionRef<'c, 'a> {}
 
 #[cfg(test)]
 mod tests {
