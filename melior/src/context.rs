@@ -140,12 +140,27 @@ impl Eq for Context {}
 
 /// A reference to a context.
 #[derive(Clone, Copy, Debug)]
-pub struct ContextRef<'a> {
+pub struct ContextRef<'c> {
     raw: MlirContext,
-    _reference: PhantomData<&'a Context>,
+    _reference: PhantomData<&'c Context>,
 }
 
-impl<'a> ContextRef<'a> {
+impl<'c> ContextRef<'c> {
+    /// Gets a context.
+    ///
+    /// This function is different from `deref` because the correct lifetime is kept for the return
+    /// type.
+    ///
+    /// # Safety
+    ///
+    /// The returned reference is safe to use only in the lifetime scope of the context reference.
+    pub unsafe fn to_ref(&self) -> &'c Context {
+        // As we can't deref ContextRef<'a> into `&'a Context`, we forcibly cast its
+        // lifetime here to extend it from the lifetime of `ObjectRef<'a>` itself into
+        // `'a`.
+        transmute(self)
+    }
+
     /// Creates a context reference from a raw object.
     ///
     /// # Safety
