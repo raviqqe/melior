@@ -436,6 +436,7 @@
 <a href="#436" id="436">436</a>
 <a href="#437" id="437">437</a>
 <a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Operations and operation builders.
 
 </span><span class="kw">mod </span>builder;
@@ -666,12 +667,13 @@
 
     <span class="doccomment">/// Gets an operation.
     ///
-    /// This function is different from `deref` because the correct lifetime is kept for the return
-    /// type.
+    /// This function is different from `deref` because the correct lifetime is
+    /// kept for the return type.
     ///
     /// # Safety
     ///
-    /// The returned reference is safe to use only in the lifetime scope of the operation reference.
+    /// The returned reference is safe to use only in the lifetime scope of the
+    /// operation reference.
     </span><span class="kw">pub unsafe fn </span>to_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Operation&lt;<span class="lifetime">&#39;a</span>&gt; {
         <span class="comment">// As we can&#39;t deref OperationRef&lt;&#39;a&gt; into `&amp;&#39;a Operation`, we forcibly cast its
         // lifetime here to extend it from the lifetime of `ObjectRef&lt;&#39;a&gt;` itself into

@@ -196,6 +196,22 @@
 <a href="#196" id="196">196</a>
 <a href="#197" id="197">197</a>
 <a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
 </pre><pre class="rust"><code><span class="doccomment">//! `func` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -203,7 +219,7 @@
         attribute::{FlatSymbolRefAttribute, StringAttribute, TypeAttribute},
         operation::OperationBuilder,
         r#type::FunctionType,
-        Attribute, Identifier, Location, Operation, Region, Value,
+        Attribute, Identifier, Location, Operation, Region, Type, Value,
     },
     Context,
 };
@@ -213,11 +229,13 @@
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     function: FlatSymbolRefAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     arguments: <span class="kw-2">&amp;</span>[Value],
+    result_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;func.call&quot;</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;callee&quot;</span>), function.into())])
         .add_operands(arguments)
+        .add_results(result_types)
         .build()
 }
 
@@ -225,11 +243,13 @@
 </span><span class="kw">pub fn </span>call_indirect&lt;<span class="lifetime">&#39;c</span>&gt;(
     function: Value,
     arguments: <span class="kw-2">&amp;</span>[Value],
+    result_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;func.call_indirect&quot;</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[function])
         .add_operands(arguments)
+        .add_results(result_types)
         .build()
 }
 
@@ -286,30 +306,36 @@
 
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>module = Module::new(location);
+        <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>function_type = FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[index_type], <span class="kw-2">&amp;</span>[index_type]);
 
-        <span class="kw">let </span>function = {
-            <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
+        <span class="kw">let </span>function = func(
+            <span class="kw-2">&amp;</span>context,
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            TypeAttribute::new(function_type.into()),
+            {
+                <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(index_type, location)]);
 
-            block.append_operation(call(
-                <span class="kw-2">&amp;</span>context,
-                FlatSymbolRefAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
-                <span class="kw-2">&amp;</span>[],
-                location,
-            ));
-            block.append_operation(r#return(<span class="kw-2">&amp;</span>[], location));
+                <span class="kw">let </span>value = block
+                    .append_operation(call(
+                        <span class="kw-2">&amp;</span>context,
+                        FlatSymbolRefAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+                        <span class="kw-2">&amp;</span>[block.argument(<span class="number">0</span>).unwrap().into()],
+                        <span class="kw-2">&amp;</span>[index_type],
+                        location,
+                    ))
+                    .result(<span class="number">0</span>)
+                    .unwrap()
+                    .into();
+                block.append_operation(r#return(<span class="kw-2">&amp;</span>[value], location));
 
-            <span class="kw">let </span>region = Region::new();
-            region.append_block(block);
-
-            func(
-                <span class="kw-2">&amp;</span>context,
-                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
-                TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
-                region,
-                <span class="kw-2">&amp;</span>[],
-                Location::unknown(<span class="kw-2">&amp;</span>context),
-            )
-        };
+                <span class="kw">let </span>region = Region::new();
+                region.append_block(block);
+                region
+            },
+            <span class="kw-2">&amp;</span>[],
+            Location::unknown(<span class="kw-2">&amp;</span>context),
+        );
 
         module.body().append_operation(function);
 
@@ -323,35 +349,41 @@
 
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>module = Module::new(location);
+        <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>function_type = FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[index_type], <span class="kw-2">&amp;</span>[index_type]);
 
-        <span class="kw">let </span>function = {
-            <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
+        <span class="kw">let </span>function = func(
+            <span class="kw-2">&amp;</span>context,
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            TypeAttribute::new(function_type.into()),
+            {
+                <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(index_type, location)]);
 
-            <span class="kw">let </span>function = block.append_operation(constant(
-                <span class="kw-2">&amp;</span>context,
-                FlatSymbolRefAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
-                FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]),
-                location,
-            ));
-            block.append_operation(call_indirect(
-                function.result(<span class="number">0</span>).unwrap().into(),
-                <span class="kw-2">&amp;</span>[],
-                location,
-            ));
-            block.append_operation(r#return(<span class="kw-2">&amp;</span>[], location));
+                <span class="kw">let </span>function = block.append_operation(constant(
+                    <span class="kw-2">&amp;</span>context,
+                    FlatSymbolRefAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+                    function_type,
+                    location,
+                ));
+                <span class="kw">let </span>value = block
+                    .append_operation(call_indirect(
+                        function.result(<span class="number">0</span>).unwrap().into(),
+                        <span class="kw-2">&amp;</span>[block.argument(<span class="number">0</span>).unwrap().into()],
+                        <span class="kw-2">&amp;</span>[index_type],
+                        location,
+                    ))
+                    .result(<span class="number">0</span>)
+                    .unwrap()
+                    .into();
+                block.append_operation(r#return(<span class="kw-2">&amp;</span>[value], location));
 
-            <span class="kw">let </span>region = Region::new();
-            region.append_block(block);
-
-            func(
-                <span class="kw-2">&amp;</span>context,
-                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
-                TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
-                region,
-                <span class="kw-2">&amp;</span>[],
-                Location::unknown(<span class="kw-2">&amp;</span>context),
-            )
-        };
+                <span class="kw">let </span>region = Region::new();
+                region.append_block(block);
+                region
+            },
+            <span class="kw-2">&amp;</span>[],
+            Location::unknown(<span class="kw-2">&amp;</span>context),
+        );
 
         module.body().append_operation(function);
 
