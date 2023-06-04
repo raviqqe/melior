@@ -2,7 +2,7 @@ mod value_like;
 
 pub use self::value_like::ValueLike;
 use super::{block::BlockArgument, operation::OperationResult, Type};
-use crate::utility::print_callback;
+use crate::{utility::print_callback, Context};
 use mlir_sys::{mlirValueEqual, mlirValuePrint, MlirValue};
 use std::{
     ffi::c_void,
@@ -12,14 +12,15 @@ use std::{
 
 /// A value.
 // Values are always non-owning references to their parents, such as operations
-// and block arguments. See the `Value` class in the MLIR C++ API.
+// and blocks. See the `Value` class in the MLIR C++ API.
 #[derive(Clone, Copy)]
-pub struct Value<'a> {
+pub struct Value<'c, 'a: 'c> {
     raw: MlirValue,
+    _context: PhantomData<&'c Context>,
     _parent: PhantomData<&'a ()>,
 }
 
-impl<'a> Value<'a> {
+impl<'c, 'a> Value<'c, 'a> {
     /// Creates a value from a raw object.
     ///
     /// # Safety
@@ -28,26 +29,27 @@ impl<'a> Value<'a> {
     pub unsafe fn from_raw(value: MlirValue) -> Self {
         Self {
             raw: value,
+            _context: Default::default(),
             _parent: Default::default(),
         }
     }
 }
 
-impl<'a> ValueLike for Value<'a> {
+impl<'c, 'a> ValueLike<'c> for Value<'c, 'a> {
     fn to_raw(&self) -> MlirValue {
         self.raw
     }
 }
 
-impl<'a> PartialEq for Value<'a> {
+impl<'c, 'a> PartialEq for Value<'c, 'a> {
     fn eq(&self, other: &Self) -> bool {
         unsafe { mlirValueEqual(self.raw, other.raw) }
     }
 }
 
-impl<'a> Eq for Value<'a> {}
+impl<'c, 'a> Eq for Value<'c, 'a> {}
 
-impl<'a> Display for Value<'a> {
+impl<'c, 'a> Display for Value<'c, 'a> {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
         let mut data = (formatter, Ok(()));
 
@@ -63,7 +65,7 @@ impl<'a> Display for Value<'a> {
     }
 }
 
-impl<'a> Debug for Value<'a> {
+impl<'c, 'a> Debug for Value<'c, 'a> {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
         writeln!(formatter, "Value(")?;
         Display::fmt(self, formatter)?;
@@ -71,7 +73,7 @@ impl<'a> Debug for Value<'a> {
     }
 }
 
-from_raw_subtypes!(Value, BlockArgument, OperationResult);
+from_borrowed_subtypes!(Value, BlockArgument, OperationResult);
 
 #[cfg(test)]
 mod tests {
