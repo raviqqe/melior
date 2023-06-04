@@ -518,7 +518,7 @@
     }
 
     <span class="doccomment">/// Gets a region at a position.
-    </span><span class="kw">pub fn </span>region(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;RegionRef, Error&gt; {
+    </span><span class="kw">pub fn </span>region(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;RegionRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, Error&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">if </span>index &lt; <span class="self">self</span>.region_count() {
                 <span class="prelude-val">Ok</span>(RegionRef::from_raw(mlirOperationGetRegion(
@@ -541,7 +541,7 @@
     }
 
     <span class="doccomment">/// Gets the next operation in the same block.
-    </span><span class="kw">pub fn </span>next_in_block(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OperationRef&gt; {
+    </span><span class="kw">pub fn </span>next_in_block(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>operation = mlirOperationGetNextInBlock(<span class="self">self</span>.raw);
 
@@ -649,7 +649,7 @@
 
 <span class="doccomment">/// A reference to an operation.
 </span><span class="attr">#[derive(Clone, Copy)]
-</span><span class="kw">pub struct </span>OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub struct </span>OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     raw: MlirOperation,
     _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Operation&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
 }
@@ -658,11 +658,6 @@
     <span class="doccomment">/// Gets a result at a position.
     </span><span class="kw">pub fn </span>result(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;OperationResult&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt;, Error&gt; {
         <span class="kw">unsafe </span>{ <span class="self">self</span>.to_ref() }.result(index)
-    }
-
-    <span class="doccomment">/// Converts an operation reference into a raw object.
-    </span><span class="kw">pub const fn </span>to_raw(<span class="self">self</span>) -&gt; MlirOperation {
-        <span class="self">self</span>.raw
     }
 
     <span class="doccomment">/// Gets an operation.
@@ -679,6 +674,11 @@
         // lifetime here to extend it from the lifetime of `ObjectRef&lt;&#39;a&gt;` itself into
         // `&#39;a`.
         </span>transmute(<span class="self">self</span>)
+    }
+
+    <span class="doccomment">/// Converts an operation reference into a raw object.
+    </span><span class="kw">pub const fn </span>to_raw(<span class="self">self</span>) -&gt; MlirOperation {
+        <span class="self">self</span>.raw
     }
 
     <span class="doccomment">/// Creates an operation reference from a raw object.

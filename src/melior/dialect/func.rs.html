@@ -228,7 +228,7 @@
 </span><span class="kw">pub fn </span>call&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     function: FlatSymbolRefAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    arguments: <span class="kw-2">&amp;</span>[Value],
+    arguments: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
     result_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
@@ -241,8 +241,8 @@
 
 <span class="doccomment">/// Create a `func.call_indirect` operation.
 </span><span class="kw">pub fn </span>call_indirect&lt;<span class="lifetime">&#39;c</span>&gt;(
-    function: Value,
-    arguments: <span class="kw-2">&amp;</span>[Value],
+    function: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    arguments: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
     result_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
@@ -271,7 +271,7 @@
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     name: StringAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     r#type: TypeAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    region: Region,
+    region: Region&lt;<span class="lifetime">&#39;c</span>&gt;,
     attributes: <span class="kw-2">&amp;</span>[(Identifier&lt;<span class="lifetime">&#39;c</span>&gt;, Attribute&lt;<span class="lifetime">&#39;c</span>&gt;)],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
@@ -286,7 +286,7 @@
 }
 
 <span class="doccomment">/// Create a `func.return` operation.
-</span><span class="kw">pub fn </span>r#return&lt;<span class="lifetime">&#39;c</span>&gt;(operands: <span class="kw-2">&amp;</span>[Value], location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub fn </span>r#return&lt;<span class="lifetime">&#39;c</span>&gt;(operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;], location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;func.return&quot;</span>, location)
         .add_operands(operands)
         .build()

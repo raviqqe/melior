@@ -640,8 +640,8 @@
 </span><span class="kw">pub fn </span>cmpf&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     predicate: CmpfPredicate,
-    lhs: Value,
-    rhs: Value,
+    lhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     cmp(context, <span class="string">&quot;arith.cmpf&quot;</span>, predicate <span class="kw">as </span>i64, lhs, rhs, location)
@@ -665,8 +665,8 @@
 </span><span class="kw">pub fn </span>cmpi&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     predicate: CmpiPredicate,
-    lhs: Value,
-    rhs: Value,
+    lhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     cmp(context, <span class="string">&quot;arith.cmpi&quot;</span>, predicate <span class="kw">as </span>i64, lhs, rhs, location)
@@ -676,8 +676,8 @@
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     name: <span class="kw-2">&amp;</span>str,
     predicate: i64,
-    lhs: Value,
-    rhs: Value,
+    lhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(name, location)

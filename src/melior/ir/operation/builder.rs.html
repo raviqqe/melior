@@ -252,7 +252,7 @@
     </span>}
 
     <span class="doccomment">/// Adds operands.
-    </span><span class="kw">pub fn </span>add_operands(<span class="kw-2">mut </span><span class="self">self</span>, operands: <span class="kw-2">&amp;</span>[Value]) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>add_operands(<span class="kw-2">mut </span><span class="self">self</span>, operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;]) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             mlirOperationStateAddOperands(
                 <span class="kw-2">&amp;mut </span><span class="self">self</span>.raw,
@@ -265,7 +265,7 @@
     </span>}
 
     <span class="doccomment">/// Adds regions.
-    </span><span class="kw">pub fn </span>add_regions(<span class="kw-2">mut </span><span class="self">self</span>, regions: Vec&lt;Region&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>add_regions(<span class="kw-2">mut </span><span class="self">self</span>, regions: Vec&lt;Region&lt;<span class="lifetime">&#39;c</span>&gt;&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             mlirOperationStateAddOwnedRegions(
                 <span class="kw-2">&amp;mut </span><span class="self">self</span>.raw,
@@ -298,7 +298,7 @@
     </span>}
 
     <span class="doccomment">/// Adds attributes.
-    </span><span class="kw">pub fn </span>add_attributes(<span class="kw-2">mut </span><span class="self">self</span>, attributes: <span class="kw-2">&amp;</span>[(Identifier, Attribute&lt;<span class="lifetime">&#39;c</span>&gt;)]) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>add_attributes(<span class="kw-2">mut </span><span class="self">self</span>, attributes: <span class="kw-2">&amp;</span>[(Identifier&lt;<span class="lifetime">&#39;c</span>&gt;, Attribute&lt;<span class="lifetime">&#39;c</span>&gt;)]) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             mlirOperationStateAddAttributes(
                 <span class="kw-2">&amp;mut </span><span class="self">self</span>.raw,

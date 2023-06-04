@@ -264,7 +264,7 @@
 </span><span class="comment">// Values are always non-owning references to their parents, such as operations
 // and blocks. See the `Value` class in the MLIR C++ API.
 </span><span class="attr">#[derive(Clone, Copy)]
-</span><span class="kw">pub struct </span>Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub struct </span>Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     raw: MlirValue,
     _context: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context&gt;,
     _parent: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>()&gt;,

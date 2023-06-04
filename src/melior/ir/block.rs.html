@@ -529,6 +529,18 @@
 <a href="#529" id="529">529</a>
 <a href="#530" id="530">530</a>
 <a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Blocks.
 
 </span><span class="kw">mod </span>argument;
@@ -649,7 +661,7 @@
     }
 
     <span class="doccomment">/// Appends an operation.
-    </span><span class="kw">pub fn </span>append_operation(<span class="kw-2">&amp;</span><span class="self">self</span>, operation: Operation) -&gt; OperationRef {
+    </span><span class="kw">pub fn </span>append_operation(<span class="kw-2">&amp;</span><span class="self">self</span>, operation: Operation&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>operation = operation.into_raw();
 
@@ -662,7 +674,11 @@
     <span class="doccomment">/// Inserts an operation.
     </span><span class="comment">// TODO How can we make those update functions take `&amp;mut self`?
     // TODO Use cells?
-    </span><span class="kw">pub fn </span>insert_operation(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize, operation: Operation) -&gt; OperationRef {
+    </span><span class="kw">pub fn </span>insert_operation(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        position: usize,
+        operation: Operation&lt;<span class="lifetime">&#39;c</span>&gt;,
+    ) -&gt; OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>operation = operation.into_raw();
 
@@ -673,7 +689,11 @@
     }
 
     <span class="doccomment">/// Inserts an operation after another.
-    </span><span class="kw">pub fn </span>insert_operation_after(<span class="kw-2">&amp;</span><span class="self">self</span>, one: OperationRef, other: Operation) -&gt; OperationRef {
+    </span><span class="kw">pub fn </span>insert_operation_after(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        one: OperationRef,
+        other: Operation&lt;<span class="lifetime">&#39;c</span>&gt;,
+    ) -&gt; OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>other = other.into_raw();
 
@@ -684,7 +704,11 @@
     }
 
     <span class="doccomment">/// Inserts an operation before another.
-    </span><span class="kw">pub fn </span>insert_operation_before(<span class="kw-2">&amp;</span><span class="self">self</span>, one: OperationRef, other: Operation) -&gt; OperationRef {
+    </span><span class="kw">pub fn </span>insert_operation_before(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        one: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+        other: Operation&lt;<span class="lifetime">&#39;c</span>&gt;,
+    ) -&gt; OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>other = other.into_raw();
 
