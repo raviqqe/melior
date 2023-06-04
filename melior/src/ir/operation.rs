@@ -79,7 +79,7 @@ impl<'c> Operation<'c> {
     }
 
     /// Gets a region at a position.
-    pub fn region(&self, index: usize) -> Result<RegionRef, Error> {
+    pub fn region(&self, index: usize) -> Result<RegionRef<'c, '_>, Error> {
         unsafe {
             if index < self.region_count() {
                 Ok(RegionRef::from_raw(mlirOperationGetRegion(
@@ -102,7 +102,7 @@ impl<'c> Operation<'c> {
     }
 
     /// Gets the next operation in the same block.
-    pub fn next_in_block(&self) -> Option<OperationRef> {
+    pub fn next_in_block(&self) -> Option<OperationRef<'c, '_>> {
         unsafe {
             let operation = mlirOperationGetNextInBlock(self.raw);
 
@@ -210,7 +210,7 @@ impl<'c> Debug for Operation<'c> {
 
 /// A reference to an operation.
 #[derive(Clone, Copy)]
-pub struct OperationRef<'c, 'a: 'c> {
+pub struct OperationRef<'c, 'a> {
     raw: MlirOperation,
     _reference: PhantomData<&'a Operation<'c>>,
 }
@@ -219,11 +219,6 @@ impl<'c, 'a> OperationRef<'c, 'a> {
     /// Gets a result at a position.
     pub fn result(self, index: usize) -> Result<OperationResult<'c, 'a>, Error> {
         unsafe { self.to_ref() }.result(index)
-    }
-
-    /// Converts an operation reference into a raw object.
-    pub const fn to_raw(self) -> MlirOperation {
-        self.raw
     }
 
     /// Gets an operation.
@@ -240,6 +235,11 @@ impl<'c, 'a> OperationRef<'c, 'a> {
         // lifetime here to extend it from the lifetime of `ObjectRef<'a>` itself into
         // `'a`.
         transmute(self)
+    }
+
+    /// Converts an operation reference into a raw object.
+    pub const fn to_raw(self) -> MlirOperation {
+        self.raw
     }
 
     /// Creates an operation reference from a raw object.
