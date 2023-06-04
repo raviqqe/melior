@@ -206,6 +206,8 @@
 <a href="#206" id="206">206</a>
 <a href="#207" id="207">207</a>
 <a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
 </pre><pre class="rust"><code><span class="kw">use super</span>::{Block, BlockRef};
 <span class="kw">use </span>mlir_sys::{
     mlirRegionAppendOwnedBlock, mlirRegionCreate, mlirRegionDestroy, mlirRegionEqual,
@@ -220,15 +222,17 @@
 
 <span class="doccomment">/// A region.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>Region {
+</span><span class="kw">pub struct </span>Region&lt;<span class="lifetime">&#39;c</span>&gt; {
     raw: MlirRegion,
+    _block: PhantomData&lt;Block&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
 }
 
-<span class="kw">impl </span>Region {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Region&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Creates a region.
     </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             raw: <span class="kw">unsafe </span>{ mlirRegionCreate() },
+            _block: Default::default(),
         }
     }
 
@@ -246,7 +250,7 @@
     }
 
     <span class="doccomment">/// Inserts a block after another block.
-    </span><span class="kw">pub fn </span>insert_block_after(<span class="kw-2">&amp;</span><span class="self">self</span>, one: BlockRef, other: Block) -&gt; BlockRef {
+    </span><span class="kw">pub fn </span>insert_block_after(<span class="kw-2">&amp;</span><span class="self">self</span>, one: BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, other: Block&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; BlockRef {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>r#ref = BlockRef::from_raw(other.to_raw());
 
@@ -288,34 +292,34 @@
     }
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>Region {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Default <span class="kw">for </span>Region&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new()
     }
 }
 
-<span class="kw">impl </span>Drop <span class="kw">for </span>Region {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Drop <span class="kw">for </span>Region&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">unsafe </span>{ mlirRegionDestroy(<span class="self">self</span>.raw) }
     }
 }
 
-<span class="kw">impl </span>PartialEq <span class="kw">for </span>Region {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; PartialEq <span class="kw">for </span>Region&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ mlirRegionEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl </span>Eq <span class="kw">for </span>Region {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Eq <span class="kw">for </span>Region&lt;<span class="lifetime">&#39;c</span>&gt; {}
 
 <span class="doccomment">/// A reference to a region.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">pub struct </span>RegionRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     raw: MlirRegion,
-    _region: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Region&gt;,
+    _region: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Region&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; RegionRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Creates a region from a raw object.
     ///
     /// # Safety
@@ -342,21 +346,21 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">type </span>Target = Region;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>RegionRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">type </span>Target = Region&lt;<span class="lifetime">&#39;c</span>&gt;;
 
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw">unsafe </span>{ transmute(<span class="self">self</span>) }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; PartialEq <span class="kw">for </span>RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; PartialEq <span class="kw">for </span>RegionRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ mlirRegionEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Eq <span class="kw">for </span>RegionRef&lt;<span class="lifetime">&#39;a</span>&gt; {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; Eq <span class="kw">for </span>RegionRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {}
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
