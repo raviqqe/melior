@@ -237,7 +237,7 @@
     }
 
     <span class="doccomment">/// Gets the first block in a region.
-    </span><span class="kw">pub fn </span>first_block(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BlockRef&gt; {
+    </span><span class="kw">pub fn </span>first_block(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>block = mlirRegionGetFirstBlock(<span class="self">self</span>.raw);
 
@@ -250,7 +250,7 @@
     }
 
     <span class="doccomment">/// Inserts a block after another block.
-    </span><span class="kw">pub fn </span>insert_block_after(<span class="kw-2">&amp;</span><span class="self">self</span>, one: BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, other: Block&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; BlockRef {
+    </span><span class="kw">pub fn </span>insert_block_after(<span class="kw-2">&amp;</span><span class="self">self</span>, one: BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, other: Block&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>r#ref = BlockRef::from_raw(other.to_raw());
 
@@ -261,7 +261,7 @@
     }
 
     <span class="doccomment">/// Inserts a block before another block.
-    </span><span class="kw">pub fn </span>insert_block_before(<span class="kw-2">&amp;</span><span class="self">self</span>, one: BlockRef, other: Block) -&gt; BlockRef {
+    </span><span class="kw">pub fn </span>insert_block_before(<span class="kw-2">&amp;</span><span class="self">self</span>, one: BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, other: Block&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>r#ref = BlockRef::from_raw(other.to_raw());
 
@@ -272,7 +272,7 @@
     }
 
     <span class="doccomment">/// Appends a block.
-    </span><span class="kw">pub fn </span>append_block(<span class="kw-2">&amp;</span><span class="self">self</span>, block: Block) -&gt; BlockRef {
+    </span><span class="kw">pub fn </span>append_block(<span class="kw-2">&amp;</span><span class="self">self</span>, block: Block&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>r#ref = BlockRef::from_raw(block.to_raw());
 
