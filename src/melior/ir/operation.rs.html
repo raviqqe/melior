@@ -424,6 +424,18 @@
 <a href="#424" id="424">424</a>
 <a href="#425" id="425">425</a>
 <a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Operations and operation builders.
 
 </span><span class="kw">mod </span>builder;
@@ -644,15 +656,27 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationRef&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Gets a result at a position.
     </span><span class="kw">pub fn </span>result(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;OperationResult&lt;<span class="lifetime">&#39;a</span>&gt;, Error&gt; {
-        <span class="comment">// As we can&#39;t deref OperationRef&lt;&#39;a&gt; into `&amp;&#39;a Operation`, we forcibly cast its
-        // lifetime here to extend it from the lifetime of `ObjectRef&lt;&#39;a&gt;` itself into
-        // `&#39;a`.
-        </span><span class="kw">unsafe </span>{ transmute(<span class="self">self</span>.deref().result(index)) }
+        <span class="kw">unsafe </span>{ <span class="self">self</span>.to_ref() }.result(index)
     }
 
     <span class="doccomment">/// Converts an operation reference into a raw object.
     </span><span class="kw">pub const fn </span>to_raw(<span class="self">self</span>) -&gt; MlirOperation {
         <span class="self">self</span>.raw
+    }
+
+    <span class="doccomment">/// Gets an operation.
+    ///
+    /// This function is different from `deref` because the correct lifetime is kept for the return
+    /// type.
+    ///
+    /// # Safety
+    ///
+    /// The returned reference is safe to use only in the lifetime scope of the operation reference.
+    </span><span class="kw">pub unsafe fn </span>to_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Operation&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="comment">// As we can&#39;t deref OperationRef&lt;&#39;a&gt; into `&amp;&#39;a Operation`, we forcibly cast its
+        // lifetime here to extend it from the lifetime of `ObjectRef&lt;&#39;a&gt;` itself into
+        // `&#39;a`.
+        </span>transmute(<span class="self">self</span>)
     }
 
     <span class="doccomment">/// Creates an operation reference from a raw object.

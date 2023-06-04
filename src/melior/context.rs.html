@@ -261,6 +261,21 @@
 <a href="#261" id="261">261</a>
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{
     diagnostic::{Diagnostic, DiagnosticHandlerId},
     dialect::{Dialect, DialectRegistry},
@@ -403,12 +418,27 @@
 
 <span class="doccomment">/// A reference to a context.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>ContextRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">pub struct </span>ContextRef&lt;<span class="lifetime">&#39;c</span>&gt; {
     raw: MlirContext,
-    _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Context&gt;,
+    _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ContextRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; ContextRef&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="doccomment">/// Gets a context.
+    ///
+    /// This function is different from `deref` because the correct lifetime is kept for the return
+    /// type.
+    ///
+    /// # Safety
+    ///
+    /// The returned reference is safe to use only in the lifetime scope of the context reference.
+    </span><span class="kw">pub unsafe fn </span>to_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context {
+        <span class="comment">// As we can&#39;t deref ContextRef&lt;&#39;a&gt; into `&amp;&#39;a Context`, we forcibly cast its
+        // lifetime here to extend it from the lifetime of `ObjectRef&lt;&#39;a&gt;` itself into
+        // `&#39;a`.
+        </span>transmute(<span class="self">self</span>)
+    }
+
     <span class="doccomment">/// Creates a context reference from a raw object.
     ///
     /// # Safety
