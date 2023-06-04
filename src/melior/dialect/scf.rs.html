@@ -723,8 +723,8 @@
 
 <span class="doccomment">/// Creates a `scf.condition` operation.
 </span><span class="kw">pub fn </span>condition&lt;<span class="lifetime">&#39;c</span>&gt;(
-    condition: Value&lt;<span class="lifetime">&#39;c</span>&gt;,
-    values: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>&gt;],
+    condition: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    values: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;scf.condition&quot;</span>, location)
@@ -747,9 +747,9 @@
 
 <span class="doccomment">/// Creates a `scf.for` operation.
 </span><span class="kw">pub fn </span>r#for&lt;<span class="lifetime">&#39;c</span>&gt;(
-    start: Value&lt;<span class="lifetime">&#39;c</span>&gt;,
-    end: Value&lt;<span class="lifetime">&#39;c</span>&gt;,
-    step: Value&lt;<span class="lifetime">&#39;c</span>&gt;,
+    start: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    end: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    step: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     region: Region,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
@@ -761,7 +761,7 @@
 
 <span class="doccomment">/// Creates a `scf.if` operation.
 </span><span class="kw">pub fn </span>r#if&lt;<span class="lifetime">&#39;c</span>&gt;(
-    condition: Value&lt;<span class="lifetime">&#39;c</span>&gt;,
+    condition: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     result_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
     then_region: Region,
     else_region: Region,
@@ -777,7 +777,7 @@
 <span class="doccomment">/// Creates a `scf.index_switch` operation.
 </span><span class="kw">pub fn </span>index_switch&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    condition: Value&lt;<span class="lifetime">&#39;c</span>&gt;,
+    condition: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     result_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
     cases: DenseI64ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     regions: Vec&lt;Region&gt;,
@@ -793,7 +793,7 @@
 
 <span class="doccomment">/// Creates a `scf.while` operation.
 </span><span class="kw">pub fn </span>r#while&lt;<span class="lifetime">&#39;c</span>&gt;(
-    initial_values: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>&gt;],
+    initial_values: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
     result_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
     before_region: Region,
     after_region: Region,

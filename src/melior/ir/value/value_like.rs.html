@@ -34,12 +34,12 @@
 };
 
 <span class="doccomment">/// Trait for value-like types.
-</span><span class="kw">pub trait </span>ValueLike {
+</span><span class="kw">pub trait </span>ValueLike&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Converts a value into a raw value.
     </span><span class="kw">fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirValue;
 
     <span class="doccomment">/// Gets a type.
-    </span><span class="kw">fn </span>r#type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type {
+    </span><span class="kw">fn </span>r#type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type&lt;<span class="lifetime">&#39;c</span>&gt; {
         <span class="kw">unsafe </span>{ Type::from_raw(mlirValueGetType(<span class="self">self</span>.to_raw())) }
     }
 

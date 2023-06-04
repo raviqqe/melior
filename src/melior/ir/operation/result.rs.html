@@ -87,10 +87,8 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Value;
-<span class="kw">use crate</span>::{
-    ir::{OperationRef, ValueLike},
+</pre><pre class="rust"><code><span class="kw">use crate</span>::{
+    ir::{OperationRef, Value, ValueLike},
     Error,
 };
 <span class="kw">use </span>mlir_sys::{mlirOpResultGetOwner, mlirOpResultGetResultNumber, MlirValue};
@@ -98,11 +96,11 @@
 
 <span class="doccomment">/// An operation result.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>OperationResult&lt;<span class="lifetime">&#39;a</span>&gt; {
-    value: Value&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub struct </span>OperationResult&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
+    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationResult&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; OperationResult&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Gets a result number.
     </span><span class="kw">pub fn </span>result_number(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="kw">unsafe </span>{ mlirOpResultGetResultNumber(<span class="self">self</span>.value.to_raw()) <span class="kw">as </span>usize }
@@ -125,22 +123,22 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ValueLike <span class="kw">for </span>OperationResult&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; ValueLike&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>OperationResult&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirValue {
         <span class="self">self</span>.value.to_raw()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>OperationResult&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>OperationResult&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         Value::from(<span class="kw-2">*</span><span class="self">self</span>).fmt(formatter)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TryFrom&lt;Value&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>OperationResult&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; TryFrom&lt;Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>OperationResult&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Error = Error;
 
-    <span class="kw">fn </span>try_from(value: Value&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+    <span class="kw">fn </span>try_from(value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="kw">if </span>value.is_operation_result() {
             <span class="prelude-val">Ok</span>(<span class="self">Self </span>{ value })
         } <span class="kw">else </span>{

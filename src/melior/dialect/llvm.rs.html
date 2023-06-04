@@ -680,7 +680,7 @@
 </span><span class="doccomment">/// Creates a `llvm.extractvalue` operation.
 </span><span class="kw">pub fn </span>extract_value&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    container: Value,
+    container: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     position: DenseI64ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
@@ -695,7 +695,7 @@
 <span class="doccomment">/// Creates a `llvm.getelementptr` operation.
 </span><span class="kw">pub fn </span>get_element_ptr&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    ptr: Value,
+    ptr: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     indices: DenseI32ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     element_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
     result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
@@ -720,8 +720,8 @@
 <span class="doccomment">/// Creates a `llvm.getelementptr` operation with dynamic indices.
 </span><span class="kw">pub fn </span>get_element_ptr_dynamic&lt;<span class="lifetime">&#39;c</span>, <span class="kw">const </span>N: usize&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    ptr: Value,
-    indices: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>&gt;; N],
+    ptr: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    indices: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;; N],
     element_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
     result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
@@ -746,9 +746,9 @@
 <span class="doccomment">/// Creates a `llvm.insertvalue` operation.
 </span><span class="kw">pub fn </span>insert_value&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    container: Value,
+    container: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     position: DenseI64ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    value: Value,
+    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;llvm.insertvalue&quot;</span>, location)
@@ -775,8 +775,8 @@
 <span class="doccomment">/// Creates a `llvm.store` operation.
 </span><span class="kw">pub fn </span>store&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    value: Value,
-    addr: Value,
+    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    addr: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
     extra_options: LoadStoreOptions&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
@@ -789,7 +789,7 @@
 <span class="doccomment">/// Creates a `llvm.load` operation.
 </span><span class="kw">pub fn </span>load&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    addr: Value,
+    addr: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
     extra_options: LoadStoreOptions&lt;<span class="lifetime">&#39;c</span>&gt;,
@@ -821,7 +821,7 @@
 }
 
 <span class="comment">// Creates a `llvm.return` operation.
-</span><span class="kw">pub fn </span>r#return&lt;<span class="lifetime">&#39;c</span>&gt;(value: <span class="prelude-ty">Option</span>&lt;Value&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub fn </span>r#return&lt;<span class="lifetime">&#39;c</span>&gt;(value: <span class="prelude-ty">Option</span>&lt;Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>builder = OperationBuilder::new(<span class="string">&quot;llvm.return&quot;</span>, location);
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = value {

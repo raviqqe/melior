@@ -203,8 +203,8 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-</pre><pre class="rust"><code><span class="kw">use crate</span>::{
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Operation;
+<span class="kw">use crate</span>::{
     context::Context,
     ir::{
         Attribute, AttributeLike, Block, Identifier, Location, Region, Type, TypeLike, Value,
@@ -220,8 +220,6 @@
     mlirOperationStateGet, MlirOperationState,
 };
 <span class="kw">use </span>std::marker::PhantomData;
-
-<span class="kw">use </span><span class="kw">super</span>::Operation;
 
 <span class="doccomment">/// An operation builder.
 </span><span class="kw">pub struct </span>OperationBuilder&lt;<span class="lifetime">&#39;c</span>&gt; {

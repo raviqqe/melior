@@ -384,7 +384,7 @@
 <span class="doccomment">/// Creates a `cf.assert` operation.
 </span><span class="kw">pub fn </span>assert&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    argument: Value&lt;<span class="lifetime">&#39;c</span>&gt;,
+    argument: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     message: <span class="kw-2">&amp;</span>str,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
@@ -400,7 +400,7 @@
 <span class="doccomment">/// Creates a `cf.br` operation.
 </span><span class="kw">pub fn </span>br&lt;<span class="lifetime">&#39;c</span>&gt;(
     successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;,
-    destination_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>&gt;],
+    destination_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;cf.br&quot;</span>, location)
@@ -412,11 +412,11 @@
 <span class="doccomment">/// Creates a `cf.cond_br` operation.
 </span><span class="kw">pub fn </span>cond_br&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    condition: Value&lt;<span class="lifetime">&#39;c</span>&gt;,
+    condition: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     true_successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;,
     false_successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;,
-    true_successor_operands: <span class="kw-2">&amp;</span>[Value],
-    false_successor_operands: <span class="kw-2">&amp;</span>[Value],
+    true_successor_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
+    false_successor_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
     OperationBuilder::new(<span class="string">&quot;cf.cond_br&quot;</span>, location)
@@ -447,10 +447,10 @@
 </span><span class="kw">pub fn </span>switch&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     case_values: <span class="kw-2">&amp;</span>[i64],
-    flag: Value&lt;<span class="lifetime">&#39;c</span>&gt;,
+    flag: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     flag_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    default_destination: (<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;, <span class="kw-2">&amp;</span>[Value]),
-    case_destinations: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;, <span class="kw-2">&amp;</span>[Value])],
+    default_destination: (<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;, <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;]),
+    case_destinations: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;, <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;])],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Operation&lt;<span class="lifetime">&#39;c</span>&gt;, Error&gt; {
     <span class="kw">let </span>(destinations, operands): (Vec&lt;<span class="kw">_</span>&gt;, Vec&lt;<span class="kw">_</span>&gt;) = [default_destination]

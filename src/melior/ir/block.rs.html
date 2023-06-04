@@ -583,7 +583,7 @@
     }
 
     <span class="doccomment">/// Gets an argument at a position.
-    </span><span class="kw">pub fn </span>argument(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;BlockArgument, Error&gt; {
+    </span><span class="kw">pub fn </span>argument(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;BlockArgument&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, Error&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">if </span>index &lt; <span class="self">self</span>.argument_count() {
                 <span class="prelude-val">Ok</span>(BlockArgument::from_raw(mlirBlockGetArgument(
@@ -634,7 +634,7 @@
     }
 
     <span class="doccomment">/// Adds an argument.
-    </span><span class="kw">pub fn </span>add_argument(<span class="kw-2">&amp;</span><span class="self">self</span>, r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Value {
+    </span><span class="kw">pub fn </span>add_argument(<span class="kw-2">&amp;</span><span class="self">self</span>, r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">unsafe </span>{
             Value::from_raw(mlirBlockAddArgument(
                 <span class="self">self</span>.raw,
@@ -697,7 +697,7 @@
     /// This function might invalidate existing references to the block if you
     /// drop it too early.
     </span><span class="comment">// TODO Implement this for BlockRefMut instead and mark it safe.
-    </span><span class="kw">pub unsafe fn </span>detach(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Block&gt; {
+    </span><span class="kw">pub unsafe fn </span>detach(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Block&lt;<span class="lifetime">&#39;c</span>&gt;&gt; {
         <span class="kw">if </span><span class="self">self</span>.parent_region().is_some() {
             mlirBlockDetach(<span class="self">self</span>.raw);
 
@@ -708,7 +708,7 @@
     }
 
     <span class="doccomment">/// Gets a next block in a region.
-    </span><span class="kw">pub fn </span>next_in_region(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BlockRef&gt; {
+    </span><span class="kw">pub fn </span>next_in_region(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;&gt; {
         <span class="kw">unsafe </span>{ BlockRef::from_option_raw(mlirBlockGetNextInRegion(<span class="self">self</span>.raw)) }
     }
 
@@ -779,12 +779,12 @@
 
 <span class="doccomment">/// A reference of a block.
 </span><span class="attr">#[derive(Clone, Copy)]
-</span><span class="kw">pub struct </span>BlockRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">pub struct </span>BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     raw: MlirBlock,
-    _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Block&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Block&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; BlockRef&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Creates a block reference from a raw object.
     ///
     /// # Safety
@@ -811,7 +811,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Target = Block&lt;<span class="lifetime">&#39;a</span>&gt;;
 
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
@@ -819,21 +819,21 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; PartialEq <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; PartialEq <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ mlirBlockEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Eq <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;a</span>&gt; {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; Eq <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {}
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         Display::fmt(<span class="self">self</span>.deref(), formatter)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Debug <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; Debug <span class="kw">for </span>BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         Debug::fmt(<span class="self">self</span>.deref(), formatter)
     }

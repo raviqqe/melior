@@ -494,12 +494,12 @@
 
         <span class="kw">let </span>integer_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
-        <span class="kw">fn </span>compile_add&lt;<span class="lifetime">&#39;a</span>&gt;(
+        <span class="kw">fn </span>compile_add&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt;(
             context: <span class="kw-2">&amp;</span>Context,
             block: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Block,
-            lhs: Value&lt;<span class="lifetime">&#39;a</span>&gt;,
-            rhs: Value&lt;<span class="lifetime">&#39;a</span>&gt;,
-        ) -&gt; Value&lt;<span class="lifetime">&#39;a</span>&gt; {
+            lhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt;,
+            rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt;,
+        ) -&gt; Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
             block
                 .append_operation(arith::addi(lhs, rhs, Location::unknown(context)))
                 .result(<span class="number">0</span>)

@@ -192,7 +192,7 @@
     }
 
     <span class="doccomment">/// Gets a block of a module body.
-    </span><span class="kw">pub fn </span>body(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BlockRef {
+    </span><span class="kw">pub fn </span>body(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">unsafe </span>{ BlockRef::from_raw(mlirModuleGetBody(<span class="self">self</span>.raw)) }
     }
 
