@@ -1,4 +1,4 @@
-use super::TypeLike;
+use super::{shaped_type::ShapedType, TypeLike};
 use crate::{
     ir::{attribute::AttributeLike, Attribute, Location, Type},
     Error,
@@ -58,6 +58,8 @@ impl<'c> RankedTensorType<'c> {
         }
     }
 }
+
+impl<'c> ShapedType<'c> for RankedTensorType<'c> {}
 
 type_traits!(RankedTensorType, is_ranked_tensor, "tensor");
 
