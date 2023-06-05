@@ -7,7 +7,7 @@ use mlir_sys::{
 };
 
 /// Trait for shaped types.
-pub trait ShapedType<'c>: TypeLike<'c> {
+pub trait ShapedTypeLike<'c>: TypeLike<'c> {
     /// Gets a element type.
     fn element(&self) -> Type<'c> {
         unsafe { Type::from_raw(mlirShapedTypeGetElementType(self.to_raw())) }
@@ -111,17 +111,8 @@ mod tests {
         let context = Context::new();
         let element_type = Type::index(&context);
 
-        assert_eq!(
-            MemRefType::new(element_type, &[], None, None).has_rank(),
-            true
-        );
-        assert_eq!(
-            MemRefType::new(element_type, &[0], None, None).has_rank(),
-            true,
-        );
-        assert_eq!(
-            MemRefType::new(element_type, &[0, 0], None, None).has_rank(),
-            true,
-        );
+        assert!(MemRefType::new(element_type, &[], None, None).has_rank());
+        assert!(MemRefType::new(element_type, &[0], None, None).has_rank(),);
+        assert!(MemRefType::new(element_type, &[0, 0], None, None).has_rank(),);
     }
 }
