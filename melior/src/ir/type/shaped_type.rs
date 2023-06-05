@@ -1,5 +1,5 @@
 use super::{Type, TypeLike};
-use mlir_sys::{mlirShapedTypeGetElementType, mlirShapedTypeGetRank};
+use mlir_sys::{mlirShapedTypeGetElementType, mlirShapedTypeGetRank, mlirShapedTypeHasRank};
 
 /// Trait for shaped types.
 pub trait ShapedType<'c>: TypeLike<'c> {
@@ -11,6 +11,11 @@ pub trait ShapedType<'c>: TypeLike<'c> {
     /// Gets a rank.
     fn rank(&self) -> usize {
         (unsafe { mlirShapedTypeGetRank(self.to_raw()) }) as usize
+    }
+
+    /// Checks if a type has a rank.
+    fn has_rank(&self) -> bool {
+        unsafe { mlirShapedTypeHasRank(self.to_raw()) }
     }
 }
 
@@ -48,6 +53,25 @@ mod tests {
         assert_eq!(
             MemRefType::new(Type::index(&context), &[0, 0], None, None).rank(),
             2
+        );
+    }
+
+    #[test]
+    fn has_rank() {
+        let context = Context::new();
+        let element_type = Type::index(&context);
+
+        assert_eq!(
+            MemRefType::new(element_type, &[], None, None).has_rank(),
+            true
+        );
+        assert_eq!(
+            MemRefType::new(element_type, &[0], None, None).has_rank(),
+            true,
+        );
+        assert_eq!(
+            MemRefType::new(element_type, &[0, 0], None, None).has_rank(),
+            true,
         );
     }
 }
