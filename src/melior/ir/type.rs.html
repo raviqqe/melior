@@ -282,6 +282,7 @@
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Types and type IDs.
 
 </span><span class="attr">#[macro_use]
@@ -297,7 +298,8 @@
 
 <span class="kw">pub use </span><span class="self">self</span>::{
     function::FunctionType, id::TypeId, integer::IntegerType, mem_ref::MemRefType,
-    ranked_tensor::RankedTensorType, tuple::TupleType, type_like::TypeLike,
+    ranked_tensor::RankedTensorType, shaped_type_like::ShapedTypeLike, tuple::TupleType,
+    type_like::TypeLike,
 };
 <span class="kw">use </span><span class="kw">super</span>::Location;
 <span class="kw">use crate</span>::{context::Context, string_ref::StringRef, utility::print_callback};
