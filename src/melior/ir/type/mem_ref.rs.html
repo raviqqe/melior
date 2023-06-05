@@ -128,7 +128,7 @@
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{shaped_type::ShapedType, TypeLike};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{shaped_type_like::ShapedTypeLike, TypeLike};
 <span class="kw">use crate</span>::{
     ir::{affine_map::AffineMap, attribute::AttributeLike, Attribute, Location, Type},
     Error,
@@ -207,7 +207,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; ShapedType&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>MemRefType&lt;<span class="lifetime">&#39;c</span>&gt; {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; ShapedTypeLike&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>MemRefType&lt;<span class="lifetime">&#39;c</span>&gt; {}
 
 <span class="macro">type_traits!</span>(MemRefType, is_mem_ref, <span class="string">&quot;mem ref&quot;</span>);
 
