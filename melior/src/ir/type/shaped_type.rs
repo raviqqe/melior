@@ -1,5 +1,10 @@
+use crate::Error;
+
 use super::{Type, TypeLike};
-use mlir_sys::{mlirShapedTypeGetElementType, mlirShapedTypeGetRank, mlirShapedTypeHasRank};
+use mlir_sys::{
+    mlirShapedTypeGetDimSize, mlirShapedTypeGetElementType, mlirShapedTypeGetRank,
+    mlirShapedTypeHasRank,
+};
 
 /// Trait for shaped types.
 pub trait ShapedType<'c>: TypeLike<'c> {
@@ -11,6 +16,19 @@ pub trait ShapedType<'c>: TypeLike<'c> {
     /// Gets a rank.
     fn rank(&self) -> usize {
         (unsafe { mlirShapedTypeGetRank(self.to_raw()) }) as usize
+    }
+
+    /// Gets a dimension size.
+    fn dim_size(&self, index: usize) -> Result<usize, Error> {
+        if index < self.rank() {
+            Ok((unsafe { mlirShapedTypeGetDimSize(self.to_raw(), index as isize) }) as usize)
+        } else {
+            Err(Error::PositionOutOfBounds {
+                name: "dimension size",
+                value: unsafe { Type::from_raw(self.to_raw()) }.to_string(),
+                index,
+            })
+        }
     }
 
     /// Checks if a type has a rank.
@@ -53,6 +71,38 @@ mod tests {
         assert_eq!(
             MemRefType::new(Type::index(&context), &[0, 0], None, None).rank(),
             2
+        );
+    }
+
+    #[test]
+    fn dim_size() {
+        let context = Context::new();
+
+        assert_eq!(
+            MemRefType::new(Type::index(&context), &[], None, None).dim_size(0),
+            Err(Error::PositionOutOfBounds {
+                name: "dimension size",
+                value: "memref<index>".into(),
+                index: 0
+            })
+        );
+        assert_eq!(
+            MemRefType::new(Type::index(&context), &[42], None, None)
+                .dim_size(0)
+                .unwrap(),
+            42
+        );
+        assert_eq!(
+            MemRefType::new(Type::index(&context), &[42, 0], None, None)
+                .dim_size(0)
+                .unwrap(),
+            42
+        );
+        assert_eq!(
+            MemRefType::new(Type::index(&context), &[0, 42], None, None)
+                .dim_size(1)
+                .unwrap(),
+            42
         );
     }
 
