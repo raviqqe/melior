@@ -163,13 +163,11 @@
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
 </pre><pre class="rust"><code><span class="doccomment">//! LLVM types
 
 </span><span class="kw">use crate</span>::{
     context::Context,
     ir::{Type, TypeLike},
-    utility::into_raw_array,
 };
 <span class="kw">use </span>mlir_sys::{
     mlirLLVMArrayTypeGet, mlirLLVMFunctionTypeGet, mlirLLVMPointerTypeGet,
@@ -193,7 +191,7 @@
         Type::from_raw(mlirLLVMFunctionTypeGet(
             result.to_raw(),
             arguments.len() <span class="kw">as </span>isize,
-            into_raw_array(arguments.iter().map(|argument| argument.to_raw()).collect()),
+            arguments <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span><span class="kw-2">*const </span><span class="kw">_</span>,
             variadic_arguments,
         ))
     }
@@ -215,7 +213,7 @@
         Type::from_raw(mlirLLVMStructTypeLiteralGet(
             context.to_raw(),
             fields.len() <span class="kw">as </span>isize,
-            into_raw_array(fields.iter().map(|field| field.to_raw()).collect()),
+            fields <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span><span class="kw-2">*const </span><span class="kw">_</span>,
             packed,
         ))
     }

@@ -184,7 +184,7 @@
     context::{Context, ContextRef},
     ir::{Attribute, AttributeLike},
     string_ref::StringRef,
-    utility::{into_raw_array, print_callback},
+    utility::print_callback,
 };
 <span class="kw">use </span>mlir_sys::{
     mlirLocationEqual, mlirLocationFileLineColGet, mlirLocationFusedGet, mlirLocationGetContext,
@@ -222,7 +222,7 @@
             <span class="self">Self</span>::from_raw(mlirLocationFusedGet(
                 context.to_raw(),
                 locations.len() <span class="kw">as </span>isize,
-                into_raw_array(locations.iter().map(|location| location.to_raw()).collect()),
+                locations <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span><span class="kw-2">*const </span><span class="kw">_</span>,
                 attribute.to_raw(),
             ))
         }

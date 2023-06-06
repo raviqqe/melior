@@ -149,11 +149,6 @@
 <a href="#149" id="149">149</a>
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Utility functions.
 
 </span><span class="kw">use crate</span>::{
@@ -219,11 +214,6 @@
     } <span class="kw">else </span>{
         <span class="kw-2">*</span>data = string.as_str().map(String::from).ok();
     }
-}
-
-<span class="comment">// TODO Use into_raw_parts.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>into_raw_array&lt;T&gt;(xs: Vec&lt;T&gt;) -&gt; <span class="kw-2">*mut </span>T {
-    xs.leak().as_mut_ptr()
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>print_callback(string: MlirStringRef, data: <span class="kw-2">*mut </span>c_void) {

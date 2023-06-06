@@ -202,16 +202,11 @@
 <a href="#202" id="202">202</a>
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Operation;
 <span class="kw">use crate</span>::{
     context::Context,
-    ir::{
-        Attribute, AttributeLike, Block, Identifier, Location, Region, Type, TypeLike, Value,
-        ValueLike,
-    },
+    ir::{Attribute, AttributeLike, Block, Identifier, Location, Region, Type, Value},
     string_ref::StringRef,
-    utility::into_raw_array,
 };
 <span class="kw">use </span>mlir_sys::{
     mlirNamedAttributeGet, mlirOperationCreate, mlirOperationStateAddAttributes,
@@ -244,7 +239,7 @@
             mlirOperationStateAddResults(
                 <span class="kw-2">&amp;mut </span><span class="self">self</span>.raw,
                 results.len() <span class="kw">as </span>isize,
-                into_raw_array(results.iter().map(|r#type| r#type.to_raw()).collect()),
+                results <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span><span class="kw-2">*const </span><span class="kw">_</span>,
             )
         }
 
@@ -257,7 +252,7 @@
             mlirOperationStateAddOperands(
                 <span class="kw-2">&amp;mut </span><span class="self">self</span>.raw,
                 operands.len() <span class="kw">as </span>isize,
-                into_raw_array(operands.iter().map(|value| value.to_raw()).collect()),
+                operands <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span><span class="kw-2">*const </span><span class="kw">_</span>,
             )
         }
 
@@ -270,12 +265,7 @@
             mlirOperationStateAddOwnedRegions(
                 <span class="kw-2">&amp;mut </span><span class="self">self</span>.raw,
                 regions.len() <span class="kw">as </span>isize,
-                into_raw_array(
-                    regions
-                        .into_iter()
-                        .map(|region| region.into_raw())
-                        .collect(),
-                ),
+                regions.leak().as_ptr() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span><span class="kw-2">*const </span><span class="kw">_</span>,
             )
         }
 
@@ -285,12 +275,17 @@
     <span class="doccomment">/// Adds successor blocks.
     </span><span class="comment">// TODO Fix this to ensure blocks are alive while they are referenced by the
     // operation.
+    // TODO Should we accept `BlockRef`?
     </span><span class="kw">pub fn </span>add_successors(<span class="kw-2">mut </span><span class="self">self</span>, successors: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;]) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             mlirOperationStateAddSuccessors(
                 <span class="kw-2">&amp;mut </span><span class="self">self</span>.raw,
                 successors.len() <span class="kw">as </span>isize,
-                into_raw_array(successors.iter().map(|block| block.to_raw()).collect()),
+                successors
+                    .iter()
+                    .map(|block| block.to_raw())
+                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+                    .as_ptr() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>,
             )
         }
 
@@ -298,19 +293,19 @@
     </span>}
 
     <span class="doccomment">/// Adds attributes.
+    </span><span class="comment">// TODO Should we accept `NamedAttribute`?
     </span><span class="kw">pub fn </span>add_attributes(<span class="kw-2">mut </span><span class="self">self</span>, attributes: <span class="kw-2">&amp;</span>[(Identifier&lt;<span class="lifetime">&#39;c</span>&gt;, Attribute&lt;<span class="lifetime">&#39;c</span>&gt;)]) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             mlirOperationStateAddAttributes(
                 <span class="kw-2">&amp;mut </span><span class="self">self</span>.raw,
                 attributes.len() <span class="kw">as </span>isize,
-                into_raw_array(
-                    attributes
-                        .iter()
-                        .map(|(identifier, attribute)| {
-                            mlirNamedAttributeGet(identifier.to_raw(), attribute.to_raw())
-                        })
-                        .collect(),
-                ),
+                attributes
+                    .iter()
+                    .map(|(identifier, attribute)| {
+                        mlirNamedAttributeGet(identifier.to_raw(), attribute.to_raw())
+                    })
+                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+                    .as_ptr() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>,
             )
         }
 
@@ -333,7 +328,10 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use crate</span>::{ir::Block, test::create_test_context};
+    <span class="kw">use crate</span>::{
+        ir::{Block, ValueLike},
+        test::create_test_context,
+    };
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>new() {

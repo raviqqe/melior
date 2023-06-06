@@ -536,22 +536,13 @@
 <a href="#536" id="536">536</a>
 <a href="#537" id="537">537</a>
 <a href="#538" id="538">538</a>
-<a href="#539" id="539">539</a>
-<a href="#540" id="540">540</a>
-<a href="#541" id="541">541</a>
-<a href="#542" id="542">542</a>
-<a href="#543" id="543">543</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Blocks.
 
 </span><span class="kw">mod </span>argument;
 
 <span class="kw">pub use </span><span class="self">self</span>::argument::BlockArgument;
 <span class="kw">use super</span>::{Location, Operation, OperationRef, RegionRef, Type, TypeLike, Value};
-<span class="kw">use crate</span>::{
-    context::Context,
-    utility::{into_raw_array, print_callback},
-    Error,
-};
+<span class="kw">use crate</span>::{context::Context, utility::print_callback, Error};
 <span class="kw">use </span>mlir_sys::{
     mlirBlockAddArgument, mlirBlockAppendOwnedOperation, mlirBlockCreate, mlirBlockDestroy,
     mlirBlockDetach, mlirBlockEqual, mlirBlockGetArgument, mlirBlockGetFirstOperation,
@@ -576,22 +567,21 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Block&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Creates a block.
+    </span><span class="comment">// TODO Should we accept types and locations separately?
     </span><span class="kw">pub fn </span>new(arguments: <span class="kw-2">&amp;</span>[(Type&lt;<span class="lifetime">&#39;c</span>&gt;, Location&lt;<span class="lifetime">&#39;c</span>&gt;)]) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_raw(mlirBlockCreate(
                 arguments.len() <span class="kw">as </span>isize,
-                into_raw_array(
-                    arguments
-                        .iter()
-                        .map(|(argument, <span class="kw">_</span>)| argument.to_raw())
-                        .collect(),
-                ),
-                into_raw_array(
-                    arguments
-                        .iter()
-                        .map(|(<span class="kw">_</span>, location)| location.to_raw())
-                        .collect(),
-                ),
+                arguments
+                    .iter()
+                    .map(|(argument, <span class="kw">_</span>)| argument.to_raw())
+                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+                    .as_ptr() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>,
+                arguments
+                    .iter()
+                    .map(|(<span class="kw">_</span>, location)| location.to_raw())
+                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+                    .as_ptr() <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>,
             ))
         }
     }

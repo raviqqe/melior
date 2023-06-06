@@ -110,8 +110,11 @@
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::TypeLike;
-<span class="kw">use crate</span>::{ir::Type, utility::into_raw_array, Context, Error};
+<span class="kw">use crate</span>::{ir::Type, Context, Error};
 <span class="kw">use </span>mlir_sys::{mlirTupleTypeGet, mlirTupleTypeGetNumTypes, mlirTupleTypeGetType, MlirType};
 
 <span class="doccomment">/// A tuple type.
@@ -127,7 +130,7 @@
             <span class="self">Self</span>::from_raw(mlirTupleTypeGet(
                 context.to_raw(),
                 types.len() <span class="kw">as </span>isize,
-                into_raw_array(types.iter().map(|r#type| r#type.to_raw()).collect()),
+                types <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_ as </span><span class="kw-2">*const </span><span class="kw">_</span>,
             ))
         }
     }
@@ -197,9 +200,12 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>r#type() {
         <span class="kw">let </span>context = Context::new();
-        <span class="kw">let </span>r#type = Type::index(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>index_type = Type::index(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>float64_type = Type::float64(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>tuple = TupleType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[index_type, float64_type]);
 
-        <span class="macro">assert_eq!</span>(TupleType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[r#type]).r#type(<span class="number">0</span>), <span class="prelude-val">Ok</span>(r#type));
+        <span class="macro">assert_eq!</span>(tuple.r#type(<span class="number">0</span>), <span class="prelude-val">Ok</span>(index_type));
+        <span class="macro">assert_eq!</span>(tuple.r#type(<span class="number">1</span>), <span class="prelude-val">Ok</span>(float64_type));
     }
 
     <span class="attr">#[test]
