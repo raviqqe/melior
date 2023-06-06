@@ -1,12 +1,8 @@
 use super::Operation;
 use crate::{
     context::Context,
-    ir::{
-        Attribute, AttributeLike, Block, Identifier, Location, Region, Type, TypeLike, Value,
-        ValueLike,
-    },
+    ir::{Attribute, AttributeLike, Block, Identifier, Location, Region, Type, Value},
     string_ref::StringRef,
-    utility::into_raw_array,
 };
 use mlir_sys::{
     mlirNamedAttributeGet, mlirOperationCreate, mlirOperationStateAddAttributes,
@@ -39,7 +35,7 @@ impl<'c> OperationBuilder<'c> {
             mlirOperationStateAddResults(
                 &mut self.raw,
                 results.len() as isize,
-                into_raw_array(results.iter().map(|r#type| r#type.to_raw()).collect()),
+                results as *const _ as *const _,
             )
         }
 
@@ -52,7 +48,7 @@ impl<'c> OperationBuilder<'c> {
             mlirOperationStateAddOperands(
                 &mut self.raw,
                 operands.len() as isize,
-                into_raw_array(operands.iter().map(|value| value.to_raw()).collect()),
+                operands as *const _ as *const _,
             )
         }
 
@@ -65,12 +61,7 @@ impl<'c> OperationBuilder<'c> {
             mlirOperationStateAddOwnedRegions(
                 &mut self.raw,
                 regions.len() as isize,
-                into_raw_array(
-                    regions
-                        .into_iter()
-                        .map(|region| region.into_raw())
-                        .collect(),
-                ),
+                regions.leak().as_ptr() as *const _ as *const _,
             )
         }
 
@@ -80,12 +71,17 @@ impl<'c> OperationBuilder<'c> {
     /// Adds successor blocks.
     // TODO Fix this to ensure blocks are alive while they are referenced by the
     // operation.
+    // TODO Should we accept `BlockRef`?
     pub fn add_successors(mut self, successors: &[&Block<'c>]) -> Self {
         unsafe {
             mlirOperationStateAddSuccessors(
                 &mut self.raw,
                 successors.len() as isize,
-                into_raw_array(successors.iter().map(|block| block.to_raw()).collect()),
+                successors
+                    .iter()
+                    .map(|block| block.to_raw())
+                    .collect::<Vec<_>>()
+                    .as_ptr() as *const _,
             )
         }
 
@@ -93,19 +89,19 @@ impl<'c> OperationBuilder<'c> {
     }
 
     /// Adds attributes.
+    // TODO Should we accept `NamedAttribute`?
     pub fn add_attributes(mut self, attributes: &[(Identifier<'c>, Attribute<'c>)]) -> Self {
         unsafe {
             mlirOperationStateAddAttributes(
                 &mut self.raw,
                 attributes.len() as isize,
-                into_raw_array(
-                    attributes
-                        .iter()
-                        .map(|(identifier, attribute)| {
-                            mlirNamedAttributeGet(identifier.to_raw(), attribute.to_raw())
-                        })
-                        .collect(),
-                ),
+                attributes
+                    .iter()
+                    .map(|(identifier, attribute)| {
+                        mlirNamedAttributeGet(identifier.to_raw(), attribute.to_raw())
+                    })
+                    .collect::<Vec<_>>()
+                    .as_ptr() as *const _,
             )
         }
 
@@ -128,7 +124,10 @@ impl<'c> OperationBuilder<'c> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{ir::Block, test::create_test_context};
+    use crate::{
+        ir::{Block, ValueLike},
+        test::create_test_context,
+    };
 
     #[test]
     fn new() {
