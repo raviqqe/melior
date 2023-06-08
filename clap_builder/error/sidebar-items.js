@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ErrorKind"],"struct":["DefaultFormatter","Error","KindFormatter"],"trait":["ErrorFormatter"],"type":["Result"]};
+window.SIDEBAR_ITEMS = {"enum":["ErrorKind"],"struct":["Error","KindFormatter"],"trait":["ErrorFormatter"],"type":["Result"]};

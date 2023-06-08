@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["MeshLine"],"struct":["Cartesian2d","Cartesian3d"]};
+window.SIDEBAR_ITEMS = {"enum":["MeshLine"],"struct":["Cartesian2d"]};
