@@ -657,6 +657,99 @@
 <a href="#657" id="657">657</a>
 <a href="#658" id="658">658</a>
 <a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! `llvm` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -670,7 +763,10 @@
     Context,
 };
 
+<span class="kw">pub use </span>alloca_options::<span class="kw-2">*</span>;
 <span class="kw">pub use </span>load_store_options::<span class="kw-2">*</span>;
+
+<span class="kw">mod </span>alloca_options;
 <span class="kw">pub mod </span>attributes;
 <span class="kw">mod </span>load_store_options;
 <span class="kw">pub mod </span>r#type;
@@ -772,6 +868,41 @@
         .build()
 }
 
+<span class="doccomment">/// Creates a `llvm.mlir.null` operation. A null pointer.
+</span><span class="kw">pub fn </span>nullptr&lt;<span class="lifetime">&#39;c</span>&gt;(ptr_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+    OperationBuilder::new(<span class="string">&quot;llvm.mlir.null&quot;</span>, location)
+        .add_results(<span class="kw-2">&amp;</span>[ptr_type])
+        .build()
+}
+
+<span class="doccomment">/// Creates a `llvm.unreachable` operation. A null pointer.
+</span><span class="kw">pub fn </span>unreachable(location: Location) -&gt; Operation {
+    OperationBuilder::new(<span class="string">&quot;llvm.unreachable&quot;</span>, location).build()
+}
+
+<span class="doccomment">/// Creates a `llvm.bitcast` operation.
+</span><span class="kw">pub fn </span>bitcast&lt;<span class="lifetime">&#39;c</span>&gt;(arg: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, res: Type&lt;<span class="lifetime">&#39;c</span>&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+    OperationBuilder::new(<span class="string">&quot;llvm.bitcast&quot;</span>, location)
+        .add_operands(<span class="kw-2">&amp;</span>[arg])
+        .add_results(<span class="kw-2">&amp;</span>[res])
+        .build()
+}
+
+<span class="doccomment">/// Creates a `llvm.alloca` operation.
+</span><span class="kw">pub fn </span>alloca&lt;<span class="lifetime">&#39;c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
+    array_size: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+    ptr_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
+    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
+    extra_options: AllocaOptions&lt;<span class="lifetime">&#39;c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+    OperationBuilder::new(<span class="string">&quot;llvm.alloca&quot;</span>, location)
+        .add_operands(<span class="kw-2">&amp;</span>[array_size])
+        .add_attributes(<span class="kw-2">&amp;</span>extra_options.into_attributes(context))
+        .add_results(<span class="kw-2">&amp;</span>[ptr_type])
+        .build()
+}
+
 <span class="doccomment">/// Creates a `llvm.store` operation.
 </span><span class="kw">pub fn </span>store&lt;<span class="lifetime">&#39;c</span>&gt;(
     context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
@@ -829,6 +960,21 @@
     }
 
     builder.build()
+}
+
+<span class="doccomment">/// Creates a `llvm.call_intrinsic` operation.
+</span><span class="kw">pub fn </span>call_intrinsic&lt;<span class="lifetime">&#39;c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
+    intrin: StringAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
+    args: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
+    results: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
+    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+    OperationBuilder::new(<span class="string">&quot;llvm.call_intrinsic&quot;</span>, location)
+        .add_operands(args)
+        .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;intrin&quot;</span>), intrin.into())])
+        .add_results(results)
+        .build()
 }
 
 <span class="attr">#[cfg(test)]
@@ -1101,6 +1247,46 @@
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(struct_type, location)]);
 
                 block.append_operation(poison(struct_type, location));
+
+                block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
+
+                <span class="kw">let </span>region = Region::new();
+                region.append_block(block);
+                region
+            },
+            <span class="kw-2">&amp;</span>[],
+            location,
+        ));
+
+        convert_module(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;mut </span>module);
+
+        <span class="macro">assert!</span>(module.as_operation().verify());
+        <span class="macro">insta::assert_display_snapshot!</span>(module.as_operation());
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>compile_alloca() {
+        <span class="kw">let </span>context = create_test_context();
+
+        <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span><span class="kw-2">mut </span>module = Module::new(location);
+        <span class="kw">let </span>integer_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
+        <span class="kw">let </span>ptr_type = r#type::opaque_pointer(<span class="kw-2">&amp;</span>context);
+
+        module.body().append_operation(func::func(
+            <span class="kw-2">&amp;</span>context,
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[]).into()),
+            {
+                <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location)]);
+
+                block.append_operation(alloca(
+                    <span class="kw-2">&amp;</span>context,
+                    block.argument(<span class="number">0</span>).unwrap().into(),
+                    ptr_type,
+                    location,
+                    AllocaOptions::new().elem_type(<span class="prelude-val">Some</span>(TypeAttribute::new(integer_type))),
+                ));
 
                 block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
 

@@ -131,7 +131,7 @@
 <span class="comment">// spell-checker: disable
 
 </span><span class="doccomment">/// Load/store options.
-</span><span class="attr">#[derive(Debug, Default)]
+</span><span class="attr">#[derive(Debug, Default, Clone, Copy)]
 </span><span class="kw">pub struct </span>LoadStoreOptions&lt;<span class="lifetime">&#39;c</span>&gt; {
     align: <span class="prelude-ty">Option</span>&lt;IntegerAttribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
     volatile: bool,
