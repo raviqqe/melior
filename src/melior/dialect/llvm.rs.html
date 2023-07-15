@@ -749,7 +749,6 @@
 <a href="#749" id="749">749</a>
 <a href="#750" id="750">750</a>
 <a href="#751" id="751">751</a>
-<a href="#752" id="752">752</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! `llvm` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -762,7 +761,6 @@
     },
     Context,
 };
-
 <span class="kw">pub use </span>alloca_options::<span class="kw-2">*</span>;
 <span class="kw">pub use </span>load_store_options::<span class="kw-2">*</span>;
 
@@ -875,7 +873,7 @@
         .build()
 }
 
-<span class="doccomment">/// Creates a `llvm.unreachable` operation. A null pointer.
+<span class="doccomment">/// Creates a `llvm.unreachable` operation.
 </span><span class="kw">pub fn </span>unreachable(location: Location) -&gt; Operation {
     OperationBuilder::new(<span class="string">&quot;llvm.unreachable&quot;</span>, location).build()
 }

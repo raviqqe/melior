@@ -120,6 +120,8 @@
 <a href="#120" id="120">120</a>
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{
     ir::{
         attribute::{ArrayAttribute, IntegerAttribute},
@@ -127,6 +129,8 @@
     },
     Context,
 };
+
+<span class="kw">const </span>ATTRIBUTE_COUNT: usize = <span class="number">7</span>;
 
 <span class="comment">// spell-checker: disable
 
@@ -194,7 +198,7 @@
         <span class="self">self</span>,
         context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     ) -&gt; Vec&lt;(Identifier&lt;<span class="lifetime">&#39;c</span>&gt;, Attribute&lt;<span class="lifetime">&#39;c</span>&gt;)&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>attributes = Vec::with_capacity(<span class="number">7</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>attributes = Vec::with_capacity(ATTRIBUTE_COUNT);
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(align) = <span class="self">self</span>.align {
             attributes.push((Identifier::new(context, <span class="string">&quot;alignment&quot;</span>), align.into()));
