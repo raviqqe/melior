@@ -39,10 +39,24 @@
 <a href="#39" id="39">39</a>
 <a href="#40" id="40">40</a>
 <a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
+<a href="#48" id="48">48</a>
+<a href="#49" id="49">49</a>
+<a href="#50" id="50">50</a>
+<a href="#51" id="51">51</a>
+<a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Passes and pass managers.
 
 </span><span class="kw">pub mod </span>r#async;
 <span class="kw">pub mod </span>conversion;
+<span class="kw">pub mod </span>external;
 <span class="kw">pub mod </span>gpu;
 <span class="kw">pub mod </span>linalg;
 <span class="kw">mod </span>manager;
@@ -50,7 +64,10 @@
 <span class="kw">pub mod </span>sparse_tensor;
 <span class="kw">pub mod </span>transform;
 
-<span class="kw">pub use </span><span class="self">self</span>::{manager::PassManager, operation_manager::OperationPassManager};
+<span class="kw">pub use </span><span class="self">self</span>::{
+    external::create_external, external::ExternalPass, manager::PassManager,
+    operation_manager::OperationPassManager,
+};
 <span class="kw">use </span>mlir_sys::MlirPass;
 
 <span class="doccomment">/// A pass.
@@ -68,6 +85,15 @@
         <span class="self">Self </span>{
             raw: <span class="kw">unsafe </span>{ create_raw() },
         }
+    }
+
+    <span class="doccomment">/// Creates a pass from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub const unsafe fn </span>from_raw(raw: MlirPass) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ raw }
     }
 
     <span class="doccomment">/// Converts a pass into a raw object.
