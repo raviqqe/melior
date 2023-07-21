@@ -81,28 +81,42 @@
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Type IDs and allocators
 
 </span><span class="kw">mod </span>allocator;
 
 <span class="kw">pub use </span>allocator::Allocator;
 <span class="kw">use </span>mlir_sys::{mlirTypeIDCreate, mlirTypeIDEqual, mlirTypeIDHashValue, MlirTypeID};
-<span class="kw">use </span>std::hash::{Hash, Hasher};
+<span class="kw">use </span>std::{
+    hash::{Hash, Hasher},
+    marker::PhantomData,
+};
 
 <span class="doccomment">/// A type ID.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>TypeId {
+</span><span class="kw">pub struct </span>TypeId&lt;<span class="lifetime">&#39;c</span>&gt; {
     raw: MlirTypeID,
+    _owner: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>()&gt;,
 }
 
-<span class="kw">impl </span>TypeId {
+<span class="kw">impl </span>TypeId&lt;<span class="lifetime">&#39;_</span>&gt; {
     <span class="doccomment">/// Creates a type ID from a raw object.
     ///
     /// # Safety
     ///
     /// A raw object must be valid.
     </span><span class="kw">pub const unsafe fn </span>from_raw(raw: MlirTypeID) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ raw }
+        <span class="self">Self </span>{
+            raw,
+            _owner: PhantomData,
+        }
     }
 
     <span class="doccomment">/// Converts a type ID into a raw object.
@@ -129,15 +143,15 @@
     }
 }
 
-<span class="kw">impl </span>PartialEq <span class="kw">for </span>TypeId {
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>TypeId&lt;<span class="lifetime">&#39;_</span>&gt; {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ mlirTypeIDEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl </span>Eq <span class="kw">for </span>TypeId {}
+<span class="kw">impl </span>Eq <span class="kw">for </span>TypeId&lt;<span class="lifetime">&#39;_</span>&gt; {}
 
-<span class="kw">impl </span>Hash <span class="kw">for </span>TypeId {
+<span class="kw">impl </span>Hash <span class="kw">for </span>TypeId&lt;<span class="lifetime">&#39;_</span>&gt; {
     <span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, hasher: <span class="kw-2">&amp;mut </span>H) {
         <span class="kw">unsafe </span>{
             mlirTypeIDHashValue(<span class="self">self</span>.raw).hash(hasher);
