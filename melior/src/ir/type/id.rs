@@ -3,7 +3,7 @@
 mod allocator;
 
 pub use allocator::Allocator;
-use mlir_sys::{mlirTypeIDEqual, mlirTypeIDHashValue, MlirTypeID};
+use mlir_sys::{mlirTypeIDCreate, mlirTypeIDEqual, mlirTypeIDHashValue, MlirTypeID};
 use std::hash::{Hash, Hasher};
 
 /// A type ID.
@@ -32,16 +32,17 @@ impl TypeId {
     /// # Panics
     ///
     /// This function will panic if the given reference is not 8-byte aligned.
-    pub fn create<T>(t: &T) -> Self {
-        unsafe {
-            let ptr = t as *const _ as *const std::ffi::c_void;
-            assert_eq!(
-                ptr.align_offset(8),
-                0,
-                "type ID pointer must be 8-byte aligned"
-            );
-            Self::from_raw(mlir_sys::mlirTypeIDCreate(ptr))
-        }
+    // TODO Return a result instead of using assertion.
+    pub fn create<T>(reference: &T) -> Self {
+        let ptr = reference as *const _ as *const std::ffi::c_void;
+
+        assert_eq!(
+            ptr.align_offset(8),
+            0,
+            "type ID pointer must be 8-byte aligned"
+        );
+
+        unsafe { Self::from_raw(mlirTypeIDCreate(ptr)) }
     }
 }
 
@@ -58,5 +59,25 @@ impl Hash for TypeId {
         unsafe {
             mlirTypeIDHashValue(self.raw).hash(hasher);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn create_from_reference() {
+        static VALUE: u64 = 0;
+
+        TypeId::create(&VALUE);
+    }
+
+    #[test]
+    #[should_panic]
+    fn reject_invalid_alignment() {
+        static VALUES: [u8; 2] = [1u8; 2];
+
+        TypeId::create(&VALUES[1]);
     }
 }

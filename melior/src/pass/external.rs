@@ -6,7 +6,11 @@ use crate::{
     ir::{r#type::TypeId, OperationRef},
     ContextRef, StringRef,
 };
-use mlir_sys::{MlirContext, MlirExternalPass, MlirLogicalResult, MlirOperation};
+use mlir_sys::{
+    mlirCreateExternalPass, MlirContext, MlirExternalPass, MlirExternalPassCallbacks,
+    MlirLogicalResult, MlirOperation,
+};
+use std::{mem::transmute, ptr::drop_in_place};
 
 unsafe extern "C" fn callback_construct<'a, T: ExternalPass<'a>>(pass: *mut T) {
     pass.as_mut()
@@ -18,7 +22,7 @@ unsafe extern "C" fn callback_destruct<'a, T: ExternalPass<'a>>(pass: *mut T) {
     pass.as_mut()
         .expect("pass should be valid when called")
         .destruct();
-    std::ptr::drop_in_place(pass);
+    drop_in_place(pass);
 }
 
 unsafe extern "C" fn callback_initialize<'a, T: ExternalPass<'a>>(
@@ -134,32 +138,29 @@ pub fn create_external<'c, T: ExternalPass<'c>>(
     dependent_dialects: &[DialectHandle],
 ) -> Pass {
     unsafe {
-        let mut dep_dialects_raw: Vec<_> = dependent_dialects.iter().map(|d| d.to_raw()).collect();
-        let callbacks = mlir_sys::MlirExternalPassCallbacks {
-            construct: Some(std::mem::transmute(callback_construct::<T> as *const ())),
-            destruct: Some(std::mem::transmute(callback_destruct::<T> as *const ())),
-            initialize: Some(std::mem::transmute(callback_initialize::<T> as *const ())),
-            run: Some(std::mem::transmute(callback_run::<T> as *const ())),
-            clone: Some(std::mem::transmute(callback_clone::<T> as *const ())),
-        };
-        let pass_box = Box::<T>::into_raw(Box::new(pass));
-        let raw_pass = mlir_sys::mlirCreateExternalPass(
+        Pass::from_raw(mlirCreateExternalPass(
             pass_id.to_raw(),
             StringRef::from(name).to_raw(),
             StringRef::from(argument).to_raw(),
             StringRef::from(description).to_raw(),
             StringRef::from(op_name).to_raw(),
-            dep_dialects_raw.len() as isize,
-            dep_dialects_raw.as_mut_ptr(),
-            callbacks,
-            pass_box as *mut std::ffi::c_void,
-        );
-        Pass::from_raw(raw_pass)
+            dependent_dialects.len() as isize,
+            dependent_dialects.as_ptr() as _,
+            MlirExternalPassCallbacks {
+                construct: Some(transmute(callback_construct::<T> as *const ())),
+                destruct: Some(transmute(callback_destruct::<T> as *const ())),
+                initialize: Some(transmute(callback_initialize::<T> as *const ())),
+                run: Some(transmute(callback_run::<T> as *const ())),
+                clone: Some(transmute(callback_clone::<T> as *const ())),
+            },
+            Box::into_raw(Box::new(pass)) as _,
+        ))
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::{
         dialect::func,
         ir::{
@@ -171,8 +172,6 @@ mod tests {
         test::create_test_context,
         Context,
     };
-
-    use super::*;
 
     #[repr(align(8))]
     struct PassId;
