@@ -297,7 +297,6 @@
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! External passes
 
 </span><span class="kw">use </span><span class="kw">super</span>::Pass;
@@ -306,7 +305,11 @@
     ir::{r#type::TypeId, OperationRef},
     ContextRef, StringRef,
 };
-<span class="kw">use </span>mlir_sys::{MlirContext, MlirExternalPass, MlirLogicalResult, MlirOperation};
+<span class="kw">use </span>mlir_sys::{
+    mlirCreateExternalPass, MlirContext, MlirExternalPass, MlirExternalPassCallbacks,
+    MlirLogicalResult, MlirOperation,
+};
+<span class="kw">use </span>std::{mem::transmute, ptr::drop_in_place};
 
 <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_construct&lt;<span class="lifetime">&#39;a</span>, T: ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) {
     pass.as_mut()
@@ -318,7 +321,7 @@
     pass.as_mut()
         .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
         .destruct();
-    std::ptr::drop_in_place(pass);
+    drop_in_place(pass);
 }
 
 <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_initialize&lt;<span class="lifetime">&#39;a</span>, T: ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(
@@ -434,32 +437,29 @@
     dependent_dialects: <span class="kw-2">&amp;</span>[DialectHandle],
 ) -&gt; Pass {
     <span class="kw">unsafe </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>dep_dialects_raw: Vec&lt;<span class="kw">_</span>&gt; = dependent_dialects.iter().map(|d| d.to_raw()).collect();
-        <span class="kw">let </span>callbacks = mlir_sys::MlirExternalPassCallbacks {
-            construct: <span class="prelude-val">Some</span>(std::mem::transmute(callback_construct::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
-            destruct: <span class="prelude-val">Some</span>(std::mem::transmute(callback_destruct::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
-            initialize: <span class="prelude-val">Some</span>(std::mem::transmute(callback_initialize::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
-            run: <span class="prelude-val">Some</span>(std::mem::transmute(callback_run::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
-            clone: <span class="prelude-val">Some</span>(std::mem::transmute(callback_clone::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
-        };
-        <span class="kw">let </span>pass_box = Box::&lt;T&gt;::into_raw(Box::new(pass));
-        <span class="kw">let </span>raw_pass = mlir_sys::mlirCreateExternalPass(
+        Pass::from_raw(mlirCreateExternalPass(
             pass_id.to_raw(),
             StringRef::from(name).to_raw(),
             StringRef::from(argument).to_raw(),
             StringRef::from(description).to_raw(),
             StringRef::from(op_name).to_raw(),
-            dep_dialects_raw.len() <span class="kw">as </span>isize,
-            dep_dialects_raw.as_mut_ptr(),
-            callbacks,
-            pass_box <span class="kw">as </span><span class="kw-2">*mut </span>std::ffi::c_void,
-        );
-        Pass::from_raw(raw_pass)
+            dependent_dialects.len() <span class="kw">as </span>isize,
+            dependent_dialects.as_ptr() <span class="kw">as _</span>,
+            MlirExternalPassCallbacks {
+                construct: <span class="prelude-val">Some</span>(transmute(callback_construct::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
+                destruct: <span class="prelude-val">Some</span>(transmute(callback_destruct::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
+                initialize: <span class="prelude-val">Some</span>(transmute(callback_initialize::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
+                run: <span class="prelude-val">Some</span>(transmute(callback_run::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
+                clone: <span class="prelude-val">Some</span>(transmute(callback_clone::&lt;T&gt; <span class="kw">as </span><span class="kw-2">*const </span>())),
+            },
+            Box::into_raw(Box::new(pass)) <span class="kw">as _</span>,
+        ))
     }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
         dialect::func,
         ir::{
@@ -471,8 +471,6 @@
         test::create_test_context,
         Context,
     };
-
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[repr(align(<span class="number">8</span>))]
     </span><span class="kw">struct </span>PassId;
