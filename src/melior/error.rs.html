@@ -70,6 +70,10 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     error,
     fmt::{<span class="self">self</span>, Display, Formatter},
@@ -87,6 +91,7 @@
     },
     InvokeFunction,
     OperationResultExpected(String),
+    OperationAttributeExpected(String),
     PositionOutOfBounds {
         name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
         value: String,
@@ -114,6 +119,9 @@
             <span class="self">Self</span>::InvokeFunction =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to invoke JIT-compiled function&quot;</span>),
             <span class="self">Self</span>::OperationResultExpected(value) =&gt; {
                 <span class="macro">write!</span>(formatter, <span class="string">&quot;operation result expected: {value}&quot;</span>)
+            }
+            <span class="self">Self</span>::OperationAttributeExpected(value) =&gt; {
+                <span class="macro">write!</span>(formatter, <span class="string">&quot;attribute {value} expected&quot;</span>)
             }
             <span class="self">Self</span>::ParsePassPipeline(message) =&gt; {
                 <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to parse pass pipeline:\n{}&quot;</span>, message)
