@@ -84,6 +84,7 @@
 </span><span class="attr">#[derive(Debug, Eq, PartialEq)]
 </span><span class="kw">pub enum </span>Error {
     AttributeExpected(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, String),
+    AttributeNotFound(String),
     BlockArgumentExpected(String),
     ElementExpected {
         r#type: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
@@ -91,7 +92,6 @@
     },
     InvokeFunction,
     OperationResultExpected(String),
-    OperationAttributeExpected(String),
     PositionOutOfBounds {
         name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
         value: String,
@@ -110,6 +110,9 @@
             <span class="self">Self</span>::AttributeExpected(r#type, attribute) =&gt; {
                 <span class="macro">write!</span>(formatter, <span class="string">&quot;{type} attribute expected: {attribute}&quot;</span>)
             }
+            <span class="self">Self</span>::AttributeNotFound(name) =&gt; {
+                <span class="macro">write!</span>(formatter, <span class="string">&quot;attribute {name} not found&quot;</span>)
+            }
             <span class="self">Self</span>::BlockArgumentExpected(value) =&gt; {
                 <span class="macro">write!</span>(formatter, <span class="string">&quot;block argument expected: {value}&quot;</span>)
             }
@@ -119,9 +122,6 @@
             <span class="self">Self</span>::InvokeFunction =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to invoke JIT-compiled function&quot;</span>),
             <span class="self">Self</span>::OperationResultExpected(value) =&gt; {
                 <span class="macro">write!</span>(formatter, <span class="string">&quot;operation result expected: {value}&quot;</span>)
-            }
-            <span class="self">Self</span>::OperationAttributeExpected(value) =&gt; {
-                <span class="macro">write!</span>(formatter, <span class="string">&quot;attribute {value} expected&quot;</span>)
             }
             <span class="self">Self</span>::ParsePassPipeline(message) =&gt; {
                 <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to parse pass pipeline:\n{}&quot;</span>, message)

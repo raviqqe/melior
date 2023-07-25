@@ -605,24 +605,6 @@
 <a href="#605" id="605">605</a>
 <a href="#606" id="606">606</a>
 <a href="#607" id="607">607</a>
-<a href="#608" id="608">608</a>
-<a href="#609" id="609">609</a>
-<a href="#610" id="610">610</a>
-<a href="#611" id="611">611</a>
-<a href="#612" id="612">612</a>
-<a href="#613" id="613">613</a>
-<a href="#614" id="614">614</a>
-<a href="#615" id="615">615</a>
-<a href="#616" id="616">616</a>
-<a href="#617" id="617">617</a>
-<a href="#618" id="618">618</a>
-<a href="#619" id="619">619</a>
-<a href="#620" id="620">620</a>
-<a href="#621" id="621">621</a>
-<a href="#622" id="622">622</a>
-<a href="#623" id="623">623</a>
-<a href="#624" id="624">624</a>
-<a href="#625" id="625">625</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Operations and operation builders.
 
 </span><span class="kw">mod </span>builder;
@@ -691,12 +673,7 @@
     <span class="doccomment">/// Gets the operand at a position.
     </span><span class="kw">pub fn </span>operand(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, Error&gt; {
         <span class="kw">if </span>index &lt; <span class="self">self</span>.operand_count() {
-            <span class="kw">unsafe </span>{
-                <span class="prelude-val">Ok</span>(Value::from_raw(mlirOperationGetOperand(
-                    <span class="self">self</span>.raw,
-                    index <span class="kw">as </span>isize,
-                )))
-            }
+            <span class="prelude-val">Ok</span>(<span class="kw">unsafe </span>{ Value::from_raw(mlirOperationGetOperand(<span class="self">self</span>.raw, index <span class="kw">as </span>isize)) })
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
                 name: <span class="string">&quot;operation operand&quot;</span>,
@@ -719,12 +696,9 @@
     <span class="doccomment">/// Gets a result at a position.
     </span><span class="kw">pub fn </span>result(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;OperationResult&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, Error&gt; {
         <span class="kw">if </span>index &lt; <span class="self">self</span>.result_count() {
-            <span class="kw">unsafe </span>{
-                <span class="prelude-val">Ok</span>(OperationResult::from_raw(mlirOperationGetResult(
-                    <span class="self">self</span>.raw,
-                    index <span class="kw">as </span>isize,
-                )))
-            }
+            <span class="prelude-val">Ok</span>(<span class="kw">unsafe </span>{
+                OperationResult::from_raw(mlirOperationGetResult(<span class="self">self</span>.raw, index <span class="kw">as </span>isize))
+            })
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
                 name: <span class="string">&quot;operation result&quot;</span>,
@@ -747,12 +721,7 @@
     <span class="doccomment">/// Gets a region at a position.
     </span><span class="kw">pub fn </span>region(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;RegionRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, Error&gt; {
         <span class="kw">if </span>index &lt; <span class="self">self</span>.region_count() {
-            <span class="kw">unsafe </span>{
-                <span class="prelude-val">Ok</span>(RegionRef::from_raw(mlirOperationGetRegion(
-                    <span class="self">self</span>.raw,
-                    index <span class="kw">as </span>isize,
-                )))
-            }
+            <span class="prelude-val">Ok</span>(<span class="kw">unsafe </span>{ RegionRef::from_raw(mlirOperationGetRegion(<span class="self">self</span>.raw, index <span class="kw">as </span>isize)) })
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
                 name: <span class="string">&quot;region&quot;</span>,
@@ -775,12 +744,7 @@
     <span class="doccomment">/// Gets a successor at a position.
     </span><span class="kw">pub fn </span>successor(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, Error&gt; {
         <span class="kw">if </span>index &lt; <span class="self">self</span>.successor_count() {
-            <span class="kw">unsafe </span>{
-                <span class="prelude-val">Ok</span>(BlockRef::from_raw(mlirOperationGetSuccessor(
-                    <span class="self">self</span>.raw,
-                    index <span class="kw">as </span>isize,
-                )))
-            }
+            <span class="prelude-val">Ok</span>(<span class="kw">unsafe </span>{ BlockRef::from_raw(mlirOperationGetSuccessor(<span class="self">self</span>.raw, index <span class="kw">as </span>isize)) })
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(Error::PositionOutOfBounds {
                 name: <span class="string">&quot;successor&quot;</span>,
@@ -856,7 +820,7 @@
     </span><span class="kw">pub fn </span>remove_attribute(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="kw">unsafe </span>{ mlirOperationRemoveAttributeByName(<span class="self">self</span>.raw, StringRef::from(name).to_raw()) }
             .then_some(())
-            .ok_or(Error::OperationAttributeExpected(name.into()))
+            .ok_or(Error::AttributeNotFound(name.into()))
     }
 
     <span class="doccomment">/// Gets the next operation in the same block.
