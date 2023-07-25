@@ -138,6 +138,21 @@ mod tests {
     }
 
     #[test]
+    fn add_operands() {
+        let context = create_test_context();
+        context.set_allow_unregistered_dialects(true);
+
+        let location = Location::unknown(&context);
+        let r#type = Type::index(&context);
+        let block = Block::new(&[(r#type, location)]);
+        let argument = block.argument(0).unwrap().into();
+
+        OperationBuilder::new("foo", Location::unknown(&context))
+            .add_operands(&[argument])
+            .build();
+    }
+
+    #[test]
     fn add_results() {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
