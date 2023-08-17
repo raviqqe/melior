@@ -202,12 +202,6 @@
 <a href="#202" id="202">202</a>
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>operation;
 <span class="kw">mod </span>types;
@@ -231,23 +225,21 @@
 
 <span class="kw">const </span>LLVM_MAJOR_VERSION: usize = <span class="number">16</span>;
 
-<span class="kw">fn </span>dialect_module&lt;<span class="lifetime">&#39;a</span>&gt;(
+<span class="kw">fn </span>dialect_module(
     name: <span class="kw-2">&amp;</span>str,
-    dialect: Record&lt;<span class="lifetime">&#39;a</span>&gt;,
-    record_keeper: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>RecordKeeper,
+    dialect: Record,
+    record_keeper: <span class="kw-2">&amp;</span>RecordKeeper,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;proc_macro2::TokenStream, error::Error&gt; {
     <span class="kw">let </span>operations = record_keeper
         .all_derived_definitions(<span class="string">&quot;Op&quot;</span>)
         .map(Operation::from_def)
-        .filter_map(|operation: <span class="prelude-ty">Result</span>&lt;Operation, <span class="kw">_</span>&gt;| <span class="kw">match </span>operation {
-            <span class="prelude-val">Ok</span>(operation) =&gt; (operation.dialect.name() == dialect.name()).then_some(<span class="prelude-val">Ok</span>(operation)),
-            <span class="prelude-val">Err</span>(error) =&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(error)),
-        })
-        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?
+        </span>.into_iter()
+        .filter(|operation| operation.dialect.name() == dialect.name())
+        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
     <span class="kw">let </span>doc = <span class="macro">format!</span>(
-        <span class="string">&quot;`{}` dialect.\n\n{}&quot;</span>,
-        name,
+        <span class="string">&quot;`{name}` dialect.\n\n{}&quot;</span>,
         unindent::unindent(dialect.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>),)
     );
     <span class="kw">let </span>name = sanitize_name_snake(name);
@@ -269,26 +261,25 @@
 
 <span class="kw">impl </span>Parse <span class="kw">for </span>InputField {
     <span class="kw">fn </span>parse(input: syn::parse::ParseStream) -&gt; syn::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>ident: Ident = input.parse()<span class="question-mark">?</span>;
-        <span class="kw">let _</span>: <span class="macro">Token!</span>[:] = input.parse()<span class="question-mark">?</span>;
+        <span class="kw">let </span>ident = input.parse::&lt;Ident&gt;()<span class="question-mark">?</span>;
+
+        input.parse::&lt;<span class="macro">Token!</span>[:]&gt;()<span class="question-mark">?</span>;
+
         <span class="kw">if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;name&quot;</span>) {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="self">Self</span>::Name(input.parse()<span class="question-mark">?</span>));
-        }
-        <span class="kw">if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;tablegen&quot;</span>) {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="self">Self</span>::TableGen(input.parse()<span class="question-mark">?</span>));
-        }
-        <span class="kw">if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;td_file&quot;</span>) {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="self">Self</span>::TdFile(input.parse()<span class="question-mark">?</span>));
-        }
-        <span class="kw">if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;include_dirs&quot;</span>) {
+            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Name(input.parse()<span class="question-mark">?</span>))
+        } <span class="kw">else if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;tablegen&quot;</span>) {
+            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::TableGen(input.parse()<span class="question-mark">?</span>))
+        } <span class="kw">else if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;td_file&quot;</span>) {
+            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::TdFile(input.parse()<span class="question-mark">?</span>))
+        } <span class="kw">else if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;include_dirs&quot;</span>) {
             <span class="kw">let </span>content;
             <span class="macro">bracketed!</span>(content <span class="kw">in </span>input);
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="self">Self</span>::Includes(
+            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Includes(
                 Punctuated::&lt;LitStr, <span class="macro">Token!</span>[,]&gt;::parse_terminated(<span class="kw-2">&amp;</span>content)<span class="question-mark">?</span>,
-            ));
+            ))
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Err</span>(input.error(<span class="macro">format!</span>(<span class="string">&quot;invalid field {}&quot;</span>, ident)))
         }
-
-        <span class="prelude-val">Err</span>(input.error(<span class="macro">format!</span>(<span class="string">&quot;invalid field {}&quot;</span>, ident)))
     }
 }
 
@@ -301,13 +292,12 @@
 
 <span class="kw">impl </span>Parse <span class="kw">for </span>DialectMacroInput {
     <span class="kw">fn </span>parse(input: syn::parse::ParseStream) -&gt; syn::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>list = Punctuated::&lt;InputField, <span class="macro">Token!</span>[,]&gt;::parse_terminated(input)<span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>name = <span class="prelude-val">None</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>tablegen = <span class="prelude-val">None</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>td_file = <span class="prelude-val">None</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>includes = <span class="macro">vec!</span>[];
 
-        <span class="kw">for </span>item <span class="kw">in </span>list {
+        <span class="kw">for </span>item <span class="kw">in </span>Punctuated::&lt;InputField, <span class="macro">Token!</span>[,]&gt;::parse_terminated(input)<span class="question-mark">? </span>{
             <span class="kw">match </span>item {
                 InputField::Name(field) =&gt; name = <span class="prelude-val">Some</span>(field.value()),
                 InputField::TableGen(td) =&gt; tablegen = <span class="prelude-val">Some</span>(td.value()),
@@ -365,11 +355,13 @@
             .add_source(source)
             .map_err(|error| syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, error)))<span class="question-mark">?</span>;
     }
+
     <span class="kw">if let </span><span class="prelude-val">Some</span>(file) = <span class="kw-2">&amp;</span>input.td_file {
         td_parser = td_parser
             .add_source_file(file)
             .map_err(|error| syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, error)))<span class="question-mark">?</span>;
     }
+
     <span class="kw">for </span>include <span class="kw">in </span><span class="kw-2">&amp;</span>input.includes {
         td_parser = td_parser.add_include_path(include);
     }
@@ -385,11 +377,7 @@
 
     <span class="kw">let </span>dialect_def = keeper
         .all_derived_definitions(<span class="string">&quot;Dialect&quot;</span>)
-        .find_map(|def| {
-            def.str_value(<span class="string">&quot;name&quot;</span>)
-                .ok()
-                .and_then(|name| (name == input.name).then_some(def))
-        })
+        .find(|def| def.str_value(<span class="string">&quot;name&quot;</span>) == <span class="prelude-val">Ok</span>(<span class="kw-2">&amp;</span>input.name))
         .ok_or_else(|| syn::Error::new(Span::call_site(), <span class="string">&quot;dialect not found&quot;</span>))<span class="question-mark">?</span>;
     <span class="kw">let </span>dialect = dialect_module(<span class="kw-2">&amp;</span>input.name, dialect_def, <span class="kw-2">&amp;</span>keeper)
         .map_err(|error| error.add_source_info(keeper.source_info()))<span class="question-mark">?</span>;

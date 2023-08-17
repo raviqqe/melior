@@ -671,7 +671,7 @@
         });
         args.push(<span class="macro">quote! </span>{ location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt; });
 
-        <span class="kw">let </span>doc = <span class="macro">format!</span>(<span class="string">&quot;Create a new {}&quot;</span>, <span class="self">self</span>.operation.summary);
+        <span class="kw">let </span>doc = <span class="macro">format!</span>(<span class="string">&quot;Creates a new {}&quot;</span>, <span class="self">self</span>.operation.summary);
         <span class="macro">quote! </span>{
             <span class="attr">#[allow(clippy::too_many_arguments)]
             #[doc = #doc]

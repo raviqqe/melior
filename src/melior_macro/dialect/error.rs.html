@@ -74,9 +74,17 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Display;
-
-<span class="kw">use </span>proc_macro2::Span;
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>proc_macro2::Span;
+<span class="kw">use </span>std::{
+    error,
+    fmt::{<span class="self">self</span>, Display, Formatter},
+};
 <span class="kw">use </span>tblgen::{
     error::{SourceError, TableGenError},
     SourceInfo,
@@ -93,49 +101,49 @@
 <span class="kw">impl </span>Error {
     <span class="kw">pub fn </span>add_source_info(<span class="self">self</span>, info: SourceInfo) -&gt; <span class="self">Self </span>{
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::TableGen(e) =&gt; e.add_source_info(info).into(),
-            <span class="self">Self</span>::ExpectedSuperClass(e) =&gt; e.add_source_info(info).into(),
-            <span class="kw">_ </span>=&gt; <span class="self">self</span>,
+            <span class="self">Self</span>::TableGen(error) =&gt; error.add_source_info(info).into(),
+            <span class="self">Self</span>::ExpectedSuperClass(error) =&gt; error.add_source_info(info).into(),
+            <span class="self">Self</span>::Syn(<span class="kw">_</span>) | <span class="self">Self</span>::ParseError =&gt; <span class="self">self</span>,
         }
     }
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>Error {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
-            Error::Syn(e) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;failed to parse macro input: {e}&quot;</span>),
-            Error::TableGen(e) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;invalid ODS input: {e}&quot;</span>),
-            Error::ExpectedSuperClass(e) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;invalid ODS input: {e}&quot;</span>),
-            Error::ParseError =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;error parsing TableGen source&quot;</span>),
+            <span class="self">Self</span>::Syn(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to parse macro input: {error}&quot;</span>),
+            <span class="self">Self</span>::TableGen(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid ODS input: {error}&quot;</span>),
+            <span class="self">Self</span>::ExpectedSuperClass(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid ODS input: {error}&quot;</span>),
+            <span class="self">Self</span>::ParseError =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;error parsing TableGen source&quot;</span>),
         }
     }
 }
 
-<span class="kw">impl </span>std::error::Error <span class="kw">for </span>Error {}
+<span class="kw">impl </span>error::Error <span class="kw">for </span>Error {}
 
 <span class="kw">impl </span>From&lt;SourceError&lt;ExpectedSuperClassError&gt;&gt; <span class="kw">for </span>Error {
-    <span class="kw">fn </span>from(value: SourceError&lt;ExpectedSuperClassError&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::ExpectedSuperClass(value)
+    <span class="kw">fn </span>from(error: SourceError&lt;ExpectedSuperClassError&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::ExpectedSuperClass(error)
     }
 }
 
 <span class="kw">impl </span>From&lt;SourceError&lt;TableGenError&gt;&gt; <span class="kw">for </span>Error {
-    <span class="kw">fn </span>from(value: SourceError&lt;TableGenError&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::TableGen(value)
+    <span class="kw">fn </span>from(error: SourceError&lt;TableGenError&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::TableGen(error)
     }
 }
 
 <span class="kw">impl </span>From&lt;syn::Error&gt; <span class="kw">for </span>Error {
-    <span class="kw">fn </span>from(value: syn::Error) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Syn(value)
+    <span class="kw">fn </span>from(error: syn::Error) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Syn(error)
     }
 }
 
 <span class="kw">impl </span>From&lt;Error&gt; <span class="kw">for </span>syn::Error {
-    <span class="kw">fn </span>from(value: Error) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span>value {
-            Error::Syn(e) =&gt; e,
-            <span class="kw">_ </span>=&gt; syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, value)),
+    <span class="kw">fn </span>from(error: Error) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>error {
+            Error::Syn(error) =&gt; error,
+            <span class="kw">_ </span>=&gt; syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, error)),
         }
     }
 }
@@ -144,10 +152,14 @@
 </span><span class="kw">pub struct </span>ExpectedSuperClassError(<span class="kw">pub </span>String);
 
 <span class="kw">impl </span>Display <span class="kw">for </span>ExpectedSuperClassError {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;expected this record to be a subclass of {}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
+        <span class="macro">write!</span>(
+            formatter,
+            <span class="string">&quot;expected this record to be a subclass of {}&quot;</span>,
+            <span class="self">self</span>.<span class="number">0
+        </span>)
     }
 }
 
-<span class="kw">impl </span>std::error::Error <span class="kw">for </span>ExpectedSuperClassError {}
+<span class="kw">impl </span>error::Error <span class="kw">for </span>ExpectedSuperClassError {}
 </code></pre></div></section></main></body></html>
