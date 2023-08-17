@@ -1,6 +1,7 @@
 mod accessors;
 mod builder;
 
+use self::builder::OperationBuilder;
 use crate::{
     dialect::{
         error::{Error, ExpectedSuperClassError},
@@ -8,13 +9,11 @@ use crate::{
             AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint,
         },
     },
-    utility::sanitize_name_snake,
+    utility::{sanitize_documentation, sanitize_name_snake},
 };
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote, ToTokens, TokenStreamExt};
 use tblgen::{error::WithLocation, record::Record};
-
-use self::builder::OperationBuilder;
 
 #[derive(Debug, Clone, Copy)]
 pub enum FieldKind<'a> {
@@ -213,10 +212,10 @@ impl<'a> OperationField<'a> {
                 (param_kind_type, return_kind_type)
             }
         };
-        let sanitized = sanitize_name_snake(name);
+
         Self {
             name,
-            sanitized,
+            sanitized: sanitize_name_snake(name),
             param_type,
             return_type,
             optional: tc.is_optional(),
@@ -236,7 +235,7 @@ pub struct Operation<'a> {
     pub(crate) fields: Vec<OperationField<'a>>,
     pub(crate) can_infer_type: bool,
     pub(crate) summary: String,
-    pub(crate) description: String,
+    description: String,
 }
 
 impl<'a> Operation<'a> {
@@ -541,7 +540,8 @@ impl<'a> ToTokens for Operation<'a> {
         let builder_fn = builder.create_op_builder_fn();
         let default_constructor = builder.default_constructor();
         let summary = &self.summary;
-        let description = &self.description;
+        let description = sanitize_documentation(&self.description);
+
         tokens.append_all(quote! {
             #[doc = #summary]
             #[doc = "\n\n"]

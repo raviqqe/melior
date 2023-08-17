@@ -30,13 +30,24 @@ pub fn sanitize_name(name: &str) -> Ident {
     syn::parse_str::<Ident>(&name).unwrap_or(format_ident!("r#{}", name))
 }
 
-static PATTERN: Lazy<Regex> = Lazy::new(|| {
+static CODE_BLOCK_PATTERN: Lazy<Regex> = Lazy::new(|| Regex::new(r#"(?s)```\n(.*?```)"#).unwrap());
+
+// TODO Use the `comrak` crate.
+pub fn sanitize_documentation(documentation: &str) -> String {
+    CODE_BLOCK_PATTERN
+        .replace_all(documentation, |captures: &Captures| {
+            format!("```text\n{}", captures.get(1).unwrap().as_str())
+        })
+        .to_string()
+}
+
+static NAME_PATTERN: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r#"(bf_16|f_16|f_32|f_64|i_8|i_16|i_32|i_64|float_8_e_[0-9]_m_[0-9](_fn)?)"#)
         .unwrap()
 });
 
 pub fn map_name(name: &str) -> String {
-    PATTERN
+    NAME_PATTERN
         .replace_all(name, |captures: &Captures| {
             captures.get(0).unwrap().as_str().replace('_', "")
         })
@@ -63,5 +74,25 @@ mod tests {
         assert_eq!(map_name("f_64"), "f64");
         assert_eq!(map_name("float_8_e_5_m_2"), "float8e5m2");
         assert_eq!(map_name("float_8_e_4_m_3_fn"), "float8e4m3fn");
+    }
+
+    mod sanitize_documentation {
+        use super::*;
+
+        #[test]
+        fn sanitize_code_block() {
+            assert_eq!(
+                &sanitize_documentation("```\nfoo\n```"),
+                "```text\nfoo\n```"
+            );
+        }
+
+        #[test]
+        fn sanitize_code_blocks() {
+            assert_eq!(
+                &sanitize_documentation("```\nfoo\n```\n```\nbar\n```"),
+                "```text\nfoo\n```\n```text\nbar\n```"
+            );
+        }
     }
 }
