@@ -589,6 +589,7 @@
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 
+<span class="kw">use </span><span class="self">self</span>::builder::OperationBuilder;
 <span class="kw">use crate</span>::{
     dialect::{
         error::{Error, ExpectedSuperClassError},
@@ -596,13 +597,11 @@
             AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint,
         },
     },
-    utility::sanitize_name_snake,
+    utility::{sanitize_documentation, sanitize_name_snake},
 };
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
 <span class="kw">use </span>quote::{format_ident, quote, ToTokens, TokenStreamExt};
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record};
-
-<span class="kw">use </span><span class="self">self</span>::builder::OperationBuilder;
 
 <span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub enum </span>FieldKind&lt;<span class="lifetime">&#39;a</span>&gt; {
@@ -801,10 +800,10 @@
                 (param_kind_type, return_kind_type)
             }
         };
-        <span class="kw">let </span>sanitized = sanitize_name_snake(name);
+
         <span class="self">Self </span>{
             name,
-            sanitized,
+            sanitized: sanitize_name_snake(name),
             param_type,
             return_type,
             optional: tc.is_optional(),
@@ -824,7 +823,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) fields: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) can_infer_type: bool,
     <span class="kw">pub</span>(<span class="kw">crate</span>) summary: String,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) description: String,
+    description: String,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Operation&lt;<span class="lifetime">&#39;a</span>&gt; {
@@ -1129,7 +1128,8 @@
         <span class="kw">let </span>builder_fn = builder.create_op_builder_fn();
         <span class="kw">let </span>default_constructor = builder.default_constructor();
         <span class="kw">let </span>summary = <span class="kw-2">&amp;</span><span class="self">self</span>.summary;
-        <span class="kw">let </span>description = <span class="kw-2">&amp;</span><span class="self">self</span>.description;
+        <span class="kw">let </span>description = sanitize_documentation(<span class="kw-2">&amp;</span><span class="self">self</span>.description);
+
         tokens.append_all(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #summary]
             #[doc = <span class="string">&quot;\n\n&quot;</span>]

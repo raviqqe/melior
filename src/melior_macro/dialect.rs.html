@@ -162,64 +162,16 @@
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
-<a href="#167" id="167">167</a>
-<a href="#168" id="168">168</a>
-<a href="#169" id="169">169</a>
-<a href="#170" id="170">170</a>
-<a href="#171" id="171">171</a>
-<a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>operation;
 <span class="kw">mod </span>types;
 
-<span class="kw">use </span><span class="kw">crate</span>::utility::sanitize_name_snake;
+<span class="kw">use </span><span class="kw">crate</span>::utility::{sanitize_documentation, sanitize_name_snake};
 <span class="kw">use </span>operation::Operation;
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>proc_macro2::{Ident, Span};
 <span class="kw">use </span>quote::{format_ident, quote};
-<span class="kw">use </span>std::{
-    env,
-    error::Error,
-    fs::OpenOptions,
-    io::{<span class="self">self</span>, Write},
-    path::Path,
-    process::Command,
-    str,
-};
+<span class="kw">use </span>std::{env, error::Error, path::Path, process::Command, str};
 <span class="kw">use </span>syn::{bracketed, parse::Parse, punctuated::Punctuated, LitStr, Token};
 <span class="kw">use </span>tblgen::{record::Record, record_keeper::RecordKeeper, TableGenParser};
 
@@ -240,7 +192,9 @@
 
     <span class="kw">let </span>doc = <span class="macro">format!</span>(
         <span class="string">&quot;`{name}` dialect.\n\n{}&quot;</span>,
-        unindent::unindent(dialect.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>),)
+        sanitize_documentation(<span class="kw-2">&amp;</span>unindent::unindent(
+            dialect.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>),
+        ))
     );
     <span class="kw">let </span>name = sanitize_name_snake(name);
 
@@ -317,33 +271,6 @@
     }
 }
 
-<span class="comment">// Writes `tablegen_compile_commands.yaml` for any TableGen file that is being
-// parsed. See: https://mlir.llvm.org/docs/Tools/MLIRLSP/#tablegen-lsp-language-server--tblgen-lsp-server
-</span><span class="kw">fn </span>emit_tablegen_compile_commands(td_file: <span class="kw-2">&amp;</span>str, includes: <span class="kw-2">&amp;</span>[String]) -&gt; <span class="prelude-ty">Result</span>&lt;(), io::Error&gt; {
-    <span class="kw">let </span>directory = env::current_dir()<span class="question-mark">?</span>;
-    <span class="kw">let </span><span class="kw-2">mut </span>file = OpenOptions::new()
-        .write(<span class="bool-val">true</span>)
-        .append(<span class="bool-val">true</span>)
-        .create(<span class="bool-val">true</span>)
-        .open(directory.join(<span class="string">&quot;tablegen_compile_commands.yml&quot;</span>))<span class="question-mark">?</span>;
-
-    <span class="macro">writeln!</span>(file, <span class="string">&quot;--- !FileInfo:&quot;</span>)<span class="question-mark">?</span>;
-    <span class="macro">writeln!</span>(
-        file,
-        <span class="string">&quot;  filepath: \&quot;{}\&quot;&quot;</span>,
-        directory.join(td_file).to_str().unwrap()
-    )<span class="question-mark">?</span>;
-    <span class="macro">writeln!</span>(
-        file,
-        <span class="string">&quot;  includes: \&quot;{}\&quot;&quot;</span>,
-        includes
-            .iter()
-            .map(|string| directory.join(string).to_str().unwrap().to_owned())
-            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-            .join(<span class="string">&quot;;&quot;</span>)
-    )
-}
-
 <span class="kw">pub fn </span>generate_dialect(<span class="kw-2">mut </span>input: DialectMacroInput) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="comment">// spell-checker: disable-next-line
     </span>input.includes.push(llvm_config(<span class="string">&quot;--includedir&quot;</span>)<span class="question-mark">?</span>);
@@ -364,13 +291,6 @@
 
     <span class="kw">for </span>include <span class="kw">in </span><span class="kw-2">&amp;</span>input.includes {
         td_parser = td_parser.add_include_path(include);
-    }
-
-    <span class="comment">// spell-checker: disable-next-line
-    </span><span class="kw">if </span>env::var(<span class="string">&quot;DIALECTGEN_TABLEGEN_COMPILE_COMMANDS&quot;</span>).is_ok() {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(td_file) = <span class="kw-2">&amp;</span>input.td_file {
-            emit_tablegen_compile_commands(td_file, <span class="kw-2">&amp;</span>input.includes)<span class="question-mark">?</span>;
-        }
     }
 
     <span class="kw">let </span>keeper = td_parser.parse().map_err(|<span class="kw">_</span>| error::Error::ParseError)<span class="question-mark">?</span>;
