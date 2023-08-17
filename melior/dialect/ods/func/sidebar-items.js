@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["call","call_indirect","constant","func","return"],"struct":["CallIndirectOp","CallIndirectOpBuilder","CallOp","CallOpBuilder","ConstantOp","ConstantOpBuilder","FuncOp","FuncOpBuilder","ReturnOp","ReturnOpBuilder"]};

@@ -203,9 +203,12 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
-</pre></div><pre class="rust"><code><span class="kw">extern crate </span>proc_macro;
-
-<span class="kw">mod </span>error;
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+</pre></div><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>operation;
 <span class="kw">mod </span>types;
 
@@ -214,7 +217,15 @@
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>proc_macro2::{Ident, Span};
 <span class="kw">use </span>quote::{format_ident, quote};
-<span class="kw">use </span>std::{env, error::Error, fs::OpenOptions, io::Write, path::Path, process::Command, str};
+<span class="kw">use </span>std::{
+    env,
+    error::Error,
+    fs::OpenOptions,
+    io::{<span class="self">self</span>, Write},
+    path::Path,
+    process::Command,
+    str,
+};
 <span class="kw">use </span>syn::{bracketed, parse::Parse, punctuated::Punctuated, LitStr, Token};
 <span class="kw">use </span>tblgen::{record::Record, record_keeper::RecordKeeper, TableGenParser};
 
@@ -234,11 +245,13 @@
         })
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
-    <span class="kw">let </span><span class="kw-2">mut </span>doc = <span class="macro">format!</span>(<span class="string">&quot;`{}` dialect.\n\n&quot;</span>, name);
-    doc.push_str(<span class="kw-2">&amp;</span>unindent::unindent(
-        dialect.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>),
-    ));
+    <span class="kw">let </span>doc = <span class="macro">format!</span>(
+        <span class="string">&quot;`{}` dialect.\n\n{}&quot;</span>,
+        name,
+        unindent::unindent(dialect.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>),)
+    );
     <span class="kw">let </span>name = sanitize_name_snake(name);
+
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
         <span class="attr">#[doc = #doc]
         </span><span class="kw">pub mod </span>#name {
@@ -292,15 +305,15 @@
         <span class="kw">let </span><span class="kw-2">mut </span>name = <span class="prelude-val">None</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>tablegen = <span class="prelude-val">None</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>td_file = <span class="prelude-val">None</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>includes = <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>includes = <span class="macro">vec!</span>[];
 
         <span class="kw">for </span>item <span class="kw">in </span>list {
             <span class="kw">match </span>item {
-                InputField::Name(n) =&gt; name = <span class="prelude-val">Some</span>(n.value()),
+                InputField::Name(field) =&gt; name = <span class="prelude-val">Some</span>(field.value()),
                 InputField::TableGen(td) =&gt; tablegen = <span class="prelude-val">Some</span>(td.value()),
-                InputField::TdFile(f) =&gt; td_file = <span class="prelude-val">Some</span>(f.value()),
-                InputField::Includes(inc) =&gt; {
-                    includes = <span class="prelude-val">Some</span>(inc.into_iter().map(|l| l.value()).collect())
+                InputField::TdFile(file) =&gt; td_file = <span class="prelude-val">Some</span>(file.value()),
+                InputField::Includes(field) =&gt; {
+                    includes = field.into_iter().map(|literal| literal.value()).collect()
                 }
             }
         }
@@ -309,62 +322,62 @@
             name: name.ok_or(input.error(<span class="string">&quot;dialect name required&quot;</span>))<span class="question-mark">?</span>,
             tablegen,
             td_file,
-            includes: includes.unwrap_or(Vec::new()),
+            includes,
         })
     }
 }
 
 <span class="comment">// Writes `tablegen_compile_commands.yaml` for any TableGen file that is being
 // parsed. See: https://mlir.llvm.org/docs/Tools/MLIRLSP/#tablegen-lsp-language-server--tblgen-lsp-server
-</span><span class="kw">fn </span>emit_tablegen_compile_commands(td_file: <span class="kw-2">&amp;</span>str, includes: <span class="kw-2">&amp;</span>[String]) {
-    <span class="kw">let </span>pwd = env::current_dir();
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(pwd) = pwd {
-        <span class="kw">let </span>path = pwd.join(td_file);
-        <span class="kw">let </span>file = OpenOptions::new()
-            .write(<span class="bool-val">true</span>)
-            .append(<span class="bool-val">true</span>)
-            .create(<span class="bool-val">true</span>)
-            .open(pwd.join(<span class="string">&quot;tablegen_compile_commands.yml&quot;</span>));
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>file) = file {
-            <span class="macro">writeln!</span>(file, <span class="string">&quot;--- !FileInfo:&quot;</span>).unwrap();
-            <span class="macro">writeln!</span>(file, <span class="string">&quot;  filepath: \&quot;{}\&quot;&quot;</span>, path.to_str().unwrap()).unwrap();
-            <span class="kw">let _ </span>= <span class="macro">writeln!</span>(
-                file,
-                <span class="string">&quot;  includes: \&quot;{}\&quot;&quot;</span>,
-                includes
-                    .iter()
-                    .map(|s| pwd.join(s.as_str()).to_str().unwrap().to_owned())
-                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
-                    .join(<span class="string">&quot;;&quot;</span>)
-            );
-        }
-    }
+</span><span class="kw">fn </span>emit_tablegen_compile_commands(td_file: <span class="kw-2">&amp;</span>str, includes: <span class="kw-2">&amp;</span>[String]) -&gt; <span class="prelude-ty">Result</span>&lt;(), io::Error&gt; {
+    <span class="kw">let </span>directory = env::current_dir()<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>file = OpenOptions::new()
+        .write(<span class="bool-val">true</span>)
+        .append(<span class="bool-val">true</span>)
+        .create(<span class="bool-val">true</span>)
+        .open(directory.join(<span class="string">&quot;tablegen_compile_commands.yml&quot;</span>))<span class="question-mark">?</span>;
+
+    <span class="macro">writeln!</span>(file, <span class="string">&quot;--- !FileInfo:&quot;</span>)<span class="question-mark">?</span>;
+    <span class="macro">writeln!</span>(
+        file,
+        <span class="string">&quot;  filepath: \&quot;{}\&quot;&quot;</span>,
+        directory.join(td_file).to_str().unwrap()
+    )<span class="question-mark">?</span>;
+    <span class="macro">writeln!</span>(
+        file,
+        <span class="string">&quot;  includes: \&quot;{}\&quot;&quot;</span>,
+        includes
+            .iter()
+            .map(|string| directory.join(string).to_str().unwrap().to_owned())
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+            .join(<span class="string">&quot;;&quot;</span>)
+    )
 }
 
 <span class="kw">pub fn </span>generate_dialect(<span class="kw-2">mut </span>input: DialectMacroInput) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="comment">// spell-checker: disable-next-line
-    </span>input.includes.push(llvm_config(<span class="string">&quot;--includedir&quot;</span>).unwrap());
+    </span>input.includes.push(llvm_config(<span class="string">&quot;--includedir&quot;</span>)<span class="question-mark">?</span>);
 
     <span class="kw">let </span><span class="kw-2">mut </span>td_parser = TableGenParser::new();
 
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(source) = input.tablegen.as_ref() {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(source) = <span class="kw-2">&amp;</span>input.tablegen {
         td_parser = td_parser
-            .add_source(source.as_str())
-            .map_err(|e| syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, e)))<span class="question-mark">?</span>;
+            .add_source(source)
+            .map_err(|error| syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, error)))<span class="question-mark">?</span>;
     }
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(file) = input.td_file.as_ref() {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(file) = <span class="kw-2">&amp;</span>input.td_file {
         td_parser = td_parser
-            .add_source_file(file.as_str())
-            .map_err(|e| syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, e)))<span class="question-mark">?</span>;
+            .add_source_file(file)
+            .map_err(|error| syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, error)))<span class="question-mark">?</span>;
     }
-    <span class="kw">for </span>include <span class="kw">in </span>input.includes.iter() {
-        td_parser = td_parser.add_include_path(include.as_str());
+    <span class="kw">for </span>include <span class="kw">in </span><span class="kw-2">&amp;</span>input.includes {
+        td_parser = td_parser.add_include_path(include);
     }
 
     <span class="comment">// spell-checker: disable-next-line
     </span><span class="kw">if </span>env::var(<span class="string">&quot;DIALECTGEN_TABLEGEN_COMPILE_COMMANDS&quot;</span>).is_ok() {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(td_file) = input.td_file.as_ref() {
-            emit_tablegen_compile_commands(td_file, <span class="kw-2">&amp;</span>input.includes);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(td_file) = <span class="kw-2">&amp;</span>input.td_file {
+            emit_tablegen_compile_commands(td_file, <span class="kw-2">&amp;</span>input.includes)<span class="question-mark">?</span>;
         }
     }
 
@@ -375,16 +388,13 @@
         .find_map(|def| {
             def.str_value(<span class="string">&quot;name&quot;</span>)
                 .ok()
-                .and_then(|n| <span class="kw">if </span>n == input.name { <span class="prelude-val">Some</span>(def) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .and_then(|name| (name == input.name).then_some(def))
         })
         .ok_or_else(|| syn::Error::new(Span::call_site(), <span class="string">&quot;dialect not found&quot;</span>))<span class="question-mark">?</span>;
     <span class="kw">let </span>dialect = dialect_module(<span class="kw-2">&amp;</span>input.name, dialect_def, <span class="kw-2">&amp;</span>keeper)
-        .map_err(|e| e.add_source_info(keeper.source_info()))<span class="question-mark">?</span>;
+        .map_err(|error| error.add_source_info(keeper.source_info()))<span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
-        #dialect
-    }
-    .into())
+    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{ #dialect }.into())
 }
 
 <span class="kw">fn </span>llvm_config(argument: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;String, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {

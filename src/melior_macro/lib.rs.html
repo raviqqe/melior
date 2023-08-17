@@ -121,6 +121,16 @@
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>dialect;
 <span class="kw">mod </span>operation;
@@ -136,7 +146,17 @@
 <span class="kw">use </span>std::error::Error;
 <span class="kw">use </span>syn::parse_macro_input;
 
-<span class="attr">#[proc_macro]
+<span class="doccomment">/// Generates a dialect module from a TableGen file.
+///
+/// # Examples
+///
+/// ```rust
+/// melior::dialect! {
+///     name: &quot;func&quot;,
+///     tablegen: r#&quot;include &quot;mlir/Dialect/Func/IR/FuncOps.td&quot;&quot;#
+/// }
+/// ```
+</span><span class="attr">#[proc_macro]
 </span><span class="kw">pub fn </span>dialect(input: TokenStream) -&gt; TokenStream {
     <span class="kw">let </span>input = <span class="macro">parse_macro_input!</span>(input <span class="kw">as </span>DialectMacroInput);
 

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["alloc_tensor","clone","dealloc_tensor","to_memref","to_tensor"],"struct":["AllocTensorOp","AllocTensorOpBuilder","CloneOp","CloneOpBuilder","DeallocTensorOp","DeallocTensorOpBuilder","ToMemrefOp","ToMemrefOpBuilder","ToTensorOp","ToTensorOpBuilder"]};
