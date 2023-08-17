@@ -1,16 +1,15 @@
 extern crate proc_macro;
+
 mod error;
 mod operation;
 mod types;
-
-use std::io::Write;
-use std::{env, error::Error, fs::OpenOptions, path::Path, process::Command};
 
 use crate::utility::sanitize_name_snake;
 use operation::Operation;
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::{format_ident, quote};
+use std::{env, error::Error, fs::OpenOptions, io::Write, path::Path, process::Command, str};
 use syn::{bracketed, parse::Parse, punctuated::Punctuated, LitStr, Token};
 use tblgen::{record::Record, record_keeper::RecordKeeper, TableGenParser};
 
@@ -24,9 +23,9 @@ fn dialect_module<'a>(
     let operations = record_keeper
         .all_derived_definitions("Op")
         .map(Operation::from_def)
-        .filter_map(|o: Result<Operation, _>| match o {
-            Ok(o) => (o.dialect.name() == dialect.name()).then_some(Ok(o)),
-            Err(e) => Some(Err(e)),
+        .filter_map(|operation: Result<Operation, _>| match operation {
+            Ok(operation) => (operation.dialect.name() == dialect.name()).then_some(Ok(operation)),
+            Err(error) => Some(Err(error)),
         })
         .collect::<Result<Vec<_>, _>>()?;
 
@@ -110,10 +109,10 @@ impl Parse for DialectMacroInput {
     }
 }
 
-// Writes `tablegen_compile_commands.yaml` for any TableGen file that is being parsed.
-// See: https://mlir.llvm.org/docs/Tools/MLIRLSP/#tablegen-lsp-language-server--tblgen-lsp-server
+// Writes `tablegen_compile_commands.yaml` for any TableGen file that is being
+// parsed. See: https://mlir.llvm.org/docs/Tools/MLIRLSP/#tablegen-lsp-language-server--tblgen-lsp-server
 fn emit_tablegen_compile_commands(td_file: &str, includes: &[String]) {
-    let pwd = std::env::current_dir();
+    let pwd = env::current_dir();
     if let Ok(pwd) = pwd {
         let path = pwd.join(td_file);
         let file = OpenOptions::new()
@@ -138,6 +137,7 @@ fn emit_tablegen_compile_commands(td_file: &str, includes: &[String]) {
 }
 
 pub fn generate_dialect(mut input: DialectMacroInput) -> Result<TokenStream, Box<dyn Error>> {
+    // spell-checker: disable-next-line
     input.includes.push(llvm_config("--includedir").unwrap());
 
     let mut td_parser = TableGenParser::new();
@@ -156,7 +156,8 @@ pub fn generate_dialect(mut input: DialectMacroInput) -> Result<TokenStream, Box
         td_parser = td_parser.add_include_path(include.as_str());
     }
 
-    if std::env::var("DIALECTGEN_TABLEGEN_COMPILE_COMMANDS").is_ok() {
+    // spell-checker: disable-next-line
+    if env::var("DIALECTGEN_TABLEGEN_COMPILE_COMMANDS").is_ok() {
         if let Some(td_file) = input.td_file.as_ref() {
             emit_tablegen_compile_commands(td_file, &input.includes);
         }
@@ -191,7 +192,7 @@ fn llvm_config(argument: &str) -> Result<String, Box<dyn Error>> {
         argument
     );
 
-    Ok(std::str::from_utf8(
+    Ok(str::from_utf8(
         &if cfg!(target_os = "windows") {
             Command::new("cmd").args(["/C", &call]).output()?
         } else {

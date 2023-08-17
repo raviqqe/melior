@@ -1,35 +1,53 @@
-use std::collections::HashMap;
-
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
+use std::{collections::HashMap, ops::Deref};
 use tblgen::record::Record;
 
-lazy_static! {
-    pub static ref ATTRIBUTE_TYPES: HashMap<&'static str, &'static str> = {
-        let mut m = HashMap::new();
-        macro_rules! attr {
-            ($($mlir:ident => $melior:ident),* $(,)*) => {
-                $(
-                    m.insert(
-                        concat!("::mlir::", stringify!($mlir)),
-                        concat!("::melior::ir::attribute::", stringify!($melior)),
-                    );
-                )*
-            };
-        }
-        attr!(
-            ArrayAttr => ArrayAttribute,
-            Attribute => Attribute,
-            DenseElementsAttr => DenseElementsAttribute,
-            DenseI32ArrayAttr => DenseI32ArrayAttribute,
-            FlatSymbolRefAttr => FlatSymbolRefAttribute,
-            FloatAttr => FloatAttribute,
-            IntegerAttr => IntegerAttribute,
-            StringAttr => StringAttribute,
-            TypeAttr => TypeAttribute,
-        );
-        m
+macro_rules! prefixed_string {
+    ($prefix:literal, $name:ident) => {
+        concat!($prefix, stringify!($name))
     };
 }
+
+macro_rules! mlir_attribute {
+    ($name:ident) => {
+        prefixed_string!("::mlir::", $name)
+    };
+}
+
+macro_rules! melior_attribute {
+    ($name:ident) => {
+        prefixed_string!("::melior::ir::attribute::", $name)
+    };
+}
+
+pub static ATTRIBUTE_TYPES: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
+    let mut map = HashMap::new();
+
+    macro_rules! initialize_attributes {
+        ($($mlir:ident => $melior:ident),* $(,)*) => {
+            $(
+                map.insert(
+                    mlir_attribute!($mlir),
+                    melior_attribute!($melior),
+                );
+            )*
+        };
+    }
+
+    initialize_attributes!(
+        ArrayAttr => ArrayAttribute,
+        Attribute => Attribute,
+        DenseElementsAttr => DenseElementsAttribute,
+        DenseI32ArrayAttr => DenseI32ArrayAttribute,
+        FlatSymbolRefAttr => FlatSymbolRefAttribute,
+        FloatAttr => FloatAttribute,
+        IntegerAttr => IntegerAttribute,
+        StringAttr => StringAttribute,
+        TypeAttr => TypeAttribute,
+    );
+
+    map
+});
 
 #[derive(Debug, Clone, Copy)]
 pub struct RegionConstraint<'a>(Record<'a>);
@@ -39,13 +57,15 @@ impl<'a> RegionConstraint<'a> {
     pub fn new(record: Record<'a>) -> Self {
         Self(record)
     }
+
     pub fn is_variadic(&self) -> bool {
         self.0.subclass_of("VariadicRegion")
     }
 }
 
-impl<'a> std::ops::Deref for RegionConstraint<'a> {
+impl<'a> Deref for RegionConstraint<'a> {
     type Target = Record<'a>;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -59,13 +79,15 @@ impl<'a> SuccessorConstraint<'a> {
     pub fn new(record: Record<'a>) -> Self {
         Self(record)
     }
+
     pub fn is_variadic(&self) -> bool {
         self.0.subclass_of("VariadicSuccessor")
     }
 }
 
-impl<'a> std::ops::Deref for SuccessorConstraint<'a> {
+impl<'a> Deref for SuccessorConstraint<'a> {
     type Target = Record<'a>;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -83,19 +105,23 @@ impl<'a> TypeConstraint<'a> {
     pub fn is_optional(&self) -> bool {
         self.0.subclass_of("Optional")
     }
+
     pub fn is_variadic(&self) -> bool {
         self.0.subclass_of("Variadic")
     }
+
     pub fn is_variadic_of_variadic(&self) -> bool {
         self.0.subclass_of("VariadicOfVariadic")
     }
+
     pub fn is_variable_length(&self) -> bool {
         self.is_variadic() || self.is_optional()
     }
 }
 
-impl<'a> std::ops::Deref for TypeConstraint<'a> {
+impl<'a> Deref for TypeConstraint<'a> {
     type Target = Record<'a>;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -139,13 +165,13 @@ impl<'a> AttributeConstraint<'a> {
             .ok()
             .and_then(|v| ATTRIBUTE_TYPES.get(v.as_str().trim()))
             .copied()
-            .unwrap_or("::melior::ir::attribute::Attribute")
+            .unwrap_or(melior_attribute!(Attribute))
     }
 
     pub fn is_unit(&self) -> bool {
         self.0
             .string_value("storageType")
-            .map(|v| v == "::mlir::UnitAttr")
+            .map(|v| v == mlir_attribute!(UnitAttr))
             .unwrap_or(false)
     }
 
@@ -157,8 +183,9 @@ impl<'a> AttributeConstraint<'a> {
     }
 }
 
-impl<'a> std::ops::Deref for AttributeConstraint<'a> {
+impl<'a> Deref for AttributeConstraint<'a> {
     type Target = Record<'a>;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -181,34 +208,36 @@ pub struct Trait<'a> {
 #[allow(unused)]
 impl<'a> Trait<'a> {
     pub fn new(def: Record<'a>) -> Self {
-        let kind = if def.subclass_of("PredTrait") {
-            TraitKind::Pred {}
-        } else if def.subclass_of("InterfaceTrait") {
-            TraitKind::Interface {
-                name: Self::name(def),
-            }
-        } else if def.subclass_of("NativeTrait") {
-            TraitKind::Native {
-                name: Self::name(def),
-                is_structural: def.subclass_of("StructuralOpTrait"),
-            }
-        } else if def.subclass_of("GenInternalTrait") {
-            TraitKind::Internal {
-                name: def
-                    .string_value("trait")
-                    .expect("trait def has trait value"),
-            }
-        } else {
-            unreachable!("invalid trait")
-        };
-        Self { kind, def }
+        Self {
+            def,
+            kind: if def.subclass_of("PredTrait") {
+                TraitKind::Pred {}
+            } else if def.subclass_of("InterfaceTrait") {
+                TraitKind::Interface {
+                    name: Self::name(def),
+                }
+            } else if def.subclass_of("NativeTrait") {
+                TraitKind::Native {
+                    name: Self::name(def),
+                    is_structural: def.subclass_of("StructuralOpTrait"),
+                }
+            } else if def.subclass_of("GenInternalTrait") {
+                TraitKind::Internal {
+                    name: def
+                        .string_value("trait")
+                        .expect("trait def has trait value"),
+                }
+            } else {
+                unreachable!("invalid trait")
+            },
+        }
     }
 
-    pub fn has_name(&self, n: &str) -> bool {
+    pub fn has_name(&self, expected_name: &str) -> bool {
         match &self.kind {
             TraitKind::Native { name, .. }
             | TraitKind::Internal { name }
-            | TraitKind::Interface { name } => n == name,
+            | TraitKind::Interface { name } => expected_name == name,
             TraitKind::Pred {} => false,
         }
     }
@@ -217,11 +246,11 @@ impl<'a> Trait<'a> {
         let r#trait = def
             .string_value("trait")
             .expect("trait def has trait value");
-        let namespace = def.string_value("cppNamespace").ok().and_then(|n| {
-            if n.is_empty() {
+        let namespace = def.string_value("cppNamespace").ok().and_then(|namespace| {
+            if namespace.is_empty() {
                 None
             } else {
-                Some(n)
+                Some(namespace)
             }
         });
         if let Some(namespace) = namespace {
@@ -236,8 +265,9 @@ impl<'a> Trait<'a> {
     }
 }
 
-impl<'a> std::ops::Deref for Trait<'a> {
+impl<'a> Deref for Trait<'a> {
     type Target = Record<'a>;
+
     fn deref(&self) -> &Self::Target {
         &self.def
     }
