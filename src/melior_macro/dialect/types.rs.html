@@ -270,6 +270,7 @@
 <a href="#270" id="270">270</a>
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>std::{collections::HashMap, ops::Deref};
 <span class="kw">use </span>tblgen::record::Record;
@@ -324,8 +325,7 @@
 <span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub struct </span>RegionConstraint&lt;<span class="lifetime">&#39;a</span>&gt;(Record&lt;<span class="lifetime">&#39;a</span>&gt;);
 
-<span class="attr">#[allow(unused)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; RegionConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; RegionConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">pub fn </span>new(record: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(record)
     }
@@ -346,8 +346,7 @@
 <span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub struct </span>SuccessorConstraint&lt;<span class="lifetime">&#39;a</span>&gt;(Record&lt;<span class="lifetime">&#39;a</span>&gt;);
 
-<span class="attr">#[allow(unused)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; SuccessorConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; SuccessorConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">pub fn </span>new(record: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(record)
     }
@@ -368,8 +367,7 @@
 <span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub struct </span>TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt;(Record&lt;<span class="lifetime">&#39;a</span>&gt;);
 
-<span class="attr">#[allow(unused)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">pub fn </span>new(record: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(record)
     }
@@ -382,7 +380,8 @@
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;Variadic&quot;</span>)
     }
 
-    <span class="kw">pub fn </span>is_variadic_of_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    <span class="attr">#[allow(unused)]
+    </span><span class="kw">pub fn </span>is_variadic_of_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;VariadicOfVariadic&quot;</span>)
     }
 
@@ -402,28 +401,31 @@
 <span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub struct </span>AttributeConstraint&lt;<span class="lifetime">&#39;a</span>&gt;(Record&lt;<span class="lifetime">&#39;a</span>&gt;);
 
-<span class="attr">#[allow(unused)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; AttributeConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; AttributeConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">pub fn </span>new(record: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(record)
     }
 
-    <span class="kw">pub fn </span>is_derived(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    <span class="attr">#[allow(unused)]
+    </span><span class="kw">pub fn </span>is_derived(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>)
     }
 
-    <span class="kw">pub fn </span>is_type_attr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    <span class="attr">#[allow(unused)]
+    </span><span class="kw">pub fn </span>is_type_attr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;TypeAttrBase&quot;</span>)
     }
 
-    <span class="kw">pub fn </span>is_symbol_ref_attr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    <span class="attr">#[allow(unused)]
+    </span><span class="kw">pub fn </span>is_symbol_ref_attr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.name() == <span class="prelude-val">Ok</span>(<span class="string">&quot;SymbolRefAttr&quot;</span>)
             || <span class="self">self</span>.<span class="number">0</span>.name() == <span class="prelude-val">Ok</span>(<span class="string">&quot;FlatSymbolRefAttr&quot;</span>)
             || <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;SymbolRefAttr&quot;</span>)
             || <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;FlatSymbolRefAttr&quot;</span>)
     }
 
-    <span class="kw">pub fn </span>is_enum_attr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    <span class="attr">#[allow(unused)]
+    </span><span class="kw">pub fn </span>is_enum_attr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;EnumAttrInfo&quot;</span>)
     }
 
@@ -477,8 +479,7 @@
     def: Record&lt;<span class="lifetime">&#39;a</span>&gt;,
 }
 
-<span class="attr">#[allow(unused)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Trait&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Trait&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">pub fn </span>new(def: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             def,
@@ -530,7 +531,8 @@
         }
     }
 
-    <span class="kw">pub fn </span>kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TraitKind {
+    <span class="attr">#[allow(unused)]
+    </span><span class="kw">pub fn </span>kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TraitKind {
         <span class="kw-2">&amp;</span><span class="self">self</span>.kind
     }
 }
