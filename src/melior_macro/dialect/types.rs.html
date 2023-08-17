@@ -242,38 +242,86 @@
 <a href="#242" id="242">242</a>
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
-
-<span class="kw">use </span>lazy_static::lazy_static;
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>once_cell::sync::Lazy;
+<span class="kw">use </span>std::{collections::HashMap, ops::Deref};
 <span class="kw">use </span>tblgen::record::Record;
 
-<span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>ATTRIBUTE_TYPES: HashMap&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt; = {
-        <span class="kw">let </span><span class="kw-2">mut </span>m = HashMap::new();
-        <span class="macro">macro_rules! </span>attr {
-            ($(<span class="macro-nonterminal">$mlir</span>:ident =&gt; <span class="macro-nonterminal">$melior</span>:ident),* $(,)<span class="kw-2">*</span>) =&gt; {
-                $(
-                    m.insert(
-                        <span class="macro">concat!</span>(<span class="string">&quot;::mlir::&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$mlir</span>)),
-                        <span class="macro">concat!</span>(<span class="string">&quot;::melior::ir::attribute::&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$melior</span>)),
-                    );
-                )*
-            };
-        }
-        <span class="macro">attr!</span>(
-            ArrayAttr =&gt; ArrayAttribute,
-            Attribute =&gt; Attribute,
-            DenseElementsAttr =&gt; DenseElementsAttribute,
-            DenseI32ArrayAttr =&gt; DenseI32ArrayAttribute,
-            FlatSymbolRefAttr =&gt; FlatSymbolRefAttribute,
-            FloatAttr =&gt; FloatAttribute,
-            IntegerAttr =&gt; IntegerAttribute,
-            StringAttr =&gt; StringAttribute,
-            TypeAttr =&gt; TypeAttribute,
-        );
-        m
+<span class="macro">macro_rules! </span>prefixed_string {
+    (<span class="macro-nonterminal">$prefix</span>:literal, <span class="macro-nonterminal">$name</span>:ident) =&gt; {
+        <span class="macro">concat!</span>(<span class="macro-nonterminal">$prefix</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$name</span>))
     };
 }
+
+<span class="macro">macro_rules! </span>mlir_attribute {
+    (<span class="macro-nonterminal">$name</span>:ident) =&gt; {
+        <span class="macro">prefixed_string!</span>(<span class="string">&quot;::mlir::&quot;</span>, <span class="macro-nonterminal">$name</span>)
+    };
+}
+
+<span class="macro">macro_rules! </span>melior_attribute {
+    (<span class="macro-nonterminal">$name</span>:ident) =&gt; {
+        <span class="macro">prefixed_string!</span>(<span class="string">&quot;::melior::ir::attribute::&quot;</span>, <span class="macro-nonterminal">$name</span>)
+    };
+}
+
+<span class="kw">pub static </span>ATTRIBUTE_TYPES: Lazy&lt;HashMap&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span><span class="kw-2">mut </span>map = HashMap::new();
+
+    <span class="macro">macro_rules! </span>initialize_attributes {
+        ($(<span class="macro-nonterminal">$mlir</span>:ident =&gt; <span class="macro-nonterminal">$melior</span>:ident),* $(,)<span class="kw-2">*</span>) =&gt; {
+            $(
+                map.insert(
+                    <span class="macro">mlir_attribute!</span>(<span class="macro-nonterminal">$mlir</span>),
+                    <span class="macro">melior_attribute!</span>(<span class="macro-nonterminal">$melior</span>),
+                );
+            )*
+        };
+    }
+
+    <span class="macro">initialize_attributes!</span>(
+        ArrayAttr =&gt; ArrayAttribute,
+        Attribute =&gt; Attribute,
+        DenseElementsAttr =&gt; DenseElementsAttribute,
+        DenseI32ArrayAttr =&gt; DenseI32ArrayAttribute,
+        FlatSymbolRefAttr =&gt; FlatSymbolRefAttribute,
+        FloatAttr =&gt; FloatAttribute,
+        IntegerAttr =&gt; IntegerAttribute,
+        StringAttr =&gt; StringAttribute,
+        TypeAttr =&gt; TypeAttribute,
+    );
+
+    map
+});
 
 <span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub struct </span>RegionConstraint&lt;<span class="lifetime">&#39;a</span>&gt;(Record&lt;<span class="lifetime">&#39;a</span>&gt;);
@@ -283,13 +331,15 @@
     <span class="kw">pub fn </span>new(record: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(record)
     }
+
     <span class="kw">pub fn </span>is_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;VariadicRegion&quot;</span>)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; std::ops::Deref <span class="kw">for </span>RegionConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>RegionConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Target = Record&lt;<span class="lifetime">&#39;a</span>&gt;;
+
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
     </span>}
@@ -303,13 +353,15 @@
     <span class="kw">pub fn </span>new(record: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(record)
     }
+
     <span class="kw">pub fn </span>is_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;VariadicSuccessor&quot;</span>)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; std::ops::Deref <span class="kw">for </span>SuccessorConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>SuccessorConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Target = Record&lt;<span class="lifetime">&#39;a</span>&gt;;
+
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
     </span>}
@@ -327,19 +379,23 @@
     <span class="kw">pub fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;Optional&quot;</span>)
     }
+
     <span class="kw">pub fn </span>is_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;Variadic&quot;</span>)
     }
+
     <span class="kw">pub fn </span>is_variadic_of_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;VariadicOfVariadic&quot;</span>)
     }
+
     <span class="kw">pub fn </span>is_variable_length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.is_variadic() || <span class="self">self</span>.is_optional()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; std::ops::Deref <span class="kw">for </span>TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Target = Record&lt;<span class="lifetime">&#39;a</span>&gt;;
+
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
     </span>}
@@ -383,13 +439,13 @@
             .ok()
             .and_then(|v| ATTRIBUTE_TYPES.get(v.as_str().trim()))
             .copied()
-            .unwrap_or(<span class="string">&quot;::melior::ir::attribute::Attribute&quot;</span>)
+            .unwrap_or(<span class="macro">melior_attribute!</span>(Attribute))
     }
 
     <span class="kw">pub fn </span>is_unit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0
             </span>.string_value(<span class="string">&quot;storageType&quot;</span>)
-            .map(|v| v == <span class="string">&quot;::mlir::UnitAttr&quot;</span>)
+            .map(|v| v == <span class="macro">mlir_attribute!</span>(UnitAttr))
             .unwrap_or(<span class="bool-val">false</span>)
     }
 
@@ -401,8 +457,9 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; std::ops::Deref <span class="kw">for </span>AttributeConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>AttributeConstraint&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Target = Record&lt;<span class="lifetime">&#39;a</span>&gt;;
+
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
     </span>}
@@ -425,34 +482,36 @@
 <span class="attr">#[allow(unused)]
 </span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Trait&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">pub fn </span>new(def: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>kind = <span class="kw">if </span>def.subclass_of(<span class="string">&quot;PredTrait&quot;</span>) {
-            TraitKind::Pred {}
-        } <span class="kw">else if </span>def.subclass_of(<span class="string">&quot;InterfaceTrait&quot;</span>) {
-            TraitKind::Interface {
-                name: <span class="self">Self</span>::name(def),
-            }
-        } <span class="kw">else if </span>def.subclass_of(<span class="string">&quot;NativeTrait&quot;</span>) {
-            TraitKind::Native {
-                name: <span class="self">Self</span>::name(def),
-                is_structural: def.subclass_of(<span class="string">&quot;StructuralOpTrait&quot;</span>),
-            }
-        } <span class="kw">else if </span>def.subclass_of(<span class="string">&quot;GenInternalTrait&quot;</span>) {
-            TraitKind::Internal {
-                name: def
-                    .string_value(<span class="string">&quot;trait&quot;</span>)
-                    .expect(<span class="string">&quot;trait def has trait value&quot;</span>),
-            }
-        } <span class="kw">else </span>{
-            <span class="macro">unreachable!</span>(<span class="string">&quot;invalid trait&quot;</span>)
-        };
-        <span class="self">Self </span>{ kind, def }
+        <span class="self">Self </span>{
+            def,
+            kind: <span class="kw">if </span>def.subclass_of(<span class="string">&quot;PredTrait&quot;</span>) {
+                TraitKind::Pred {}
+            } <span class="kw">else if </span>def.subclass_of(<span class="string">&quot;InterfaceTrait&quot;</span>) {
+                TraitKind::Interface {
+                    name: <span class="self">Self</span>::name(def),
+                }
+            } <span class="kw">else if </span>def.subclass_of(<span class="string">&quot;NativeTrait&quot;</span>) {
+                TraitKind::Native {
+                    name: <span class="self">Self</span>::name(def),
+                    is_structural: def.subclass_of(<span class="string">&quot;StructuralOpTrait&quot;</span>),
+                }
+            } <span class="kw">else if </span>def.subclass_of(<span class="string">&quot;GenInternalTrait&quot;</span>) {
+                TraitKind::Internal {
+                    name: def
+                        .string_value(<span class="string">&quot;trait&quot;</span>)
+                        .expect(<span class="string">&quot;trait def has trait value&quot;</span>),
+                }
+            } <span class="kw">else </span>{
+                <span class="macro">unreachable!</span>(<span class="string">&quot;invalid trait&quot;</span>)
+            },
+        }
     }
 
-    <span class="kw">pub fn </span>has_name(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <span class="kw-2">&amp;</span>str) -&gt; bool {
+    <span class="kw">pub fn </span>has_name(<span class="kw-2">&amp;</span><span class="self">self</span>, expected_name: <span class="kw-2">&amp;</span>str) -&gt; bool {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
             TraitKind::Native { name, .. }
             | TraitKind::Internal { name }
-            | TraitKind::Interface { name } =&gt; n == name,
+            | TraitKind::Interface { name } =&gt; expected_name == name,
             TraitKind::Pred {} =&gt; <span class="bool-val">false</span>,
         }
     }
@@ -461,11 +520,11 @@
         <span class="kw">let </span>r#trait = def
             .string_value(<span class="string">&quot;trait&quot;</span>)
             .expect(<span class="string">&quot;trait def has trait value&quot;</span>);
-        <span class="kw">let </span>namespace = def.string_value(<span class="string">&quot;cppNamespace&quot;</span>).ok().and_then(|n| {
-            <span class="kw">if </span>n.is_empty() {
+        <span class="kw">let </span>namespace = def.string_value(<span class="string">&quot;cppNamespace&quot;</span>).ok().and_then(|namespace| {
+            <span class="kw">if </span>namespace.is_empty() {
                 <span class="prelude-val">None
             </span>} <span class="kw">else </span>{
-                <span class="prelude-val">Some</span>(n)
+                <span class="prelude-val">Some</span>(namespace)
             }
         });
         <span class="kw">if let </span><span class="prelude-val">Some</span>(namespace) = namespace {
@@ -480,8 +539,9 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; std::ops::Deref <span class="kw">for </span>Trait&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>Trait&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Target = Record&lt;<span class="lifetime">&#39;a</span>&gt;;
+
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.def
     }

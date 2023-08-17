@@ -261,6 +261,7 @@
 <a href="#261" id="261">261</a>
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{FieldKind, OperationField, SequenceInfo, VariadicKind};
 
 <span class="kw">use </span><span class="kw">crate</span>::utility::sanitize_name_snake;
@@ -291,7 +292,8 @@
                         </span><span class="kw">if </span>t.is_variable_length() {
                             <span class="kw">if </span>t.is_optional() {
                                 <span class="comment">// Optional element, and some singular elements.
-                                // Only present if the amount of groups is at least the number of elements.
+                                // Only present if the amount of groups is at least the number of
+                                // elements.
                                 </span><span class="macro">quote! </span>{
                                   <span class="kw">if </span><span class="self">self</span>.operation.#count() &lt; #len {
                                     <span class="prelude-val">None

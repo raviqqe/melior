@@ -358,6 +358,7 @@
 <a href="#358" id="358">358</a>
 <a href="#359" id="359">359</a>
 <a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>convert_case::{Case, Casing};
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
 <span class="kw">use </span>quote::{format_ident, quote};
@@ -470,7 +471,8 @@
                 };
 
                 <span class="comment">// Argument types can be singular and variadic, but add functions in melior
-                // are always variadic, so we need to create a slice or vec for singular arguments
+                // are always variadic, so we need to create a slice or vec for singular
+                // arguments
                 </span><span class="kw">match </span><span class="kw-2">&amp;</span>f.kind {
                     FieldKind::Operand(tc) | FieldKind::Result(tc) =&gt; {
                         <span class="kw">if </span>tc.is_variable_length() &amp;&amp; !tc.is_optional() {

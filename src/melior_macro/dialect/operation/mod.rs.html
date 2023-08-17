@@ -582,18 +582,25 @@
 <a href="#582" id="582">582</a>
 <a href="#583" id="583">583</a>
 <a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 
-<span class="kw">use </span><span class="kw">crate</span>::dialect::{
-    error::{Error, ExpectedSuperClassError},
-    types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
+<span class="kw">use crate</span>::{
+    dialect::{
+        error::{Error, ExpectedSuperClassError},
+        types::{
+            AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint,
+        },
+    },
+    utility::sanitize_name_snake,
 };
-<span class="kw">use </span><span class="kw">crate</span>::utility::sanitize_name_snake;
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
 <span class="kw">use </span>quote::{format_ident, quote, ToTokens, TokenStreamExt};
-<span class="kw">use </span>tblgen::error::WithLocation;
-<span class="kw">use </span>tblgen::record::Record;
+<span class="kw">use </span>tblgen::{error::WithLocation, record::Record};
 
 <span class="kw">use </span><span class="self">self</span>::builder::OperationBuilder;
 
@@ -868,7 +875,8 @@
             ))
         });
 
-        <span class="comment">// Creates an initial `VariadicKind` instance based on SameSize and AttrSized traits.
+        <span class="comment">// Creates an initial `VariadicKind` instance based on SameSize and AttrSized
+        // traits.
         </span><span class="kw">let </span>initial_variadic_kind = |num_variable_length: usize, kind_name_upper: <span class="kw-2">&amp;</span>str| {
             <span class="kw">let </span>same_size_trait = <span class="macro">format!</span>(<span class="string">&quot;::mlir::OpTrait::SameVariadic{}Size&quot;</span>, kind_name_upper);
             <span class="kw">let </span>attr_sized = <span class="macro">format!</span>(<span class="string">&quot;::mlir::OpTrait::AttrSized{}Segments&quot;</span>, kind_name_upper);
