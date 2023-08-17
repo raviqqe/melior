@@ -28,12 +28,9 @@ by removing dimensions that are statically known to be of size 1.</p>
 %1 = memref.subview %0[%c0, %c0][%size0, %size1][%c1, %c1]
   : memref&lt;64x4xf32, affine_map&lt;(d0, d1) -&gt; (d0 * 4 + d1)&gt;&gt; to
     memref&lt;?x?xf32, affine_map&lt;(d0, d1)[s0, s1] -&gt; (d0 * s1 + d1 + s0)&gt;&gt;
-```text
-
-Example 2:
-
-```mlir
-%0 = memref.alloc() : memref&lt;8x16x4xf32, affine_map&lt;(d0, d1, d2) -&gt; (d0 * 64 + d1 * 4 + d2)&gt;&gt;
+</code></pre></div>
+<p>Example 2:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%0 = memref.alloc() : memref&lt;8x16x4xf32, affine_map&lt;(d0, d1, d2) -&gt; (d0 * 64 + d1 * 4 + d2)&gt;&gt;
 
 // Create a sub-view of &quot;base&quot; memref &#39;%0&#39; with dynamic offsets, sizes,
 // and strides.
@@ -46,23 +43,17 @@ Example 2:
   : memref&lt;8x16x4xf32, affine_map&lt;(d0, d1, d2) -&gt; (d0 * 64 + d1 * 4 + d2)&gt;&gt; to
     memref&lt;?x?x?xf32,
       affine_map&lt;(d0, d1, d2)[s0, s1, s2, s3] -&gt; (d0 * s1 + d1 * s2 + d2 * s3 + s0)&gt;&gt;
-```text
-
-Example 3:
-
-```mlir
-%0 = memref.alloc() : memref&lt;8x16x4xf32, affine_map&lt;(d0, d1, d2) -&gt; (d0 * 64 + d1 * 4 + d2)&gt;&gt;
+</code></pre></div>
+<p>Example 3:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%0 = memref.alloc() : memref&lt;8x16x4xf32, affine_map&lt;(d0, d1, d2) -&gt; (d0 * 64 + d1 * 4 + d2)&gt;&gt;
 
 // Subview with constant offsets, sizes and strides.
 %1 = memref.subview %0[0, 2, 0][4, 4, 4][1, 1, 1]
   : memref&lt;8x16x4xf32, affine_map&lt;(d0, d1, d2) -&gt; (d0 * 64 + d1 * 4 + d2)&gt;&gt; to
     memref&lt;4x4x4xf32, affine_map&lt;(d0, d1, d2) -&gt; (d0 * 64 + d1 * 4 + d2 + 8)&gt;&gt;
-```text
-
-Example 4:
-
-```mlir
-%0 = memref.alloc(%arg0, %arg1) : memref&lt;?x?xf32&gt;
+</code></pre></div>
+<p>Example 4:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%0 = memref.alloc(%arg0, %arg1) : memref&lt;?x?xf32&gt;
 
 // Subview with constant size, but dynamic offsets and
 // strides. The resulting memref has a static shape, but if the
@@ -106,12 +97,9 @@ Example 4:
 // memref is &quot;inbounds&quot; w.r.t to base memref. It is upto the client
 // to ensure that the subview is accessed in a manner that is
 // in-bounds.
-```text
-
-Example 5:
-
-```mlir
-// Rank-reducing subview.
+</code></pre></div>
+<p>Example 5:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Rank-reducing subview.
 %1 = memref.subview %0[0, 0, 0][1, 16, 4][1, 1, 1] :
   memref&lt;8x16x4xf32&gt; to memref&lt;16x4xf32&gt;
 

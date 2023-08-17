@@ -13,13 +13,10 @@ Result type is ranked.</p>
 // Flatten unranked tensor.
 %dst = tensor.reshape %src(%shape)
          : (tensor&lt;*xf32&gt;, tensor&lt;1xi32&gt;) -&gt; tensor&lt;?xf32&gt;
-```text
-
-b. Source type is ranked or unranked. Shape argument has dynamic size.
-Result type is unranked.
-
-```mlir
-// Reshape dynamically-shaped 1D tensor.
+</code></pre></div>
+<p>b. Source type is ranked or unranked. Shape argument has dynamic size.
+Result type is unranked.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Reshape dynamically-shaped 1D tensor.
 %dst = tensor.reshape %src(%shape)
          : (tensor&lt;?xf32&gt;, tensor&lt;?xi32&gt;) -&gt; tensor&lt;*xf32&gt;
 // Reshape unranked tensor.

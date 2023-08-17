@@ -8,17 +8,12 @@
 as <code>base</code>. The result is <code>base</code> raised to the power of <code>power</code>.
 The operation is elementwise for non-scalars, e.g.:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%v = math.fpowi %base, %power : vector&lt;2xf32&gt;, vector&lt;2xi32
-```text
-
-The result is a vector of:
-
 </code></pre></div>
-<p>[&lt;math.fpowi %base[0], %power[0]&gt;, &lt;math.fpowi %base[1], %power[1]&gt;]</p>
-<div class="example-wrap"><pre class="language-text"><code>
-Example:
-
-```mlir
-// Scalar exponentiation.
+<p>The result is a vector of:</p>
+<div class="example-wrap"><pre class="language-text"><code>[&lt;math.fpowi %base[0], %power[0]&gt;, &lt;math.fpowi %base[1], %power[1]&gt;]
+</code></pre></div>
+<p>Example:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Scalar exponentiation.
 %a = math.fpowi %base, %power : f64, i32
 </code></pre></div></div></details><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-FPowIOp%3C'c%3E" class="impl"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#65-68">source</a><a href="#impl-FPowIOp%3C'c%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'c&gt; <a class="struct" href="struct.FPowIOp.html" title="struct melior::dialect::ods::math::FPowIOp">FPowIOp</a>&lt;'c&gt;</h3></section></summary><div class="impl-items"><section id="method.name" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#65-68">source</a><h4 class="code-header">pub fn <a href="#method.name" class="fn">name</a>() -&gt; &amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.71.1/std/primitive.str.html">str</a></h4></section><section id="method.operation" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#65-68">source</a><h4 class="code-header">pub fn <a href="#method.operation" class="fn">operation</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../../ir/operation/struct.Operation.html" title="struct melior::ir::operation::Operation">Operation</a>&lt;'c&gt;</h4></section><section id="method.builder" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#65-68">source</a><h4 class="code-header">pub fn <a href="#method.builder" class="fn">builder</a>(
     location: <a class="struct" href="../../../ir/struct.Location.html" title="struct melior::ir::Location">Location</a>&lt;'c&gt;

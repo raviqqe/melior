@@ -15,13 +15,13 @@ llvm.store %c0, %ptr1 { alias_scopes = [@metadata::@scope1], llvm.noalias = [@me
 llvm.store %c4, %ptr2 { alias_scopes = [@metadata::@scope2], llvm.noalias = [@metadata::@scope1] } : !llvm.ptr<i32>
 llvm.return
 }</p>
-
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code>llvm.metadata @metadata {
+<div class="example-wrap"><pre class="language-text"><code>llvm.metadata @metadata {
   llvm.alias_scope_domain @unused_domain
-  llvm.alias_scope_domain @domain { description = <span class="string">&quot;Optional domain description&quot;</span>}
+  llvm.alias_scope_domain @domain { description = &quot;Optional domain description&quot;}
   llvm.alias_scope @scope1 { domain = @domain }
-  llvm.alias_scope @scope2 { domain = @domain, description = <span class="string">&quot;Optional scope description&quot; </span>}
-}</code></pre></div>
+  llvm.alias_scope @scope2 { domain = @domain, description = &quot;Optional scope description&quot; }
+}
+</code></pre></div>
 <p>}</p>
 <p>See the following link for more details:
 https://llvm.org/docs/LangRef.html#noalias-and-alias-scope-metadata</p>

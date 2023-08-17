@@ -25,14 +25,11 @@ dma_start %src[%i, %j], %dst[%k, %l], %num_elements, %tag[%idx] :
   memref&lt;40 x 128 x f32&gt;, affine_map&lt;(d0) -&gt; (d0)&gt;, 0&gt;,
   memref&lt;2 x 1024 x f32&gt;, affine_map&lt;(d0) -&gt; (d0)&gt;, 1&gt;,
   memref&lt;1 x i32&gt;, affine_map&lt;(d0) -&gt; (d0)&gt;, 2&gt;
-```text
-
-If %stride and %num_elt_per_stride are specified, the DMA is expected to
+</code></pre></div>
+<p>If %stride and %num_elt_per_stride are specified, the DMA is expected to
 transfer %num_elt_per_stride elements every %stride elements apart from
-memory space 0 until %num_elements are transferred.
-
-```mlir
-dma_start %src[%i, %j], %dst[%k, %l], %num_elements, %tag[%idx], %stride,
+memory space 0 until %num_elements are transferred.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>dma_start %src[%i, %j], %dst[%k, %l], %num_elements, %tag[%idx], %stride,
           %num_elt_per_stride :
 </code></pre></div>
 <p>TODO: add additional operands to allow source and destination striding, and

@@ -12,15 +12,12 @@ thereby make forks in async execution explicit. Example usage:</p>
 // gpu.baz doesn&#39;t run until gpu.foo and gpu.bar have both completed, just
 // as if the async dependencies were [%t0, %t1].
 %t3 = gpu.baz async [%t2]
-```text
-
-If the op does not contain the `async` keyword, it does not return a new
+</code></pre></div>
+<p>If the op does not contain the <code>async</code> keyword, it does not return a new
 async token but blocks until all ops producing the async dependency tokens
 finished execution. All dependent memory operations are visible to the host
-once this op completes. Example usage:
-
-```mlir
-%t0 = gpu.foo async : !gpu.async.token
+once this op completes. Example usage:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%t0 = gpu.foo async : !gpu.async.token
 %t1 = gpu.bar async : !gpu.async.token
 // The gpu.wait op blocks until gpu.foo and gpu.bar have completed.
 gpu.wait [%t0, %t1]

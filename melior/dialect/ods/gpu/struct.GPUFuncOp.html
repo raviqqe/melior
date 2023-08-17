@@ -38,12 +38,9 @@ memory-attribution ::= (`workgroup` `(` ssa-id-and-type-list `)`)?
     attributes {qux: &quot;quux&quot;} {
   gpu.return
 }
-```text
-
-The generic form illustrates the concept
-
-```mlir
-&quot;gpu.func&quot;(%arg: index) {sym_name: &quot;foo&quot;, kernel, qux: &quot;quux&quot;} ({
+</code></pre></div>
+<p>The generic form illustrates the concept</p>
+<div class="example-wrap"><pre class="language-mlir"><code>&quot;gpu.func&quot;(%arg: index) {sym_name: &quot;foo&quot;, kernel, qux: &quot;quux&quot;} ({
 ^bb0(%arg0: index, %workgroup: memref&lt;32xf32, 3&gt;,
      %private: memref&lt;1xf32, 5&gt;):
   &quot;gpu.return&quot;() : () -&gt; ()

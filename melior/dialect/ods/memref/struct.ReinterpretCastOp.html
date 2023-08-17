@@ -12,20 +12,17 @@ memref.reinterpret_cast %unranked to
   sizes: [%size0, %size1],
   strides: [%stride0, %stride1]
 : memref&lt;*xf32&gt; to memref&lt;?x?xf32, strided&lt;[?, ?], offset: ?&gt;&gt;
-```text
-
-This operation creates a new memref descriptor using the base of the
+</code></pre></div>
+<p>This operation creates a new memref descriptor using the base of the
 source and applying the input arguments to the other metadata.
-In other words:
-```mlir
-%dst = memref.reinterpret_cast %src to
+In other words:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%dst = memref.reinterpret_cast %src to
   offset: [%offset],
   sizes: [%sizes],
   strides: [%strides]
-```text
-means that `%dst`&#39;s descriptor will be:
-```mlir
-%dst.base = %src.base
+</code></pre></div>
+<p>means that <code>%dst</code>’s descriptor will be:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%dst.base = %src.base
 %dst.aligned = %src.aligned
 %dst.offset = %offset
 %dst.sizes = %sizes

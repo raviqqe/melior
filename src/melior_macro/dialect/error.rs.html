@@ -70,9 +70,29 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     error,
     fmt::{<span class="self">self</span>, Display, Formatter},
+    io,
+    string::FromUtf8Error,
 };
 <span class="kw">use </span>tblgen::{
     error::{SourceError, TableGenError},
@@ -81,10 +101,12 @@
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub enum </span>Error {
+    ExpectedSuperClass(SourceError&lt;ExpectedSuperClassError&gt;),
+    Io(io::Error),
+    ParseError,
     Syn(syn::Error),
     TableGen(tblgen::Error),
-    ExpectedSuperClass(SourceError&lt;ExpectedSuperClassError&gt;),
-    ParseError,
+    Utf8(FromUtf8Error),
 }
 
 <span class="kw">impl </span>Error {
@@ -92,7 +114,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::TableGen(error) =&gt; error.add_source_info(info).into(),
             <span class="self">Self</span>::ExpectedSuperClass(error) =&gt; error.add_source_info(info).into(),
-            <span class="self">Self</span>::Syn(<span class="kw">_</span>) | <span class="self">Self</span>::ParseError =&gt; <span class="self">self</span>,
+            <span class="self">Self</span>::Io(<span class="kw">_</span>) | <span class="self">Self</span>::ParseError | <span class="self">Self</span>::Syn(<span class="kw">_</span>) | <span class="self">Self</span>::Utf8(<span class="kw">_</span>) =&gt; <span class="self">self</span>,
         }
     }
 }
@@ -100,10 +122,12 @@
 <span class="kw">impl </span>Display <span class="kw">for </span>Error {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
+            <span class="self">Self</span>::ExpectedSuperClass(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid ODS input: {error}&quot;</span>),
+            <span class="self">Self</span>::Io(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;{error}&quot;</span>),
+            <span class="self">Self</span>::ParseError =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;error parsing TableGen source&quot;</span>),
             <span class="self">Self</span>::Syn(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to parse macro input: {error}&quot;</span>),
             <span class="self">Self</span>::TableGen(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid ODS input: {error}&quot;</span>),
-            <span class="self">Self</span>::ExpectedSuperClass(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid ODS input: {error}&quot;</span>),
-            <span class="self">Self</span>::ParseError =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;error parsing TableGen source&quot;</span>),
+            <span class="self">Self</span>::Utf8(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;{error}&quot;</span>),
         }
     }
 }
@@ -125,6 +149,18 @@
 <span class="kw">impl </span>From&lt;syn::Error&gt; <span class="kw">for </span>Error {
     <span class="kw">fn </span>from(error: syn::Error) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Syn(error)
+    }
+}
+
+<span class="kw">impl </span>From&lt;io::Error&gt; <span class="kw">for </span>Error {
+    <span class="kw">fn </span>from(error: io::Error) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Io(error)
+    }
+}
+
+<span class="kw">impl </span>From&lt;FromUtf8Error&gt; <span class="kw">for </span>Error {
+    <span class="kw">fn </span>from(error: FromUtf8Error) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Utf8(error)
     }
 }
 

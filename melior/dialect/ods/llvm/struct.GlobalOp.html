@@ -6,17 +6,13 @@ initialized in both cases.</p>
 <p>There are two forms of initialization syntax. Simple constants that can be
 represented as MLIR attributes can be given in-line:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>llvm.mlir.global @variable(32.0 : f32) : f32
-```text
-
-This initialization and type syntax is similar to `llvm.mlir.constant` and
+</code></pre></div>
+<p>This initialization and type syntax is similar to <code>llvm.mlir.constant</code> and
 may use two types: one for MLIR attribute and another for the LLVM value.
-These types must be compatible.
-
-More complex constants that cannot be represented as MLIR attributes can be
-given in an initializer region:
-
-```mlir
-// This global is initialized with the equivalent of:
+These types must be compatible.</p>
+<p>More complex constants that cannot be represented as MLIR attributes can be
+given in an initializer region:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// This global is initialized with the equivalent of:
 //   i32* getelementptr (i32* @g2, i32 2)
 llvm.mlir.global constant @int_gep() : !llvm.ptr&lt;i32&gt; {
   %0 = llvm.mlir.addressof @g2 : !llvm.ptr&lt;i32&gt;
@@ -26,18 +22,13 @@ llvm.mlir.global constant @int_gep() : !llvm.ptr&lt;i32&gt; {
   // The initializer region must end with `llvm.return`.
   llvm.return %2 : !llvm.ptr&lt;i32&gt;
 }
-```text
-
-Only one of the initializer attribute or initializer region may be provided.
-
-`llvm.mlir.global` must appear at top-level of the enclosing module. It uses
+</code></pre></div>
+<p>Only one of the initializer attribute or initializer region may be provided.</p>
+<p><code>llvm.mlir.global</code> must appear at top-level of the enclosing module. It uses
 an @-identifier for its value, which will be uniqued by the module with
-respect to other @-identifiers in it.
-
-Examples:
-
-```mlir
-// Global values use @-identifiers.
+respect to other @-identifiers in it.</p>
+<p>Examples:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Global values use @-identifiers.
 llvm.mlir.global constant @cst(42 : i32) : i32
 
 // Non-constant values must also be initialized.
@@ -58,17 +49,13 @@ llvm.mlir.global constant @int_gep() : !llvm.ptr&lt;i32&gt; {
      : (!llvm.ptr&lt;i32&gt;, i32) -&gt; !llvm.ptr&lt;i32&gt;
   llvm.return %2 : !llvm.ptr&lt;i32&gt;
 }
-```text
-
-Similarly to functions, globals have a linkage attribute. In the custom
-syntax, this attribute is placed between `llvm.mlir.global` and the optional
-`constant` keyword. If the attribute is omitted, `external` linkage is
-assumed by default.
-
-Examples:
-
-```mlir
-// A constant with internal linkage will not participate in linking.
+</code></pre></div>
+<p>Similarly to functions, globals have a linkage attribute. In the custom
+syntax, this attribute is placed between <code>llvm.mlir.global</code> and the optional
+<code>constant</code> keyword. If the attribute is omitted, <code>external</code> linkage is
+assumed by default.</p>
+<p>Examples:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// A constant with internal linkage will not participate in linking.
 llvm.mlir.global internal constant @cst(42 : i32) : i32
 
 // By default, &quot;external&quot; linkage is assumed and the global participates in
@@ -77,16 +64,12 @@ llvm.mlir.global @glob(0 : f32) : f32
 
 // Alignment is optional
 llvm.mlir.global private constant @y(dense&lt;1.0&gt; : tensor&lt;8xf32&gt;) : !llvm.array&lt;8 x f32&gt;
-```text
-
-Like global variables in LLVM IR, globals can have an (optional)
-alignment attribute using keyword `alignment`. The integer value of the
-alignment must be a positive integer that is a power of 2.
-
-Examples:
-
-```mlir
-// Alignment is optional
+</code></pre></div>
+<p>Like global variables in LLVM IR, globals can have an (optional)
+alignment attribute using keyword <code>alignment</code>. The integer value of the
+alignment must be a positive integer that is a power of 2.</p>
+<p>Examples:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Alignment is optional
 llvm.mlir.global private constant @y(dense&lt;1.0&gt; : tensor&lt;8xf32&gt;) { alignment = 32 : i64 } : !llvm.array&lt;8 x f32&gt;
 </code></pre></div></div></details><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-GlobalOp%3C'c%3E" class="impl"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#44-48">source</a><a href="#impl-GlobalOp%3C'c%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'c&gt; <a class="struct" href="struct.GlobalOp.html" title="struct melior::dialect::ods::llvm::GlobalOp">GlobalOp</a>&lt;'c&gt;</h3></section></summary><div class="impl-items"><section id="method.name" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#44-48">source</a><h4 class="code-header">pub fn <a href="#method.name" class="fn">name</a>() -&gt; &amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.71.1/std/primitive.str.html">str</a></h4></section><section id="method.operation" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#44-48">source</a><h4 class="code-header">pub fn <a href="#method.operation" class="fn">operation</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../../ir/operation/struct.Operation.html" title="struct melior::ir::operation::Operation">Operation</a>&lt;'c&gt;</h4></section><section id="method.builder" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#44-48">source</a><h4 class="code-header">pub fn <a href="#method.builder" class="fn">builder</a>(
     location: <a class="struct" href="../../../ir/struct.Location.html" title="struct melior::ir::Location">Location</a>&lt;'c&gt;

@@ -43,20 +43,14 @@ MLIR:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>vector.transfer_read %A[%expr1, %expr2, %expr3, %expr4]
   { permutation_map : (d0,d1,d2,d3) -&gt; (d2,0,d0) } :
   memref&lt;?x?x?x?xf32&gt;, vector&lt;3x4x5xf32&gt;
-```text
-
-This operation always reads a slice starting at `%A[%expr1, %expr2, %expr3,
-%expr4]`. The size of the slice is 3 along d2 and 5 along d0, so the slice
-is: `%A[%expr1 : %expr1 + 5, %expr2, %expr3:%expr3 + 3, %expr4]`
-
-That slice needs to be read into a `vector&lt;3x4x5xf32&gt;`. Since the
+</code></pre></div>
+<p>This operation always reads a slice starting at <code>%A[%expr1, %expr2, %expr3, %expr4]</code>. The size of the slice is 3 along d2 and 5 along d0, so the slice
+is: <code>%A[%expr1 : %expr1 + 5, %expr2, %expr3:%expr3 + 3, %expr4]</code></p>
+<p>That slice needs to be read into a <code>vector&lt;3x4x5xf32&gt;</code>. Since the
 permutation map is not full rank, there must be a broadcast along vector
-dimension `1`.
-
-A notional lowering of vector.transfer_read could generate code resembling:
-
-```mlir
-// %expr1, %expr2, %expr3, %expr4 defined before this point
+dimension <code>1</code>.</p>
+<p>A notional lowering of vector.transfer_read could generate code resembling:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// %expr1, %expr2, %expr3, %expr4 defined before this point
 %tmp = alloc() : vector&lt;3x4x5xf32&gt;
 %view_in_tmp = &quot;element_type_cast&quot;(%tmp) : memref&lt;1xvector&lt;3x4x5xf32&gt;&gt;
 for %i = 0 to 3 {
@@ -68,17 +62,13 @@ for %i = 0 to 3 {
 }}}
 %c0 = arith.constant 0 : index
 %vec = load %view_in_tmp[%c0] : vector&lt;3x4x5xf32&gt;
-```text
-
-On a GPU one could then map `i`, `j`, `k` to blocks and threads. Notice that
-the temporary storage footprint is `3 * 5` values but `3 * 4 * 5` values are
-actually transferred between `%A` and `%tmp`.
-
-Alternatively, if a notional vector broadcast operation were available, the
-lowered code would resemble:
-
-```mlir
-// %expr1, %expr2, %expr3, %expr4 defined before this point
+</code></pre></div>
+<p>On a GPU one could then map <code>i</code>, <code>j</code>, <code>k</code> to blocks and threads. Notice that
+the temporary storage footprint is <code>3 * 5</code> values but <code>3 * 4 * 5</code> values are
+actually transferred between <code>%A</code> and <code>%tmp</code>.</p>
+<p>Alternatively, if a notional vector broadcast operation were available, the
+lowered code would resemble:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// %expr1, %expr2, %expr3, %expr4 defined before this point
 %tmp = alloc() : vector&lt;3x4x5xf32&gt;
 %view_in_tmp = &quot;element_type_cast&quot;(%tmp) : memref&lt;1xvector&lt;3x4x5xf32&gt;&gt;
 for %i = 0 to 3 {
@@ -90,23 +80,18 @@ for %i = 0 to 3 {
 %c0 = arith.constant 0 : index
 %tmpvec = load %view_in_tmp[%c0] : vector&lt;3x4x5xf32&gt;
 %vec = broadcast %tmpvec, 1 : vector&lt;3x4x5xf32&gt;
-```text
-
-where `broadcast` broadcasts from element 0 to all others along the
-specified dimension. This time, the temporary storage footprint is `3 * 5`
-values which is the same amount of data as the `3 * 5` values transferred.
-An additional `1` broadcast is required. On a GPU this broadcast could be
-implemented using a warp-shuffle if loop `j` were mapped to `threadIdx.x`.
-
-Syntax
 </code></pre></div>
-<p>operation ::= ssa-id <code>=</code> <code>vector.transfer_read</code> ssa-use-list
-<code>{</code> attribute-entry <code>} :</code> memref-type <code>,</code> vector-type</p>
-<div class="example-wrap"><pre class="language-text"><code>
-Example:
-
-```mlir
-// Read the slice `%A[%i0, %i1:%i1+256, %i2:%i2+32]` into vector&lt;32x256xf32&gt;
+<p>where <code>broadcast</code> broadcasts from element 0 to all others along the
+specified dimension. This time, the temporary storage footprint is <code>3 * 5</code>
+values which is the same amount of data as the <code>3 * 5</code> values transferred.
+An additional <code>1</code> broadcast is required. On a GPU this broadcast could be
+implemented using a warp-shuffle if loop <code>j</code> were mapped to <code>threadIdx.x</code>.</p>
+<p>Syntax</p>
+<div class="example-wrap"><pre class="language-text"><code>operation ::= ssa-id `=` `vector.transfer_read` ssa-use-list
+  `{` attribute-entry `} :` memref-type `,` vector-type
+</code></pre></div>
+<p>Example:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Read the slice `%A[%i0, %i1:%i1+256, %i2:%i2+32]` into vector&lt;32x256xf32&gt;
 // and pad with %f0 to handle the boundary case:
 %f0 = arith.constant 0.0f : f32
 for %i0 = 0 to %0 {

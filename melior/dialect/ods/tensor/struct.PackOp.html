@@ -14,23 +14,17 @@ tile complete.</li>
 <p>Example NC_to_NCnc:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%0 = tensor.pack %source inner_dims_pos = [0, 1]
   inner_tiles = [8, 32] into %dest : tensor&lt;128x256xf32&gt; -&gt; tensor&lt;16x8x8x32xf32&gt;
-```text
-Example CK to KCck
-
-```mlir
-%0 = tensor.pack %source outer_dims_perm = [1, 0] inner_dims_pos = [0, 1]
+</code></pre></div>
+<p>Example CK to KCck</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%0 = tensor.pack %source outer_dims_perm = [1, 0] inner_dims_pos = [0, 1]
   inner_tiles = [8, 32] into %dest : tensor&lt;128x256xf32&gt; -&gt; tensor&lt;8x16x8x32xf32&gt;
-```text
-
-In all cases, dimension at position 0 in the input tensor (128) is tiled
+</code></pre></div>
+<p>In all cases, dimension at position 0 in the input tensor (128) is tiled
 with a factor of 8, while dimension at position 1 (256) is tiled with a factor
 of 32. In the second example, the outer data dimensions are interchanged
-according to `outer_dims_perm`.
-
-Example NC_to_NCnc with padding:
-
-```mlir
-%0 = tensor.pack %arg padding_value(%pad : f32) inner_dims_pos = [0, 1]
+according to <code>outer_dims_perm</code>.</p>
+<p>Example NC_to_NCnc with padding:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%0 = tensor.pack %arg padding_value(%pad : f32) inner_dims_pos = [0, 1]
   inner_tiles = [8, 2] into %arg1 : tensor&lt;13x15xf32&gt; -&gt; tensor&lt;2x8x8x2xf32&gt;
 </code></pre></div></div></details><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-PackOp%3C'c%3E" class="impl"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#89-92">source</a><a href="#impl-PackOp%3C'c%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'c&gt; <a class="struct" href="struct.PackOp.html" title="struct melior::dialect::ods::tensor::PackOp">PackOp</a>&lt;'c&gt;</h3></section></summary><div class="impl-items"><section id="method.name" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#89-92">source</a><h4 class="code-header">pub fn <a href="#method.name" class="fn">name</a>() -&gt; &amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.71.1/std/primitive.str.html">str</a></h4></section><section id="method.operation" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#89-92">source</a><h4 class="code-header">pub fn <a href="#method.operation" class="fn">operation</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../../ir/operation/struct.Operation.html" title="struct melior::ir::operation::Operation">Operation</a>&lt;'c&gt;</h4></section><section id="method.builder" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#89-92">source</a><h4 class="code-header">pub fn <a href="#method.builder" class="fn">builder</a>(
     location: <a class="struct" href="../../../ir/struct.Location.html" title="struct melior::ir::Location">Location</a>&lt;'c&gt;

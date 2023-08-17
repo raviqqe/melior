@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ListDelimType","ListType","NodeValue","TableAlignment"],"fn":["can_contain_type"],"struct":["Ast","LineColumn","NodeCode","NodeCodeBlock","NodeDescriptionItem","NodeHeading","NodeHtmlBlock","NodeLink","NodeList","Sourcepos"],"type":["AstNode"]};

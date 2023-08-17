@@ -5,13 +5,10 @@ statically shaped.</p>
 <p>Example:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%s = arith.constant 10.1 : f32
 %t = tensor.splat %s : tensor&lt;8x16xf32&gt;
-```text
-
-TODO: This operation is easy to extend to broadcast to dynamically shaped
-      tensors:
-
-```mlir
-// Broadcasts %s to a 2-d dynamically shaped tensor, with %m, %n binding
+</code></pre></div>
+<p>TODO: This operation is easy to extend to broadcast to dynamically shaped
+tensors:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Broadcasts %s to a 2-d dynamically shaped tensor, with %m, %n binding
 // to the sizes of the two dynamic dimensions.
 %m = &quot;foo&quot;() : () -&gt; (index)
 %n = &quot;bar&quot;() : () -&gt; (index)

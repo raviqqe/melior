@@ -48,41 +48,34 @@ func.func @simple_example(%A: memref&lt;?x?xf32&gt;, %B: memref&lt;?x?xf32&gt;) 
   }
   return
 }
-```text
-`affine.for` can also operate on loop-carried variables (`iter_args`) and
+</code></pre></div>
+<p><code>affine.for</code> can also operate on loop-carried variables (<code>iter_args</code>) and
 return the final values after loop termination. The initial values of the
-variables are passed as additional SSA operands to the `affine.for`
-following the operands for the loop&#39;s lower and upper bounds. The
-operation&#39;s region has equivalent arguments for each variable representing
-the value of the variable at the current iteration.
-
-The region must terminate with an `affine.yield` that passes all the current
-iteration variables to the next iteration, or to the `affine.for`&#39;s results
-if at the last iteration. For `affine.for`&#39;s that execute zero iterations, the
+variables are passed as additional SSA operands to the <code>affine.for</code>
+following the operands for the loop’s lower and upper bounds. The
+operation’s region has equivalent arguments for each variable representing
+the value of the variable at the current iteration.</p>
+<p>The region must terminate with an <code>affine.yield</code> that passes all the current
+iteration variables to the next iteration, or to the <code>affine.for</code>’s results
+if at the last iteration. For <code>affine.for</code>’s that execute zero iterations, the
 initial values of the loop-carried variables (corresponding to the SSA
-operands) will be the op&#39;s results.
-
-For example, to sum-reduce a memref:
-
- ```mlir
-func.func @reduce(%buffer: memref&lt;1024xf32&gt;) -&gt; (f32) {
-  // Initial sum set to 0.
-  %sum_0 = arith.constant 0.0 : f32
-  // iter_args binds initial values to the loop&#39;s region arguments.
-  %sum = affine.for %i = 0 to 10 step 2
-      iter_args(%sum_iter = %sum_0) -&gt; (f32) {
-    %t = affine.load %buffer[%i] : memref&lt;1024xf32&gt;
-    %sum_next = arith.addf %sum_iter, %t : f32
-    // Yield current iteration sum to next iteration %sum_iter or to %sum
-    // if final iteration.
-    affine.yield %sum_next : f32
-  }
-  return %sum : f32
+operands) will be the op’s results.</p>
+<p>For example, to sum-reduce a memref:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>func.func @reduce(%buffer: memref&lt;1024xf32&gt;) -&gt; (f32) {
+ // Initial sum set to 0.
+ %sum_0 = arith.constant 0.0 : f32
+ // iter_args binds initial values to the loop&#39;s region arguments.
+ %sum = affine.for %i = 0 to 10 step 2
+     iter_args(%sum_iter = %sum_0) -&gt; (f32) {
+   %t = affine.load %buffer[%i] : memref&lt;1024xf32&gt;
+   %sum_next = arith.addf %sum_iter, %t : f32
+   // Yield current iteration sum to next iteration %sum_iter or to %sum
+   // if final iteration.
+   affine.yield %sum_next : f32
+ }
+ return %sum : f32
 }
-```text
-
-```mlir
-%res:2 = affine.for %i = 0 to 128 iter_args(%arg0 = %init0, %arg1 = %init1)
+</code></pre></div><div class="example-wrap"><pre class="language-mlir"><code>%res:2 = affine.for %i = 0 to 128 iter_args(%arg0 = %init0, %arg1 = %init1)
            -&gt; (index, index) {
   %y0 = arith.addi %arg0, %c1 : index
   %y1 = arith.addi %arg1, %c2 : index

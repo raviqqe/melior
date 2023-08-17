@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["escape","escape_href","format_document","format_document_with_plugins","write_opening_tag"],"struct":["Anchorizer"]};

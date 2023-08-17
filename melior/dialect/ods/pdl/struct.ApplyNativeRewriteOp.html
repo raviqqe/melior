@@ -7,10 +7,7 @@ the interleaving of native rewrite methods with other pdl constructs.</p>
 <p>Example:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>// Apply a native rewrite method that returns an attribute.
 %ret = pdl.apply_native_rewrite &quot;myNativeFunc&quot;(%arg0, %attr1) : !pdl.attribute
-```text
-
-```c++
-// The native rewrite as defined in C++:
+</code></pre></div><div class="example-wrap"><pre class="language-c++"><code>// The native rewrite as defined in C++:
 static Attribute myNativeFunc(PatternRewriter &amp;rewriter, Value arg0, Attribute arg1) {
   // Just return the second arg.
   return arg1;

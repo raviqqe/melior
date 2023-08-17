@@ -22,15 +22,12 @@ variables may not change with iterations.</p>
    %sum = arith.add %iter, %arg3
    sparse_tensor.yield %sum
 }
-```text
-
-It is important to note that foreach generated loop iterates over the stored elements
+</code></pre></div>
+<p>It is important to note that foreach generated loop iterates over the stored elements
 in the storage order. However, no matter what storage order is used, the indices passed
-to the block always obey the original dimension order.
-
-For example:
-```mlir
-#COL_MAJOR = #sparse_tensor.encoding&lt;{
+to the block always obey the original dimension order.</p>
+<p>For example:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>#COL_MAJOR = #sparse_tensor.encoding&lt;{
   dimLevelType = [ &quot;compressed&quot;, &quot;compressed&quot; ],
   dimOrdering = affine_map&lt;(i,j) -&gt; (j,i)&gt;
 }&gt;

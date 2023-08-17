@@ -11,40 +11,28 @@ is undefined. This is consistent with the ISO C realloc.</p>
 <p>The operation returns an SSA value for the memref.</p>
 <p>Example:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%0 = memref.realloc %src : memref&lt;64xf32&gt; to memref&lt;124xf32&gt;
-```text
-
-The source memref may have a dynamic shape, in which case, the compiler will
+</code></pre></div>
+<p>The source memref may have a dynamic shape, in which case, the compiler will
 generate code to extract its size from the runtime data structure for the
-memref.
-
-```mlir
-%1 = memref.realloc %src : memref&lt;?xf32&gt; to memref&lt;124xf32&gt;
-```text
-
-If the result memref has a dynamic shape, a result dimension operand is
+memref.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%1 = memref.realloc %src : memref&lt;?xf32&gt; to memref&lt;124xf32&gt;
+</code></pre></div>
+<p>If the result memref has a dynamic shape, a result dimension operand is
 needed to spefify its dynamic dimension. In the example below, the ssa value
-&#39;%d&#39; specifies the unknown dimension of the result memref.
-
-```mlir
-%2 = memref.realloc %src(%d) : memref&lt;?xf32&gt; to memref&lt;?xf32&gt;
-```text
-
-An optional `alignment` attribute may be specified to ensure that the
+‘%d’ specifies the unknown dimension of the result memref.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%2 = memref.realloc %src(%d) : memref&lt;?xf32&gt; to memref&lt;?xf32&gt;
+</code></pre></div>
+<p>An optional <code>alignment</code> attribute may be specified to ensure that the
 region of memory that will be indexed is aligned at the specified byte
 boundary.  This is consistent with the fact that memref.alloc supports such
 an optional alignment attribute. Note that in ISO C standard, neither alloc
 nor realloc supports alignment, though there is aligned_alloc but not
-aligned_realloc.
-
-```mlir
-%3 = memref.ralloc %src {alignment = 8} : memref&lt;64xf32&gt; to memref&lt;124xf32&gt;
-```text
-
-Referencing the memref through the old SSA value after realloc is undefined
-behavior.
-
-```mlir
-%new = memref.realloc %old : memref&lt;64xf32&gt; to memref&lt;124xf32&gt;
+aligned_realloc.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%3 = memref.ralloc %src {alignment = 8} : memref&lt;64xf32&gt; to memref&lt;124xf32&gt;
+</code></pre></div>
+<p>Referencing the memref through the old SSA value after realloc is undefined
+behavior.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%new = memref.realloc %old : memref&lt;64xf32&gt; to memref&lt;124xf32&gt;
 %4 = memref.load %new[%index]   // ok
 %5 = memref.load %old[%index]   // undefined behavior
 </code></pre></div></div></details><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-ReallocOp%3C'c%3E" class="impl"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#49-52">source</a><a href="#impl-ReallocOp%3C'c%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'c&gt; <a class="struct" href="struct.ReallocOp.html" title="struct melior::dialect::ods::memref::ReallocOp">ReallocOp</a>&lt;'c&gt;</h3></section></summary><div class="impl-items"><section id="method.name" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#49-52">source</a><h4 class="code-header">pub fn <a href="#method.name" class="fn">name</a>() -&gt; &amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.71.1/std/primitive.str.html">str</a></h4></section><section id="method.operation" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#49-52">source</a><h4 class="code-header">pub fn <a href="#method.operation" class="fn">operation</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../../ir/operation/struct.Operation.html" title="struct melior::ir::operation::Operation">Operation</a>&lt;'c&gt;</h4></section><section id="method.builder" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#49-52">source</a><h4 class="code-header">pub fn <a href="#method.builder" class="fn">builder</a>(

@@ -36,12 +36,9 @@ func.func @reduced_domain_example(%A, %X, %N) : (memref&lt;10xi32&gt;, i32, i32)
   }
   return
 }
-```text
-
-Example with an explicit yield (initialization with edge padding):
-
-```mlir
-#interior = affine_set&lt;(i, j) : (i - 1 &gt;= 0, j - 1 &gt;= 0,  10 - i &gt;= 0, 10 - j &gt;= 0)&gt; (%i, %j)
+</code></pre></div>
+<p>Example with an explicit yield (initialization with edge padding):</p>
+<div class="example-wrap"><pre class="language-mlir"><code>#interior = affine_set&lt;(i, j) : (i - 1 &gt;= 0, j - 1 &gt;= 0,  10 - i &gt;= 0, 10 - j &gt;= 0)&gt; (%i, %j)
 func.func @pad_edges(%I : memref&lt;10x10xf32&gt;) -&gt; (memref&lt;12x12xf32) {
   %O = alloc memref&lt;12x12xf32&gt;
   affine.parallel (%i, %j) = (0, 0) to (12, 12) {

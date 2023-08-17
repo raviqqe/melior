@@ -7,19 +7,15 @@ the control-flow exits the nested region. For example:</p>
   %myalloca = memref.alloca(): memref&lt;4x3xf32&gt;
   ...
 }
-```text
-
-Here, `%myalloca` memref is valid within the explicitly delimited scope
+</code></pre></div>
+<p>Here, <code>%myalloca</code> memref is valid within the explicitly delimited scope
 and is automatically deallocated at the end of the given region. Conceptually,
-`memref.alloca_scope` is a passthrough operation with
-`AutomaticAllocationScope` that spans the body of the region within the operation.
-
-`memref.alloca_scope` may also return results that are defined in the nested
-region. To return a value, one should use `memref.alloca_scope.return`
-operation:
-
-```mlir
-%result = memref.alloca_scope {
+<code>memref.alloca_scope</code> is a passthrough operation with
+<code>AutomaticAllocationScope</code> that spans the body of the region within the operation.</p>
+<p><code>memref.alloca_scope</code> may also return results that are defined in the nested
+region. To return a value, one should use <code>memref.alloca_scope.return</code>
+operation:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%result = memref.alloca_scope {
   ...
   memref.alloca_scope.return %value
 }

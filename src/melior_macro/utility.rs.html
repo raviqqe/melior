@@ -65,37 +65,6 @@
 <a href="#65" id="65">65</a>
 <a href="#66" id="66">66</a>
 <a href="#67" id="67">67</a>
-<a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
-<a href="#93" id="93">93</a>
-<a href="#94" id="94">94</a>
-<a href="#95" id="95">95</a>
-<a href="#96" id="96">96</a>
-<a href="#97" id="97">97</a>
-<a href="#98" id="98">98</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>convert_case::{Case, Casing};
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>proc_macro2::Ident;
@@ -126,17 +95,6 @@
     <span class="comment">// Try to parse the string as an ident, and prefix the identifier
     // with &quot;r#&quot; if it is not a valid identifier.
     </span>syn::parse_str::&lt;Ident&gt;(<span class="kw-2">&amp;</span>name).unwrap_or(<span class="macro">format_ident!</span>(<span class="string">&quot;r#{}&quot;</span>, name))
-}
-
-<span class="kw">static </span>CODE_BLOCK_PATTERN: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">r#&quot;(?s)```\n(.*?```)&quot;#</span>).unwrap());
-
-<span class="comment">// TODO Use the `comrak` crate.
-</span><span class="kw">pub fn </span>sanitize_documentation(documentation: <span class="kw-2">&amp;</span>str) -&gt; String {
-    CODE_BLOCK_PATTERN
-        .replace_all(documentation, |captures: <span class="kw-2">&amp;</span>Captures| {
-            <span class="macro">format!</span>(<span class="string">&quot;```text\n{}&quot;</span>, captures.get(<span class="number">1</span>).unwrap().as_str())
-        })
-        .to_string()
 }
 
 <span class="kw">static </span>NAME_PATTERN: Lazy&lt;Regex&gt; = Lazy::new(|| {
@@ -172,26 +130,6 @@
         <span class="macro">assert_eq!</span>(map_name(<span class="string">&quot;f_64&quot;</span>), <span class="string">&quot;f64&quot;</span>);
         <span class="macro">assert_eq!</span>(map_name(<span class="string">&quot;float_8_e_5_m_2&quot;</span>), <span class="string">&quot;float8e5m2&quot;</span>);
         <span class="macro">assert_eq!</span>(map_name(<span class="string">&quot;float_8_e_4_m_3_fn&quot;</span>), <span class="string">&quot;float8e4m3fn&quot;</span>);
-    }
-
-    <span class="kw">mod </span>sanitize_documentation {
-        <span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-        <span class="attr">#[test]
-        </span><span class="kw">fn </span>sanitize_code_block() {
-            <span class="macro">assert_eq!</span>(
-                <span class="kw-2">&amp;</span>sanitize_documentation(<span class="string">&quot;```\nfoo\n```&quot;</span>),
-                <span class="string">&quot;```text\nfoo\n```&quot;
-            </span>);
-        }
-
-        <span class="attr">#[test]
-        </span><span class="kw">fn </span>sanitize_code_blocks() {
-            <span class="macro">assert_eq!</span>(
-                <span class="kw-2">&amp;</span>sanitize_documentation(<span class="string">&quot;```\nfoo\n```\n```\nbar\n```&quot;</span>),
-                <span class="string">&quot;```text\nfoo\n```\n```text\nbar\n```&quot;
-            </span>);
-        }
     }
 }
 </code></pre></div></section></main></body></html>

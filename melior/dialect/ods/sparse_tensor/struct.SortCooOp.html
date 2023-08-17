@@ -12,10 +12,7 @@ the operator is undefined if this condition is not met.</p>
 <p>Example:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>sparse_tensor.sort_coo %n, %x { nx = 2 : index}
   : memref&lt;?xindex&gt;
-```text
-
-```mlir
-sparse_tensor.sort %n, %xy jointly %y1 { nx = 2 : index, ny = 2 : index}
+</code></pre></div><div class="example-wrap"><pre class="language-mlir"><code>sparse_tensor.sort %n, %xy jointly %y1 { nx = 2 : index, ny = 2 : index}
   : memref&lt;?xi64&gt; jointly memref&lt;?xf32&gt;
 </code></pre></div></div></details><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-SortCooOp%3C'c%3E" class="impl"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#85-88">source</a><a href="#impl-SortCooOp%3C'c%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'c&gt; <a class="struct" href="struct.SortCooOp.html" title="struct melior::dialect::ods::sparse_tensor::SortCooOp">SortCooOp</a>&lt;'c&gt;</h3></section></summary><div class="impl-items"><section id="method.name" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#85-88">source</a><h4 class="code-header">pub fn <a href="#method.name" class="fn">name</a>() -&gt; &amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.71.1/std/primitive.str.html">str</a></h4></section><section id="method.operation" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#85-88">source</a><h4 class="code-header">pub fn <a href="#method.operation" class="fn">operation</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../../ir/operation/struct.Operation.html" title="struct melior::ir::operation::Operation">Operation</a>&lt;'c&gt;</h4></section><section id="method.builder" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#85-88">source</a><h4 class="code-header">pub fn <a href="#method.builder" class="fn">builder</a>(
     location: <a class="struct" href="../../../ir/struct.Location.html" title="struct melior::ir::Location">Location</a>&lt;'c&gt;

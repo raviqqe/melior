@@ -6,10 +6,10 @@ to more inputs. Both operands can be of type <code>shape.shape</code> or
 operands are tensors, may be of type <code>tensor&lt;?xindex&gt;</code>.</p>
 <p>If the two operand shapes are of different rank the smaller one is padded
 with 1’s from the left. The resulting broadcasted shape is then defined as</p>
-
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code>result[i] = lhs[i] <span class="kw">if </span>lhs[i] == rhs[i]
-          = lhs[i] <span class="kw">if </span>rhs[i] == <span class="number">1
-          </span>= rhs[i] <span class="kw">if </span>lhs[i] == <span class="number">1.</span></code></pre></div>
+<div class="example-wrap"><pre class="language-text"><code>result[i] = lhs[i] if lhs[i] == rhs[i]
+          = lhs[i] if rhs[i] == 1
+          = rhs[i] if lhs[i] == 1.
+</code></pre></div>
 <p>In case the resulting shape is undefined, i.e. if corresponding extents are
 different from each other but none is 1, the result is an error shape.
 Likewise error values are propagated if any of the operands holds an error

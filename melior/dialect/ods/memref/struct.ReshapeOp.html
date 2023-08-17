@@ -14,13 +14,10 @@ Result type is ranked.</p>
 // Flatten unranked memref.
 %dst = memref.reshape %src(%shape)
          : (memref&lt;*xf32&gt;, memref&lt;1xi32&gt;) to memref&lt;?xf32&gt;
-```text
-
-b. Source type is ranked or unranked. Shape argument has dynamic size.
-Result type is unranked.
-
-```mlir
-// Reshape dynamically-shaped 1D memref.
+</code></pre></div>
+<p>b. Source type is ranked or unranked. Shape argument has dynamic size.
+Result type is unranked.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Reshape dynamically-shaped 1D memref.
 %dst = memref.reshape %src(%shape)
          : (memref&lt;?xf32&gt;, memref&lt;?xi32&gt;) to memref&lt;*xf32&gt;
 // Reshape unranked memref.

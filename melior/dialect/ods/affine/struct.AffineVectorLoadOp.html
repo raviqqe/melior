@@ -13,18 +13,12 @@ dimension of the memref. The keyword ‘symbol’ can be used to indicate SSA
 identifiers which are symbolic.</p>
 <p>Example 1: 8-wide f32 vector load.</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%1 = affine.vector_load %0[%i0 + 3, %i1 + 7] : memref&lt;100x100xf32&gt;, vector&lt;8xf32&gt;
-```text
-
-Example 2: 4-wide f32 vector load. Uses &#39;symbol&#39; keyword for symbols &#39;%n&#39; and &#39;%m&#39;.
-
-```mlir
-%1 = affine.vector_load %0[%i0 + symbol(%n), %i1 + symbol(%m)] : memref&lt;100x100xf32&gt;, vector&lt;4xf32&gt;
-```text
-
-Example 3: 2-dim f32 vector load.
-
-```mlir
-%1 = affine.vector_load %0[%i0, %i1] : memref&lt;100x100xf32&gt;, vector&lt;2x8xf32&gt;
+</code></pre></div>
+<p>Example 2: 4-wide f32 vector load. Uses ‘symbol’ keyword for symbols ‘%n’ and ‘%m’.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%1 = affine.vector_load %0[%i0 + symbol(%n), %i1 + symbol(%m)] : memref&lt;100x100xf32&gt;, vector&lt;4xf32&gt;
+</code></pre></div>
+<p>Example 3: 2-dim f32 vector load.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%1 = affine.vector_load %0[%i0, %i1] : memref&lt;100x100xf32&gt;, vector&lt;2x8xf32&gt;
 </code></pre></div>
 <p>TODOs:</p>
 <ul>

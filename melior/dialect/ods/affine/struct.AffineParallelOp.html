@@ -42,12 +42,9 @@ terminator, even when they are missing from the textual representation.</p>
   }
   return %O
 }
-```text
-
-Example (tiling by potentially imperfectly dividing sizes):
-
-```mlir
-affine.parallel (%ii, %jj) = (0, 0) to (%N, %M) step (32, 32) {
+</code></pre></div>
+<p>Example (tiling by potentially imperfectly dividing sizes):</p>
+<div class="example-wrap"><pre class="language-mlir"><code>affine.parallel (%ii, %jj) = (0, 0) to (%N, %M) step (32, 32) {
   affine.parallel (%i, %j) = (%ii, %jj)
                           to (min(%ii + 32, %N), min(%jj + 32, %M)) {
     call @f(%i, %j) : (index, index) -&gt; ()

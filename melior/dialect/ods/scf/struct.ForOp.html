@@ -15,29 +15,24 @@ cases when it is absent from the custom format. For example:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>scf.for %iv = %lb to %ub step %step {
   ... // body
 }
-```text
-
-`scf.for` can also operate on loop-carried variables and returns the final
+</code></pre></div>
+<p><code>scf.for</code> can also operate on loop-carried variables and returns the final
 values after loop termination. The initial values of the variables are
-passed as additional SSA operands to the &quot;scf.for&quot; following the 3 loop
+passed as additional SSA operands to the “scf.for” following the 3 loop
 control SSA values mentioned above (lower bound, upper bound and step). The
 operation region has an argument for the induction variable, followed by
 one argument for each loop-carried variable, representing the value of the
-variable at the current iteration.
-
-The region must terminate with a &quot;scf.yield&quot; that passes the current
+variable at the current iteration.</p>
+<p>The region must terminate with a “scf.yield” that passes the current
 values of all loop-carried variables to the next iteration, or to the
-&quot;scf.for&quot; result, if at the last iteration. The static type of a
+“scf.for” result, if at the last iteration. The static type of a
 loop-carried variable may not change with iterations; its runtime type is
 allowed to change. Note, that when the loop-carried variables are present,
 calling ForOp::build will not insert the terminator implicitly. The caller
-must insert &quot;scf.yield&quot; in that case.
-
-&quot;scf.for&quot; results hold the final values after the last iteration.
-For example, to sum-reduce a memref:
-
-```mlir
-func.func @reduce(%buffer: memref&lt;1024xf32&gt;, %lb: index,
+must insert “scf.yield” in that case.</p>
+<p>“scf.for” results hold the final values after the last iteration.
+For example, to sum-reduce a memref:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>func.func @reduce(%buffer: memref&lt;1024xf32&gt;, %lb: index,
                   %ub: index, %step: index) -&gt; (f32) {
   // Initial sum set to 0.
   %sum_0 = arith.constant 0.0 : f32
@@ -52,17 +47,13 @@ func.func @reduce(%buffer: memref&lt;1024xf32&gt;, %lb: index,
   }
   return %sum : f32
 }
-```text
-
-If the &quot;scf.for&quot; defines any values, a yield must be explicitly present.
-The number and types of the &quot;scf.for&quot; results must match the initial
-values in the &quot;iter_args&quot; binding and the yield operands.
-
-Another example with a nested &quot;scf.if&quot; (see &quot;scf.if&quot; for details) to
-perform conditional reduction:
-
-```mlir
-func.func @conditional_reduce(%buffer: memref&lt;1024xf32&gt;, %lb: index,
+</code></pre></div>
+<p>If the “scf.for” defines any values, a yield must be explicitly present.
+The number and types of the “scf.for” results must match the initial
+values in the “iter_args” binding and the yield operands.</p>
+<p>Another example with a nested “scf.if” (see “scf.if” for details) to
+perform conditional reduction:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>func.func @conditional_reduce(%buffer: memref&lt;1024xf32&gt;, %lb: index,
                               %ub: index, %step: index) -&gt; (f32) {
   %sum_0 = arith.constant 0.0 : f32
   %c0 = arith.constant 0.0 : f32

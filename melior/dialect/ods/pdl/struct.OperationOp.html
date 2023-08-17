@@ -14,76 +14,58 @@ can be extracted via <code>pdl.result</code>.</p>
 <div class="example-wrap"><pre class="language-mlir"><code>// Define an instance of a `foo.op` operation.
 %op = pdl.operation &quot;foo.op&quot;(%arg0, %arg1 : !pdl.value, !pdl.value)
   {&quot;attrA&quot; = %attr0} -&gt; (%type, %type : !pdl.type, !pdl.type)
-```text
-
-When used within a matching context, the name of the operation may be
-omitted.
-
-When used within a rewriting context, i.e. when defined within a
-`pdl.rewrite`, all of the result types must be &quot;inferable&quot;. This means that
+</code></pre></div>
+<p>When used within a matching context, the name of the operation may be
+omitted.</p>
+<p>When used within a rewriting context, i.e. when defined within a
+<code>pdl.rewrite</code>, all of the result types must be “inferable”. This means that
 the type must be attributable to either a constant type value or the result
 type of another entity, such as an attribute, the result of a
-`apply_native_rewrite`, or the result type of another operation. If the
+<code>apply_native_rewrite</code>, or the result type of another operation. If the
 result type value does not meet any of these criteria, the operation must
-override the `InferTypeOpInterface` to ensure that the result types can be
-inferred.
-
-The operands of the operation are interpreted in the following ways:
-
-1) A single !pdl.range&lt;value&gt;:
-
-In this case, the single range is treated as all of the operands of the
-operation.
-
-```mlir
-// Define an instance with single range of operands.
+override the <code>InferTypeOpInterface</code> to ensure that the result types can be
+inferred.</p>
+<p>The operands of the operation are interpreted in the following ways:</p>
+<ol>
+<li>A single !pdl.range<value>:</li>
+</ol>
+<p>In this case, the single range is treated as all of the operands of the
+operation.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Define an instance with single range of operands.
 %op = pdl.operation &quot;func.return&quot;(%allArgs : !pdl.range&lt;value&gt;)
-```text
-
-2) A variadic number of either !pdl.value or !pdl.range&lt;value&gt;:
-
-In this case, the inputs are expected to correspond with the operand groups
-defined on the operation in ODS.
-
-```tablgen
-// Given the following operation definition in ODS:
+</code></pre></div>
+<ol start="2">
+<li>A variadic number of either !pdl.value or !pdl.range<value>:</li>
+</ol>
+<p>In this case, the inputs are expected to correspond with the operand groups
+defined on the operation in ODS.</p>
+<div class="example-wrap"><pre class="language-tablgen"><code>// Given the following operation definition in ODS:
 def MyIndirectCallOp {
   let results = (outs FunctionType:$call, Variadic&lt;AnyType&gt;:$args);
 }
-```text
-
-```mlir
-// We can match the operands as so:
+</code></pre></div><div class="example-wrap"><pre class="language-mlir"><code>// We can match the operands as so:
 %op = pdl.operation &quot;my.indirect_call&quot;(%call, %args : !pdl.value, !pdl.range&lt;value&gt;)
-```text
-
-The results of the operation are interpreted in the following ways:
-
-1) A single !pdl.range&lt;type&gt;:
-
-In this case, the single range is treated as all of the result types of the
-operation.
-
-```mlir
-// Define an instance with single range of types.
+</code></pre></div>
+<p>The results of the operation are interpreted in the following ways:</p>
+<ol>
+<li>A single !pdl.range<type>:</li>
+</ol>
+<p>In this case, the single range is treated as all of the result types of the
+operation.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>// Define an instance with single range of types.
 %allResultTypes = pdl.types
 %op = pdl.operation &quot;builtin.unrealized_conversion_cast&quot; -&gt; (%allResultTypes : !pdl.types)
-```text
-
-2) A variadic number of either !pdl.type or !pdl.range&lt;type&gt;:
-
-In this case, the inputs are expected to correspond with the result groups
-defined on the operation in ODS.
-
-```tablgen
-// Given the following operation definition in ODS:
+</code></pre></div>
+<ol start="2">
+<li>A variadic number of either !pdl.type or !pdl.range<type>:</li>
+</ol>
+<p>In this case, the inputs are expected to correspond with the result groups
+defined on the operation in ODS.</p>
+<div class="example-wrap"><pre class="language-tablgen"><code>// Given the following operation definition in ODS:
 def MyOp {
   let results = (outs SomeType:$result, Variadic&lt;SomeType&gt;:$otherResults);
 }
-```text
-
-```mlir
-// We can match the results as so:
+</code></pre></div><div class="example-wrap"><pre class="language-mlir"><code>// We can match the results as so:
 %result = pdl.type
 %otherResults = pdl.types
 %op = pdl.operation &quot;foo.op&quot; -&gt; (%result, %otherResults : !pdl.type, !pdl.range&lt;type&gt;)

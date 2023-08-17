@@ -41,12 +41,9 @@ in the inputs are copied to the output unchanged.</p>
       right={}
     linalg.yield %result : i8
 } -&gt; tensor&lt;?xi8, #SparseVector&gt;
-```text
-
-Example of A+B in upper triangle, A-B in lower triangle:
-
-```mlir
-%C = bufferization.alloc_tensor...
+</code></pre></div>
+<p>Example of A+B in upper triangle, A-B in lower triangle:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%C = bufferization.alloc_tensor...
 %1 = linalg.generic #trait
   ins(%A: tensor&lt;?x?xf64, #CSR&gt;, %B: tensor&lt;?x?xf64, #CSR&gt;
   outs(%C: tensor&lt;?x?xf64, #CSR&gt; {
@@ -72,14 +69,11 @@ Example of A+B in upper triangle, A-B in lower triangle:
       }
     linalg.yield %result : f64
 } -&gt; tensor&lt;?x?xf64, #CSR&gt;
-```text
-
-Example of set difference. Returns a copy of A where its sparse structure
-is *not* overlapped by B. The element type of B can be different than A
-because we never use its values, only its sparse structure:
-
-```mlir
-%C = bufferization.alloc_tensor...
+</code></pre></div>
+<p>Example of set difference. Returns a copy of A where its sparse structure
+is <em>not</em> overlapped by B. The element type of B can be different than A
+because we never use its values, only its sparse structure:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%C = bufferization.alloc_tensor...
 %2 = linalg.generic #trait
   ins(%A: tensor&lt;?x?xf64, #CSR&gt;, %B: tensor&lt;?x?xi32, #CSR&gt;
   outs(%C: tensor&lt;?x?xf64, #CSR&gt; {

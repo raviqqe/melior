@@ -6,22 +6,16 @@ surrounding operation with an
 The amount of memory allocated is specified by its memref and additional
 operands. For example:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%0 = memref.alloca() : memref&lt;8x64xf32&gt;
-```text
-
-The optional list of dimension operands are bound to the dynamic dimensions
-specified in its memref type. In the example below, the SSA value &#39;%d&#39; is
-bound to the second dimension of the memref (which is dynamic).
-
-```mlir
-%0 = memref.alloca(%d) : memref&lt;8x?xf32&gt;
-```text
-
-The optional list of symbol operands are bound to the symbols of the
-memref&#39;s affine map. In the example below, the SSA value &#39;%s&#39; is bound to
-the symbol &#39;s0&#39; in the affine map specified in the allocs memref type.
-
-```mlir
-%0 = memref.alloca()[%s] : memref&lt;8x64xf32,
+</code></pre></div>
+<p>The optional list of dimension operands are bound to the dynamic dimensions
+specified in its memref type. In the example below, the SSA value ‘%d’ is
+bound to the second dimension of the memref (which is dynamic).</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%0 = memref.alloca(%d) : memref&lt;8x?xf32&gt;
+</code></pre></div>
+<p>The optional list of symbol operands are bound to the symbols of the
+memref’s affine map. In the example below, the SSA value ‘%s’ is bound to
+the symbol ‘s0’ in the affine map specified in the allocs memref type.</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%0 = memref.alloca()[%s] : memref&lt;8x64xf32,
                            affine_map&lt;(d0, d1)[s0] -&gt; ((d0 + s0), d1)&gt;&gt;
 </code></pre></div>
 <p>This operation returns a single SSA value of memref type, which can be used

@@ -11,31 +11,30 @@ vector elements undefined.</p>
 character, and undefined data elements are represented by ‘-’.</p>
 <p>Example</p>
 <p>vector&lt;1x8xf32&gt; with valid data shape [6], fixed vector sizes [8]</p>
+<div class="example-wrap"><pre class="language-text"><code>        input: [a, b, c, d, e, f]
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code>        input: [a, b, c, d, e, f]
+   layout map: (d0) -&gt; (d0 floordiv 8, d0 mod 8)
 
-   layout map: (d0) -&gt; (d0 floordiv <span class="number">8</span>, d0 <span class="kw">mod </span><span class="number">8</span>)
-
-vector layout: [a, b, c, d, e, f, -, -]</code></pre></div>
+vector layout: [a, b, c, d, e, f, -, -]
+</code></pre></div>
 <p>Example</p>
 <p>vector&lt;2x8xf32&gt; with valid data shape [10], fixed vector sizes [8]</p>
+<div class="example-wrap"><pre class="language-text"><code>        input: [a, b, c, d, e, f, g, h, i, j]
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code>        input: [a, b, c, d, e, f, g, h, i, j]
-
-   layout map: (d0) -&gt; (d0 floordiv <span class="number">8</span>, d0 <span class="kw">mod </span><span class="number">8</span>)
+   layout map: (d0) -&gt; (d0 floordiv 8, d0 mod 8)
 
 vector layout: [[a, b, c, d, e, f, g, h],
-                [i, j, -, -, -, -, -, -]]</code></pre></div>
+                [i, j, -, -, -, -, -, -]]
+</code></pre></div>
 <p>Example</p>
 <p>vector&lt;2x2x2x3xf32&gt; with valid data shape [3, 5], fixed vector sizes
 [2, 3]</p>
-
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code>        input: [[a, b, c, d, e],
+<div class="example-wrap"><pre class="language-text"><code>        input: [[a, b, c, d, e],
                 [f, g, h, i, j],
                 [k, l, m, n, o]]
 
-   layout map: (d0, d1) -&gt; (d0 floordiv <span class="number">3</span>, d1 floordiv <span class="number">5</span>,
-                            d0 <span class="kw">mod </span><span class="number">3</span>, d1 <span class="kw">mod </span><span class="number">5</span>)
+   layout map: (d0, d1) -&gt; (d0 floordiv 3, d1 floordiv 5,
+                            d0 mod 3, d1 mod 5)
 
 vector layout: [[[[a, b, c],
                   [f, g, h]]
@@ -44,16 +43,17 @@ vector layout: [[[[a, b, c],
                 [[[k, l, m],
                   [-, -, -]]
                  [[n, o, -],
-                  [-, -, -]]]]</code></pre></div>
+                  [-, -, -]]]]
+</code></pre></div>
 <p>Example</p>
 <p>%1 = vector.reshape %0, [%c3, %c6], [%c2, %c9], [4]
 : vector&lt;3x2x4xf32&gt; to vector&lt;2x3x4xf32&gt;</p>
-
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code>     input: [[a, b, c, d, e, f],
+<div class="example-wrap"><pre class="language-text"><code>     input: [[a, b, c, d, e, f],
              [g, h, i, j, k, l],
              [m, n, o, p, q, r]]
 
-layout map: (d0, d1) -&gt; (d0, d1 floordiv <span class="number">4</span>, d1 <span class="kw">mod </span><span class="number">4</span>)</code></pre></div>
+layout map: (d0, d1) -&gt; (d0, d1 floordiv 4, d1 mod 4)
+</code></pre></div>
 <p>Input vector:  [[[a, b, c, d],
 [e, f, -, -]],
 [[g, h, i, j],

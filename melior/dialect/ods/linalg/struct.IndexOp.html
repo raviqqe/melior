@@ -15,12 +15,9 @@ linalg.generic {indexing_maps = [#map, #map],
   %j = linalg.index 1 : index
   linalg.yield %i, %j : index, index
 }
-```text
-
-This may lower to IR resembling:
-
-```mlir
-%0 = dim %I, %c0 : memref&lt;?x?xindex&gt;
+</code></pre></div>
+<p>This may lower to IR resembling:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%0 = dim %I, %c0 : memref&lt;?x?xindex&gt;
 %1 = dim %I, %c1 : memref&lt;?x?xindex&gt;
 scf.for %i = %c0 to %0 step %c1 {
   scf.for %j = %c0 to %1 step %c1 {

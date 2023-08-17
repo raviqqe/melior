@@ -24,15 +24,11 @@ type by a whitespace for readability purposes.</p>
       (tensor&lt;4x4x4xf32&gt;, tensor&lt;1x2x 3xindex&gt;) -&gt; tensor&lt;1x2x 1x1x1xf32&gt;
 
     // Note: result type may be further rank-reduced to tensor&lt;1x2x f32&gt;.
-```text
-
-A slice variant is provided to allow specifying whole slices of the source
-tensor.
-
-Example:
-
-```mlir
-    // For each 5x6 singleton of coordinates in %indices, extract the 2-D
+</code></pre></div>
+<p>A slice variant is provided to allow specifying whole slices of the source
+tensor.</p>
+<p>Example:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>    // For each 5x6 singleton of coordinates in %indices, extract the 2-D
     // slice %source[*, %indices[...]:%indices[...] + 1, *] with the indices
     // corresponding to the `gather_dims` attribute specified by %indices.
     //
@@ -40,43 +36,34 @@ Example:
       (tensor&lt;3x4x5xf32&gt;, tensor&lt;6x7x 1xindex&gt;) -&gt; tensor&lt;6x7x 3x1x5xf32&gt;
 
     // Note: result type may be further rank-reduced to tensor&lt;6x7x 3x5xf32&gt;.
-```text
-
-The dimensions specified in the gather_dims attribute are ones for which the
-result tensor has size `1`.
-I.e. if the source type is `axbxcxd` and the coordinates are [1, 3], then
-the shape suffix is `ax1xcx1`.
-Gather also allows rank-reducing semantics where the shape `ax1xcx1` can be
-further simplified to `axc`.
-
-The elemental type of the indices tensor can be any integer type.
+</code></pre></div>
+<p>The dimensions specified in the gather_dims attribute are ones for which the
+result tensor has size <code>1</code>.
+I.e. if the source type is <code>axbxcxd</code> and the coordinates are [1, 3], then
+the shape suffix is <code>ax1xcx1</code>.
+Gather also allows rank-reducing semantics where the shape <code>ax1xcx1</code> can be
+further simplified to <code>axc</code>.</p>
+<p>The elemental type of the indices tensor can be any integer type.
 In the absence of target-specific or problem specific information the default
-type one should use is `index`.
-
-This operation does not support unranked tensors.
-
-An optional `unique` unit attribute may be specified to indicate that the
-coordinates in `indices` are statically guaranteed to be unique at runtime.
-Incorrectly setting the `unique` attribute when the coordinates are not truly
-unique is undefined behavior.
-
-Only full slices are meant to be supported by this op, if one desires
+type one should use is <code>index</code>.</p>
+<p>This operation does not support unranked tensors.</p>
+<p>An optional <code>unique</code> unit attribute may be specified to indicate that the
+coordinates in <code>indices</code> are statically guaranteed to be unique at runtime.
+Incorrectly setting the <code>unique</code> attribute when the coordinates are not truly
+unique is undefined behavior.</p>
+<p>Only full slices are meant to be supported by this op, if one desires
 partial slices (e.g. strided windows) one should compose this op with other
 tensor ops (e.g. tensor.extract_slice). This is to avoid a slippery slope of
-complexity that would make the op unusable in practice.
-
-At the tensor-level, the index tensor is specified in an AoS form (i.e.
+complexity that would make the op unusable in practice.</p>
+<p>At the tensor-level, the index tensor is specified in an AoS form (i.e.
 coordinate tuple is the most minor). It is the responsibility of further
-lowerings and bufferiation to implement various concrete layouts.
-
-Note: As currently specified, the operation must lower to an abstraction that
+lowerings and bufferiation to implement various concrete layouts.</p>
+<p>Note: As currently specified, the operation must lower to an abstraction that
 performs copies to the output tensor. This is because the buffer type system
 is currently not rich enough to allow multiple non-contiguous views in the
 same type. This is visible more clearly in a notional buffer version of the
-op:
-
-```mlir
-    // memref&lt;?x4x1xf32&gt; is a contiguous buffer of ?x4x1 elements.
+op:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>    // memref&lt;?x4x1xf32&gt; is a contiguous buffer of ?x4x1 elements.
     // gather from random source slices must copy to the contiguous output.
     %out = memref.gather %source[%indices] gather_dims([1]) :
       (memref&lt;4x4xf32&gt;, memref&lt;?x 1xindex&gt;) -&gt; memref&lt;?x 4x1xf32&gt;

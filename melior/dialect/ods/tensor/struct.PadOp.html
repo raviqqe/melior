@@ -29,32 +29,23 @@ be used, e.g., for packing or promotion to faster memory.</p>
   ^bb0(%arg0 : index, %arg1 : index):
     tensor.yield %pad_value : f32
   } : tensor&lt;?x?xf32&gt; to tensor&lt;?x?xf32&gt;
-```text
-
-Example 2:
-
-```mlir
-  %pad_value = ... : f32
+</code></pre></div>
+<p>Example 2:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>  %pad_value = ... : f32
   %0 = tensor.pad %arg0 low[2, %arg1, 3, 3] high[3, 3, %arg1, 2] {
   ^bb0(%arg2: index, %arg3: index, %arg4: index, %arg5: index):
       tensor.yield %pad_value : f32
   } : tensor&lt;1x2x2x?xf32&gt; to tensor&lt;6x?x?x?xf32&gt;
-```text
-
-Example 3:
-
-```mlir
-  %pad_value = ... : f32
+</code></pre></div>
+<p>Example 3:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>  %pad_value = ... : f32
   %0 = tensor.pad %arg0 low[0, 0] high[%ub0, %ub1] {
   ^bb0(%arg1: index, %arg2: index):
     tensor.yield %pad_value : f32
   } : tensor&lt;2x3xf32&gt; to tensor&lt;?x?xf32&gt;
-```text
-
-Example 4:
-
-```mlir
-  // Force a padded value to be always exist with `nofold`.
+</code></pre></div>
+<p>Example 4:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>  // Force a padded value to be always exist with `nofold`.
   %pad_value = ... : f32
   %0 = tensor.pad %arg0 nofold low[0, 0] high[0, 0] {
   ^bb0(%arg1: index, %arg2: index):

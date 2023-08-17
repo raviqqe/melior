@@ -70,12 +70,9 @@ across threads.</p>
 // Implicit synchronization point.
 // Sequential context.
 //
-```text
-
-Example with mapping attribute:
-
-```mlir
-//
+</code></pre></div>
+<p>Example with mapping attribute:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>//
 // Sequential context. Here `mapping` is expressed as GPU thread mapping
 // attributes
 //
@@ -93,12 +90,9 @@ Example with mapping attribute:
 // Implicit synchronization point.
 // Sequential context.
 //
-```text
-
-Example with privatized tensors:
-
-```mlir
-%t0 = ...
+</code></pre></div>
+<p>Example with privatized tensors:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%t0 = ...
 %t1 = ...
 %r = scf.foreach_thread ... shared_outs(%o = t0) -&gt; tensor&lt;?xf32&gt; {
   // %t0 and %t1 are privatized. %t0 is definitely copied for each thread

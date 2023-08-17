@@ -29,12 +29,9 @@ region does not contribute to the output.</p>
       absent={}
     linalg.yield %result : f64
 } -&gt; tensor&lt;?xf64, #SparseVector&gt;
-```text
-
-Example returning +1 for existing values and -1 for missing values:
-
-```mlir
-%result = sparse_tensor.unary %a : f64 to i32
+</code></pre></div>
+<p>Example returning +1 for existing values and -1 for missing values:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%result = sparse_tensor.unary %a : f64 to i32
   present={
     ^bb0(%x: f64):
       %ret = arith.constant 1 : i32
@@ -44,13 +41,10 @@ Example returning +1 for existing values and -1 for missing values:
     %ret = arith.constant -1 : i32
     sparse_tensor.yield %ret : i32
   }
-```text
-
-Example showing a structural inversion (existing values become missing in
-the output, while missing values are filled with 1):
-
-```mlir
-%result = sparse_tensor.unary %a : f64 to i64
+</code></pre></div>
+<p>Example showing a structural inversion (existing values become missing in
+the output, while missing values are filled with 1):</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%result = sparse_tensor.unary %a : f64 to i64
   present={}
   absent={
     %ret = arith.constant 1 : i64

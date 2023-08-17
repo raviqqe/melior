@@ -6,14 +6,10 @@ In the operation</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%1 = vector.transpose %0, [i_1, .., i_n]
   : vector&lt;d_1 x .. x d_n x f32&gt;
   to vector&lt;d_trans[0] x .. x d_trans[n-1] x f32&gt;
-```text
-
-the transp array [i_1, .., i_n] must be a permutation of [0, .., n-1].
-
-Example:
-
-```mlir
-%1 = vector.transpose %0, [1, 0] : vector&lt;2x3xf32&gt; to vector&lt;3x2xf32&gt;
+</code></pre></div>
+<p>the transp array [i_1, .., i_n] must be a permutation of [0, .., n-1].</p>
+<p>Example:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>%1 = vector.transpose %0, [1, 0] : vector&lt;2x3xf32&gt; to vector&lt;3x2xf32&gt;
 
  [ [a, b, c],       [ [a, d],
    [d, e, f] ]  -&gt;    [b, e],

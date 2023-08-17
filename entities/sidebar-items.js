@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Codepoints"],"static":["ENTITIES"],"struct":["Entity"]};

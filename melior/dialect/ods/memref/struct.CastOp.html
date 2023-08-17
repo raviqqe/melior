@@ -31,15 +31,11 @@ disagree with resultant destination size.</p>
 // dynamic information.
 %5 = memref.cast %1 : memref&lt;12x4xf32, strided&lt;[4, 1], offset: 5&gt;&gt; to
                       memref&lt;12x4xf32, strided&lt;[?, ?], offset: ?&gt;&gt;
-```text
-
-b. Either or both memref types are unranked with the same element type, and
-address space.
-
-Example:
-
-```mlir
-Cast to concrete shape.
+</code></pre></div>
+<p>b. Either or both memref types are unranked with the same element type, and
+address space.</p>
+<p>Example:</p>
+<div class="example-wrap"><pre class="language-mlir"><code>Cast to concrete shape.
     %4 = memref.cast %1 : memref&lt;*xf32&gt; to memref&lt;4x?xf32&gt;
 
 Erase rank information.
