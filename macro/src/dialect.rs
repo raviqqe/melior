@@ -1,5 +1,3 @@
-extern crate proc_macro;
-
 mod error;
 mod operation;
 mod types;
@@ -9,7 +7,15 @@ use operation::Operation;
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::{format_ident, quote};
-use std::{env, error::Error, fs::OpenOptions, io::Write, path::Path, process::Command, str};
+use std::{
+    env,
+    error::Error,
+    fs::OpenOptions,
+    io::{self, Write},
+    path::Path,
+    process::Command,
+    str,
+};
 use syn::{bracketed, parse::Parse, punctuated::Punctuated, LitStr, Token};
 use tblgen::{record::Record, record_keeper::RecordKeeper, TableGenParser};
 
@@ -29,11 +35,13 @@ fn dialect_module<'a>(
         })
         .collect::<Result<Vec<_>, _>>()?;
 
-    let mut doc = format!("`{}` dialect.\n\n", name);
-    doc.push_str(&unindent::unindent(
-        dialect.str_value("description").unwrap_or(""),
-    ));
+    let doc = format!(
+        "`{}` dialect.\n\n{}",
+        name,
+        unindent::unindent(dialect.str_value("description").unwrap_or(""),)
+    );
     let name = sanitize_name_snake(name);
+
     Ok(quote! {
         #[doc = #doc]
         pub mod #name {
@@ -87,15 +95,15 @@ impl Parse for DialectMacroInput {
         let mut name = None;
         let mut tablegen = None;
         let mut td_file = None;
-        let mut includes = None;
+        let mut includes = vec![];
 
         for item in list {
             match item {
-                InputField::Name(n) => name = Some(n.value()),
+                InputField::Name(field) => name = Some(field.value()),
                 InputField::TableGen(td) => tablegen = Some(td.value()),
-                InputField::TdFile(f) => td_file = Some(f.value()),
-                InputField::Includes(inc) => {
-                    includes = Some(inc.into_iter().map(|l| l.value()).collect())
+                InputField::TdFile(file) => td_file = Some(file.value()),
+                InputField::Includes(field) => {
+                    includes = field.into_iter().map(|literal| literal.value()).collect()
                 }
             }
         }
@@ -104,62 +112,62 @@ impl Parse for DialectMacroInput {
             name: name.ok_or(input.error("dialect name required"))?,
             tablegen,
             td_file,
-            includes: includes.unwrap_or(Vec::new()),
+            includes,
         })
     }
 }
 
 // Writes `tablegen_compile_commands.yaml` for any TableGen file that is being
 // parsed. See: https://mlir.llvm.org/docs/Tools/MLIRLSP/#tablegen-lsp-language-server--tblgen-lsp-server
-fn emit_tablegen_compile_commands(td_file: &str, includes: &[String]) {
-    let pwd = env::current_dir();
-    if let Ok(pwd) = pwd {
-        let path = pwd.join(td_file);
-        let file = OpenOptions::new()
-            .write(true)
-            .append(true)
-            .create(true)
-            .open(pwd.join("tablegen_compile_commands.yml"));
-        if let Ok(mut file) = file {
-            writeln!(file, "--- !FileInfo:").unwrap();
-            writeln!(file, "  filepath: \"{}\"", path.to_str().unwrap()).unwrap();
-            let _ = writeln!(
-                file,
-                "  includes: \"{}\"",
-                includes
-                    .iter()
-                    .map(|s| pwd.join(s.as_str()).to_str().unwrap().to_owned())
-                    .collect::<Vec<_>>()
-                    .join(";")
-            );
-        }
-    }
+fn emit_tablegen_compile_commands(td_file: &str, includes: &[String]) -> Result<(), io::Error> {
+    let directory = env::current_dir()?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .create(true)
+        .open(directory.join("tablegen_compile_commands.yml"))?;
+
+    writeln!(file, "--- !FileInfo:")?;
+    writeln!(
+        file,
+        "  filepath: \"{}\"",
+        directory.join(td_file).to_str().unwrap()
+    )?;
+    writeln!(
+        file,
+        "  includes: \"{}\"",
+        includes
+            .iter()
+            .map(|string| directory.join(string).to_str().unwrap().to_owned())
+            .collect::<Vec<_>>()
+            .join(";")
+    )
 }
 
 pub fn generate_dialect(mut input: DialectMacroInput) -> Result<TokenStream, Box<dyn Error>> {
     // spell-checker: disable-next-line
-    input.includes.push(llvm_config("--includedir").unwrap());
+    input.includes.push(llvm_config("--includedir")?);
 
     let mut td_parser = TableGenParser::new();
 
-    if let Some(source) = input.tablegen.as_ref() {
+    if let Some(source) = &input.tablegen {
         td_parser = td_parser
-            .add_source(source.as_str())
-            .map_err(|e| syn::Error::new(Span::call_site(), format!("{}", e)))?;
+            .add_source(source)
+            .map_err(|error| syn::Error::new(Span::call_site(), format!("{}", error)))?;
     }
-    if let Some(file) = input.td_file.as_ref() {
+    if let Some(file) = &input.td_file {
         td_parser = td_parser
-            .add_source_file(file.as_str())
-            .map_err(|e| syn::Error::new(Span::call_site(), format!("{}", e)))?;
+            .add_source_file(file)
+            .map_err(|error| syn::Error::new(Span::call_site(), format!("{}", error)))?;
     }
-    for include in input.includes.iter() {
-        td_parser = td_parser.add_include_path(include.as_str());
+    for include in &input.includes {
+        td_parser = td_parser.add_include_path(include);
     }
 
     // spell-checker: disable-next-line
     if env::var("DIALECTGEN_TABLEGEN_COMPILE_COMMANDS").is_ok() {
-        if let Some(td_file) = input.td_file.as_ref() {
-            emit_tablegen_compile_commands(td_file, &input.includes);
+        if let Some(td_file) = &input.td_file {
+            emit_tablegen_compile_commands(td_file, &input.includes)?;
         }
     }
 
@@ -170,16 +178,13 @@ pub fn generate_dialect(mut input: DialectMacroInput) -> Result<TokenStream, Box
         .find_map(|def| {
             def.str_value("name")
                 .ok()
-                .and_then(|n| if n == input.name { Some(def) } else { None })
+                .and_then(|name| (name == input.name).then_some(def))
         })
         .ok_or_else(|| syn::Error::new(Span::call_site(), "dialect not found"))?;
     let dialect = dialect_module(&input.name, dialect_def, &keeper)
-        .map_err(|e| e.add_source_info(keeper.source_info()))?;
+        .map_err(|error| error.add_source_info(keeper.source_info()))?;
 
-    Ok(quote! {
-        #dialect
-    }
-    .into())
+    Ok(quote! { #dialect }.into())
 }
 
 fn llvm_config(argument: &str) -> Result<String, Box<dyn Error>> {
