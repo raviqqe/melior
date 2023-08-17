@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["async_passes","attribute_check_functions","binary_operations","conversion_passes","gpu_passes","linalg_passes","sparse_tensor_passes","transform_passes","type_check_functions","typed_unary_operations","unary_operations"]};
+window.SIDEBAR_ITEMS = {"macro":["async_passes","attribute_check_functions","binary_operations","conversion_passes","dialect","gpu_passes","linalg_passes","sparse_tensor_passes","transform_passes","type_check_functions","typed_unary_operations","unary_operations"]};

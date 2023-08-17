@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error"],"mod":["diagnostic","dialect","ir","pass","utility"],"struct":["Context","ContextRef","ExecutionEngine","StringRef"]};
+window.SIDEBAR_ITEMS = {"enum":["Error"],"macro":["dialect"],"mod":["diagnostic","dialect","ir","pass","utility"],"struct":["Context","ContextRef","ExecutionEngine","StringRef"]};

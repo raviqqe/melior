@@ -26,11 +26,12 @@ var sourcesIndex = JSON.parse('{\
 "is_terminal":["",[],["lib.rs"]],\
 "itertools":["",[["adaptors",[],["coalesce.rs","map.rs","mod.rs","multi_product.rs"]]],["combinations.rs","combinations_with_replacement.rs","concat_impl.rs","cons_tuples_impl.rs","diff.rs","duplicates_impl.rs","either_or_both.rs","exactly_one_err.rs","extrema_set.rs","flatten_ok.rs","format.rs","free.rs","group_map.rs","groupbylazy.rs","grouping_map.rs","impl_macros.rs","intersperse.rs","k_smallest.rs","kmerge_impl.rs","lazy_buffer.rs","lib.rs","merge_join.rs","minmax.rs","multipeek_impl.rs","pad_tail.rs","peek_nth.rs","peeking_take_while.rs","permutations.rs","powerset.rs","process_results_impl.rs","put_back_n_impl.rs","rciter_impl.rs","repeatn.rs","size_hint.rs","sources.rs","tee.rs","tuple_impl.rs","unique_impl.rs","unziptuple.rs","with_position.rs","zip_eq_impl.rs","zip_longest.rs","ziptuple.rs"]],\
 "itoa":["",[],["lib.rs","udiv128.rs"]],\
+"lazy_static":["",[],["inline_lazy.rs","lib.rs"]],\
 "libc":["",[["unix",[["linux_like",[["linux",[["arch",[["generic",[],["mod.rs"]]],["mod.rs"]],["gnu",[["b64",[["x86_64",[],["align.rs","mod.rs","not_x32.rs"]]],["mod.rs"]]],["align.rs","mod.rs"]]],["align.rs","mod.rs","non_exhaustive.rs"]]],["mod.rs"]]],["align.rs","mod.rs"]]],["fixed_width_ints.rs","lib.rs","macros.rs"]],\
 "linux_raw_sys":["",[["x86_64",[],["errno.rs","general.rs","ioctl.rs"]]],["lib.rs"]],\
 "lock_api":["",[],["lib.rs","mutex.rs","remutex.rs","rwlock.rs"]],\
 "melior":["",[["diagnostic",[],["handler_id.rs","severity.rs"]],["dialect",[["llvm",[],["alloca_options.rs","attributes.rs","load_store_options.rs","type.rs"]]],["arith.rs","cf.rs","func.rs","handle.rs","index.rs","llvm.rs","memref.rs","registry.rs","scf.rs"]],["ir",[["attribute",[],["array.rs","attribute_like.rs","dense_elements.rs","dense_i32_array.rs","dense_i64_array.rs","flat_symbol_ref.rs","float.rs","integer.rs","macro.rs","string.rs","type.rs"]],["block",[],["argument.rs"]],["operation",[],["builder.rs","printing_flags.rs","result.rs"]],["type",[["id",[],["allocator.rs"]]],["function.rs","id.rs","integer.rs","macro.rs","mem_ref.rs","ranked_tensor.rs","shaped_type_like.rs","tuple.rs","type_like.rs"]],["value",[],["value_like.rs"]]],["affine_map.rs","attribute.rs","block.rs","identifier.rs","location.rs","module.rs","operation.rs","region.rs","type.rs","value.rs"]],["pass",[],["async.rs","conversion.rs","external.rs","gpu.rs","linalg.rs","manager.rs","operation_manager.rs","sparse_tensor.rs","transform.rs"]]],["context.rs","diagnostic.rs","dialect.rs","error.rs","execution_engine.rs","ir.rs","lib.rs","logical_result.rs","macro.rs","pass.rs","string_ref.rs","utility.rs"]],\
-"melior_macro":["",[],["attribute.rs","lib.rs","operation.rs","parse.rs","pass.rs","type.rs","utility.rs"]],\
+"melior_macro":["",[["dialect",[["operation",[],["accessors.rs","builder.rs","mod.rs"]]],["error.rs","mod.rs","types.rs"]]],["attribute.rs","lib.rs","operation.rs","parse.rs","pass.rs","type.rs","utility.rs"]],\
 "memchr":["",[["memchr",[["x86",[],["avx.rs","mod.rs","sse2.rs"]]],["fallback.rs","iter.rs","mod.rs","naive.rs"]],["memmem",[["prefilter",[["x86",[],["avx.rs","mod.rs","sse.rs"]]],["fallback.rs","genericsimd.rs","mod.rs"]],["x86",[],["avx.rs","mod.rs","sse.rs"]]],["byte_frequencies.rs","genericsimd.rs","mod.rs","rabinkarp.rs","rarebytes.rs","twoway.rs","util.rs","vector.rs"]]],["cow.rs","lib.rs"]],\
 "memoffset":["",[],["lib.rs","offset_of.rs","raw_field.rs","span_of.rs"]],\
 "mlir_sys":["",[],["lib.rs"]],\
@@ -39,6 +40,7 @@ var sourcesIndex = JSON.parse('{\
 "once_cell":["",[],["imp_std.rs","lib.rs","race.rs"]],\
 "oorandom":["",[],["lib.rs"]],\
 "parking_lot_core":["",[["thread_parker",[],["linux.rs","mod.rs"]]],["lib.rs","parking_lot.rs","spinwait.rs","util.rs","word_lock.rs"]],\
+"paste":["",[],["attr.rs","error.rs","lib.rs","segment.rs"]],\
 "plotters":["",[["chart",[["context",[["cartesian2d",[],["draw_impl.rs","mod.rs"]],["cartesian3d",[],["draw_impl.rs","mod.rs"]]]]],["axes3d.rs","builder.rs","context.rs","dual_coord.rs","mesh.rs","mod.rs","series.rs","state.rs"]],["coord",[["ranged1d",[["combinators",[],["ckps.rs","group_by.rs","linspace.rs","logarithmic.rs","mod.rs","nested.rs","partial_axis.rs"]],["types",[],["mod.rs","numeric.rs","slice.rs"]]],["discrete.rs","mod.rs"]],["ranged2d",[],["cartesian.rs","mod.rs"]],["ranged3d",[],["cartesian3d.rs","mod.rs","projection.rs"]]],["mod.rs","translate.rs"]],["data",[],["data_range.rs","float.rs","mod.rs","quartiles.rs"]],["drawing",[["backend_impl",[],["mod.rs"]]],["area.rs","mod.rs"]],["element",[],["basic_shapes.rs","basic_shapes_3d.rs","composable.rs","dynelem.rs","mod.rs","pie.rs","points.rs","text.rs"]],["series",[],["area_series.rs","line_series.rs","mod.rs"]],["style",[["colors",[],["mod.rs"]],["font",[],["font_desc.rs","mod.rs","naive.rs"]]],["color.rs","mod.rs","palette.rs","shape.rs","size.rs","text.rs"]]],["lib.rs"]],\
 "plotters_backend":["",[["rasterizer",[],["circle.rs","line.rs","mod.rs","path.rs","polygon.rs","rect.rs"]]],["lib.rs","style.rs","text.rs"]],\
 "plotters_svg":["",[],["lib.rs","svg.rs"]],\
@@ -58,9 +60,13 @@ var sourcesIndex = JSON.parse('{\
 "serde_json":["",[["features_check",[],["mod.rs"]],["io",[],["mod.rs"]],["value",[],["de.rs","from.rs","index.rs","mod.rs","partial_eq.rs","ser.rs"]]],["de.rs","error.rs","iter.rs","lib.rs","macros.rs","map.rs","number.rs","read.rs","ser.rs"]],\
 "smallvec":["",[],["lib.rs"]],\
 "syn":["",[["gen",[],["clone.rs","debug.rs","eq.rs","hash.rs","visit.rs","visit_mut.rs"]]],["attr.rs","bigint.rs","buffer.rs","custom_keyword.rs","custom_punctuation.rs","data.rs","derive.rs","discouraged.rs","drops.rs","error.rs","export.rs","expr.rs","ext.rs","file.rs","gen_helper.rs","generics.rs","group.rs","ident.rs","item.rs","lib.rs","lifetime.rs","lit.rs","lookahead.rs","mac.rs","macros.rs","meta.rs","op.rs","parse.rs","parse_macro_input.rs","parse_quote.rs","pat.rs","path.rs","print.rs","punctuated.rs","restriction.rs","sealed.rs","span.rs","spanned.rs","stmt.rs","thread.rs","token.rs","tt.rs","ty.rs","verbatim.rs","whitespace.rs"]],\
+"tblgen":["",[],["error.rs","init.rs","lib.rs","record.rs","record_keeper.rs","string_ref.rs","util.rs"]],\
+"thiserror":["",[],["aserror.rs","display.rs","lib.rs"]],\
+"thiserror_impl":["",[],["ast.rs","attr.rs","expand.rs","fmt.rs","generics.rs","lib.rs","prop.rs","valid.rs"]],\
 "tinytemplate":["",[],["compiler.rs","error.rs","instruction.rs","lib.rs","syntax.rs","template.rs"]],\
 "unicode_ident":["",[],["lib.rs","tables.rs"]],\
 "unicode_segmentation":["",[],["grapheme.rs","lib.rs","sentence.rs","tables.rs","word.rs"]],\
+"unindent":["",[],["lib.rs","unindent.rs"]],\
 "walkdir":["",[],["dent.rs","error.rs","lib.rs","util.rs"]]\
 }');
 createSourceSidebar();
