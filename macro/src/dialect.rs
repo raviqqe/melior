@@ -21,23 +21,21 @@ use tblgen::{record::Record, record_keeper::RecordKeeper, TableGenParser};
 
 const LLVM_MAJOR_VERSION: usize = 16;
 
-fn dialect_module<'a>(
+fn dialect_module(
     name: &str,
-    dialect: Record<'a>,
-    record_keeper: &'a RecordKeeper,
+    dialect: Record,
+    record_keeper: &RecordKeeper,
 ) -> Result<proc_macro2::TokenStream, error::Error> {
     let operations = record_keeper
         .all_derived_definitions("Op")
         .map(Operation::from_def)
-        .filter_map(|operation: Result<Operation, _>| match operation {
-            Ok(operation) => (operation.dialect.name() == dialect.name()).then_some(Ok(operation)),
-            Err(error) => Some(Err(error)),
-        })
-        .collect::<Result<Vec<_>, _>>()?;
+        .collect::<Result<Vec<_>, _>>()?
+        .into_iter()
+        .filter(|operation| operation.dialect.name() == dialect.name())
+        .collect::<Vec<_>>();
 
     let doc = format!(
-        "`{}` dialect.\n\n{}",
-        name,
+        "`{name}` dialect.\n\n{}",
         unindent::unindent(dialect.str_value("description").unwrap_or(""),)
     );
     let name = sanitize_name_snake(name);
@@ -59,26 +57,25 @@ enum InputField {
 
 impl Parse for InputField {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let ident: Ident = input.parse()?;
-        let _: Token![:] = input.parse()?;
+        let ident = input.parse::<Ident>()?;
+
+        input.parse::<Token![:]>()?;
+
         if ident == format_ident!("name") {
-            return Ok(Self::Name(input.parse()?));
-        }
-        if ident == format_ident!("tablegen") {
-            return Ok(Self::TableGen(input.parse()?));
-        }
-        if ident == format_ident!("td_file") {
-            return Ok(Self::TdFile(input.parse()?));
-        }
-        if ident == format_ident!("include_dirs") {
+            Ok(Self::Name(input.parse()?))
+        } else if ident == format_ident!("tablegen") {
+            Ok(Self::TableGen(input.parse()?))
+        } else if ident == format_ident!("td_file") {
+            Ok(Self::TdFile(input.parse()?))
+        } else if ident == format_ident!("include_dirs") {
             let content;
             bracketed!(content in input);
-            return Ok(Self::Includes(
+            Ok(Self::Includes(
                 Punctuated::<LitStr, Token![,]>::parse_terminated(&content)?,
-            ));
+            ))
+        } else {
+            Err(input.error(format!("invalid field {}", ident)))
         }
-
-        Err(input.error(format!("invalid field {}", ident)))
     }
 }
 
@@ -91,13 +88,12 @@ pub struct DialectMacroInput {
 
 impl Parse for DialectMacroInput {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let list = Punctuated::<InputField, Token![,]>::parse_terminated(input)?;
         let mut name = None;
         let mut tablegen = None;
         let mut td_file = None;
         let mut includes = vec![];
 
-        for item in list {
+        for item in Punctuated::<InputField, Token![,]>::parse_terminated(input)? {
             match item {
                 InputField::Name(field) => name = Some(field.value()),
                 InputField::TableGen(td) => tablegen = Some(td.value()),
@@ -155,11 +151,13 @@ pub fn generate_dialect(mut input: DialectMacroInput) -> Result<TokenStream, Box
             .add_source(source)
             .map_err(|error| syn::Error::new(Span::call_site(), format!("{}", error)))?;
     }
+
     if let Some(file) = &input.td_file {
         td_parser = td_parser
             .add_source_file(file)
             .map_err(|error| syn::Error::new(Span::call_site(), format!("{}", error)))?;
     }
+
     for include in &input.includes {
         td_parser = td_parser.add_include_path(include);
     }
@@ -175,11 +173,7 @@ pub fn generate_dialect(mut input: DialectMacroInput) -> Result<TokenStream, Box
 
     let dialect_def = keeper
         .all_derived_definitions("Dialect")
-        .find_map(|def| {
-            def.str_value("name")
-                .ok()
-                .and_then(|name| (name == input.name).then_some(def))
-        })
+        .find(|def| def.str_value("name") == Ok(&input.name))
         .ok_or_else(|| syn::Error::new(Span::call_site(), "dialect not found"))?;
     let dialect = dialect_module(&input.name, dialect_def, &keeper)
         .map_err(|error| error.add_source_info(keeper.source_info()))?;
