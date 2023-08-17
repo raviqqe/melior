@@ -262,8 +262,8 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{FieldKind, OperationField, SequenceInfo, VariadicKind};
-
 <span class="kw">use </span><span class="kw">crate</span>::utility::sanitize_name_snake;
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::{format_ident, quote};
@@ -271,7 +271,7 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationField&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>getter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
-            FieldKind::Operand(t) | FieldKind::Result(t) =&gt; {
+            FieldKind::Operand(constraint) | FieldKind::Result(constraint) =&gt; {
                 <span class="kw">let </span>kind = <span class="self">self</span>.kind.as_str();
                 <span class="kw">let </span>kind_ident = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, kind);
                 <span class="kw">let </span>plural = <span class="macro">format_ident!</span>(<span class="string">&quot;{}s&quot;</span>, kind);
@@ -284,13 +284,14 @@
                     </span>.variadic_info
                     .as_ref()
                     .expect(<span class="string">&quot;operands and results need variadic info&quot;</span>);
+
                 <span class="prelude-val">Some</span>(<span class="kw">match </span>variadic_kind {
                     VariadicKind::Simple {
                         seen_variable_length,
                     } =&gt; {
                         <span class="comment">// At most one variable length group
-                        </span><span class="kw">if </span>t.is_variable_length() {
-                            <span class="kw">if </span>t.is_optional() {
+                        </span><span class="kw">if </span>constraint.is_variable_length() {
+                            <span class="kw">if </span>constraint.is_optional() {
                                 <span class="comment">// Optional element, and some singular elements.
                                 // Only present if the amount of groups is at least the number of
                                 // elements.
@@ -337,8 +338,7 @@
                             <span class="kw">let </span>group_len = total_var_len / #num_variable_length;
                             <span class="kw">let </span>start = #num_preceding_simple + #num_preceding_variadic * group_len;
                         };
-
-                        <span class="kw">let </span>get_elements = <span class="kw">if </span>t.is_variable_length() {
+                        <span class="kw">let </span>get_elements = <span class="kw">if </span>constraint.is_variable_length() {
                             <span class="macro">quote! </span>{
                                 <span class="self">self</span>.operation.#plural().skip(start).take(group_len)
                             }
@@ -347,56 +347,58 @@
                                 <span class="self">self</span>.operation.#kind_ident(start).expect(#error)
                             }
                         };
+
                         <span class="macro">quote! </span>{ #compute_start_length #get_elements }
                     }
                     VariadicKind::AttrSized {} =&gt; {
                         <span class="kw">let </span>error = <span class="macro">format!</span>(<span class="string">&quot;operation should have this {}&quot;</span>, kind);
-                        <span class="kw">let </span>attr_name = <span class="macro">format!</span>(<span class="string">&quot;{}_segment_sizes&quot;</span>, kind);
-                        <span class="kw">let </span>attr_missing_error = <span class="macro">format!</span>(<span class="string">&quot;operation has {} attribute&quot;</span>, attr_name);
+                        <span class="kw">let </span>attribute_name = <span class="macro">format!</span>(<span class="string">&quot;{}_segment_sizes&quot;</span>, kind);
+                        <span class="kw">let </span>attribute_missing_error =
+                            <span class="macro">format!</span>(<span class="string">&quot;operation has {} attribute&quot;</span>, attribute_name);
                         <span class="kw">let </span>compute_start_length = <span class="macro">quote! </span>{
                             <span class="kw">let </span>attribute =
                                 ::melior::ir::attribute::DenseI32ArrayAttribute::&lt;<span class="lifetime">&#39;c</span>&gt;::try_from(
                                     <span class="self">self</span>.operation
-                                        .attribute(#attr_name)
-                                        .expect(#attr_missing_error)
+                                        .attribute(#attribute_name)
+                                        .expect(#attribute_missing_error)
                                 ).expect(<span class="string">&quot;is a DenseI32ArrayAttribute&quot;</span>);
                             <span class="kw">let </span>start = (<span class="number">0</span>..#index)
-                                            .map(|i| attribute.element(i)
-                                            .expect(<span class="string">&quot;has segment size&quot;</span>))
-                                            .sum::&lt;i32&gt;() <span class="kw">as </span>usize;
+                                .map(|index| attribute.element(index)
+                                .expect(<span class="string">&quot;has segment size&quot;</span>))
+                                .sum::&lt;i32&gt;() <span class="kw">as </span>usize;
                             <span class="kw">let </span>group_len = attribute
-                                                .element(#index)
-                                                .expect(<span class="string">&quot;has segment size&quot;</span>) <span class="kw">as </span>usize;
+                                .element(#index)
+                                .expect(<span class="string">&quot;has segment size&quot;</span>) <span class="kw">as </span>usize;
                         };
-                        <span class="kw">let </span>get_elements = <span class="kw">if </span>t.is_variable_length() {
-                            <span class="kw">if </span>t.is_optional() {
-                                <span class="macro">quote! </span>{
-                                    <span class="kw">if </span>group_len == <span class="number">0 </span>{
-                                        <span class="prelude-val">None
-                                    </span>} <span class="kw">else </span>{
-                                        <span class="self">self</span>.operation.#kind_ident(start).ok()
-                                    }
-                                }
-                            } <span class="kw">else </span>{
-                                <span class="macro">quote! </span>{
-                                    <span class="self">self</span>.operation.#plural().skip(start).take(group_len)
+                        <span class="kw">let </span>get_elements = <span class="kw">if </span>!constraint.is_variable_length() {
+                            <span class="macro">quote! </span>{
+                                <span class="self">self</span>.operation.#kind_ident(start).expect(#error)
+                            }
+                        } <span class="kw">else if </span>constraint.is_optional() {
+                            <span class="macro">quote! </span>{
+                                <span class="kw">if </span>group_len == <span class="number">0 </span>{
+                                    <span class="prelude-val">None
+                                </span>} <span class="kw">else </span>{
+                                    <span class="self">self</span>.operation.#kind_ident(start).ok()
                                 }
                             }
                         } <span class="kw">else </span>{
                             <span class="macro">quote! </span>{
-                                <span class="self">self</span>.operation.#kind_ident(start).expect(#error)
+                                <span class="self">self</span>.operation.#plural().skip(start).take(group_len)
                             }
                         };
+
                         <span class="macro">quote! </span>{ #compute_start_length #get_elements }
                     }
                 })
             }
-            FieldKind::Successor(s) =&gt; {
+            FieldKind::Successor(constraint) =&gt; {
                 <span class="kw">let </span>SequenceInfo { index, .. } = <span class="self">self
                     </span>.seq_info
                     .as_ref()
                     .expect(<span class="string">&quot;successors need sequence info&quot;</span>);
-                <span class="prelude-val">Some</span>(<span class="kw">if </span>s.is_variadic() {
+
+                <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_variadic() {
                     <span class="comment">// Only the last successor can be variadic
                     </span><span class="macro">quote! </span>{
                         <span class="self">self</span>.operation.successors().skip(#index)
@@ -407,10 +409,11 @@
                     }
                 })
             }
-            FieldKind::Region(r) =&gt; {
+            FieldKind::Region(constraint) =&gt; {
                 <span class="kw">let </span>SequenceInfo { index, .. } =
                     <span class="self">self</span>.seq_info.as_ref().expect(<span class="string">&quot;regions need sequence info&quot;</span>);
-                <span class="prelude-val">Some</span>(<span class="kw">if </span>r.is_variadic() {
+
+                <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_variadic() {
                     <span class="comment">// Only the last region can be variadic
                     </span><span class="macro">quote! </span>{
                         <span class="self">self</span>.operation.regions().skip(#index)
@@ -421,23 +424,24 @@
                     }
                 })
             }
-            FieldKind::Attribute(a) =&gt; {
-                <span class="kw">let </span>n = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
-                <span class="kw">let </span>attr_error = <span class="macro">format!</span>(<span class="string">&quot;operation should have attribute {}&quot;</span>, n);
-                <span class="kw">let </span>type_error = <span class="macro">format!</span>(<span class="string">&quot;{} should be a {}&quot;</span>, n, a.storage_type());
-                <span class="prelude-val">Some</span>(<span class="kw">if </span>a.is_unit() {
-                    <span class="macro">quote! </span>{ <span class="self">self</span>.operation.attribute(#n).is_some() }
-                } <span class="kw">else if </span>a.is_optional() {
+            FieldKind::Attribute(constraint) =&gt; {
+                <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
+                <span class="kw">let </span>attribute_error = <span class="macro">format!</span>(<span class="string">&quot;operation should have attribute {}&quot;</span>, name);
+                <span class="kw">let </span>type_error = <span class="macro">format!</span>(<span class="string">&quot;{} should be a {}&quot;</span>, name, constraint.storage_type());
+
+                <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit() {
+                    <span class="macro">quote! </span>{ <span class="self">self</span>.operation.attribute(#name).is_some() }
+                } <span class="kw">else if </span>constraint.is_optional() {
                     <span class="macro">quote! </span>{
                         <span class="self">self</span>.operation
-                            .attribute(#n)
-                            .map(|a| a.try_into().expect(#type_error))
+                            .attribute(#name)
+                            .map(|attribute| attribute.try_into().expect(#type_error))
                     }
                 } <span class="kw">else </span>{
                     <span class="macro">quote! </span>{
                         <span class="self">self</span>.operation
-                            .attribute(#n)
-                            .expect(#attr_error)
+                            .attribute(#name)
+                            .expect(#attribute_error)
                             .try_into()
                             .expect(#type_error)
                     }
@@ -448,12 +452,12 @@
 
     <span class="kw">fn </span>remover_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
-            FieldKind::Attribute(a) =&gt; {
-                <span class="kw">let </span>n = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
+            FieldKind::Attribute(constraint) =&gt; {
+                <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
-                <span class="kw">if </span>a.is_unit() || a.is_optional() {
+                <span class="kw">if </span>constraint.is_unit() || constraint.is_optional() {
                     <span class="prelude-val">Some</span>(<span class="macro">quote! </span>{
-                      <span class="kw">let _ </span>= <span class="self">self</span>.operation.remove_attribute(#n);
+                      <span class="kw">let _ </span>= <span class="self">self</span>.operation.remove_attribute(#name);
                     })
                 } <span class="kw">else </span>{
                     <span class="prelude-val">None
@@ -464,57 +468,55 @@
     }
 
     <span class="kw">fn </span>setter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
-            FieldKind::Attribute(a) =&gt; {
-                <span class="kw">let </span>n = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
+        <span class="kw">let </span>FieldKind::Attribute(constraint) = <span class="kw-2">&amp;</span><span class="self">self</span>.kind <span class="kw">else </span>{
+            <span class="kw">return </span><span class="prelude-val">None</span>;
+        };
+        <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
-                <span class="prelude-val">Some</span>(<span class="kw">if </span>a.is_unit() {
-                    <span class="macro">quote! </span>{
-                        <span class="kw">if </span>value {
-                          <span class="self">self</span>.operation.set_attribute(#n, Attribute::unit(<span class="kw-2">&amp;</span><span class="self">self</span>.operation.context()));
-                        } <span class="kw">else </span>{
-                          <span class="kw">let _ </span>= <span class="self">self</span>.operation.remove_attribute(#n);
-                        }
-                    }
+        <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit() {
+            <span class="macro">quote! </span>{
+                <span class="kw">if </span>value {
+                  <span class="self">self</span>.operation.set_attribute(#name, Attribute::unit(<span class="kw-2">&amp;</span><span class="self">self</span>.operation.context()));
                 } <span class="kw">else </span>{
-                    <span class="macro">quote! </span>{
-                        <span class="self">self</span>.operation.set_attribute(#n, <span class="kw-2">&amp;</span>value.into());
-                    }
-                })
+                  <span class="kw">let _ </span>= <span class="self">self</span>.operation.remove_attribute(#name);
+                }
             }
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-        }
+        } <span class="kw">else </span>{
+            <span class="macro">quote! </span>{
+                <span class="self">self</span>.operation.set_attribute(#name, <span class="kw-2">&amp;</span>value.into());
+            }
+        })
     }
 
     <span class="kw">pub fn </span>accessors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenStream {
         <span class="kw">let </span>setter = {
-            <span class="kw">let </span>set_fn_ident = sanitize_name_snake(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;set_{}&quot;</span>, <span class="self">self</span>.name));
-            <span class="self">self</span>.setter_impl().map_or(<span class="macro">quote!</span>(), |imp| {
+            <span class="kw">let </span>ident = sanitize_name_snake(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;set_{}&quot;</span>, <span class="self">self</span>.name));
+            <span class="self">self</span>.setter_impl().map_or(<span class="macro">quote!</span>(), |body| {
                 <span class="kw">let </span>param_type = <span class="kw-2">&amp;</span><span class="self">self</span>.param_type;
                 <span class="macro">quote! </span>{
-                    <span class="kw">pub fn </span>#set_fn_ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: #param_type) {
-                        #imp
+                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: #param_type) {
+                        #body
                     }
                 }
             })
         };
         <span class="kw">let </span>remover = {
-            <span class="kw">let </span>remove_fn_ident = sanitize_name_snake(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;remove_{}&quot;</span>, <span class="self">self</span>.name));
-            <span class="self">self</span>.remover_impl().map_or(<span class="macro">quote!</span>(), |imp| {
+            <span class="kw">let </span>ident = sanitize_name_snake(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;remove_{}&quot;</span>, <span class="self">self</span>.name));
+            <span class="self">self</span>.remover_impl().map_or(<span class="macro">quote!</span>(), |body| {
                 <span class="macro">quote! </span>{
-                    <span class="kw">pub fn </span>#remove_fn_ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-                        #imp
+                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+                        #body
                     }
                 }
             })
         };
         <span class="kw">let </span>getter = {
-            <span class="kw">let </span>get_fn_ident = <span class="kw-2">&amp;</span><span class="self">self</span>.sanitized;
+            <span class="kw">let </span>ident = <span class="kw-2">&amp;</span><span class="self">self</span>.sanitized;
             <span class="kw">let </span>return_type = <span class="kw-2">&amp;</span><span class="self">self</span>.return_type;
-            <span class="self">self</span>.getter_impl().map_or(<span class="macro">quote!</span>(), |imp| {
+            <span class="self">self</span>.getter_impl().map_or(<span class="macro">quote!</span>(), |body| {
                 <span class="macro">quote! </span>{
-                    <span class="kw">pub fn </span>#get_fn_ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; #return_type {
-                        #imp
+                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; #return_type {
+                        #body
                     }
                 }
             })
