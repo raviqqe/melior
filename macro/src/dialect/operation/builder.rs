@@ -97,7 +97,7 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
         let builder_ident = format_ident!("{}Builder", self.operation.class_name);
         self.operation.fields.iter().map(move |field| {
             let name = sanitize_name_snake(field.name);
-            let st = &field.param_type;
+            let st = &field.kind.param_type();
             let args = quote! { #name: #st };
             let add = format_ident!("add_{}s", field.kind.as_str());
 
@@ -281,7 +281,7 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
         let mut args = required_fields
             .clone()
             .map(|field| {
-                let param_type = &field.param_type;
+                let param_type = &field.kind.param_type();
                 let param_name = &field.sanitized_name;
                 quote! { #param_name: #param_type }
             })

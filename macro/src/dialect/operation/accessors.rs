@@ -211,7 +211,7 @@ impl<'a> OperationField<'a> {
         let setter = {
             let ident = sanitize_name_snake(&format!("set_{}", self.name));
             self.setter_impl().map_or(quote!(), |body| {
-                let param_type = &self.param_type;
+                let param_type = &self.kind.param_type();
                 quote! {
                     pub fn #ident(&mut self, value: #param_type) {
                         #body
@@ -231,7 +231,7 @@ impl<'a> OperationField<'a> {
         };
         let getter = {
             let ident = &self.sanitized_name;
-            let return_type = &self.return_type;
+            let return_type = &self.kind.return_type();
             self.getter_impl().map_or(quote!(), |body| {
                 quote! {
                     pub fn #ident(&self) -> #return_type {
