@@ -620,6 +620,7 @@
 <a href="#620" id="620">620</a>
 <a href="#621" id="621">621</a>
 <a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Operations and operation builders.
 
 </span><span class="kw">mod </span>builder;
@@ -806,18 +807,19 @@
     }
 
     <span class="doccomment">/// Gets a attribute with the given name.
-    </span><span class="kw">pub fn </span>attribute(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;Attribute&lt;<span class="lifetime">&#39;c</span>&gt;&gt; {
+    </span><span class="kw">pub fn </span>attribute(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Attribute&lt;<span class="lifetime">&#39;c</span>&gt;, Error&gt; {
         <span class="kw">unsafe </span>{
             Attribute::from_option_raw(mlirOperationGetAttributeByName(
                 <span class="self">self</span>.raw,
                 StringRef::from(name).to_raw(),
             ))
         }
+        .ok_or(Error::AttributeNotFound(name.into()))
     }
 
     <span class="doccomment">/// Checks if the operation has a attribute with the given name.
     </span><span class="kw">pub fn </span>has_attribute(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; bool {
-        <span class="self">self</span>.attribute(name).is_some()
+        <span class="self">self</span>.attribute(name).is_ok()
     }
 
     <span class="doccomment">/// Sets the attribute with the given name to the given attribute.
@@ -1169,14 +1171,14 @@
         <span class="macro">assert!</span>(operation.has_attribute(<span class="string">&quot;foo&quot;</span>));
         <span class="macro">assert_eq!</span>(
             operation.attribute(<span class="string">&quot;foo&quot;</span>).map(|a| a.to_string()),
-            <span class="prelude-val">Some</span>(<span class="string">&quot;\&quot;bar\&quot;&quot;</span>.into())
+            <span class="prelude-val">Ok</span>(<span class="string">&quot;\&quot;bar\&quot;&quot;</span>.into())
         );
         <span class="macro">assert!</span>(operation.remove_attribute(<span class="string">&quot;foo&quot;</span>).is_ok());
         <span class="macro">assert!</span>(operation.remove_attribute(<span class="string">&quot;foo&quot;</span>).is_err());
         operation.set_attribute(<span class="string">&quot;foo&quot;</span>, <span class="kw-2">&amp;</span>StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>).into());
         <span class="macro">assert_eq!</span>(
             operation.attribute(<span class="string">&quot;foo&quot;</span>).map(|a| a.to_string()),
-            <span class="prelude-val">Some</span>(<span class="string">&quot;\&quot;foo\&quot;&quot;</span>.into())
+            <span class="prelude-val">Ok</span>(<span class="string">&quot;\&quot;foo\&quot;&quot;</span>.into())
         );
         <span class="macro">assert_eq!</span>(
             operation.attributes().next(),

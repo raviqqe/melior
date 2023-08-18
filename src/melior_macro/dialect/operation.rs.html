@@ -577,6 +577,14 @@
 <a href="#577" id="577">577</a>
 <a href="#578" id="578">578</a>
 <a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 
@@ -655,10 +663,11 @@
         <span class="kw">let </span>(param_type, return_type) = {
             <span class="kw">if </span>ac.is_unit() {
                 (<span class="macro">quote! </span>{ bool }, <span class="macro">quote! </span>{ bool })
-            } <span class="kw">else if </span>ac.is_optional() {
-                (<span class="macro">quote! </span>{ #kind_type&lt;<span class="lifetime">&#39;c</span>&gt; }, <span class="macro">quote! </span>{ <span class="prelude-ty">Option</span>&lt;#kind_type&lt;<span class="lifetime">&#39;c</span>&gt;&gt; })
             } <span class="kw">else </span>{
-                (<span class="macro">quote! </span>{ #kind_type&lt;<span class="lifetime">&#39;c</span>&gt; }, <span class="macro">quote! </span>{ #kind_type&lt;<span class="lifetime">&#39;c</span>&gt; })
+                (
+                    <span class="macro">quote! </span>{ #kind_type&lt;<span class="lifetime">&#39;c</span>&gt; },
+                    <span class="macro">quote! </span>{ <span class="prelude-ty">Result</span>&lt;#kind_type&lt;<span class="lifetime">&#39;c</span>&gt;, ::melior::Error&gt; },
+                )
             }
         };
         <span class="kw">let </span>sanitized = sanitize_name_snake(name);
@@ -687,7 +696,7 @@
             } <span class="kw">else </span>{
                 (
                     <span class="macro">quote! </span>{ ::melior::ir::Region&lt;<span class="lifetime">&#39;c</span>&gt; },
-                    <span class="macro">quote! </span>{ ::melior::ir::RegionRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; },
+                    <span class="macro">quote! </span>{ <span class="prelude-ty">Result</span>&lt;::melior::ir::RegionRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, ::melior::Error&gt; },
                 )
             }
         };
@@ -721,7 +730,7 @@
             } <span class="kw">else </span>{
                 (
                     <span class="macro">quote! </span>{ <span class="kw-2">&amp;</span>::melior::ir::Block&lt;<span class="lifetime">&#39;c</span>&gt; },
-                    <span class="macro">quote! </span>{ ::melior::ir::BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt; },
+                    <span class="macro">quote! </span>{ <span class="prelude-ty">Result</span>&lt;::melior::ir::BlockRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, ::melior::Error&gt; },
                 )
             }
         };
@@ -780,16 +789,23 @@
                 <span class="kw">if </span>tc.is_optional() {
                     (
                         <span class="macro">quote! </span>{ #param_kind_type },
-                        <span class="macro">quote! </span>{ <span class="prelude-ty">Option</span>&lt;#return_kind_type&gt; },
+                        <span class="macro">quote! </span>{ <span class="prelude-ty">Result</span>&lt;#return_kind_type, ::melior::Error&gt; },
                     )
                 } <span class="kw">else </span>{
                     (
                         <span class="macro">quote! </span>{ <span class="kw-2">&amp;</span>[#param_kind_type] },
-                        <span class="macro">quote! </span>{ <span class="kw">impl </span>Iterator&lt;Item = #return_kind_type&gt; },
+                        <span class="kw">if let </span>VariadicKind::AttrSized {} = variadic_info {
+                            <span class="macro">quote! </span>{ <span class="prelude-ty">Result</span>&lt;<span class="kw">impl </span>Iterator&lt;Item = #return_kind_type&gt;, ::melior::Error&gt; }
+                        } <span class="kw">else </span>{
+                            <span class="macro">quote! </span>{ <span class="kw">impl </span>Iterator&lt;Item = #return_kind_type&gt; }
+                        },
                     )
                 }
             } <span class="kw">else </span>{
-                (param_kind_type, return_kind_type)
+                (
+                    param_kind_type,
+                    <span class="macro">quote!</span>(<span class="prelude-ty">Result</span>&lt;#return_kind_type, ::melior::Error&gt;),
+                )
             }
         };
 
