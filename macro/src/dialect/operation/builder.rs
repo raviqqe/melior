@@ -76,7 +76,7 @@ impl TypeStateList {
 }
 
 pub struct OperationBuilder<'o, 'c> {
-    operation: &'c Operation<'o>,
+    pub(crate) operation: &'c Operation<'o>,
     type_state: TypeStateList,
 }
 
@@ -111,25 +111,25 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                 // are always variadic, so we need to create a slice or vec for singular
                 // arguments
                 match &field.kind {
-                    FieldKind::Operand(tc) | FieldKind::Result(tc) => {
-                        if tc.is_variable_length() && !tc.is_optional() {
+                    FieldKind::Element { constraint, .. } => {
+                        if constraint.is_variable_length() && !constraint.is_optional() {
                             quote! { #name }
                         } else {
                             quote! { &[#name] }
                         }
                     }
-                    FieldKind::Attribute(_) => {
+                    FieldKind::Attribute { .. } => {
                         quote! { &[(#mlir_ident, #name.into())] }
                     }
-                    FieldKind::Successor(sc) => {
-                        if sc.is_variadic() {
+                    FieldKind::Successor { constraint, .. } => {
+                        if constraint.is_variadic() {
                             quote! { #name }
                         } else {
                             quote! { &[#name] }
                         }
                     }
-                    FieldKind::Region(rc) => {
-                        if rc.is_variadic() {
+                    FieldKind::Region { constraint, .. } => {
+                        if constraint.is_variadic() {
                             quote! { #name }
                         } else {
                             quote! { vec![#name] }
@@ -138,8 +138,8 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                 }
             };
 
-            if !field.optional && !field.has_default {
-                if let FieldKind::Result(_) = field.kind {
+            if !field.kind.is_optional() {
+                if field.kind.is_result() {
                     if self.operation.can_infer_type {
                         // Don't allow setting the result type when it can be inferred
                         return quote!();
@@ -275,37 +275,20 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
     pub fn default_constructor(&self) -> TokenStream {
         let class_name = format_ident!("{}", &self.operation.class_name);
         let name = sanitize_name_snake(self.operation.short_name);
-        let mut args = self
-            .operation
-            .fields
-            .iter()
-            .filter_map(|f| {
-                if !f.optional && !f.has_default {
-                    if let FieldKind::Result(_) = f.kind {
-                        if self.operation.can_infer_type {
-                            return None;
-                        }
-                    }
-                    let param_type = &f.param_type;
-                    let param_name = &f.sanitized;
-                    Some(quote! { #param_name: #param_type })
-                } else {
-                    None
-                }
+        let required_fields = self.operation.fields.iter().filter(|field| {
+            !field.kind.is_optional() && (!field.kind.is_result() || !self.operation.can_infer_type)
+        });
+        let mut args = required_fields
+            .clone()
+            .map(|field| {
+                let param_type = &field.param_type;
+                let param_name = &field.sanitized_name;
+                quote! { #param_name: #param_type }
             })
             .collect::<Vec<_>>();
-        let builder_calls = self.operation.fields.iter().filter_map(|f| {
-            if !f.optional && !f.has_default {
-                if let FieldKind::Result(_) = f.kind {
-                    if self.operation.can_infer_type {
-                        return None;
-                    }
-                }
-                let param_name = &f.sanitized;
-                Some(quote! { .#param_name(#param_name) })
-            } else {
-                None
-            }
+        let builder_calls = required_fields.map(|field| {
+            let param_name = &field.sanitized_name;
+            quote! { .#param_name(#param_name) }
         });
         args.push(quote! { location: ::melior::ir::Location<'c> });
 
@@ -324,17 +307,10 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
             operation
                 .fields
                 .iter()
-                .filter_map(|f| {
-                    if !f.optional && !f.has_default {
-                        if let FieldKind::Result(_) = f.kind {
-                            if operation.can_infer_type {
-                                return None;
-                            }
-                        }
-                        Some(TypeStateItem::new(operation.class_name, f.name))
-                    } else {
-                        None
-                    }
+                .filter_map(|field| {
+                    (!field.kind.is_optional()
+                        && (!field.kind.is_result() || !operation.can_infer_type))
+                        .then_some(TypeStateItem::new(operation.class_name, field.name))
                 })
                 .collect(),
         )

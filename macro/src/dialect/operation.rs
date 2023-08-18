@@ -17,23 +17,69 @@ use quote::{format_ident, quote, ToTokens, TokenStreamExt};
 use tblgen::{error::WithLocation, record::Record};
 
 #[derive(Debug, Clone, Copy)]
+pub enum ElementKind {
+    Operand,
+    Result,
+}
+
+impl ElementKind {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Operand => "operand",
+            Self::Result => "result",
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub enum FieldKind<'a> {
-    Operand(TypeConstraint<'a>),
-    Result(TypeConstraint<'a>),
-    Attribute(AttributeConstraint<'a>),
-    Successor(SuccessorConstraint<'a>),
-    Region(RegionConstraint<'a>),
+    Element {
+        kind: ElementKind,
+        constraint: TypeConstraint<'a>,
+        sequence_info: SequenceInfo,
+        variadic_kind: VariadicKind,
+    },
+    Attribute {
+        constraint: AttributeConstraint<'a>,
+    },
+    Successor {
+        constraint: SuccessorConstraint<'a>,
+        sequence_info: SequenceInfo,
+    },
+    Region {
+        constraint: RegionConstraint<'a>,
+        sequence_info: SequenceInfo,
+    },
 }
 
 impl<'a> FieldKind<'a> {
     pub fn as_str(&self) -> &'static str {
         match self {
-            Self::Operand(_) => "operand",
-            Self::Result(_) => "result",
-            Self::Attribute(_) => "attribute",
-            Self::Successor(_) => "successor",
-            Self::Region(_) => "region",
+            Self::Element { kind, .. } => kind.as_str(),
+            Self::Attribute { .. } => "attribute",
+            Self::Successor { .. } => "successor",
+            Self::Region { .. } => "region",
         }
+    }
+
+    pub fn is_optional(&self) -> bool {
+        match self {
+            Self::Element { constraint, .. } => constraint.is_optional(),
+            Self::Attribute { constraint, .. } => {
+                constraint.is_optional() || constraint.has_default_value()
+            }
+            Self::Successor { .. } | Self::Region { .. } => false,
+        }
+    }
+
+    pub fn is_result(&self) -> bool {
+        matches!(
+            self,
+            Self::Element {
+                kind: ElementKind::Result,
+                ..
+            }
+        )
     }
 }
 
@@ -59,22 +105,18 @@ pub enum VariadicKind {
 #[derive(Debug, Clone)]
 pub struct OperationField<'a> {
     name: &'a str,
+    pub(crate) sanitized_name: Ident,
     param_type: TokenStream,
     return_type: TokenStream,
-    optional: bool,
-    has_default: bool,
     kind: FieldKind<'a>,
-    seq_info: Option<SequenceInfo>,
-    variadic_info: Option<VariadicKind>,
-    pub(crate) sanitized: Ident,
 }
 
 impl<'a> OperationField<'a> {
-    pub fn from_attribute(name: &'a str, ac: AttributeConstraint<'a>) -> Self {
+    pub fn from_attribute(name: &'a str, constraint: AttributeConstraint<'a>) -> Self {
         let kind_type: TokenStream =
-            syn::parse_str(ac.storage_type()).expect("storage type strings are valid");
+            syn::parse_str(constraint.storage_type()).expect("storage type strings are valid");
         let (param_type, return_type) = {
-            if ac.is_unit() {
+            if constraint.is_unit() {
                 (quote! { bool }, quote! { bool })
             } else {
                 (
@@ -86,22 +128,22 @@ impl<'a> OperationField<'a> {
         let sanitized = sanitize_name_snake(name);
         Self {
             name,
-            sanitized,
+            sanitized_name: sanitized,
             param_type,
             return_type,
-            optional: ac.is_optional(),
-            has_default: ac.has_default_value(),
-            seq_info: None,
-            variadic_info: None,
-            kind: FieldKind::Attribute(ac),
+            kind: FieldKind::Attribute { constraint },
         }
     }
 
-    pub fn from_region(name: &'a str, rc: RegionConstraint<'a>, seq_info: SequenceInfo) -> Self {
+    pub fn from_region(
+        name: &'a str,
+        constraint: RegionConstraint<'a>,
+        sequence_info: SequenceInfo,
+    ) -> Self {
         let sanitized = sanitize_name_snake(name);
 
         let (param_type, return_type) = {
-            if rc.is_variadic() {
+            if constraint.is_variadic() {
                 (
                     quote! { Vec<::melior::ir::Region<'c>> },
                     quote! { impl Iterator<Item = ::melior::ir::RegionRef<'c, '_>> },
@@ -116,26 +158,25 @@ impl<'a> OperationField<'a> {
 
         Self {
             name,
-            sanitized,
+            sanitized_name: sanitized,
             param_type,
             return_type,
-            optional: false,
-            has_default: false,
-            kind: FieldKind::Region(rc),
-            seq_info: Some(seq_info),
-            variadic_info: None,
+            kind: FieldKind::Region {
+                constraint,
+                sequence_info,
+            },
         }
     }
 
     pub fn from_successor(
         name: &'a str,
-        sc: SuccessorConstraint<'a>,
-        seq_info: SequenceInfo,
+        constraint: SuccessorConstraint<'a>,
+        sequence_info: SequenceInfo,
     ) -> Self {
         let sanitized = sanitize_name_snake(name);
 
         let (param_type, return_type) = {
-            if sc.is_variadic() {
+            if constraint.is_variadic() {
                 (
                     quote! { &[&::melior::ir::Block<'c>] },
                     quote! { impl Iterator<Item = ::melior::ir::BlockRef<'c, '_>> },
@@ -150,14 +191,13 @@ impl<'a> OperationField<'a> {
 
         Self {
             name,
-            sanitized,
+            sanitized_name: sanitized,
             param_type,
             return_type,
-            optional: false,
-            has_default: false,
-            kind: FieldKind::Successor(sc),
-            seq_info: Some(seq_info),
-            variadic_info: None,
+            kind: FieldKind::Successor {
+                constraint,
+                sequence_info,
+            },
         }
     }
 
@@ -167,7 +207,7 @@ impl<'a> OperationField<'a> {
         seq_info: SequenceInfo,
         variadic_info: VariadicKind,
     ) -> Self {
-        Self::from_element(name, tc, FieldKind::Operand(tc), seq_info, variadic_info)
+        Self::from_element(name, tc, ElementKind::Operand, seq_info, variadic_info)
     }
 
     pub fn from_result(
@@ -176,30 +216,30 @@ impl<'a> OperationField<'a> {
         seq_info: SequenceInfo,
         variadic_info: VariadicKind,
     ) -> Self {
-        Self::from_element(name, tc, FieldKind::Result(tc), seq_info, variadic_info)
+        Self::from_element(name, tc, ElementKind::Result, seq_info, variadic_info)
     }
 
     fn from_element(
         name: &'a str,
-        tc: TypeConstraint<'a>,
-        kind: FieldKind<'a>,
-        seq_info: SequenceInfo,
-        variadic_info: VariadicKind,
+        constraint: TypeConstraint<'a>,
+        kind: ElementKind,
+        sequence_info: SequenceInfo,
+        variadic_kind: VariadicKind,
     ) -> Self {
         let (param_kind_type, return_kind_type) = match &kind {
-            FieldKind::Operand(_) => (
+            ElementKind::Operand => (
                 quote!(::melior::ir::Value<'c, '_>),
                 quote!(::melior::ir::Value<'c, '_>),
             ),
-            FieldKind::Result(_) => (
+            ElementKind::Result => (
                 quote!(::melior::ir::Type<'c>),
                 quote!(::melior::ir::operation::OperationResult<'c, '_>),
             ),
             _ => unreachable!(),
         };
         let (param_type, return_type) = {
-            if tc.is_variable_length() {
-                if tc.is_optional() {
+            if constraint.is_variable_length() {
+                if constraint.is_optional() {
                     (
                         quote! { #param_kind_type },
                         quote! { Result<#return_kind_type, ::melior::Error> },
@@ -207,7 +247,7 @@ impl<'a> OperationField<'a> {
                 } else {
                     (
                         quote! { &[#param_kind_type] },
-                        if let VariadicKind::AttrSized {} = variadic_info {
+                        if let VariadicKind::AttrSized {} = variadic_kind {
                             quote! { Result<impl Iterator<Item = #return_kind_type>, ::melior::Error> }
                         } else {
                             quote! { impl Iterator<Item = #return_kind_type> }
@@ -224,14 +264,15 @@ impl<'a> OperationField<'a> {
 
         Self {
             name,
-            sanitized: sanitize_name_snake(name),
+            sanitized_name: sanitize_name_snake(name),
             param_type,
             return_type,
-            optional: tc.is_optional(),
-            has_default: false,
-            seq_info: Some(seq_info),
-            variadic_info: Some(variadic_info),
-            kind,
+            kind: FieldKind::Element {
+                kind,
+                constraint,
+                sequence_info,
+                variadic_kind,
+            },
         }
     }
 }

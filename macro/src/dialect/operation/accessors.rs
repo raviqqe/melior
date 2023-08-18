@@ -1,4 +1,4 @@
-use super::{FieldKind, OperationField, SequenceInfo, VariadicKind};
+use super::{ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind};
 use crate::utility::sanitize_name_snake;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
@@ -6,22 +6,19 @@ use quote::{format_ident, quote};
 impl<'a> OperationField<'a> {
     fn getter_impl(&self) -> Option<TokenStream> {
         match &self.kind {
-            FieldKind::Operand(constraint) | FieldKind::Result(constraint) => {
-                let kind = self.kind.as_str();
-                let kind_ident = format_ident!("{}", kind);
-                let plural = format_ident!("{}s", kind);
-                let count = format_ident!("{}_count", kind);
-                let SequenceInfo { index, len } = self
-                    .seq_info
-                    .as_ref()
-                    .expect("operands and results need sequence info");
-                let variadic_kind = self
-                    .variadic_info
-                    .as_ref()
-                    .expect("operands and results need variadic info");
-                let error_variant = match &self.kind {
-                    FieldKind::Operand(_) => quote!(OperandNotFound),
-                    FieldKind::Result(_) => quote!(ResultNotFound),
+            FieldKind::Element {
+                kind,
+                constraint,
+                sequence_info: SequenceInfo { index, len },
+                variadic_kind,
+            } => {
+                let kind_str = kind.as_str();
+                let kind_ident = format_ident!("{}", kind_str);
+                let plural = format_ident!("{}s", kind_str);
+                let count = format_ident!("{}_count", kind_str);
+                let error_variant = match kind {
+                    ElementKind::Operand => quote!(OperandNotFound),
+                    ElementKind::Result => quote!(ResultNotFound),
                     _ => unreachable!(),
                 };
                 let name = self.name;
@@ -89,7 +86,7 @@ impl<'a> OperationField<'a> {
                         quote! { #compute_start_length #get_elements }
                     }
                     VariadicKind::AttrSized {} => {
-                        let attribute_name = format!("{}_segment_sizes", kind);
+                        let attribute_name = format!("{}_segment_sizes", kind_str);
                         let compute_start_length = quote! {
                             let attribute =
                                 ::melior::ir::attribute::DenseI32ArrayAttribute::<'c>::try_from(
@@ -125,12 +122,10 @@ impl<'a> OperationField<'a> {
                     }
                 })
             }
-            FieldKind::Successor(constraint) => {
-                let SequenceInfo { index, .. } = self
-                    .seq_info
-                    .as_ref()
-                    .expect("successors need sequence info");
-
+            FieldKind::Successor {
+                constraint,
+                sequence_info: SequenceInfo { index, .. },
+            } => {
                 Some(if constraint.is_variadic() {
                     // Only the last successor can be variadic
                     quote! {
@@ -142,10 +137,10 @@ impl<'a> OperationField<'a> {
                     }
                 })
             }
-            FieldKind::Region(constraint) => {
-                let SequenceInfo { index, .. } =
-                    self.seq_info.as_ref().expect("regions need sequence info");
-
+            FieldKind::Region {
+                constraint,
+                sequence_info: SequenceInfo { index, .. },
+            } => {
                 Some(if constraint.is_variadic() {
                     // Only the last region can be variadic
                     quote! {
@@ -157,7 +152,7 @@ impl<'a> OperationField<'a> {
                     }
                 })
             }
-            FieldKind::Attribute(constraint) => {
+            FieldKind::Attribute { constraint } => {
                 let name = &self.name;
 
                 Some(if constraint.is_unit() {
@@ -176,7 +171,7 @@ impl<'a> OperationField<'a> {
 
     fn remover_impl(&self) -> Option<TokenStream> {
         match &self.kind {
-            FieldKind::Attribute(constraint) => {
+            FieldKind::Attribute { constraint } => {
                 let name = &self.name;
 
                 if constraint.is_unit() || constraint.is_optional() {
@@ -192,7 +187,7 @@ impl<'a> OperationField<'a> {
     }
 
     fn setter_impl(&self) -> Option<TokenStream> {
-        let FieldKind::Attribute(constraint) = &self.kind else {
+        let FieldKind::Attribute { constraint } = &self.kind else {
             return None;
         };
         let name = &self.name;
@@ -235,7 +230,7 @@ impl<'a> OperationField<'a> {
             })
         };
         let getter = {
-            let ident = &self.sanitized;
+            let ident = &self.sanitized_name;
             let return_type = &self.return_type;
             self.getter_impl().map_or(quote!(), |body| {
                 quote! {
