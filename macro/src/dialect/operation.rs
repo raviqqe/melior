@@ -208,6 +208,73 @@ pub enum VariadicKind {
     AttrSized {},
 }
 
+impl VariadicKind {
+    pub fn new(num_variable_length: usize, same_size: bool, attr_sized: bool) -> Self {
+        if num_variable_length <= 1 {
+            VariadicKind::Simple {
+                seen_variable_length: false,
+            }
+        } else if same_size {
+            VariadicKind::SameSize {
+                num_variable_length,
+                num_preceding_simple: 0,
+                num_preceding_variadic: 0,
+            }
+        } else if attr_sized {
+            VariadicKind::AttrSized {}
+        } else {
+            unimplemented!()
+        }
+    }
+}
+
+pub struct VariadicKindIter<I> {
+    current: VariadicKind,
+    iter: I,
+}
+
+impl<'a: 'b, 'b, I: Iterator<Item = &'b TypeConstraint<'a>>> VariadicKindIter<I> {
+    pub fn new(iter: I, num_variable_length: usize, same_size: bool, attr_sized: bool) -> Self {
+        Self {
+            iter,
+            current: VariadicKind::new(num_variable_length, same_size, attr_sized),
+        }
+    }
+}
+
+impl<'a: 'b, 'b, I: Iterator<Item = &'b TypeConstraint<'a>>> Iterator for VariadicKindIter<I> {
+    type Item = VariadicKind;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let Some(constraint) = self.iter.next() else {
+            return None;
+        };
+        let original = self.current.clone();
+        match &mut self.current {
+            VariadicKind::Simple {
+                seen_variable_length,
+            } => {
+                if constraint.is_variable_length() {
+                    *seen_variable_length = true;
+                }
+            }
+            VariadicKind::SameSize {
+                num_preceding_simple,
+                num_preceding_variadic,
+                ..
+            } => {
+                if constraint.is_variable_length() {
+                    *num_preceding_variadic += 1;
+                } else {
+                    *num_preceding_simple += 1;
+                }
+            }
+            VariadicKind::AttrSized {} => {}
+        };
+        Some(original)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct OperationField<'a> {
     pub(crate) name: &'a str,
@@ -256,24 +323,6 @@ impl<'a> OperationField<'a> {
         )
     }
 
-    pub fn new_operand(
-        name: &'a str,
-        tc: TypeConstraint<'a>,
-        seq_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    ) -> Self {
-        Self::new_element(name, tc, ElementKind::Operand, seq_info, variadic_kind)
-    }
-
-    pub fn new_result(
-        name: &'a str,
-        tc: TypeConstraint<'a>,
-        seq_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    ) -> Self {
-        Self::new_element(name, tc, ElementKind::Result, seq_info, variadic_kind)
-    }
-
     fn new_element(
         name: &'a str,
         constraint: TypeConstraint<'a>,
@@ -299,16 +348,67 @@ pub struct Operation<'a> {
     pub(crate) short_name: &'a str,
     pub(crate) full_name: String,
     pub(crate) class_name: &'a str,
-    pub(crate) fields: Vec<OperationField<'a>>,
+    pub(crate) regions: Vec<OperationField<'a>>,
+    pub(crate) successors: Vec<OperationField<'a>>,
+    pub(crate) results: Vec<OperationField<'a>>,
+    pub(crate) operands: Vec<OperationField<'a>>,
+    pub(crate) attributes: Vec<OperationField<'a>>,
+    pub(crate) derived_attributes: Vec<OperationField<'a>>,
     pub(crate) can_infer_type: bool,
     pub(crate) summary: String,
     pub(crate) description: String,
 }
 
 impl<'a> Operation<'a> {
-    pub fn from_def(def: Record<'a>) -> Result<Self, Error> {
-        let dialect = def.def_value("opDialect")?;
+    pub fn fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
+        self.results
+            .iter()
+            .chain(self.operands.iter())
+            .chain(self.regions.iter())
+            .chain(self.successors.iter())
+            .chain(self.attributes.iter())
+            .chain(self.derived_attributes.iter())
+    }
 
+    fn collect_successors(def: Record<'a>) -> Result<Vec<OperationField>, Error> {
+        let successors_dag = def.dag_value("successors")?;
+        let len = successors_dag.num_args();
+        successors_dag
+            .args()
+            .enumerate()
+            .map(|(i, (n, v))| {
+                Ok(OperationField::new_successor(
+                    n,
+                    SuccessorConstraint::new(
+                        v.try_into()
+                            .map_err(|e: tblgen::Error| e.set_location(def))?,
+                    ),
+                    SequenceInfo { index: i, len },
+                ))
+            })
+            .collect()
+    }
+
+    fn collect_regions(def: Record<'a>) -> Result<Vec<OperationField>, Error> {
+        let regions_dag = def.dag_value("regions")?;
+        let len = regions_dag.num_args();
+        regions_dag
+            .args()
+            .enumerate()
+            .map(|(i, (n, v))| {
+                Ok(OperationField::new_region(
+                    n,
+                    RegionConstraint::new(
+                        v.try_into()
+                            .map_err(|e: tblgen::Error| e.set_location(def))?,
+                    ),
+                    SequenceInfo { index: i, len },
+                ))
+            })
+            .collect()
+    }
+
+    fn collect_traits(def: Record<'a>) -> Result<Vec<Trait>, Error> {
         let mut work_list: Vec<_> = vec![def.list_value("traits")?];
         let mut traits = Vec::new();
         while let Some(trait_def) = work_list.pop() {
@@ -326,211 +426,163 @@ impl<'a> Operation<'a> {
                 }
             }
         }
+        Ok(traits)
+    }
 
-        let successors_dag = def.dag_value("successors")?;
-        let len = successors_dag.num_args();
-        let successors = successors_dag.args().enumerate().map(|(i, (n, v))| {
-            Result::<_, Error>::Ok(OperationField::new_successor(
-                n,
-                SuccessorConstraint::new(
-                    v.try_into()
-                        .map_err(|e: tblgen::Error| e.set_location(def))?,
-                ),
-                SequenceInfo { index: i, len },
-            ))
-        });
+    fn dag_constraints(
+        def: Record<'a>,
+        dag_field_name: &str,
+    ) -> Result<Vec<(&'a str, Record<'a>)>, Error> {
+        def.dag_value(dag_field_name)?
+            .args()
+            .map(|(name, arg)| {
+                let mut arg_def: Record = arg
+                    .try_into()
+                    .map_err(|e: tblgen::Error| e.set_location(def))?;
 
-        let regions_dag = def.dag_value("regions").expect("operation has regions");
-        let len = regions_dag.num_args();
-        let regions = regions_dag.args().enumerate().map(|(i, (n, v))| {
-            Ok(OperationField::new_region(
-                n,
-                RegionConstraint::new(
-                    v.try_into()
-                        .map_err(|e: tblgen::Error| e.set_location(def))?,
-                ),
-                SequenceInfo { index: i, len },
-            ))
-        });
-
-        // Creates an initial `VariadicKind` instance based on SameSize and AttrSized
-        // traits.
-        let initial_variadic_kind = |num_variable_length: usize, kind_name_upper: &str| {
-            let same_size_trait = format!("::mlir::OpTrait::SameVariadic{}Size", kind_name_upper);
-            let attr_sized = format!("::mlir::OpTrait::AttrSized{}Segments", kind_name_upper);
-            if num_variable_length <= 1 {
-                VariadicKind::Simple {
-                    seen_variable_length: false,
+                if arg_def.subclass_of("OpVariable") {
+                    arg_def = arg_def.def_value("constraint")?;
                 }
-            } else if traits.iter().any(|t| t.has_name(&same_size_trait)) {
-                VariadicKind::SameSize {
-                    num_variable_length,
-                    num_preceding_simple: 0,
-                    num_preceding_variadic: 0,
-                }
-            } else if traits.iter().any(|t| t.has_name(&attr_sized)) {
-                VariadicKind::AttrSized {}
-            } else {
-                unimplemented!("unsupported {} structure", kind_name_upper)
-            }
-        };
 
-        // Updates the given `VariadicKind` and returns the original value.
-        let update_variadic_kind = |tc: &TypeConstraint, variadic_kind: &mut VariadicKind| {
-            let orig_variadic_kind = variadic_kind.clone();
-            match variadic_kind {
-                VariadicKind::Simple {
-                    seen_variable_length,
-                } => {
-                    if tc.is_variable_length() {
-                        *seen_variable_length = true;
-                    }
-                    variadic_kind.clone()
-                }
-                VariadicKind::SameSize {
-                    num_preceding_simple,
-                    num_preceding_variadic,
-                    ..
-                } => {
-                    if tc.is_variable_length() {
-                        *num_preceding_variadic += 1;
-                    } else {
-                        *num_preceding_simple += 1;
-                    }
-                    orig_variadic_kind
-                }
-                VariadicKind::AttrSized {} => variadic_kind.clone(),
-            }
-        };
+                Ok((name, arg_def))
+            })
+            .collect()
+    }
 
-        let results_dag = def.dag_value("results")?;
-        let results = results_dag.args().map(|(n, arg)| {
-            let mut arg_def: Record = arg
-                .try_into()
-                .map_err(|e: tblgen::Error| e.set_location(def))?;
+    fn collect_results(
+        def: Record<'a>,
+        same_size: bool,
+        attr_sized: bool,
+    ) -> Result<(Vec<OperationField>, usize), Error> {
+        Self::collect_elements(
+            Self::dag_constraints(def, "results")?
+                .into_iter()
+                .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
+                .collect::<Vec<_>>()
+                .iter(),
+            ElementKind::Result,
+            same_size,
+            attr_sized,
+        )
+    }
 
-            if arg_def.subclass_of("OpVariable") {
-                arg_def = arg_def.def_value("constraint")?;
-            }
+    fn collect_operands<'b, 'c: 'a + 'b>(
+        arguments: impl Iterator<Item = &'b (&'c str, Record<'c>)>,
+        same_size: bool,
+        attr_sized: bool,
+    ) -> Result<Vec<OperationField<'a>>, Error> {
+        Ok(Self::collect_elements(
+            arguments
+                .filter(|(_, arg_def)| arg_def.subclass_of("TypeConstraint"))
+                .map(|(n, arg_def)| (*n, TypeConstraint::new(arg_def.clone())))
+                .collect::<Vec<_>>()
+                .iter(),
+            ElementKind::Operand,
+            same_size,
+            attr_sized,
+        )?
+        .0)
+    }
 
-            Ok((n, TypeConstraint::new(arg_def)))
-        });
-        let num_results = results.clone().count();
-        let num_variable_length_results = results
+    fn collect_elements<'b, 'c: 'a + 'b>(
+        elements: impl Iterator<Item = &'b (&'c str, TypeConstraint<'c>)> + Clone,
+        kind: ElementKind,
+        same_size: bool,
+        attr_sized: bool,
+    ) -> Result<(Vec<OperationField<'a>>, usize), Error> {
+        let len = elements.clone().count();
+        let num_variable_length = elements
             .clone()
-            .filter(|res| {
-                res.as_ref()
-                    .map(|(_, tc)| tc.is_variable_length())
-                    .unwrap_or_default()
-            })
+            .filter(|res| res.1.is_variable_length())
             .count();
-        let mut kind = initial_variadic_kind(num_variable_length_results, "Result");
-        let results = results.enumerate().map(|(i, res)| {
-            res.map(|(n, tc)| {
-                let current_kind = update_variadic_kind(&tc, &mut kind);
-                OperationField::new_result(
-                    n,
-                    tc,
-                    SequenceInfo {
-                        index: i,
-                        len: num_results,
-                    },
-                    current_kind,
-                )
-            })
-        });
+        let variadic_iter = VariadicKindIter::new(
+            elements.clone().map(|(_, tc)| tc),
+            num_variable_length,
+            same_size,
+            attr_sized,
+        );
+        Ok((
+            elements
+                .enumerate()
+                .zip(variadic_iter)
+                .map(|((i, (n, tc)), variadic_kind)| {
+                    OperationField::new_element(
+                        n,
+                        tc.clone(),
+                        kind,
+                        SequenceInfo { index: i, len },
+                        variadic_kind,
+                    )
+                })
+                .collect::<Vec<_>>(),
+            num_variable_length,
+        ))
+    }
 
-        let arguments_dag = def.dag_value("arguments")?;
-        let arguments = arguments_dag.args().map(|(name, arg)| {
-            let mut arg_def: Record = arg
-                .try_into()
-                .map_err(|e: tblgen::Error| e.set_location(def))?;
-
-            if arg_def.subclass_of("OpVariable") {
-                arg_def = arg_def.def_value("constraint")?;
-            }
-
-            Ok((name, arg_def))
-        });
-
-        let operands = arguments.clone().filter_map(|res| {
-            res.map(|(n, arg_def)| {
-                if arg_def.subclass_of("TypeConstraint") {
-                    Some((n, TypeConstraint::new(arg_def)))
-                } else {
-                    None
-                }
-            })
-            .transpose()
-        });
-        let num_operands = operands.clone().count();
-        let num_variable_length_operands = operands
-            .clone()
-            .filter(|res| {
-                res.as_ref()
-                    .map(|(_, tc)| tc.is_variable_length())
-                    .unwrap_or_default()
-            })
-            .count();
-        let mut kind = initial_variadic_kind(num_variable_length_operands, "Operand");
-        let operands = operands.enumerate().map(|(i, res)| {
-            res.map(|(name, tc)| {
-                let current_kind = update_variadic_kind(&tc, &mut kind);
-                OperationField::new_operand(
+    fn collect_attributes<'b, 'c: 'a + 'b>(
+        arguments: impl Iterator<Item = &'b (&'c str, Record<'c>)>,
+    ) -> Result<Vec<OperationField<'a>>, Error> {
+        arguments
+            .filter(|(_, arg_def)| arg_def.subclass_of("Attr"))
+            .map(|(name, arg_def)| {
+                // TODO: Replace assert! with Result
+                assert!(!name.is_empty());
+                assert!(!arg_def.subclass_of("DerivedAttr"));
+                Ok(OperationField::new_attribute(
                     name,
-                    tc,
-                    SequenceInfo {
-                        index: i,
-                        len: num_operands,
-                    },
-                    current_kind,
-                )
+                    AttributeConstraint::new(arg_def.clone()),
+                ))
             })
-        });
+            .collect()
+    }
 
-        let attributes = arguments.clone().filter_map(|res| {
-            res.map(|(name, arg_def)| {
-                if arg_def.subclass_of("Attr") {
-                    assert!(!name.is_empty());
-                    assert!(!arg_def.subclass_of("DerivedAttr"));
-                    Some(OperationField::new_attribute(
-                        name,
-                        AttributeConstraint::new(arg_def),
-                    ))
-                } else {
-                    None
-                }
+    fn collect_derived_attributes(def: Record<'a>) -> Result<Vec<OperationField<'a>>, Error> {
+        def.values()
+            .filter_map(|value| {
+                let Ok(def) = Record::try_from(value) else {
+                    return None;
+                };
+                def.subclass_of("Attr").then_some(def)
             })
-            .transpose()
-        });
-
-        let derived_attrs = def.values().map(Ok).filter_map(|val| {
-            val.and_then(|val| {
-                if let Ok(def) = Record::try_from(val) {
-                    if def.subclass_of("Attr") {
-                        def.subclass_of("DerivedAttr")
-                            .then_some(())
-                            .ok_or_else(|| {
-                                ExpectedSuperClassError("DerivedAttr".into()).with_location(def)
-                            })?;
-                        return Ok(Some(OperationField::new_attribute(
-                            def.name()?,
-                            AttributeConstraint::new(def),
-                        )));
-                    }
-                }
-                Ok(None)
+            .map(|def| {
+                def.subclass_of("DerivedAttr")
+                    .then_some(())
+                    .ok_or_else(|| {
+                        ExpectedSuperClassError("DerivedAttr".into()).with_location(def)
+                    })?;
+                Ok(OperationField::new_attribute(
+                    def.name()?,
+                    AttributeConstraint::new(def),
+                ))
             })
-            .transpose()
-        });
+            .collect()
+    }
 
-        let fields = successors
-            .chain(regions)
-            .chain(results)
-            .chain(operands)
-            .chain(attributes)
-            .chain(derived_attrs)
-            .collect::<Result<Vec<_>, _>>()?;
+    pub fn from_def(def: Record<'a>) -> Result<Self, Error> {
+        let dialect = def.def_value("opDialect")?;
+        let traits = Self::collect_traits(def)?;
+        let has_trait = |r#trait: &str| traits.iter().any(|t| t.has_name(r#trait));
+
+        let successors = Self::collect_successors(def)?;
+        let regions = Self::collect_regions(def)?;
+
+        let (results, num_variable_length_results) = Self::collect_results(
+            def,
+            has_trait("::mlir::OpTrait::SameVariadicResultSize"),
+            has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
+        )?;
+
+        let arguments = Self::dag_constraints(def, "arguments")?;
+
+        let operands = Self::collect_operands(
+            arguments.iter(),
+            has_trait("::mlir::OpTrait::SameVariadicOperandSize"),
+            has_trait("::mlir::OpTrait::AttrSizedOperandSegments"),
+        )?;
+
+        let attributes = Self::collect_attributes(arguments.iter())?;
+
+        let derived_attributes = Self::collect_derived_attributes(def)?;
 
         let name = def.name()?;
         let class_name = if name.contains('_') && !name.starts_with('_') {
@@ -546,7 +598,7 @@ impl<'a> Operation<'a> {
             (t.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
                 || t.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
                 && num_variable_length_results == 0
-                || t.has_name("::mlir::InferTypeOpInterface::Trait") && regions_dag.num_args() == 0
+                || t.has_name("::mlir::InferTypeOpInterface::Trait") && regions.len() == 0
         });
 
         let short_name = def.str_value("opName")?;
@@ -558,8 +610,6 @@ impl<'a> Operation<'a> {
         };
 
         let summary = def.str_value("summary").unwrap_or(short_name);
-        let description = def.str_value("description").unwrap_or("");
-
         let summary = if !summary.is_empty() {
             format!(
                 "[`{}`]({}) operation: {}",
@@ -570,14 +620,19 @@ impl<'a> Operation<'a> {
         } else {
             format!("[`{}`]({}) operation", short_name, class_name)
         };
-        let description = unindent::unindent(description);
+        let description = unindent::unindent(def.str_value("description").unwrap_or(""));
 
         Ok(Self {
             dialect,
             short_name,
             full_name,
             class_name,
-            fields,
+            regions,
+            successors,
+            operands,
+            results,
+            attributes,
+            derived_attributes,
             can_infer_type,
             summary,
             description,
@@ -589,7 +644,7 @@ impl<'a> ToTokens for Operation<'a> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let class_name = format_ident!("{}", &self.class_name);
         let name = &self.full_name;
-        let accessors = self.fields.iter().map(|field| field.accessors());
+        let accessors = self.fields().map(|field| field.accessors());
         let builder = OperationBuilder::new(self);
         let builder_tokens = builder.builder();
         let builder_fn = builder.create_op_builder_fn();
@@ -634,9 +689,9 @@ impl<'a> ToTokens for Operation<'a> {
                 }
             }
 
-            impl<'c> Into<::melior::ir::operation::Operation<'c>> for #class_name<'c> {
-                fn into(self) -> ::melior::ir::operation::Operation<'c> {
-                    self.operation
+            impl<'c> From<#class_name<'c>> for ::melior::ir::operation::Operation<'c> {
+                fn from(operation: #class_name<'c>) -> ::melior::ir::operation::Operation<'c> {
+                    operation.operation
                 }
             }
         })
