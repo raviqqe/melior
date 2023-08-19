@@ -1,4 +1,4 @@
-use super::{FieldKind, Operation};
+use super::{FieldKind, Operation, OperationField};
 use crate::utility::sanitize_name_snake;
 use convert_case::{Case, Casing};
 use proc_macro2::{Ident, TokenStream};
@@ -76,7 +76,7 @@ impl TypeStateList {
 }
 
 pub struct OperationBuilder<'o, 'c> {
-    operation: &'c Operation<'o>,
+    pub(crate) operation: &'c Operation<'o>,
     type_state: TypeStateList,
 }
 
@@ -97,7 +97,7 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
         let builder_ident = format_ident!("{}Builder", self.operation.class_name);
         self.operation.fields.iter().map(move |field| {
             let name = sanitize_name_snake(field.name);
-            let st = &field.param_type;
+            let st = &field.kind.param_type();
             let args = quote! { #name: #st };
             let add = format_ident!("add_{}s", field.kind.as_str());
 
@@ -111,25 +111,25 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                 // are always variadic, so we need to create a slice or vec for singular
                 // arguments
                 match &field.kind {
-                    FieldKind::Operand(tc) | FieldKind::Result(tc) => {
-                        if tc.is_variable_length() && !tc.is_optional() {
+                    FieldKind::Element { constraint, .. } => {
+                        if constraint.is_variable_length() && !constraint.is_optional() {
                             quote! { #name }
                         } else {
                             quote! { &[#name] }
                         }
                     }
-                    FieldKind::Attribute(_) => {
+                    FieldKind::Attribute { .. } => {
                         quote! { &[(#mlir_ident, #name.into())] }
                     }
-                    FieldKind::Successor(sc) => {
-                        if sc.is_variadic() {
+                    FieldKind::Successor { constraint, .. } => {
+                        if constraint.is_variadic() {
                             quote! { #name }
                         } else {
                             quote! { &[#name] }
                         }
                     }
-                    FieldKind::Region(rc) => {
-                        if rc.is_variadic() {
+                    FieldKind::Region { constraint, .. } => {
+                        if constraint.is_variadic() {
                             quote! { #name }
                         } else {
                             quote! { vec![#name] }
@@ -138,13 +138,19 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                 }
             };
 
-            if !field.optional && !field.has_default {
-                if let FieldKind::Result(_) = field.kind {
-                    if self.operation.can_infer_type {
-                        // Don't allow setting the result type when it can be inferred
-                        return quote!();
+            if field.kind.is_optional() {
+                let iter_all_any = self.type_state.iter_all_any().collect::<Vec<_>>();
+                quote! {
+                    impl<'c, #(#iter_all_any),*> #builder_ident<'c, #(#iter_all_any),*> {
+                        pub fn #name(mut self, #args) -> #builder_ident<'c, #(#iter_all_any),*> {
+                            self.builder = self.builder.#add(#add_args);
+                            self
+                        }
                     }
                 }
+            } else if field.kind.is_result() && self.operation.can_infer_type {
+                quote!()
+            } else {
                 let iter_all_any_without =
                     self.type_state.iter_all_any_without(field.name.to_string());
                 let iter_set_yes = self.type_state.iter_set_yes(field.name.to_string());
@@ -159,16 +165,6 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                                 builder,
                                 #(#phantoms),*
                             }
-                        }
-                    }
-                }
-            } else {
-                let iter_all_any = self.type_state.iter_all_any().collect::<Vec<_>>();
-                quote! {
-                    impl<'c, #(#iter_all_any),*> #builder_ident<'c, #(#iter_all_any),*> {
-                        pub fn #name(mut self, #args) -> #builder_ident<'c, #(#iter_all_any),*> {
-                            self.builder = self.builder.#add(#add_args);
-                            self
                         }
                     }
                 }
@@ -275,37 +271,16 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
     pub fn default_constructor(&self) -> TokenStream {
         let class_name = format_ident!("{}", &self.operation.class_name);
         let name = sanitize_name_snake(self.operation.short_name);
-        let mut args = self
-            .operation
-            .fields
-            .iter()
-            .filter_map(|f| {
-                if !f.optional && !f.has_default {
-                    if let FieldKind::Result(_) = f.kind {
-                        if self.operation.can_infer_type {
-                            return None;
-                        }
-                    }
-                    let param_type = &f.param_type;
-                    let param_name = &f.sanitized;
-                    Some(quote! { #param_name: #param_type })
-                } else {
-                    None
-                }
+        let mut args = Self::required_fields(self.operation)
+            .map(|field| {
+                let param_type = &field.kind.param_type();
+                let param_name = &field.sanitized_name;
+                quote! { #param_name: #param_type }
             })
             .collect::<Vec<_>>();
-        let builder_calls = self.operation.fields.iter().filter_map(|f| {
-            if !f.optional && !f.has_default {
-                if let FieldKind::Result(_) = f.kind {
-                    if self.operation.can_infer_type {
-                        return None;
-                    }
-                }
-                let param_name = &f.sanitized;
-                Some(quote! { .#param_name(#param_name) })
-            } else {
-                None
-            }
+        let builder_calls = Self::required_fields(self.operation).map(|field| {
+            let param_name = &field.sanitized_name;
+            quote! { .#param_name(#param_name) }
         });
         args.push(quote! { location: ::melior::ir::Location<'c> });
 
@@ -319,23 +294,18 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
         }
     }
 
-    fn create_type_state(operation: &Operation) -> TypeStateList {
+    fn required_fields<'a, 'b>(
+        operation: &'a Operation<'b>,
+    ) -> impl Iterator<Item = &'a OperationField<'b>> {
+        operation.fields.iter().filter(|field| {
+            !field.kind.is_optional() && (!field.kind.is_result() || !operation.can_infer_type)
+        })
+    }
+
+    fn create_type_state(operation: &'c Operation<'o>) -> TypeStateList {
         TypeStateList(
-            operation
-                .fields
-                .iter()
-                .filter_map(|f| {
-                    if !f.optional && !f.has_default {
-                        if let FieldKind::Result(_) = f.kind {
-                            if operation.can_infer_type {
-                                return None;
-                            }
-                        }
-                        Some(TypeStateItem::new(operation.class_name, f.name))
-                    } else {
-                        None
-                    }
-                })
+            Self::required_fields(operation)
+                .map(|field| TypeStateItem::new(operation.class_name, field.name))
                 .collect(),
         )
     }
