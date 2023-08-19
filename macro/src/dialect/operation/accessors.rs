@@ -19,7 +19,6 @@ impl<'a> OperationField<'a> {
                 let error_variant = match kind {
                     ElementKind::Operand => quote!(OperandNotFound),
                     ElementKind::Result => quote!(ResultNotFound),
-                    _ => unreachable!(),
                 };
                 let name = self.name;
 

@@ -1,4 +1,4 @@
-use super::{FieldKind, Operation};
+use super::{FieldKind, Operation, OperationField};
 use crate::utility::sanitize_name_snake;
 use convert_case::{Case, Casing};
 use proc_macro2::{Ident, TokenStream};
@@ -138,13 +138,19 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                 }
             };
 
-            if !field.kind.is_optional() {
-                if field.kind.is_result() {
-                    if self.operation.can_infer_type {
-                        // Don't allow setting the result type when it can be inferred
-                        return quote!();
+            if field.kind.is_optional() {
+                let iter_all_any = self.type_state.iter_all_any().collect::<Vec<_>>();
+                quote! {
+                    impl<'c, #(#iter_all_any),*> #builder_ident<'c, #(#iter_all_any),*> {
+                        pub fn #name(mut self, #args) -> #builder_ident<'c, #(#iter_all_any),*> {
+                            self.builder = self.builder.#add(#add_args);
+                            self
+                        }
                     }
                 }
+            } else if field.kind.is_result() && self.operation.can_infer_type {
+                quote!()
+            } else {
                 let iter_all_any_without =
                     self.type_state.iter_all_any_without(field.name.to_string());
                 let iter_set_yes = self.type_state.iter_set_yes(field.name.to_string());
@@ -159,16 +165,6 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                                 builder,
                                 #(#phantoms),*
                             }
-                        }
-                    }
-                }
-            } else {
-                let iter_all_any = self.type_state.iter_all_any().collect::<Vec<_>>();
-                quote! {
-                    impl<'c, #(#iter_all_any),*> #builder_ident<'c, #(#iter_all_any),*> {
-                        pub fn #name(mut self, #args) -> #builder_ident<'c, #(#iter_all_any),*> {
-                            self.builder = self.builder.#add(#add_args);
-                            self
                         }
                     }
                 }
@@ -275,18 +271,14 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
     pub fn default_constructor(&self) -> TokenStream {
         let class_name = format_ident!("{}", &self.operation.class_name);
         let name = sanitize_name_snake(self.operation.short_name);
-        let required_fields = self.operation.fields.iter().filter(|field| {
-            !field.kind.is_optional() && (!field.kind.is_result() || !self.operation.can_infer_type)
-        });
-        let mut args = required_fields
-            .clone()
+        let mut args = Self::required_fields(self.operation)
             .map(|field| {
                 let param_type = &field.kind.param_type();
                 let param_name = &field.sanitized_name;
                 quote! { #param_name: #param_type }
             })
             .collect::<Vec<_>>();
-        let builder_calls = required_fields.map(|field| {
+        let builder_calls = Self::required_fields(self.operation).map(|field| {
             let param_name = &field.sanitized_name;
             quote! { .#param_name(#param_name) }
         });
@@ -302,16 +294,18 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
         }
     }
 
-    fn create_type_state(operation: &Operation) -> TypeStateList {
+    fn required_fields<'a, 'b>(
+        operation: &'a Operation<'b>,
+    ) -> impl Iterator<Item = &'a OperationField<'b>> {
+        operation.fields.iter().filter(|field| {
+            !field.kind.is_optional() && (!field.kind.is_result() || !operation.can_infer_type)
+        })
+    }
+
+    fn create_type_state(operation: &'c Operation<'o>) -> TypeStateList {
         TypeStateList(
-            operation
-                .fields
-                .iter()
-                .filter_map(|field| {
-                    (!field.kind.is_optional()
-                        && (!field.kind.is_result() || !operation.can_infer_type))
-                        .then_some(TypeStateItem::new(operation.class_name, field.name))
-                })
+            Self::required_fields(operation)
+                .map(|field| TypeStateItem::new(operation.class_name, field.name))
                 .collect(),
         )
     }
