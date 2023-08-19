@@ -246,13 +246,7 @@
 <a href="#246" id="246">246</a>
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{FieldKind, OperationField, SequenceInfo, VariadicKind};
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind};
 <span class="kw">use </span><span class="kw">crate</span>::utility::sanitize_name_snake;
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::{format_ident, quote};
@@ -260,23 +254,19 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationField&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>getter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
-            FieldKind::Operand(constraint) | FieldKind::Result(constraint) =&gt; {
-                <span class="kw">let </span>kind = <span class="self">self</span>.kind.as_str();
-                <span class="kw">let </span>kind_ident = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, kind);
-                <span class="kw">let </span>plural = <span class="macro">format_ident!</span>(<span class="string">&quot;{}s&quot;</span>, kind);
-                <span class="kw">let </span>count = <span class="macro">format_ident!</span>(<span class="string">&quot;{}_count&quot;</span>, kind);
-                <span class="kw">let </span>SequenceInfo { index, len } = <span class="self">self
-                    </span>.seq_info
-                    .as_ref()
-                    .expect(<span class="string">&quot;operands and results need sequence info&quot;</span>);
-                <span class="kw">let </span>variadic_kind = <span class="self">self
-                    </span>.variadic_info
-                    .as_ref()
-                    .expect(<span class="string">&quot;operands and results need variadic info&quot;</span>);
-                <span class="kw">let </span>error_variant = <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
-                    FieldKind::Operand(<span class="kw">_</span>) =&gt; <span class="macro">quote!</span>(OperandNotFound),
-                    FieldKind::Result(<span class="kw">_</span>) =&gt; <span class="macro">quote!</span>(ResultNotFound),
-                    <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+            FieldKind::Element {
+                kind,
+                constraint,
+                sequence_info: SequenceInfo { index, len },
+                variadic_kind,
+            } =&gt; {
+                <span class="kw">let </span>kind_str = kind.as_str();
+                <span class="kw">let </span>kind_ident = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, kind_str);
+                <span class="kw">let </span>plural = <span class="macro">format_ident!</span>(<span class="string">&quot;{}s&quot;</span>, kind_str);
+                <span class="kw">let </span>count = <span class="macro">format_ident!</span>(<span class="string">&quot;{}_count&quot;</span>, kind_str);
+                <span class="kw">let </span>error_variant = <span class="kw">match </span>kind {
+                    ElementKind::Operand =&gt; <span class="macro">quote!</span>(OperandNotFound),
+                    ElementKind::Result =&gt; <span class="macro">quote!</span>(ResultNotFound),
                 };
                 <span class="kw">let </span>name = <span class="self">self</span>.name;
 
@@ -343,7 +333,7 @@
                         <span class="macro">quote! </span>{ #compute_start_length #get_elements }
                     }
                     VariadicKind::AttrSized {} =&gt; {
-                        <span class="kw">let </span>attribute_name = <span class="macro">format!</span>(<span class="string">&quot;{}_segment_sizes&quot;</span>, kind);
+                        <span class="kw">let </span>attribute_name = <span class="macro">format!</span>(<span class="string">&quot;{}_segment_sizes&quot;</span>, kind_str);
                         <span class="kw">let </span>compute_start_length = <span class="macro">quote! </span>{
                             <span class="kw">let </span>attribute =
                                 ::melior::ir::attribute::DenseI32ArrayAttribute::&lt;<span class="lifetime">&#39;c</span>&gt;::try_from(
@@ -379,12 +369,10 @@
                     }
                 })
             }
-            FieldKind::Successor(constraint) =&gt; {
-                <span class="kw">let </span>SequenceInfo { index, .. } = <span class="self">self
-                    </span>.seq_info
-                    .as_ref()
-                    .expect(<span class="string">&quot;successors need sequence info&quot;</span>);
-
+            FieldKind::Successor {
+                constraint,
+                sequence_info: SequenceInfo { index, .. },
+            } =&gt; {
                 <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_variadic() {
                     <span class="comment">// Only the last successor can be variadic
                     </span><span class="macro">quote! </span>{
@@ -396,10 +384,10 @@
                     }
                 })
             }
-            FieldKind::Region(constraint) =&gt; {
-                <span class="kw">let </span>SequenceInfo { index, .. } =
-                    <span class="self">self</span>.seq_info.as_ref().expect(<span class="string">&quot;regions need sequence info&quot;</span>);
-
+            FieldKind::Region {
+                constraint,
+                sequence_info: SequenceInfo { index, .. },
+            } =&gt; {
                 <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_variadic() {
                     <span class="comment">// Only the last region can be variadic
                     </span><span class="macro">quote! </span>{
@@ -411,7 +399,7 @@
                     }
                 })
             }
-            FieldKind::Attribute(constraint) =&gt; {
+            FieldKind::Attribute { constraint } =&gt; {
                 <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
                 <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit() {
@@ -430,7 +418,7 @@
 
     <span class="kw">fn </span>remover_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
-            FieldKind::Attribute(constraint) =&gt; {
+            FieldKind::Attribute { constraint } =&gt; {
                 <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
                 <span class="kw">if </span>constraint.is_unit() || constraint.is_optional() {
@@ -446,7 +434,7 @@
     }
 
     <span class="kw">fn </span>setter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
-        <span class="kw">let </span>FieldKind::Attribute(constraint) = <span class="kw-2">&amp;</span><span class="self">self</span>.kind <span class="kw">else </span>{
+        <span class="kw">let </span>FieldKind::Attribute { constraint } = <span class="kw-2">&amp;</span><span class="self">self</span>.kind <span class="kw">else </span>{
             <span class="kw">return </span><span class="prelude-val">None</span>;
         };
         <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
@@ -470,7 +458,7 @@
         <span class="kw">let </span>setter = {
             <span class="kw">let </span>ident = sanitize_name_snake(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;set_{}&quot;</span>, <span class="self">self</span>.name));
             <span class="self">self</span>.setter_impl().map_or(<span class="macro">quote!</span>(), |body| {
-                <span class="kw">let </span>param_type = <span class="kw-2">&amp;</span><span class="self">self</span>.param_type;
+                <span class="kw">let </span>param_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.param_type();
                 <span class="macro">quote! </span>{
                     <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: #param_type) {
                         #body
@@ -489,8 +477,8 @@
             })
         };
         <span class="kw">let </span>getter = {
-            <span class="kw">let </span>ident = <span class="kw-2">&amp;</span><span class="self">self</span>.sanitized;
-            <span class="kw">let </span>return_type = <span class="kw-2">&amp;</span><span class="self">self</span>.return_type;
+            <span class="kw">let </span>ident = <span class="kw-2">&amp;</span><span class="self">self</span>.sanitized_name;
+            <span class="kw">let </span>return_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.return_type();
             <span class="self">self</span>.getter_impl().map_or(<span class="macro">quote!</span>(), |body| {
                 <span class="macro">quote! </span>{
                     <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; #return_type {
