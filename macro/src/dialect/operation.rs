@@ -474,7 +474,7 @@ impl<'a> Operation<'a> {
         Ok(Self::collect_elements(
             arguments
                 .filter(|(_, arg_def)| arg_def.subclass_of("TypeConstraint"))
-                .map(|(n, arg_def)| (*n, TypeConstraint::new(arg_def.clone())))
+                .map(|(n, arg_def)| (*n, TypeConstraint::new(*arg_def)))
                 .collect::<Vec<_>>()
                 .iter(),
             ElementKind::Operand,
@@ -508,7 +508,7 @@ impl<'a> Operation<'a> {
                 .map(|((i, (n, tc)), variadic_kind)| {
                     OperationField::new_element(
                         n,
-                        tc.clone(),
+                        *tc,
                         kind,
                         SequenceInfo { index: i, len },
                         variadic_kind,
@@ -530,7 +530,7 @@ impl<'a> Operation<'a> {
                 assert!(!arg_def.subclass_of("DerivedAttr"));
                 Ok(OperationField::new_attribute(
                     name,
-                    AttributeConstraint::new(arg_def.clone()),
+                    AttributeConstraint::new(*arg_def),
                 ))
             })
             .collect()
@@ -598,7 +598,7 @@ impl<'a> Operation<'a> {
             (t.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
                 || t.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
                 && num_variable_length_results == 0
-                || t.has_name("::mlir::InferTypeOpInterface::Trait") && regions.len() == 0
+                || t.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
         });
 
         let short_name = def.str_value("opName")?;
