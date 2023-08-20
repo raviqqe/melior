@@ -108,6 +108,7 @@
 <a href="#108" id="108">108</a>
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     error,
     fmt::{<span class="self">self</span>, Display, Formatter},
@@ -124,7 +125,7 @@
     ExpectedSuperClass(SourceError&lt;ExpectedSuperClassError&gt;),
     InvalidTrait(SourceError&lt;InvalidTraitError&gt;),
     Io(io::Error),
-    ParseError,
+    Parse(tblgen::Error),
     Syn(syn::Error),
     TableGen(tblgen::Error),
     Utf8(FromUtf8Error),
@@ -136,7 +137,8 @@
             <span class="self">Self</span>::TableGen(error) =&gt; error.add_source_info(info).into(),
             <span class="self">Self</span>::ExpectedSuperClass(error) =&gt; error.add_source_info(info).into(),
             <span class="self">Self</span>::InvalidTrait(error) =&gt; error.add_source_info(info).into(),
-            <span class="self">Self</span>::Io(<span class="kw">_</span>) | <span class="self">Self</span>::ParseError | <span class="self">Self</span>::Syn(<span class="kw">_</span>) | <span class="self">Self</span>::Utf8(<span class="kw">_</span>) =&gt; <span class="self">self</span>,
+            <span class="self">Self</span>::Parse(error) =&gt; <span class="self">Self</span>::Parse(error.add_source_info(info)),
+            <span class="self">Self</span>::Io(<span class="kw">_</span>) | <span class="self">Self</span>::Syn(<span class="kw">_</span>) | <span class="self">Self</span>::Utf8(<span class="kw">_</span>) =&gt; <span class="self">self</span>,
         }
     }
 }
@@ -147,7 +149,7 @@
             <span class="self">Self</span>::ExpectedSuperClass(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid ODS input: {error}&quot;</span>),
             <span class="self">Self</span>::InvalidTrait(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid ODS input: {error}&quot;</span>),
             <span class="self">Self</span>::Io(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;{error}&quot;</span>),
-            <span class="self">Self</span>::ParseError =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;error parsing TableGen source&quot;</span>),
+            <span class="self">Self</span>::Parse(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to parse TableGen source: {error}&quot;</span>),
             <span class="self">Self</span>::Syn(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to parse macro input: {error}&quot;</span>),
             <span class="self">Self</span>::TableGen(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid ODS input: {error}&quot;</span>),
             <span class="self">Self</span>::Utf8(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;{error}&quot;</span>),

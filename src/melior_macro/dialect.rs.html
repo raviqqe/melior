@@ -161,17 +161,25 @@
 <a href="#161" id="161">161</a>
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>operation;
 <span class="kw">mod </span>types;
 <span class="kw">mod </span>utility;
 
-<span class="kw">use </span><span class="self">self</span>::utility::{sanitize_documentation, sanitize_snake_case_name};
+<span class="kw">use </span><span class="self">self</span>::{
+    error::Error,
+    utility::{sanitize_documentation, sanitize_snake_case_name},
+};
 <span class="kw">use </span>operation::Operation;
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>proc_macro2::{Ident, Span};
 <span class="kw">use </span>quote::{format_ident, quote};
-<span class="kw">use </span>std::{env, error::Error, fmt::Display, path::Path, process::Command, str};
+<span class="kw">use </span>std::{env, fmt::Display, path::Path, process::Command, str};
 <span class="kw">use </span>syn::{bracketed, parse::Parse, punctuated::Punctuated, LitStr, Token};
 <span class="kw">use </span>tblgen::{record::Record, record_keeper::RecordKeeper, TableGenParser};
 
@@ -181,7 +189,7 @@
     name: <span class="kw-2">&amp;</span>str,
     dialect: Record,
     record_keeper: <span class="kw-2">&amp;</span>RecordKeeper,
-) -&gt; <span class="prelude-ty">Result</span>&lt;proc_macro2::TokenStream, error::Error&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;proc_macro2::TokenStream, Error&gt; {
     <span class="kw">let </span>operations = record_keeper
         .all_derived_definitions(<span class="string">&quot;Op&quot;</span>)
         .map(Operation::from_def)
@@ -271,7 +279,9 @@
     }
 }
 
-<span class="kw">pub fn </span>generate_dialect(input: DialectMacroInput) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+<span class="kw">pub fn </span>generate_dialect(
+    input: DialectMacroInput,
+) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>td_parser = TableGenParser::new();
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(source) = <span class="kw-2">&amp;</span>input.tablegen {
@@ -287,7 +297,7 @@
         td_parser = td_parser.add_include_path(include);
     }
 
-    <span class="kw">let </span>keeper = td_parser.parse().map_err(|<span class="kw">_</span>| error::Error::ParseError)<span class="question-mark">?</span>;
+    <span class="kw">let </span>keeper = td_parser.parse().map_err(Error::Parse)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>dialect_def = keeper
         .all_derived_definitions(<span class="string">&quot;Dialect&quot;</span>)
@@ -299,7 +309,7 @@
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{ #dialect }.into())
 }
 
-<span class="kw">fn </span>llvm_config(argument: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;String, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
+<span class="kw">fn </span>llvm_config(argument: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;String, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="kw">let </span>prefix = env::var(<span class="macro">format!</span>(<span class="string">&quot;MLIR_SYS_{}0_PREFIX&quot;</span>, LLVM_MAJOR_VERSION))
         .map(|path| Path::new(<span class="kw-2">&amp;</span>path).join(<span class="string">&quot;bin&quot;</span>))
         .unwrap_or_default();
