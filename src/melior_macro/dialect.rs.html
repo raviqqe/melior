@@ -161,21 +161,17 @@
 <a href="#161" id="161">161</a>
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
-<a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>operation;
 <span class="kw">mod </span>types;
 <span class="kw">mod </span>utility;
 
-<span class="kw">use </span><span class="self">self</span>::utility::sanitize_documentation;
-<span class="kw">use </span><span class="kw">crate</span>::utility::sanitize_name_snake;
+<span class="kw">use </span><span class="self">self</span>::utility::{sanitize_documentation, sanitize_snake_case_name};
 <span class="kw">use </span>operation::Operation;
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>proc_macro2::{Ident, Span};
 <span class="kw">use </span>quote::{format_ident, quote};
-<span class="kw">use </span>std::{env, error::Error, path::Path, process::Command, str};
+<span class="kw">use </span>std::{env, error::Error, fmt::Display, path::Path, process::Command, str};
 <span class="kw">use </span>syn::{bracketed, parse::Parse, punctuated::Punctuated, LitStr, Token};
 <span class="kw">use </span>tblgen::{record::Record, record_keeper::RecordKeeper, TableGenParser};
 
@@ -200,7 +196,7 @@
             dialect.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>),
         ))<span class="question-mark">?
     </span>);
-    <span class="kw">let </span>name = sanitize_name_snake(name);
+    <span class="kw">let </span>name = sanitize_snake_case_name(name);
 
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
         <span class="attr">#[doc = #doc]
@@ -275,25 +271,19 @@
     }
 }
 
-<span class="kw">pub fn </span>generate_dialect(<span class="kw-2">mut </span>input: DialectMacroInput) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-    <span class="comment">// spell-checker: disable-next-line
-    </span>input.includes.push(llvm_config(<span class="string">&quot;--includedir&quot;</span>)<span class="question-mark">?</span>);
-
+<span class="kw">pub fn </span>generate_dialect(input: DialectMacroInput) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>td_parser = TableGenParser::new();
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(source) = <span class="kw-2">&amp;</span>input.tablegen {
-        td_parser = td_parser
-            .add_source(source)
-            .map_err(|error| syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, error)))<span class="question-mark">?</span>;
+        td_parser = td_parser.add_source(source).map_err(create_syn_error)<span class="question-mark">?</span>;
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(file) = <span class="kw-2">&amp;</span>input.td_file {
-        td_parser = td_parser
-            .add_source_file(file)
-            .map_err(|error| syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, error)))<span class="question-mark">?</span>;
+        td_parser = td_parser.add_source_file(file).map_err(create_syn_error)<span class="question-mark">?</span>;
     }
 
-    <span class="kw">for </span>include <span class="kw">in </span><span class="kw-2">&amp;</span>input.includes {
+    <span class="comment">// spell-checker: disable-next-line
+    </span><span class="kw">for </span>include <span class="kw">in </span>input.includes.iter().chain([<span class="kw-2">&amp;</span>llvm_config(<span class="string">&quot;--includedir&quot;</span>)<span class="question-mark">?</span>]) {
         td_parser = td_parser.add_include_path(include);
     }
 
@@ -302,7 +292,7 @@
     <span class="kw">let </span>dialect_def = keeper
         .all_derived_definitions(<span class="string">&quot;Dialect&quot;</span>)
         .find(|def| def.str_value(<span class="string">&quot;name&quot;</span>) == <span class="prelude-val">Ok</span>(<span class="kw-2">&amp;</span>input.name))
-        .ok_or_else(|| syn::Error::new(Span::call_site(), <span class="string">&quot;dialect not found&quot;</span>))<span class="question-mark">?</span>;
+        .ok_or_else(|| create_syn_error(<span class="string">&quot;dialect not found&quot;</span>))<span class="question-mark">?</span>;
     <span class="kw">let </span>dialect = dialect_module(<span class="kw-2">&amp;</span>input.name, dialect_def, <span class="kw-2">&amp;</span>keeper)
         .map_err(|error| error.add_source_info(keeper.source_info()))<span class="question-mark">?</span>;
 
@@ -329,5 +319,9 @@
     )<span class="question-mark">?
     </span>.trim()
     .to_string())
+}
+
+<span class="kw">fn </span>create_syn_error(error: <span class="kw">impl </span>Display) -&gt; syn::Error {
+    syn::Error::new(Span::call_site(), <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, error))
 }
 </code></pre></div></section></main></body></html>

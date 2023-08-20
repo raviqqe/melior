@@ -637,24 +637,14 @@
 <a href="#637" id="637">637</a>
 <a href="#638" id="638">638</a>
 <a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
-<a href="#643" id="643">643</a>
-<a href="#644" id="644">644</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 
 <span class="kw">use </span><span class="self">self</span>::builder::OperationBuilder;
-<span class="kw">use </span><span class="kw">super</span>::utility::sanitize_documentation;
-<span class="kw">use crate</span>::{
-    dialect::{
-        error::{Error, ExpectedSuperClassError},
-        types::{
-            AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint,
-        },
-    },
-    utility::sanitize_name_snake,
+<span class="kw">use </span><span class="kw">super</span>::utility::{sanitize_documentation, sanitize_snake_case_name};
+<span class="kw">use </span><span class="kw">crate</span>::dialect::{
+    error::{Error, ExpectedSuperClassError},
+    types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
 };
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
 <span class="kw">use </span>quote::{format_ident, quote, ToTokens, TokenStreamExt};
@@ -863,7 +853,7 @@
     <span class="kw">pub fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, kind: FieldKind&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             name,
-            sanitized_name: sanitize_name_snake(name),
+            sanitized_name: sanitize_snake_case_name(name),
             kind,
         }
     }
