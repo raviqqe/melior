@@ -211,4 +211,33 @@ mod tests {
         assert!(module.as_operation().verify());
         insta::assert_display_snapshot!(module.as_operation());
     }
+
+    #[test]
+    fn compile_external_function() {
+        let context = create_test_context();
+
+        let location = Location::unknown(&context);
+        let module = Module::new(location);
+
+        let integer_type = Type::index(&context);
+
+        let function = func(
+            &context,
+            StringAttribute::new(&context, "foo"),
+            TypeAttribute::new(
+                FunctionType::new(&context, &[integer_type], &[integer_type]).into(),
+            ),
+            Region::new(),
+            &[(
+                Identifier::new(&context, "sym_visibility"),
+                StringAttribute::new(&context, "private").into(),
+            )],
+            Location::unknown(&context),
+        );
+
+        module.body().append_operation(function);
+
+        assert!(module.as_operation().verify());
+        insta::assert_display_snapshot!(module.as_operation());
+    }
 }
