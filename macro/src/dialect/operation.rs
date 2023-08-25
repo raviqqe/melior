@@ -377,7 +377,7 @@ impl<'a> Operation<'a> {
                     SuccessorConstraint::new(
                         value
                             .try_into()
-                            .map_err(|e: tblgen::Error| e.set_location(def))?,
+                            .map_err(|error: tblgen::Error| error.set_location(def))?,
                     ),
                     SequenceInfo { index, len },
                 ))
@@ -391,12 +391,13 @@ impl<'a> Operation<'a> {
         regions_dag
             .args()
             .enumerate()
-            .map(|(index, (name, v))| {
+            .map(|(index, (name, value))| {
                 Ok(OperationField::new_region(
                     name,
                     RegionConstraint::new(
-                        v.try_into()
-                            .map_err(|e: tblgen::Error| e.set_location(def))?,
+                        value
+                            .try_into()
+                            .map_err(|error: tblgen::Error| error.set_location(def))?,
                     ),
                     SequenceInfo { index, len },
                 ))
@@ -405,13 +406,15 @@ impl<'a> Operation<'a> {
     }
 
     fn collect_traits(def: Record<'a>) -> Result<Vec<Trait>, Error> {
-        let mut work_list: Vec<_> = vec![def.list_value("traits")?];
+        let mut work_list = vec![def.list_value("traits")?];
         let mut traits = Vec::new();
+
         while let Some(trait_def) = work_list.pop() {
-            for v in trait_def.iter() {
-                let trait_def: Record = v
+            for value in trait_def.iter() {
+                let trait_def: Record = value
                     .try_into()
-                    .map_err(|e: tblgen::Error| e.set_location(def))?;
+                    .map_err(|error: tblgen::Error| error.set_location(def))?;
+
                 if trait_def.subclass_of("TraitList") {
                     work_list.push(trait_def.list_value("traits")?);
                 } else {
@@ -422,6 +425,7 @@ impl<'a> Operation<'a> {
                 }
             }
         }
+
         Ok(traits)
     }
 
@@ -434,7 +438,7 @@ impl<'a> Operation<'a> {
             .map(|(name, arg)| {
                 let mut arg_def: Record = arg
                     .try_into()
-                    .map_err(|e: tblgen::Error| e.set_location(def))?;
+                    .map_err(|error: tblgen::Error| error.set_location(def))?;
 
                 if arg_def.subclass_of("OpVariable") {
                     arg_def = arg_def.def_value("constraint")?;
@@ -451,28 +455,27 @@ impl<'a> Operation<'a> {
         attr_sized: bool,
     ) -> Result<(Vec<OperationField>, usize), Error> {
         Self::collect_elements(
-            Self::dag_constraints(def, "results")?
+            &Self::dag_constraints(def, "results")?
                 .into_iter()
                 .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
-                .collect::<Vec<_>>()
-                .iter(),
+                .collect::<Vec<_>>(),
             ElementKind::Result,
             same_size,
             attr_sized,
         )
     }
 
-    fn collect_operands<'b, 'c: 'a + 'b>(
-        arguments: impl Iterator<Item = &'b (&'c str, Record<'c>)>,
+    fn collect_operands(
+        arguments: &[(&'a str, Record<'a>)],
         same_size: bool,
         attr_sized: bool,
     ) -> Result<Vec<OperationField<'a>>, Error> {
         Ok(Self::collect_elements(
-            arguments
+            &arguments
+                .iter()
                 .filter(|(_, arg_def)| arg_def.subclass_of("TypeConstraint"))
                 .map(|(name, arg_def)| (*name, TypeConstraint::new(*arg_def)))
-                .collect::<Vec<_>>()
-                .iter(),
+                .collect::<Vec<_>>(),
             ElementKind::Operand,
             same_size,
             attr_sized,
@@ -480,25 +483,25 @@ impl<'a> Operation<'a> {
         .0)
     }
 
-    fn collect_elements<'b, 'c: 'a + 'b>(
-        elements: impl Iterator<Item = &'b (&'c str, TypeConstraint<'c>)> + Clone,
+    fn collect_elements(
+        elements: &[(&'a str, TypeConstraint<'a>)],
         kind: ElementKind,
         same_size: bool,
         attr_sized: bool,
     ) -> Result<(Vec<OperationField<'a>>, usize), Error> {
-        let len = elements.clone().count();
         let num_variable_length = elements
-            .clone()
-            .filter(|res| res.1.has_variable_length())
+            .iter()
+            .filter(|(_, constraint)| constraint.has_variable_length())
             .count();
         let variadic_iter = VariadicKindIter::new(
-            elements.clone().map(|(_, tc)| tc),
+            elements.iter().map(|(_, constraint)| constraint),
             num_variable_length,
             same_size,
             attr_sized,
         );
         Ok((
             elements
+                .iter()
                 .enumerate()
                 .zip(variadic_iter)
                 .map(|((index, (name, constraint)), variadic_kind)| {
@@ -506,7 +509,10 @@ impl<'a> Operation<'a> {
                         name,
                         *constraint,
                         kind,
-                        SequenceInfo { index, len },
+                        SequenceInfo {
+                            index,
+                            len: elements.len(),
+                        },
                         variadic_kind,
                     )
                 })
@@ -515,10 +521,11 @@ impl<'a> Operation<'a> {
         ))
     }
 
-    fn collect_attributes<'b, 'c: 'a + 'b>(
-        arguments: impl Iterator<Item = &'b (&'c str, Record<'c>)>,
+    fn collect_attributes(
+        arguments: &[(&'a str, Record<'a>)],
     ) -> Result<Vec<OperationField<'a>>, Error> {
         arguments
+            .iter()
             .filter(|(_, arg_def)| arg_def.subclass_of("Attr"))
             .map(|(name, arg_def)| {
                 // TODO: Replace assert! with Result
@@ -593,12 +600,12 @@ impl<'a> Operation<'a> {
             class_name,
             successors: Self::collect_successors(def)?,
             operands: Self::collect_operands(
-                arguments.iter(),
+                &arguments,
                 has_trait("::mlir::OpTrait::SameVariadicOperandSize"),
                 has_trait("::mlir::OpTrait::AttrSizedOperandSegments"),
             )?,
             results,
-            attributes: Self::collect_attributes(arguments.iter())?,
+            attributes: Self::collect_attributes(&arguments)?,
             derived_attributes: Self::collect_derived_attributes(def)?,
             can_infer_type: traits.iter().any(|r#trait| {
                 (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
