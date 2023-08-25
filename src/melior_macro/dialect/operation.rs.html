@@ -637,6 +637,9 @@
 <a href="#637" id="637">637</a>
 <a href="#638" id="638">638</a>
 <a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 
@@ -717,8 +720,8 @@
         )
     }
 
-    <span class="kw">pub fn </span>param_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type {
-        <span class="kw">match </span><span class="self">self </span>{
+    <span class="kw">pub fn </span>param_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Type, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Element {
                 kind, constraint, ..
             } =&gt; {
@@ -740,7 +743,7 @@
                 <span class="kw">if </span>constraint.is_unit() {
                     <span class="macro">parse_quote!</span>(bool)
                 } <span class="kw">else </span>{
-                    <span class="kw">let </span>r#type: Type = syn::parse_str(constraint.storage_type())
+                    <span class="kw">let </span>r#type: Type = syn::parse_str(constraint.storage_type()<span class="question-mark">?</span>)
                         .expect(<span class="string">&quot;storage type strings are valid&quot;</span>);
                     <span class="macro">parse_quote!</span>(#r#type&lt;<span class="lifetime">&#39;c</span>&gt;)
                 }
@@ -761,7 +764,7 @@
                     r#type
                 }
             }
-        }
+        })
     }
 
     <span class="kw">fn </span>create_result_type(r#type: Type) -&gt; Type {
@@ -772,8 +775,8 @@
         <span class="macro">parse_quote!</span>(<span class="kw">impl </span>Iterator&lt;Item = #r#type&gt;)
     }
 
-    <span class="kw">pub fn </span>return_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type {
-        <span class="kw">match </span><span class="self">self </span>{
+    <span class="kw">pub fn </span>return_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Type, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Element {
                 kind,
                 constraint,
@@ -800,7 +803,7 @@
                 <span class="kw">if </span>constraint.is_unit() {
                     <span class="macro">parse_quote!</span>(bool)
                 } <span class="kw">else </span>{
-                    <span class="self">Self</span>::create_result_type(<span class="self">self</span>.param_type())
+                    <span class="self">Self</span>::create_result_type(<span class="self">self</span>.param_type()<span class="question-mark">?</span>)
                 }
             }
             <span class="self">Self</span>::Successor { constraint, .. } =&gt; {
@@ -819,7 +822,7 @@
                     <span class="self">Self</span>::create_result_type(r#type)
                 }
             }
-        }
+        })
     }
 }
 
@@ -1223,11 +1226,14 @@
     <span class="kw">fn </span>to_tokens(<span class="kw-2">&amp;</span><span class="self">self</span>, tokens: <span class="kw-2">&amp;mut </span>TokenStream) {
         <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.class_name);
         <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.full_name;
-        <span class="kw">let </span>accessors = <span class="self">self</span>.fields.iter().map(|field| field.accessors());
+        <span class="kw">let </span>accessors = <span class="self">self
+            </span>.fields
+            .iter()
+            .map(|field| field.accessors().expect(<span class="string">&quot;valid accessors&quot;</span>));
         <span class="kw">let </span>builder = OperationBuilder::new(<span class="self">self</span>);
-        <span class="kw">let </span>builder_tokens = builder.builder();
+        <span class="kw">let </span>builder_tokens = builder.builder().expect(<span class="string">&quot;valid builder&quot;</span>);
         <span class="kw">let </span>builder_fn = builder.create_op_builder_fn();
-        <span class="kw">let </span>default_constructor = builder.default_constructor();
+        <span class="kw">let </span>default_constructor = builder.default_constructor().expect(<span class="string">&quot;valid constructor&quot;</span>);
         <span class="kw">let </span>summary = <span class="kw-2">&amp;</span><span class="self">self</span>.summary;
         <span class="kw">let </span>description =
             sanitize_documentation(<span class="kw-2">&amp;</span><span class="self">self</span>.description).expect(<span class="string">&quot;valid Markdown documentation&quot;</span>);

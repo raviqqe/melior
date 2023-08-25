@@ -248,9 +248,13 @@
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{
-    <span class="kw">super</span>::utility::sanitize_snake_case_name, ElementKind, FieldKind, OperationField, SequenceInfo,
-    VariadicKind,
+    <span class="kw">super</span>::{error::Error, utility::sanitize_snake_case_name},
+    ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind,
 };
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::{format_ident, quote};
@@ -458,17 +462,20 @@
         })
     }
 
-    <span class="kw">pub fn </span>accessors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenStream {
+    <span class="kw">pub fn </span>accessors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
         <span class="kw">let </span>setter = {
             <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;set_{}&quot;</span>, <span class="self">self</span>.name));
-            <span class="self">self</span>.setter_impl().map_or(<span class="macro">quote!</span>(), |body| {
-                <span class="kw">let </span>param_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.param_type();
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(body) = <span class="self">self</span>.setter_impl() {
+                <span class="kw">let </span>param_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.param_type()<span class="question-mark">?</span>;
+
                 <span class="macro">quote! </span>{
                     <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: #param_type) {
                         #body
                     }
                 }
-            })
+            } <span class="kw">else </span>{
+                <span class="macro">quote!</span>()
+            }
         };
         <span class="kw">let </span>remover = {
             <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;remove_{}&quot;</span>, <span class="self">self</span>.name));
@@ -482,7 +489,7 @@
         };
         <span class="kw">let </span>getter = {
             <span class="kw">let </span>ident = <span class="kw-2">&amp;</span><span class="self">self</span>.sanitized_name;
-            <span class="kw">let </span>return_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.return_type();
+            <span class="kw">let </span>return_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.return_type()<span class="question-mark">?</span>;
             <span class="self">self</span>.getter_impl().map_or(<span class="macro">quote!</span>(), |body| {
                 <span class="macro">quote! </span>{
                     <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; #return_type {
@@ -491,11 +498,12 @@
                 }
             })
         };
-        <span class="macro">quote! </span>{
+
+        <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
             #getter
             #setter
             #remover
-        }
+        })
     }
 }
 </code></pre></div></section></main></body></html>
