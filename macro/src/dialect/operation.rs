@@ -543,7 +543,7 @@ impl<'a> Operation<'a> {
                 def.subclass_of("DerivedAttr")
                     .then_some(())
                     .ok_or_else(|| {
-                        ExpectedSuperClassError("DerivedAttr".into()).with_location(def)
+                        OdsError::ExpectedSuperClass("DerivedAttr".into()).with_location(def)
                     })?;
                 Ok(OperationField::new_attribute(
                     def.name()?,
