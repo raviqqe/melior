@@ -643,7 +643,7 @@
 <span class="kw">use </span><span class="self">self</span>::builder::OperationBuilder;
 <span class="kw">use </span><span class="kw">super</span>::utility::{sanitize_documentation, sanitize_snake_case_name};
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
-    error::{Error, ExpectedSuperClassError},
+    error::{Error, OdsError},
     types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
 };
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
@@ -1145,7 +1145,7 @@
                         def.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>)
                             .then_some(())
                             .ok_or_else(|| {
-                                ExpectedSuperClassError(<span class="string">&quot;DerivedAttr&quot;</span>.into()).with_location(def)
+                                OdsError::ExpectedSuperClass(<span class="string">&quot;DerivedAttr&quot;</span>).with_location(def)
                             })<span class="question-mark">?</span>;
                         <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(OperationField::new_attribute(
                             def.name()<span class="question-mark">?</span>,

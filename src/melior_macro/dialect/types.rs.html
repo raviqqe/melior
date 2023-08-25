@@ -268,12 +268,10 @@
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>once_cell::sync::Lazy;
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::error::{Error, OdsError};
+<span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>std::{collections::HashMap, ops::Deref};
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record};
-
-<span class="kw">use </span><span class="kw">super</span>::error::{Error, InvalidTraitError};
 
 <span class="macro">macro_rules! </span>prefixed_string {
     (<span class="macro-nonterminal">$prefix</span>:literal, <span class="macro-nonterminal">$name</span>:ident) =&gt; {
@@ -499,7 +497,7 @@
                     name: def.string_value(<span class="string">&quot;trait&quot;</span>)<span class="question-mark">?</span>,
                 }
             } <span class="kw">else </span>{
-                <span class="kw">return </span><span class="prelude-val">Err</span>(InvalidTraitError.with_location(def).into());
+                <span class="kw">return </span><span class="prelude-val">Err</span>(OdsError::InvalidTrait.with_location(def).into());
             },
         })
     }

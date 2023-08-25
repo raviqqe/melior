@@ -139,7 +139,7 @@
 <span class="kw">mod </span>r#type;
 <span class="kw">mod </span>utility;
 
-<span class="kw">use </span>dialect::DialectMacroInput;
+<span class="kw">use </span>dialect::DialectInput;
 <span class="kw">use </span>parse::{DialectOperationSet, IdentifierList};
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>quote::quote;
@@ -158,7 +158,7 @@
 /// ```
 </span><span class="attr">#[proc_macro]
 </span><span class="kw">pub fn </span>dialect(input: TokenStream) -&gt; TokenStream {
-    <span class="kw">let </span>input = <span class="macro">parse_macro_input!</span>(input <span class="kw">as </span>DialectMacroInput);
+    <span class="kw">let </span>input = <span class="macro">parse_macro_input!</span>(input <span class="kw">as </span>DialectInput);
 
     convert_result(dialect::generate_dialect(input))
 }
