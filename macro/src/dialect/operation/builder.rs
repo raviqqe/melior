@@ -98,7 +98,7 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
     ) -> impl Iterator<Item = Result<TokenStream, Error>> + 'a {
         let builder_ident = format_ident!("{}Builder", self.operation.class_name);
 
-        self.operation.fields.iter().map(move |field| {
+        self.operation.fields().map(move |field| {
             let name = sanitize_snake_case_name(field.name);
             let param_type = &field.kind.param_type()?;
             let args = quote! { #name: #param_type };
@@ -304,7 +304,7 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
     fn required_fields<'a, 'b>(
         operation: &'a Operation<'b>,
     ) -> impl Iterator<Item = &'a OperationField<'b>> {
-        operation.fields.iter().filter(|field| {
+        operation.fields().filter(|field| {
             !field.kind.is_optional() && (!field.kind.is_result() || !operation.can_infer_type)
         })
     }
