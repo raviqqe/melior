@@ -640,6 +640,60 @@
 <a href="#640" id="640">640</a>
 <a href="#641" id="641">641</a>
 <a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 
@@ -845,6 +899,73 @@
     AttrSized {},
 }
 
+<span class="kw">impl </span>VariadicKind {
+    <span class="kw">pub fn </span>new(num_variable_length: usize, same_size: bool, attr_sized: bool) -&gt; <span class="self">Self </span>{
+        <span class="kw">if </span>num_variable_length &lt;= <span class="number">1 </span>{
+            VariadicKind::Simple {
+                seen_variable_length: <span class="bool-val">false</span>,
+            }
+        } <span class="kw">else if </span>same_size {
+            VariadicKind::SameSize {
+                num_variable_length,
+                num_preceding_simple: <span class="number">0</span>,
+                num_preceding_variadic: <span class="number">0</span>,
+            }
+        } <span class="kw">else if </span>attr_sized {
+            VariadicKind::AttrSized {}
+        } <span class="kw">else </span>{
+            <span class="macro">unimplemented!</span>()
+        }
+    }
+}
+
+<span class="kw">pub struct </span>VariadicKindIter&lt;I&gt; {
+    current: VariadicKind,
+    iter: I,
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;b</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt;&gt;&gt; VariadicKindIter&lt;I&gt; {
+    <span class="kw">pub fn </span>new(iter: I, num_variable_length: usize, same_size: bool, attr_sized: bool) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            iter,
+            current: VariadicKind::new(num_variable_length, same_size, attr_sized),
+        }
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;b</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt;&gt;&gt; Iterator <span class="kw">for </span>VariadicKindIter&lt;I&gt; {
+    <span class="kw">type </span>Item = VariadicKind;
+
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="kw">let </span><span class="prelude-val">Some</span>(constraint) = <span class="self">self</span>.iter.next() <span class="kw">else </span>{
+            <span class="kw">return </span><span class="prelude-val">None</span>;
+        };
+        <span class="kw">let </span>original = <span class="self">self</span>.current.clone();
+        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.current {
+            VariadicKind::Simple {
+                seen_variable_length,
+            } =&gt; {
+                <span class="kw">if </span>constraint.is_variable_length() {
+                    <span class="kw-2">*</span>seen_variable_length = <span class="bool-val">true</span>;
+                }
+            }
+            VariadicKind::SameSize {
+                num_preceding_simple,
+                num_preceding_variadic,
+                ..
+            } =&gt; {
+                <span class="kw">if </span>constraint.is_variable_length() {
+                    <span class="kw-2">*</span>num_preceding_variadic += <span class="number">1</span>;
+                } <span class="kw">else </span>{
+                    <span class="kw-2">*</span>num_preceding_simple += <span class="number">1</span>;
+                }
+            }
+            VariadicKind::AttrSized {} =&gt; {}
+        };
+        <span class="prelude-val">Some</span>(original)
+    }
+}
+
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>OperationField&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">pub</span>(<span class="kw">crate</span>) name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
@@ -893,24 +1014,6 @@
         )
     }
 
-    <span class="kw">pub fn </span>new_operand(
-        name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-        tc: TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt;,
-        seq_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new_element(name, tc, ElementKind::Operand, seq_info, variadic_kind)
-    }
-
-    <span class="kw">pub fn </span>new_result(
-        name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-        tc: TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt;,
-        seq_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    ) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new_element(name, tc, ElementKind::Result, seq_info, variadic_kind)
-    }
-
     <span class="kw">fn </span>new_element(
         name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
         constraint: TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt;,
@@ -936,16 +1039,67 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) short_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
     <span class="kw">pub</span>(<span class="kw">crate</span>) full_name: String,
     <span class="kw">pub</span>(<span class="kw">crate</span>) class_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) fields: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) regions: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) successors: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) results: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) operands: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) attributes: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) derived_attributes: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
     <span class="kw">pub</span>(<span class="kw">crate</span>) can_infer_type: bool,
     <span class="kw">pub</span>(<span class="kw">crate</span>) summary: String,
     <span class="kw">pub</span>(<span class="kw">crate</span>) description: String,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Operation&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>from_def(def: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
-        <span class="kw">let </span>dialect = def.def_value(<span class="string">&quot;opDialect&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt; + Clone {
+        <span class="self">self</span>.results
+            .iter()
+            .chain(<span class="self">self</span>.operands.iter())
+            .chain(<span class="self">self</span>.regions.iter())
+            .chain(<span class="self">self</span>.successors.iter())
+            .chain(<span class="self">self</span>.attributes.iter())
+            .chain(<span class="self">self</span>.derived_attributes.iter())
+    }
 
+    <span class="kw">fn </span>collect_successors(def: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
+        <span class="kw">let </span>successors_dag = def.dag_value(<span class="string">&quot;successors&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>len = successors_dag.num_args();
+        successors_dag
+            .args()
+            .enumerate()
+            .map(|(i, (n, v))| {
+                <span class="prelude-val">Ok</span>(OperationField::new_successor(
+                    n,
+                    SuccessorConstraint::new(
+                        v.try_into()
+                            .map_err(|e: tblgen::Error| e.set_location(def))<span class="question-mark">?</span>,
+                    ),
+                    SequenceInfo { index: i, len },
+                ))
+            })
+            .collect()
+    }
+
+    <span class="kw">fn </span>collect_regions(def: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
+        <span class="kw">let </span>regions_dag = def.dag_value(<span class="string">&quot;regions&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>len = regions_dag.num_args();
+        regions_dag
+            .args()
+            .enumerate()
+            .map(|(i, (n, v))| {
+                <span class="prelude-val">Ok</span>(OperationField::new_region(
+                    n,
+                    RegionConstraint::new(
+                        v.try_into()
+                            .map_err(|e: tblgen::Error| e.set_location(def))<span class="question-mark">?</span>,
+                    ),
+                    SequenceInfo { index: i, len },
+                ))
+            })
+            .collect()
+    }
+
+    <span class="kw">fn </span>collect_traits(def: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Trait&gt;, Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>work_list: Vec&lt;<span class="kw">_</span>&gt; = <span class="macro">vec!</span>[def.list_value(<span class="string">&quot;traits&quot;</span>)<span class="question-mark">?</span>];
         <span class="kw">let </span><span class="kw-2">mut </span>traits = Vec::new();
         <span class="kw">while let </span><span class="prelude-val">Some</span>(trait_def) = work_list.pop() {
@@ -963,211 +1117,163 @@
                 }
             }
         }
+        <span class="prelude-val">Ok</span>(traits)
+    }
 
-        <span class="kw">let </span>successors_dag = def.dag_value(<span class="string">&quot;successors&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>len = successors_dag.num_args();
-        <span class="kw">let </span>successors = successors_dag.args().enumerate().map(|(i, (n, v))| {
-            <span class="prelude-ty">Result</span>::&lt;<span class="kw">_</span>, Error&gt;::Ok(OperationField::new_successor(
-                n,
-                SuccessorConstraint::new(
-                    v.try_into()
-                        .map_err(|e: tblgen::Error| e.set_location(def))<span class="question-mark">?</span>,
-                ),
-                SequenceInfo { index: i, len },
-            ))
-        });
+    <span class="kw">fn </span>dag_constraints(
+        def: Record&lt;<span class="lifetime">&#39;a</span>&gt;,
+        dag_field_name: <span class="kw-2">&amp;</span>str,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, Record&lt;<span class="lifetime">&#39;a</span>&gt;)&gt;, Error&gt; {
+        def.dag_value(dag_field_name)<span class="question-mark">?
+            </span>.args()
+            .map(|(name, arg)| {
+                <span class="kw">let </span><span class="kw-2">mut </span>arg_def: Record = arg
+                    .try_into()
+                    .map_err(|e: tblgen::Error| e.set_location(def))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>regions_dag = def.dag_value(<span class="string">&quot;regions&quot;</span>).expect(<span class="string">&quot;operation has regions&quot;</span>);
-        <span class="kw">let </span>len = regions_dag.num_args();
-        <span class="kw">let </span>regions = regions_dag.args().enumerate().map(|(i, (n, v))| {
-            <span class="prelude-val">Ok</span>(OperationField::new_region(
-                n,
-                RegionConstraint::new(
-                    v.try_into()
-                        .map_err(|e: tblgen::Error| e.set_location(def))<span class="question-mark">?</span>,
-                ),
-                SequenceInfo { index: i, len },
-            ))
-        });
-
-        <span class="comment">// Creates an initial `VariadicKind` instance based on SameSize and AttrSized
-        // traits.
-        </span><span class="kw">let </span>initial_variadic_kind = |num_variable_length: usize, kind_name_upper: <span class="kw-2">&amp;</span>str| {
-            <span class="kw">let </span>same_size_trait = <span class="macro">format!</span>(<span class="string">&quot;::mlir::OpTrait::SameVariadic{}Size&quot;</span>, kind_name_upper);
-            <span class="kw">let </span>attr_sized = <span class="macro">format!</span>(<span class="string">&quot;::mlir::OpTrait::AttrSized{}Segments&quot;</span>, kind_name_upper);
-            <span class="kw">if </span>num_variable_length &lt;= <span class="number">1 </span>{
-                VariadicKind::Simple {
-                    seen_variable_length: <span class="bool-val">false</span>,
+                <span class="kw">if </span>arg_def.subclass_of(<span class="string">&quot;OpVariable&quot;</span>) {
+                    arg_def = arg_def.def_value(<span class="string">&quot;constraint&quot;</span>)<span class="question-mark">?</span>;
                 }
-            } <span class="kw">else if </span>traits.iter().any(|t| t.has_name(<span class="kw-2">&amp;</span>same_size_trait)) {
-                VariadicKind::SameSize {
-                    num_variable_length,
-                    num_preceding_simple: <span class="number">0</span>,
-                    num_preceding_variadic: <span class="number">0</span>,
-                }
-            } <span class="kw">else if </span>traits.iter().any(|t| t.has_name(<span class="kw-2">&amp;</span>attr_sized)) {
-                VariadicKind::AttrSized {}
-            } <span class="kw">else </span>{
-                <span class="macro">unimplemented!</span>(<span class="string">&quot;unsupported {} structure&quot;</span>, kind_name_upper)
-            }
-        };
 
-        <span class="comment">// Updates the given `VariadicKind` and returns the original value.
-        </span><span class="kw">let </span>update_variadic_kind = |tc: <span class="kw-2">&amp;</span>TypeConstraint, variadic_kind: <span class="kw-2">&amp;mut </span>VariadicKind| {
-            <span class="kw">let </span>orig_variadic_kind = variadic_kind.clone();
-            <span class="kw">match </span>variadic_kind {
-                VariadicKind::Simple {
-                    seen_variable_length,
-                } =&gt; {
-                    <span class="kw">if </span>tc.is_variable_length() {
-                        <span class="kw-2">*</span>seen_variable_length = <span class="bool-val">true</span>;
-                    }
-                    variadic_kind.clone()
-                }
-                VariadicKind::SameSize {
-                    num_preceding_simple,
-                    num_preceding_variadic,
-                    ..
-                } =&gt; {
-                    <span class="kw">if </span>tc.is_variable_length() {
-                        <span class="kw-2">*</span>num_preceding_variadic += <span class="number">1</span>;
-                    } <span class="kw">else </span>{
-                        <span class="kw-2">*</span>num_preceding_simple += <span class="number">1</span>;
-                    }
-                    orig_variadic_kind
-                }
-                VariadicKind::AttrSized {} =&gt; variadic_kind.clone(),
-            }
-        };
+                <span class="prelude-val">Ok</span>((name, arg_def))
+            })
+            .collect()
+    }
 
-        <span class="kw">let </span>results_dag = def.dag_value(<span class="string">&quot;results&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>results = results_dag.args().map(|(n, arg)| {
-            <span class="kw">let </span><span class="kw-2">mut </span>arg_def: Record = arg
-                .try_into()
-                .map_err(|e: tblgen::Error| e.set_location(def))<span class="question-mark">?</span>;
+    <span class="kw">fn </span>collect_results(
+        def: Record&lt;<span class="lifetime">&#39;a</span>&gt;,
+        same_size: bool,
+        attr_sized: bool,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;OperationField&gt;, usize), Error&gt; {
+        <span class="self">Self</span>::collect_elements(
+            <span class="self">Self</span>::dag_constraints(def, <span class="string">&quot;results&quot;</span>)<span class="question-mark">?
+                </span>.into_iter()
+                .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+                .iter(),
+            ElementKind::Result,
+            same_size,
+            attr_sized,
+        )
+    }
 
-            <span class="kw">if </span>arg_def.subclass_of(<span class="string">&quot;OpVariable&quot;</span>) {
-                arg_def = arg_def.def_value(<span class="string">&quot;constraint&quot;</span>)<span class="question-mark">?</span>;
-            }
+    <span class="kw">fn </span>collect_operands&lt;<span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>: <span class="lifetime">&#39;a </span>+ <span class="lifetime">&#39;b</span>&gt;(
+        arguments: <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>str, Record&lt;<span class="lifetime">&#39;c</span>&gt;)&gt;,
+        same_size: bool,
+        attr_sized: bool,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span>::collect_elements(
+            arguments
+                .filter(|(<span class="kw">_</span>, arg_def)| arg_def.subclass_of(<span class="string">&quot;TypeConstraint&quot;</span>))
+                .map(|(n, arg_def)| (<span class="kw-2">*</span>n, TypeConstraint::new(<span class="kw-2">*</span>arg_def)))
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+                .iter(),
+            ElementKind::Operand,
+            same_size,
+            attr_sized,
+        )<span class="question-mark">?
+        </span>.<span class="number">0</span>)
+    }
 
-            <span class="prelude-val">Ok</span>((n, TypeConstraint::new(arg_def)))
-        });
-        <span class="kw">let </span>num_results = results.clone().count();
-        <span class="kw">let </span>num_variable_length_results = results
+    <span class="kw">fn </span>collect_elements&lt;<span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>: <span class="lifetime">&#39;a </span>+ <span class="lifetime">&#39;b</span>&gt;(
+        elements: <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>str, TypeConstraint&lt;<span class="lifetime">&#39;c</span>&gt;)&gt; + Clone,
+        kind: ElementKind,
+        same_size: bool,
+        attr_sized: bool,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, usize), Error&gt; {
+        <span class="kw">let </span>len = elements.clone().count();
+        <span class="kw">let </span>num_variable_length = elements
             .clone()
-            .filter(|res| {
-                res.as_ref()
-                    .map(|(<span class="kw">_</span>, tc)| tc.is_variable_length())
-                    .unwrap_or_default()
-            })
+            .filter(|res| res.<span class="number">1</span>.is_variable_length())
             .count();
-        <span class="kw">let </span><span class="kw-2">mut </span>kind = initial_variadic_kind(num_variable_length_results, <span class="string">&quot;Result&quot;</span>);
-        <span class="kw">let </span>results = results.enumerate().map(|(i, res)| {
-            res.map(|(n, tc)| {
-                <span class="kw">let </span>current_kind = update_variadic_kind(<span class="kw-2">&amp;</span>tc, <span class="kw-2">&amp;mut </span>kind);
-                OperationField::new_result(
-                    n,
-                    tc,
-                    SequenceInfo {
-                        index: i,
-                        len: num_results,
-                    },
-                    current_kind,
-                )
-            })
-        });
+        <span class="kw">let </span>variadic_iter = VariadicKindIter::new(
+            elements.clone().map(|(<span class="kw">_</span>, tc)| tc),
+            num_variable_length,
+            same_size,
+            attr_sized,
+        );
+        <span class="prelude-val">Ok</span>((
+            elements
+                .enumerate()
+                .zip(variadic_iter)
+                .map(|((i, (n, tc)), variadic_kind)| {
+                    OperationField::new_element(
+                        n,
+                        <span class="kw-2">*</span>tc,
+                        kind,
+                        SequenceInfo { index: i, len },
+                        variadic_kind,
+                    )
+                })
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+            num_variable_length,
+        ))
+    }
 
-        <span class="kw">let </span>arguments_dag = def.dag_value(<span class="string">&quot;arguments&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>arguments = arguments_dag.args().map(|(name, arg)| {
-            <span class="kw">let </span><span class="kw-2">mut </span>arg_def: Record = arg
-                .try_into()
-                .map_err(|e: tblgen::Error| e.set_location(def))<span class="question-mark">?</span>;
-
-            <span class="kw">if </span>arg_def.subclass_of(<span class="string">&quot;OpVariable&quot;</span>) {
-                arg_def = arg_def.def_value(<span class="string">&quot;constraint&quot;</span>)<span class="question-mark">?</span>;
-            }
-
-            <span class="prelude-val">Ok</span>((name, arg_def))
-        });
-
-        <span class="kw">let </span>operands = arguments.clone().filter_map(|res| {
-            res.map(|(n, arg_def)| {
-                <span class="kw">if </span>arg_def.subclass_of(<span class="string">&quot;TypeConstraint&quot;</span>) {
-                    <span class="prelude-val">Some</span>((n, TypeConstraint::new(arg_def)))
-                } <span class="kw">else </span>{
-                    <span class="prelude-val">None
-                </span>}
-            })
-            .transpose()
-        });
-        <span class="kw">let </span>num_operands = operands.clone().count();
-        <span class="kw">let </span>num_variable_length_operands = operands
-            .clone()
-            .filter(|res| {
-                res.as_ref()
-                    .map(|(<span class="kw">_</span>, tc)| tc.is_variable_length())
-                    .unwrap_or_default()
-            })
-            .count();
-        <span class="kw">let </span><span class="kw-2">mut </span>kind = initial_variadic_kind(num_variable_length_operands, <span class="string">&quot;Operand&quot;</span>);
-        <span class="kw">let </span>operands = operands.enumerate().map(|(i, res)| {
-            res.map(|(name, tc)| {
-                <span class="kw">let </span>current_kind = update_variadic_kind(<span class="kw-2">&amp;</span>tc, <span class="kw-2">&amp;mut </span>kind);
-                OperationField::new_operand(
+    <span class="kw">fn </span>collect_attributes&lt;<span class="lifetime">&#39;b</span>, <span class="lifetime">&#39;c</span>: <span class="lifetime">&#39;a </span>+ <span class="lifetime">&#39;b</span>&gt;(
+        arguments: <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>str, Record&lt;<span class="lifetime">&#39;c</span>&gt;)&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, Error&gt; {
+        arguments
+            .filter(|(<span class="kw">_</span>, arg_def)| arg_def.subclass_of(<span class="string">&quot;Attr&quot;</span>))
+            .map(|(name, arg_def)| {
+                <span class="comment">// TODO: Replace assert! with Result
+                </span><span class="macro">assert!</span>(!name.is_empty());
+                <span class="macro">assert!</span>(!arg_def.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>));
+                <span class="prelude-val">Ok</span>(OperationField::new_attribute(
                     name,
-                    tc,
-                    SequenceInfo {
-                        index: i,
-                        len: num_operands,
-                    },
-                    current_kind,
-                )
+                    AttributeConstraint::new(<span class="kw-2">*</span>arg_def),
+                ))
             })
-        });
+            .collect()
+    }
 
-        <span class="kw">let </span>attributes = arguments.clone().filter_map(|res| {
-            res.map(|(name, arg_def)| {
-                <span class="kw">if </span>arg_def.subclass_of(<span class="string">&quot;Attr&quot;</span>) {
-                    <span class="macro">assert!</span>(!name.is_empty());
-                    <span class="macro">assert!</span>(!arg_def.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>));
-                    <span class="prelude-val">Some</span>(OperationField::new_attribute(
-                        name,
-                        AttributeConstraint::new(arg_def),
-                    ))
-                } <span class="kw">else </span>{
-                    <span class="prelude-val">None
-                </span>}
+    <span class="kw">fn </span>collect_derived_attributes(def: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, Error&gt; {
+        def.values()
+            .filter_map(|value| {
+                <span class="kw">let </span><span class="prelude-val">Ok</span>(def) = Record::try_from(value) <span class="kw">else </span>{
+                    <span class="kw">return </span><span class="prelude-val">None</span>;
+                };
+                def.subclass_of(<span class="string">&quot;Attr&quot;</span>).then_some(def)
             })
-            .transpose()
-        });
-
-        <span class="kw">let </span>derived_attrs = def.values().map(<span class="prelude-val">Ok</span>).filter_map(|val| {
-            val.and_then(|val| {
-                <span class="kw">if let </span><span class="prelude-val">Ok</span>(def) = Record::try_from(val) {
-                    <span class="kw">if </span>def.subclass_of(<span class="string">&quot;Attr&quot;</span>) {
-                        def.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>)
-                            .then_some(())
-                            .ok_or_else(|| {
-                                OdsError::ExpectedSuperClass(<span class="string">&quot;DerivedAttr&quot;</span>).with_location(def)
-                            })<span class="question-mark">?</span>;
-                        <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(OperationField::new_attribute(
-                            def.name()<span class="question-mark">?</span>,
-                            AttributeConstraint::new(def),
-                        )));
-                    }
-                }
-                <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+            .map(|def| {
+                def.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>)
+                    .then_some(())
+                    .ok_or_else(|| {
+                        OdsError::ExpectedSuperClass(<span class="string">&quot;DerivedAttr&quot;</span>).with_location(def)
+                    })<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(OperationField::new_attribute(
+                    def.name()<span class="question-mark">?</span>,
+                    AttributeConstraint::new(def),
+                ))
             })
-            .transpose()
-        });
+            .collect()
+    }
 
-        <span class="kw">let </span>fields = successors
-            .chain(regions)
-            .chain(results)
-            .chain(operands)
-            .chain(attributes)
-            .chain(derived_attrs)
-            .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+    <span class="kw">pub fn </span>from_def(def: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+        <span class="kw">let </span>dialect = def.def_value(<span class="string">&quot;opDialect&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>traits = <span class="self">Self</span>::collect_traits(def)<span class="question-mark">?</span>;
+        <span class="kw">let </span>has_trait = |r#trait: <span class="kw-2">&amp;</span>str| traits.iter().any(|t| t.has_name(r#trait));
+
+        <span class="kw">let </span>successors = <span class="self">Self</span>::collect_successors(def)<span class="question-mark">?</span>;
+        <span class="kw">let </span>regions = <span class="self">Self</span>::collect_regions(def)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>(results, num_variable_length_results) = <span class="self">Self</span>::collect_results(
+            def,
+            has_trait(<span class="string">&quot;::mlir::OpTrait::SameVariadicResultSize&quot;</span>),
+            has_trait(<span class="string">&quot;::mlir::OpTrait::AttrSizedResultSegments&quot;</span>),
+        )<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>arguments = <span class="self">Self</span>::dag_constraints(def, <span class="string">&quot;arguments&quot;</span>)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>operands = <span class="self">Self</span>::collect_operands(
+            arguments.iter(),
+            has_trait(<span class="string">&quot;::mlir::OpTrait::SameVariadicOperandSize&quot;</span>),
+            has_trait(<span class="string">&quot;::mlir::OpTrait::AttrSizedOperandSegments&quot;</span>),
+        )<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>attributes = <span class="self">Self</span>::collect_attributes(arguments.iter())<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>derived_attributes = <span class="self">Self</span>::collect_derived_attributes(def)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>name = def.name()<span class="question-mark">?</span>;
         <span class="kw">let </span>class_name = <span class="kw">if </span>name.contains(<span class="string">&#39;_&#39;</span>) &amp;&amp; !name.starts_with(<span class="string">&#39;_&#39;</span>) {
@@ -1183,8 +1289,8 @@
             (t.has_name(<span class="string">&quot;::mlir::OpTrait::FirstAttrDerivedResultType&quot;</span>)
                 || t.has_name(<span class="string">&quot;::mlir::OpTrait::SameOperandsAndResultType&quot;</span>))
                 &amp;&amp; num_variable_length_results == <span class="number">0
-                </span>|| t.has_name(<span class="string">&quot;::mlir::InferTypeOpInterface::Trait&quot;</span>) &amp;&amp; regions_dag.num_args() == <span class="number">0
-        </span>});
+                </span>|| t.has_name(<span class="string">&quot;::mlir::InferTypeOpInterface::Trait&quot;</span>) &amp;&amp; regions.is_empty()
+        });
 
         <span class="kw">let </span>short_name = def.str_value(<span class="string">&quot;opName&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>dialect_name = dialect.string_value(<span class="string">&quot;name&quot;</span>)<span class="question-mark">?</span>;
@@ -1195,8 +1301,6 @@
         };
 
         <span class="kw">let </span>summary = def.str_value(<span class="string">&quot;summary&quot;</span>).unwrap_or(short_name);
-        <span class="kw">let </span>description = def.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>);
-
         <span class="kw">let </span>summary = <span class="kw">if </span>!summary.is_empty() {
             <span class="macro">format!</span>(
                 <span class="string">&quot;[`{}`]({}) operation: {}&quot;</span>,
@@ -1207,14 +1311,19 @@
         } <span class="kw">else </span>{
             <span class="macro">format!</span>(<span class="string">&quot;[`{}`]({}) operation&quot;</span>, short_name, class_name)
         };
-        <span class="kw">let </span>description = unindent::unindent(description);
+        <span class="kw">let </span>description = unindent::unindent(def.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>));
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             dialect,
             short_name,
             full_name,
             class_name,
-            fields,
+            regions,
+            successors,
+            operands,
+            results,
+            attributes,
+            derived_attributes,
             can_infer_type,
             summary,
             description,
@@ -1227,8 +1336,7 @@
         <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.class_name);
         <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.full_name;
         <span class="kw">let </span>accessors = <span class="self">self
-            </span>.fields
-            .iter()
+            </span>.fields()
             .map(|field| field.accessors().expect(<span class="string">&quot;valid accessors&quot;</span>));
         <span class="kw">let </span>builder = OperationBuilder::new(<span class="self">self</span>);
         <span class="kw">let </span>builder_tokens = builder.builder().expect(<span class="string">&quot;valid builder&quot;</span>);
@@ -1274,9 +1382,9 @@
                 }
             }
 
-            <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Into&lt;::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>#class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
-                <span class="kw">fn </span>into(<span class="self">self</span>) -&gt; ::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-                    <span class="self">self</span>.operation
+            <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;#class_name&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+                <span class="kw">fn </span>from(operation: #class_name&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; ::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+                    operation.operation
                 }
             }
         })

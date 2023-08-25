@@ -435,7 +435,7 @@
     ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt;&gt; + <span class="lifetime">&#39;a </span>{
         <span class="kw">let </span>builder_ident = <span class="macro">format_ident!</span>(<span class="string">&quot;{}Builder&quot;</span>, <span class="self">self</span>.operation.class_name);
 
-        <span class="self">self</span>.operation.fields.iter().map(<span class="kw">move </span>|field| {
+        <span class="self">self</span>.operation.fields().map(<span class="kw">move </span>|field| {
             <span class="kw">let </span>name = sanitize_snake_case_name(field.name);
             <span class="kw">let </span>param_type = <span class="kw-2">&amp;</span>field.kind.param_type()<span class="question-mark">?</span>;
             <span class="kw">let </span>args = <span class="macro">quote! </span>{ #name: #param_type };
@@ -641,7 +641,7 @@
     <span class="kw">fn </span>required_fields&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt;(
         operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Operation&lt;<span class="lifetime">&#39;b</span>&gt;,
     ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>OperationField&lt;<span class="lifetime">&#39;b</span>&gt;&gt; {
-        operation.fields.iter().filter(|field| {
+        operation.fields().filter(|field| {
             !field.kind.is_optional() &amp;&amp; (!field.kind.is_result() || !operation.can_infer_type)
         })
     }
