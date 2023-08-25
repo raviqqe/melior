@@ -249,7 +249,7 @@ impl<'a: 'b, 'b, I: Iterator<Item = &'b TypeConstraint<'a>>> Iterator for Variad
             VariadicKind::Simple {
                 seen_variable_length,
             } => {
-                if constraint.is_variable_length() {
+                if constraint.has_variable_length() {
                     *seen_variable_length = true;
                 }
             }
@@ -258,7 +258,7 @@ impl<'a: 'b, 'b, I: Iterator<Item = &'b TypeConstraint<'a>>> Iterator for Variad
                 num_preceding_variadic,
                 ..
             } => {
-                if constraint.is_variable_length() {
+                if constraint.has_variable_length() {
                     *num_preceding_variadic += 1;
                 } else {
                     *num_preceding_simple += 1;
@@ -278,7 +278,7 @@ pub struct OperationField<'a> {
 }
 
 impl<'a> OperationField<'a> {
-    pub fn new(name: &'a str, kind: FieldKind<'a>) -> Self {
+    fn new(name: &'a str, kind: FieldKind<'a>) -> Self {
         Self {
             name,
             sanitized_name: sanitize_snake_case_name(name),
@@ -286,11 +286,11 @@ impl<'a> OperationField<'a> {
         }
     }
 
-    pub fn new_attribute(name: &'a str, constraint: AttributeConstraint<'a>) -> Self {
+    fn new_attribute(name: &'a str, constraint: AttributeConstraint<'a>) -> Self {
         Self::new(name, FieldKind::Attribute { constraint })
     }
 
-    pub fn new_region(
+    fn new_region(
         name: &'a str,
         constraint: RegionConstraint<'a>,
         sequence_info: SequenceInfo,
@@ -304,7 +304,7 @@ impl<'a> OperationField<'a> {
         )
     }
 
-    pub fn new_successor(
+    fn new_successor(
         name: &'a str,
         constraint: SuccessorConstraint<'a>,
         sequence_info: SequenceInfo,
@@ -371,14 +371,15 @@ impl<'a> Operation<'a> {
         successors_dag
             .args()
             .enumerate()
-            .map(|(i, (n, v))| {
+            .map(|(index, (name, value))| {
                 Ok(OperationField::new_successor(
-                    n,
+                    name,
                     SuccessorConstraint::new(
-                        v.try_into()
+                        value
+                            .try_into()
                             .map_err(|e: tblgen::Error| e.set_location(def))?,
                     ),
-                    SequenceInfo { index: i, len },
+                    SequenceInfo { index, len },
                 ))
             })
             .collect()
@@ -390,14 +391,14 @@ impl<'a> Operation<'a> {
         regions_dag
             .args()
             .enumerate()
-            .map(|(i, (n, v))| {
+            .map(|(index, (name, v))| {
                 Ok(OperationField::new_region(
-                    n,
+                    name,
                     RegionConstraint::new(
                         v.try_into()
                             .map_err(|e: tblgen::Error| e.set_location(def))?,
                     ),
-                    SequenceInfo { index: i, len },
+                    SequenceInfo { index, len },
                 ))
             })
             .collect()
@@ -469,7 +470,7 @@ impl<'a> Operation<'a> {
         Ok(Self::collect_elements(
             arguments
                 .filter(|(_, arg_def)| arg_def.subclass_of("TypeConstraint"))
-                .map(|(n, arg_def)| (*n, TypeConstraint::new(*arg_def)))
+                .map(|(name, arg_def)| (*name, TypeConstraint::new(*arg_def)))
                 .collect::<Vec<_>>()
                 .iter(),
             ElementKind::Operand,
@@ -488,7 +489,7 @@ impl<'a> Operation<'a> {
         let len = elements.clone().count();
         let num_variable_length = elements
             .clone()
-            .filter(|res| res.1.is_variable_length())
+            .filter(|res| res.1.has_variable_length())
             .count();
         let variadic_iter = VariadicKindIter::new(
             elements.clone().map(|(_, tc)| tc),
@@ -500,12 +501,12 @@ impl<'a> Operation<'a> {
             elements
                 .enumerate()
                 .zip(variadic_iter)
-                .map(|((i, (n, tc)), variadic_kind)| {
+                .map(|((index, (name, constraint)), variadic_kind)| {
                     OperationField::new_element(
-                        n,
-                        *tc,
+                        name,
+                        *constraint,
                         kind,
-                        SequenceInfo { index: i, len },
+                        SequenceInfo { index, len },
                         variadic_kind,
                     )
                 })
@@ -556,28 +557,15 @@ impl<'a> Operation<'a> {
     pub fn from_def(def: Record<'a>) -> Result<Self, Error> {
         let dialect = def.def_value("opDialect")?;
         let traits = Self::collect_traits(def)?;
-        let has_trait = |r#trait: &str| traits.iter().any(|t| t.has_name(r#trait));
+        let has_trait = |name: &str| traits.iter().any(|r#trait| r#trait.has_name(name));
 
-        let successors = Self::collect_successors(def)?;
+        let arguments = Self::dag_constraints(def, "arguments")?;
         let regions = Self::collect_regions(def)?;
-
         let (results, num_variable_length_results) = Self::collect_results(
             def,
             has_trait("::mlir::OpTrait::SameVariadicResultSize"),
             has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
         )?;
-
-        let arguments = Self::dag_constraints(def, "arguments")?;
-
-        let operands = Self::collect_operands(
-            arguments.iter(),
-            has_trait("::mlir::OpTrait::SameVariadicOperandSize"),
-            has_trait("::mlir::OpTrait::AttrSizedOperandSegments"),
-        )?;
-
-        let attributes = Self::collect_attributes(arguments.iter())?;
-
-        let derived_attributes = Self::collect_derived_attributes(def)?;
 
         let name = def.name()?;
         let class_name = if name.contains('_') && !name.starts_with('_') {
@@ -588,49 +576,50 @@ impl<'a> Operation<'a> {
         } else {
             name
         };
-
-        let can_infer_type = traits.iter().any(|t| {
-            (t.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
-                || t.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
-                && num_variable_length_results == 0
-                || t.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
-        });
-
         let short_name = def.str_value("opName")?;
-        let dialect_name = dialect.string_value("name")?;
-        let full_name = if !dialect_name.is_empty() {
-            format!("{}.{}", dialect_name, short_name)
-        } else {
-            short_name.into()
-        };
-
-        let summary = def.str_value("summary").unwrap_or(short_name);
-        let summary = if !summary.is_empty() {
-            format!(
-                "[`{}`]({}) operation: {}",
-                short_name,
-                class_name,
-                summary[0..1].to_uppercase() + &summary[1..]
-            )
-        } else {
-            format!("[`{}`]({}) operation", short_name, class_name)
-        };
-        let description = unindent::unindent(def.str_value("description").unwrap_or(""));
 
         Ok(Self {
             dialect,
             short_name,
-            full_name,
+            full_name: {
+                let dialect_name = dialect.string_value("name")?;
+
+                if dialect_name.is_empty() {
+                    short_name.into()
+                } else {
+                    format!("{dialect_name}.{short_name}")
+                }
+            },
             class_name,
-            regions,
-            successors,
-            operands,
+            successors: Self::collect_successors(def)?,
+            operands: Self::collect_operands(
+                arguments.iter(),
+                has_trait("::mlir::OpTrait::SameVariadicOperandSize"),
+                has_trait("::mlir::OpTrait::AttrSizedOperandSegments"),
+            )?,
             results,
-            attributes,
-            derived_attributes,
-            can_infer_type,
-            summary,
-            description,
+            attributes: Self::collect_attributes(arguments.iter())?,
+            derived_attributes: Self::collect_derived_attributes(def)?,
+            can_infer_type: traits.iter().any(|r#trait| {
+                (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
+                    || r#trait.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
+                    && num_variable_length_results == 0
+                    || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
+            }),
+            summary: {
+                let summary = def.str_value("summary")?;
+
+                if summary.is_empty() {
+                    format!("[`{short_name}`]({class_name}) operation")
+                } else {
+                    format!(
+                        "[`{short_name}`]({class_name}) operation: {}",
+                        summary[0..1].to_uppercase() + &summary[1..]
+                    )
+                }
+            },
+            description: unindent::unindent(def.str_value("description")?),
+            regions,
         })
     }
 }
