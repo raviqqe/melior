@@ -6,29 +6,7 @@
 safe, and complete API for MLIR with a reasonably sane ownership model
 represented by the type system in Rust.</p>
 <p>This crate is a wrapper of <a href="https://mlir.llvm.org/docs/CAPI/">the MLIR C API</a>.</p>
-<h3 id="safety"><a href="#safety">Safety</a></h3>
-<p>Although Melior aims to be completely type safe, some part of the current API is
-not.</p>
-<ul>
-<li>Access to operations, types, or attributes that belong to dialects not
-loaded in contexts can lead to runtime errors or segmentation faults in
-the worst case.
-<ul>
-<li>Fix plan: Load all dialects by default on creation of contexts, and
-provide unsafe constructors of contexts for advanced users.</li>
-</ul>
-</li>
-<li>IR object references returned from functions that move ownership of
-arguments might get invalidated later.
-<ul>
-<li>This is because we need to borrow <code>&amp;self</code> rather than <code>&amp;mut self</code> to
-return such references.</li>
-<li>e.g. <code>Region::append_block()</code></li>
-<li>Fix plan: Use dynamic check, such as <code>RefCell</code>, for the objects.</li>
-</ul>
-</li>
-</ul>
-<h3 id="examples"><a href="#examples">Examples</a></h3><h3 id="building-a-function-to-add-integers"><a href="#building-a-function-to-add-integers">Building a function to add integers</a></h3>
+<h3 id="examples"><a href="#examples">Examples</a></h3><h4 id="building-a-function-to-add-integers"><a href="#building-a-function-to-add-integers">Building a function to add integers</a></h4>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>melior::{
     Context,
     dialect::{arith, DialectRegistry, func},
@@ -97,6 +75,28 @@ module.body().append_operation(func::func(
 <ul>
 <li>If the resulting objects refer to <code>&amp;self</code>, they are named <code>&lt;X&gt;::as_&lt;Y&gt;</code>.</li>
 <li>Otherwise, they are named just <code>&lt;X&gt;::&lt;Y&gt;</code> and may have arguments, such as position indices.</li>
+</ul>
+</li>
+</ul>
+<h4 id="safety"><a href="#safety">Safety</a></h4>
+<p>Although Melior aims to be completely type safe, some part of the current API is
+not.</p>
+<ul>
+<li>Access to operations, types, or attributes that belong to dialects not
+loaded in contexts can lead to runtime errors or segmentation faults in
+the worst case.
+<ul>
+<li>Fix plan: Load all dialects by default on creation of contexts, and
+provide unsafe constructors of contexts for advanced users.</li>
+</ul>
+</li>
+<li>IR object references returned from functions that move ownership of
+arguments might get invalidated later.
+<ul>
+<li>This is because we need to borrow <code>&amp;self</code> rather than <code>&amp;mut self</code> to
+return such references.</li>
+<li>e.g. <code>Region::append_block()</code></li>
+<li>Fix plan: Use dynamic check, such as <code>RefCell</code>, for the objects.</li>
 </ul>
 </li>
 </ul>
