@@ -78,7 +78,7 @@ impl<'a> FieldKind<'a> {
         )
     }
 
-    pub fn param_type(&self) -> Result<Type, Error> {
+    pub fn parameter_type(&self) -> Result<Type, Error> {
         Ok(match self {
             Self::Element {
                 kind, constraint, ..
@@ -161,7 +161,7 @@ impl<'a> FieldKind<'a> {
                 if constraint.is_unit() {
                     parse_quote!(bool)
                 } else {
-                    Self::create_result_type(self.param_type()?)
+                    Self::create_result_type(self.parameter_type()?)
                 }
             }
             Self::Successor { constraint, .. } => {
@@ -343,15 +343,15 @@ pub struct Operation<'a> {
     pub(crate) short_name: &'a str,
     pub(crate) full_name: String,
     pub(crate) class_name: &'a str,
-    pub(crate) regions: Vec<OperationField<'a>>,
-    pub(crate) successors: Vec<OperationField<'a>>,
-    pub(crate) results: Vec<OperationField<'a>>,
-    pub(crate) operands: Vec<OperationField<'a>>,
-    pub(crate) attributes: Vec<OperationField<'a>>,
-    pub(crate) derived_attributes: Vec<OperationField<'a>>,
-    pub(crate) can_infer_type: bool,
     pub(crate) summary: String,
-    pub(crate) description: String,
+    pub(crate) can_infer_type: bool,
+    description: String,
+    regions: Vec<OperationField<'a>>,
+    successors: Vec<OperationField<'a>>,
+    results: Vec<OperationField<'a>>,
+    operands: Vec<OperationField<'a>>,
+    attributes: Vec<OperationField<'a>>,
+    derived_attributes: Vec<OperationField<'a>>,
 }
 
 impl<'a> Operation<'a> {
