@@ -249,9 +249,6 @@
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
 <a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{
     <span class="kw">super</span>::{error::Error, utility::sanitize_snake_case_name},
     ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind,
@@ -282,27 +279,24 @@
                     VariadicKind::Simple {
                         seen_variable_length,
                     } =&gt; {
-                        <span class="comment">// At most one variable length group
-                        </span><span class="kw">if </span>constraint.has_variable_length() {
-                            <span class="kw">if </span>constraint.is_optional() {
-                                <span class="comment">// Optional element, and some singular elements.
-                                // Only present if the amount of groups is at least the number of
-                                // elements.
-                                </span><span class="macro">quote! </span>{
-                                  <span class="kw">if </span><span class="self">self</span>.operation.#count() &lt; #len {
-                                    <span class="prelude-val">Err</span>(::melior::Error::#error_variant(#name))
-                                  } <span class="kw">else </span>{
-                                    <span class="self">self</span>.operation.#kind_ident(#index)
-                                  }
-                                }
-                            } <span class="kw">else </span>{
-                                <span class="comment">// A variable length group
-                                // Length computed by subtracting the amount of other
-                                // singular elements from the number of elements.
-                                </span><span class="macro">quote! </span>{
-                                  <span class="kw">let </span>group_length = <span class="self">self</span>.operation.#count() - #len + <span class="number">1</span>;
-                                  <span class="self">self</span>.operation.#plural().skip(#index).take(group_length)
-                                }
+                        <span class="kw">if </span>constraint.is_optional() {
+                            <span class="comment">// Optional element, and some singular elements.
+                            // Only present if the amount of groups is at least the number of
+                            // elements.
+                            </span><span class="macro">quote! </span>{
+                              <span class="kw">if </span><span class="self">self</span>.operation.#count() &lt; #len {
+                                <span class="prelude-val">Err</span>(::melior::Error::#error_variant(#name))
+                              } <span class="kw">else </span>{
+                                <span class="self">self</span>.operation.#kind_ident(#index)
+                              }
+                            }
+                        } <span class="kw">else if </span>constraint.is_variadic() {
+                            <span class="comment">// A variable length group
+                            // Length computed by subtracting the amount of other
+                            // singular elements from the number of elements.
+                            </span><span class="macro">quote! </span>{
+                              <span class="kw">let </span>group_length = <span class="self">self</span>.operation.#count() - #len + <span class="number">1</span>;
+                              <span class="self">self</span>.operation.#plural().skip(#index).take(group_length)
                             }
                         } <span class="kw">else if </span><span class="kw-2">*</span>seen_variable_length {
                             <span class="comment">// Single element after variable length group
@@ -452,7 +446,7 @@
                 <span class="kw">if </span>value {
                   <span class="self">self</span>.operation.set_attribute(#name, Attribute::unit(<span class="kw-2">&amp;</span><span class="self">self</span>.operation.context()));
                 } <span class="kw">else </span>{
-                  <span class="kw">let _ </span>= <span class="self">self</span>.operation.remove_attribute(#name);
+                  <span class="self">self</span>.operation.remove_attribute(#name)
                 }
             }
         } <span class="kw">else </span>{
