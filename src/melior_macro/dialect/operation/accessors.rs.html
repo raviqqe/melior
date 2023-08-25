@@ -466,10 +466,10 @@
         <span class="kw">let </span>setter = {
             <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;set_{}&quot;</span>, <span class="self">self</span>.name));
             <span class="kw">if let </span><span class="prelude-val">Some</span>(body) = <span class="self">self</span>.setter_impl() {
-                <span class="kw">let </span>param_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.param_type()<span class="question-mark">?</span>;
+                <span class="kw">let </span>parameter_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.parameter_type()<span class="question-mark">?</span>;
 
                 <span class="macro">quote! </span>{
-                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: #param_type) {
+                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: #parameter_type) {
                         #body
                     }
                 }

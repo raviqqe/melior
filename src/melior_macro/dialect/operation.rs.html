@@ -770,7 +770,7 @@
         )
     }
 
-    <span class="kw">pub fn </span>param_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Type, Error&gt; {
+    <span class="kw">pub fn </span>parameter_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Type, Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Element {
                 kind, constraint, ..
@@ -853,7 +853,7 @@
                 <span class="kw">if </span>constraint.is_unit() {
                     <span class="macro">parse_quote!</span>(bool)
                 } <span class="kw">else </span>{
-                    <span class="self">Self</span>::create_result_type(<span class="self">self</span>.param_type()<span class="question-mark">?</span>)
+                    <span class="self">Self</span>::create_result_type(<span class="self">self</span>.parameter_type()<span class="question-mark">?</span>)
                 }
             }
             <span class="self">Self</span>::Successor { constraint, .. } =&gt; {
@@ -1035,15 +1035,15 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) short_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
     <span class="kw">pub</span>(<span class="kw">crate</span>) full_name: String,
     <span class="kw">pub</span>(<span class="kw">crate</span>) class_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) regions: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) successors: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) results: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) operands: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) attributes: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) derived_attributes: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) can_infer_type: bool,
     <span class="kw">pub</span>(<span class="kw">crate</span>) summary: String,
-    <span class="kw">pub</span>(<span class="kw">crate</span>) description: String,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) can_infer_type: bool,
+    description: String,
+    regions: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    successors: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    results: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    operands: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    attributes: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    derived_attributes: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Operation&lt;<span class="lifetime">&#39;a</span>&gt; {
