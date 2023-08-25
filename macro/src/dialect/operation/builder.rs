@@ -102,43 +102,43 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
 
         self.operation.fields().map(move |field| {
             let name = sanitize_snake_case_name(field.name);
-            let parameter_type = &field.kind.parameter_type()?;
+            let parameter_type = field.kind.parameter_type()?;
             let argument = quote! { #name: #parameter_type };
             let add = format_ident!("add_{}s", field.kind.as_str());
 
-            let add_args = {
-                let mlir_ident = {
-                    let name = &field.name;
-                    quote! { ::melior::ir::Identifier::new(self.context, #name) }
-                };
+            // Argument types can be singular and variadic, but add functions in melior
+            // are always variadic, so we need to create a slice or vec for singular
+            // arguments
+            let add_arguments = match &field.kind {
+                FieldKind::Element { constraint, .. } => {
+                    if constraint.has_variable_length() && !constraint.is_optional() {
+                        quote! { #name }
+                    } else {
+                        quote! { &[#name] }
+                    }
+                }
+                FieldKind::Attribute { .. } => {
+                    let name_string = &field.name;
 
-                // Argument types can be singular and variadic, but add functions in melior
-                // are always variadic, so we need to create a slice or vec for singular
-                // arguments
-                match &field.kind {
-                    FieldKind::Element { constraint, .. } => {
-                        if constraint.has_variable_length() && !constraint.is_optional() {
-                            quote! { #name }
-                        } else {
-                            quote! { &[#name] }
-                        }
+                    quote! {
+                        &[(
+                            ::melior::ir::Identifier::new(self.context, #name_string),
+                            #name.into(),
+                        )]
                     }
-                    FieldKind::Attribute { .. } => {
-                        quote! { &[(#mlir_ident, #name.into())] }
+                }
+                FieldKind::Successor { constraint, .. } => {
+                    if constraint.is_variadic() {
+                        quote! { #name }
+                    } else {
+                        quote! { &[#name] }
                     }
-                    FieldKind::Successor { constraint, .. } => {
-                        if constraint.is_variadic() {
-                            quote! { #name }
-                        } else {
-                            quote! { &[#name] }
-                        }
-                    }
-                    FieldKind::Region { constraint, .. } => {
-                        if constraint.is_variadic() {
-                            quote! { #name }
-                        } else {
-                            quote! { vec![#name] }
-                        }
+                }
+                FieldKind::Region { constraint, .. } => {
+                    if constraint.is_variadic() {
+                        quote! { #name }
+                    } else {
+                        quote! { vec![#name] }
                     }
                 }
             };
@@ -148,7 +148,7 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                 quote! {
                     impl<'c, #(#iter_any),*> #builder_ident<'c, #(#iter_any),*> {
                         pub fn #name(mut self, #argument) -> #builder_ident<'c, #(#iter_any),*> {
-                            self.builder = self.builder.#add(#add_args);
+                            self.builder = self.builder.#add(#add_arguments);
                             self
                         }
                     }
@@ -163,7 +163,7 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                 quote! {
                     impl<'c, #(#iter_any_without),*> #builder_ident<'c, #(#iter_set_no),*> {
                         pub fn #name(mut self, #argument) -> #builder_ident<'c, #(#iter_set_yes),*> {
-                            self.builder = self.builder.#add(#add_args);
+                            self.builder = self.builder.#add(#add_arguments);
                             let Self { context, mut builder, #(#field_names),* } = self;
                             #builder_ident {
                                 context,
@@ -192,10 +192,9 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
             .iter_any()
             .zip(&field_names)
             .map(|(r#type, name)| {
-                Some(quote! {
-                    #[doc(hidden)]
+                quote! {
                     #name: ::std::marker::PhantomData<#r#type>
-                })
+                }
             });
 
         let phantoms = field_names
@@ -227,12 +226,13 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
         let build = {
             let iter_yes = self.type_state.iter_yes();
             let class_name = format_ident!("{}", &self.operation.class_name);
-            let error = format!("should be a valid {}", class_name);
+            let error = format!("should be a valid {class_name}");
             let maybe_infer = if self.operation.can_infer_type {
                 quote! { .enable_result_type_inference() }
             } else {
                 quote! {}
             };
+
             quote! {
                 impl<'c> #builder_ident<'c, #(#iter_yes),*> {
                     pub fn build(self) -> #class_name<'c> {
@@ -250,9 +250,7 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
 
             #[doc = #doc]
             pub struct #builder_ident <'c, #(#iter_any),* > {
-                #[doc(hidden)]
                 builder: ::melior::ir::operation::OperationBuilder<'c>,
-                #[doc(hidden)]
                 context: &'c ::melior::Context,
                 #(#fields),*
             }
