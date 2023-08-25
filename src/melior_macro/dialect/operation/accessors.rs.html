@@ -283,7 +283,7 @@
                         seen_variable_length,
                     } =&gt; {
                         <span class="comment">// At most one variable length group
-                        </span><span class="kw">if </span>constraint.is_variable_length() {
+                        </span><span class="kw">if </span>constraint.has_variable_length() {
                             <span class="kw">if </span>constraint.is_optional() {
                                 <span class="comment">// Optional element, and some singular elements.
                                 // Only present if the amount of groups is at least the number of
@@ -328,7 +328,7 @@
                             <span class="kw">let </span>group_len = total_var_len / #num_variable_length;
                             <span class="kw">let </span>start = #num_preceding_simple + #num_preceding_variadic * group_len;
                         };
-                        <span class="kw">let </span>get_elements = <span class="kw">if </span>constraint.is_variable_length() {
+                        <span class="kw">let </span>get_elements = <span class="kw">if </span>constraint.has_variable_length() {
                             <span class="macro">quote! </span>{
                                 <span class="self">self</span>.operation.#plural().skip(start).take(group_len)
                             }
@@ -355,7 +355,7 @@
                                 .sum::&lt;i32&gt;() <span class="kw">as </span>usize;
                             <span class="kw">let </span>group_len = attribute.element(#index)<span class="question-mark">? </span><span class="kw">as </span>usize;
                         };
-                        <span class="kw">let </span>get_elements = <span class="kw">if </span>!constraint.is_variable_length() {
+                        <span class="kw">let </span>get_elements = <span class="kw">if </span>!constraint.has_variable_length() {
                             <span class="macro">quote! </span>{
                                 <span class="self">self</span>.operation.#kind_ident(start)
                             }
