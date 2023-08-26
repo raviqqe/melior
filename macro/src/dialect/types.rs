@@ -1,7 +1,10 @@
 use super::error::{Error, OdsError};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
-use tblgen::{error::WithLocation, record::Record};
+use tblgen::{
+    error::{TableGenError, WithLocation},
+    record::Record,
+};
 
 macro_rules! prefixed_string {
     ($prefix:literal, $name:ident) => {
@@ -133,8 +136,8 @@ impl<'a> AttributeConstraint<'a> {
         self.0.subclass_of("EnumAttrInfo")
     }
 
-    pub fn is_optional(&self) -> bool {
-        self.0.bit_value("isOptional").unwrap_or(false)
+    pub fn is_optional(&self) -> Result<bool, Error> {
+        Ok(self.0.bit_value("isOptional")?)
     }
 
     pub fn storage_type(&self) -> Result<&'static str, Error> {
@@ -144,18 +147,22 @@ impl<'a> AttributeConstraint<'a> {
             .unwrap_or(melior_attribute!(Attribute)))
     }
 
-    pub fn is_unit(&self) -> bool {
-        self.0
-            .string_value("storageType")
-            .map(|string| string == mlir_attribute!(UnitAttr))
-            .unwrap_or(false)
+    pub fn is_unit(&self) -> Result<bool, Error> {
+        Ok(self.0.string_value("storageType")? == mlir_attribute!(UnitAttr))
     }
 
-    pub fn has_default_value(&self) -> bool {
-        self.0
-            .string_value("defaultValue")
-            .map(|string| !string.is_empty())
-            .unwrap_or(false)
+    pub fn has_default_value(&self) -> Result<bool, Error> {
+        Ok(match self.0.string_value("defaultValue") {
+            Ok(value) => !value.is_empty(),
+            Err(error) => {
+                // `defaultValue` can be uninitialized.
+                if !matches!(error.error(), TableGenError::InitConversion { .. }) {
+                    return Err(error.into());
+                }
+
+                false
+            }
+        })
     }
 }
 

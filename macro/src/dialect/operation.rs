@@ -58,14 +58,14 @@ impl<'a> FieldKind<'a> {
         }
     }
 
-    pub fn is_optional(&self) -> bool {
-        match self {
+    pub fn is_optional(&self) -> Result<bool, Error> {
+        Ok(match self {
             Self::Element { constraint, .. } => constraint.is_optional(),
             Self::Attribute { constraint, .. } => {
-                constraint.is_optional() || constraint.has_default_value()
+                constraint.is_optional()? || constraint.has_default_value()?
             }
             Self::Successor { .. } | Self::Region { .. } => false,
-        }
+        })
     }
 
     pub fn is_result(&self) -> bool {
@@ -98,7 +98,7 @@ impl<'a> FieldKind<'a> {
                 }
             }
             Self::Attribute { constraint } => {
-                if constraint.is_unit() {
+                if constraint.is_unit()? {
                     parse_quote!(bool)
                 } else {
                     let r#type: Type = syn::parse_str(constraint.storage_type()?)
@@ -158,7 +158,7 @@ impl<'a> FieldKind<'a> {
                 }
             }
             Self::Attribute { constraint } => {
-                if constraint.is_unit() {
+                if constraint.is_unit()? {
                     parse_quote!(bool)
                 } else {
                     Self::create_result_type(self.parameter_type()?)
@@ -633,7 +633,7 @@ impl<'a> ToTokens for Operation<'a> {
         let accessors = self
             .fields()
             .map(|field| field.accessors().expect("valid accessors"));
-        let builder = OperationBuilder::new(self);
+        let builder = OperationBuilder::new(self).expect("valid builder generator");
         let builder_tokens = builder.builder().expect("valid builder");
         let builder_fn = builder.create_op_builder_fn();
         let default_constructor = builder.default_constructor().expect("valid constructor");
