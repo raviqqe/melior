@@ -339,6 +339,14 @@
 <a href="#339" id="339">339</a>
 <a href="#340" id="340">340</a>
 <a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{
     <span class="kw">super</span>::{error::Error, utility::sanitize_snake_case_name},
     FieldKind, Operation, OperationField,
@@ -427,11 +435,11 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; OperationBuilder&lt;<span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">pub fn </span>new(operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             operation,
-            type_state: <span class="self">Self</span>::create_type_state(operation),
-        }
+            type_state: <span class="self">Self</span>::create_type_state(operation)<span class="question-mark">?</span>,
+        })
     }
 
     <span class="kw">pub fn </span>methods&lt;<span class="lifetime">&#39;a</span>&gt;(
@@ -484,7 +492,7 @@
                 }
             };
 
-            <span class="prelude-val">Ok</span>(<span class="kw">if </span>field.kind.is_optional() {
+            <span class="prelude-val">Ok</span>(<span class="kw">if </span>field.kind.is_optional()<span class="question-mark">? </span>{
                 <span class="kw">let </span>iter_any = <span class="self">self</span>.type_state.iter_any().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
                 <span class="macro">quote! </span>{
                     <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, #(#iter_any),<span class="kw-2">*</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#iter_any),<span class="kw-2">*</span>&gt; {
@@ -619,6 +627,7 @@
         <span class="kw">let </span>name = sanitize_snake_case_name(<span class="self">self</span>.operation.short_name)<span class="question-mark">?</span>;
         <span class="kw">let </span>arguments = <span class="self">Self</span>::required_fields(<span class="self">self</span>.operation)
             .map(|field| {
+                <span class="kw">let </span>field = field<span class="question-mark">?</span>;
                 <span class="kw">let </span>parameter_type = <span class="kw-2">&amp;</span>field.kind.parameter_type()<span class="question-mark">?</span>;
                 <span class="kw">let </span>parameter_name = <span class="kw-2">&amp;</span>field.sanitized_name;
 
@@ -626,10 +635,13 @@
             })
             .chain([<span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{ location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt; })])
             .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, Error&gt;&gt;()<span class="question-mark">?</span>;
-        <span class="kw">let </span>builder_calls = <span class="self">Self</span>::required_fields(<span class="self">self</span>.operation).map(|field| {
-            <span class="kw">let </span>parameter_name = <span class="kw-2">&amp;</span>field.sanitized_name;
-            <span class="macro">quote! </span>{ .#parameter_name(#parameter_name) }
-        });
+        <span class="kw">let </span>builder_calls = <span class="self">Self</span>::required_fields(<span class="self">self</span>.operation)
+            .map(|field| {
+                <span class="kw">let </span>parameter_name = <span class="kw-2">&amp;</span>field<span class="question-mark">?</span>.sanitized_name;
+
+                <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{ .#parameter_name(#parameter_name) })
+            })
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, Error&gt;&gt;()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>doc = <span class="macro">format!</span>(<span class="string">&quot;Creates a new {}&quot;</span>, <span class="self">self</span>.operation.summary);
 
@@ -644,18 +656,22 @@
 
     <span class="kw">fn </span>required_fields&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt;(
         operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Operation&lt;<span class="lifetime">&#39;b</span>&gt;,
-    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>OperationField&lt;<span class="lifetime">&#39;b</span>&gt;&gt; {
-        operation.fields().filter(|field| {
-            !field.kind.is_optional() &amp;&amp; (!field.kind.is_result() || !operation.can_infer_type)
-        })
+    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>OperationField&lt;<span class="lifetime">&#39;b</span>&gt;, Error&gt;&gt; {
+        operation
+            .fields()
+            .filter(|field| !field.kind.is_result() || !operation.can_infer_type)
+            .filter_map(|field| <span class="kw">match </span>field.kind.is_optional() {
+                <span class="prelude-val">Ok</span>(optional) =&gt; (!optional).then_some(<span class="prelude-val">Ok</span>(field)),
+                <span class="prelude-val">Err</span>(error) =&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(error)),
+            })
     }
 
-    <span class="kw">fn </span>create_type_state(operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;) -&gt; TypeStateList {
-        TypeStateList(
+    <span class="kw">fn </span>create_type_state(operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;TypeStateList, Error&gt; {
+        <span class="prelude-val">Ok</span>(TypeStateList(
             <span class="self">Self</span>::required_fields(operation)
-                .map(|field| TypeStateItem::new(operation.class_name, field.name))
-                .collect(),
-        )
+                .map(|field| <span class="prelude-val">Ok</span>(TypeStateItem::new(operation.class_name, field<span class="question-mark">?</span>.name)))
+                .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, Error&gt;&gt;()<span class="question-mark">?</span>,
+        ))
     }
 
     <span class="kw">fn </span>builder_identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Ident {

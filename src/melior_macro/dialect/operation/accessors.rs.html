@@ -249,6 +249,7 @@
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
 <a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{
     <span class="kw">super</span>::{error::Error, utility::sanitize_snake_case_name},
     ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind,
@@ -257,8 +258,8 @@
 <span class="kw">use </span>quote::{format_ident, quote};
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationField&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>getter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
+    <span class="kw">fn </span>getter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TokenStream&gt;, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
             FieldKind::Element {
                 kind,
                 constraint,
@@ -404,7 +405,7 @@
             FieldKind::Attribute { constraint } =&gt; {
                 <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
-                <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit() {
+                <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>{
                     <span class="macro">quote! </span>{ <span class="self">self</span>.operation.attribute(#name).is_some() }
                 } <span class="kw">else </span>{
                     <span class="macro">quote! </span>{
@@ -415,15 +416,15 @@
                     }
                 })
             }
-        }
+        })
     }
 
-    <span class="kw">fn </span>remover_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
+    <span class="kw">fn </span>remover_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TokenStream&gt;, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
             FieldKind::Attribute { constraint } =&gt; {
                 <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
-                <span class="kw">if </span>constraint.is_unit() || constraint.is_optional() {
+                <span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>|| constraint.is_optional()<span class="question-mark">? </span>{
                     <span class="prelude-val">Some</span>(<span class="macro">quote! </span>{
                       <span class="self">self</span>.operation.remove_attribute(#name)
                     })
@@ -432,16 +433,16 @@
                 </span>}
             }
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-        }
+        })
     }
 
-    <span class="kw">fn </span>setter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
+    <span class="kw">fn </span>setter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TokenStream&gt;, Error&gt; {
         <span class="kw">let </span>FieldKind::Attribute { constraint } = <span class="kw-2">&amp;</span><span class="self">self</span>.kind <span class="kw">else </span>{
-            <span class="kw">return </span><span class="prelude-val">None</span>;
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
         };
         <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
-        <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit() {
+        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>{
             <span class="macro">quote! </span>{
                 <span class="kw">if </span>value {
                   <span class="self">self</span>.operation.set_attribute(#name, Attribute::unit(<span class="kw-2">&amp;</span><span class="self">self</span>.operation.context()));
@@ -453,13 +454,14 @@
             <span class="macro">quote! </span>{
                 <span class="self">self</span>.operation.set_attribute(#name, <span class="kw-2">&amp;</span>value.into());
             }
-        })
+        }))
     }
 
     <span class="kw">pub fn </span>accessors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
         <span class="kw">let </span>setter = {
             <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;set_{}&quot;</span>, <span class="self">self</span>.name))<span class="question-mark">?</span>;
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(body) = <span class="self">self</span>.setter_impl() {
+
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(body) = <span class="self">self</span>.setter_impl()<span class="question-mark">? </span>{
                 <span class="kw">let </span>parameter_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.parameter_type()<span class="question-mark">?</span>;
 
                 <span class="macro">quote! </span>{
@@ -473,7 +475,7 @@
         };
         <span class="kw">let </span>remover = {
             <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;remove_{}&quot;</span>, <span class="self">self</span>.name))<span class="question-mark">?</span>;
-            <span class="self">self</span>.remover_impl().map_or(<span class="macro">quote!</span>(), |body| {
+            <span class="self">self</span>.remover_impl()<span class="question-mark">?</span>.map(|body| {
                 <span class="macro">quote! </span>{
                     <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {
                         #body
@@ -484,7 +486,7 @@
         <span class="kw">let </span>getter = {
             <span class="kw">let </span>ident = <span class="kw-2">&amp;</span><span class="self">self</span>.sanitized_name;
             <span class="kw">let </span>return_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.return_type()<span class="question-mark">?</span>;
-            <span class="self">self</span>.getter_impl().map_or(<span class="macro">quote!</span>(), |body| {
+            <span class="self">self</span>.getter_impl()<span class="question-mark">?</span>.map(|body| {
                 <span class="macro">quote! </span>{
                     <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; #return_type {
                         #body

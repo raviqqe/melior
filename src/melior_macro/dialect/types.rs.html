@@ -224,10 +224,20 @@
 <a href="#224" id="224">224</a>
 <a href="#225" id="225">225</a>
 <a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::error::{Error, OdsError};
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>std::collections::HashMap;
-<span class="kw">use </span>tblgen::{error::WithLocation, record::Record};
+<span class="kw">use </span>tblgen::{
+    error::{TableGenError, WithLocation},
+    record::Record,
+};
 
 <span class="macro">macro_rules! </span>prefixed_string {
     (<span class="macro-nonterminal">$prefix</span>:literal, <span class="macro-nonterminal">$name</span>:ident) =&gt; {
@@ -359,8 +369,8 @@
         <span class="self">self</span>.<span class="number">0</span>.subclass_of(<span class="string">&quot;EnumAttrInfo&quot;</span>)
     }
 
-    <span class="kw">pub fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.<span class="number">0</span>.bit_value(<span class="string">&quot;isOptional&quot;</span>).unwrap_or(<span class="bool-val">false</span>)
+    <span class="kw">pub fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="number">0</span>.bit_value(<span class="string">&quot;isOptional&quot;</span>)<span class="question-mark">?</span>)
     }
 
     <span class="kw">pub fn </span>storage_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, Error&gt; {
@@ -370,18 +380,22 @@
             .unwrap_or(<span class="macro">melior_attribute!</span>(Attribute)))
     }
 
-    <span class="kw">pub fn </span>is_unit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.<span class="number">0
-            </span>.string_value(<span class="string">&quot;storageType&quot;</span>)
-            .map(|string| string == <span class="macro">mlir_attribute!</span>(UnitAttr))
-            .unwrap_or(<span class="bool-val">false</span>)
+    <span class="kw">pub fn </span>is_unit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="number">0</span>.string_value(<span class="string">&quot;storageType&quot;</span>)<span class="question-mark">? </span>== <span class="macro">mlir_attribute!</span>(UnitAttr))
     }
 
-    <span class="kw">pub fn </span>has_default_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.<span class="number">0
-            </span>.string_value(<span class="string">&quot;defaultValue&quot;</span>)
-            .map(|string| !string.is_empty())
-            .unwrap_or(<span class="bool-val">false</span>)
+    <span class="kw">pub fn </span>has_default_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="self">self</span>.<span class="number">0</span>.string_value(<span class="string">&quot;defaultValue&quot;</span>) {
+            <span class="prelude-val">Ok</span>(value) =&gt; !value.is_empty(),
+            <span class="prelude-val">Err</span>(error) =&gt; {
+                <span class="comment">// `defaultValue` can be uninitialized.
+                </span><span class="kw">if </span>!<span class="macro">matches!</span>(error.error(), TableGenError::InitConversion { .. }) {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(error.into());
+                }
+
+                <span class="bool-val">false
+            </span>}
+        })
     }
 }
 

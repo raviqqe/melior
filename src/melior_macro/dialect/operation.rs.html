@@ -745,14 +745,14 @@
         }
     }
 
-    <span class="kw">pub fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">match </span><span class="self">self </span>{
+    <span class="kw">pub fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Element { constraint, .. } =&gt; constraint.is_optional(),
             <span class="self">Self</span>::Attribute { constraint, .. } =&gt; {
-                constraint.is_optional() || constraint.has_default_value()
-            }
+                constraint.is_optional()<span class="question-mark">? </span>|| constraint.has_default_value()<span class="question-mark">?
+            </span>}
             <span class="self">Self</span>::Successor { .. } | <span class="self">Self</span>::Region { .. } =&gt; <span class="bool-val">false</span>,
-        }
+        })
     }
 
     <span class="kw">pub fn </span>is_result(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -785,7 +785,7 @@
                 }
             }
             <span class="self">Self</span>::Attribute { constraint } =&gt; {
-                <span class="kw">if </span>constraint.is_unit() {
+                <span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>{
                     <span class="macro">parse_quote!</span>(bool)
                 } <span class="kw">else </span>{
                     <span class="kw">let </span>r#type: Type = syn::parse_str(constraint.storage_type()<span class="question-mark">?</span>)
@@ -845,7 +845,7 @@
                 }
             }
             <span class="self">Self</span>::Attribute { constraint } =&gt; {
-                <span class="kw">if </span>constraint.is_unit() {
+                <span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>{
                     <span class="macro">parse_quote!</span>(bool)
                 } <span class="kw">else </span>{
                     <span class="self">Self</span>::create_result_type(<span class="self">self</span>.parameter_type()<span class="question-mark">?</span>)
@@ -1320,7 +1320,7 @@
         <span class="kw">let </span>accessors = <span class="self">self
             </span>.fields()
             .map(|field| field.accessors().expect(<span class="string">&quot;valid accessors&quot;</span>));
-        <span class="kw">let </span>builder = OperationBuilder::new(<span class="self">self</span>);
+        <span class="kw">let </span>builder = OperationBuilder::new(<span class="self">self</span>).expect(<span class="string">&quot;valid builder generator&quot;</span>);
         <span class="kw">let </span>builder_tokens = builder.builder().expect(<span class="string">&quot;valid builder&quot;</span>);
         <span class="kw">let </span>builder_fn = builder.create_op_builder_fn();
         <span class="kw">let </span>default_constructor = builder.default_constructor().expect(<span class="string">&quot;valid constructor&quot;</span>);
