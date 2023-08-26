@@ -442,7 +442,7 @@
         <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier();
 
         <span class="self">self</span>.operation.fields().map(<span class="kw">move </span>|field| {
-            <span class="kw">let </span>name = sanitize_snake_case_name(field.name);
+            <span class="kw">let </span>name = sanitize_snake_case_name(field.name)<span class="question-mark">?</span>;
             <span class="kw">let </span>parameter_type = field.kind.parameter_type()<span class="question-mark">?</span>;
             <span class="kw">let </span>argument = <span class="macro">quote! </span>{ #name: #parameter_type };
             <span class="kw">let </span>add = <span class="macro">format_ident!</span>(<span class="string">&quot;add_{}s&quot;</span>, field.kind.as_str());
@@ -526,7 +526,7 @@
             </span>.type_state
             .iter()
             .map(|field| sanitize_snake_case_name(<span class="kw-2">&amp;</span>field.field_name))
-            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>fields = <span class="self">self
             </span>.type_state
@@ -540,7 +540,7 @@
 
         <span class="kw">let </span>phantoms = field_names
             .iter()
-            .map(|n| <span class="macro">quote! </span>{ #n: ::std::marker::PhantomData })
+            .map(|name| <span class="macro">quote! </span>{ #name: ::std::marker::PhantomData })
             .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
         <span class="kw">let </span>methods = <span class="self">self
@@ -616,7 +616,7 @@
 
     <span class="kw">pub fn </span>default_constructor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
         <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.operation.class_name);
-        <span class="kw">let </span>name = sanitize_snake_case_name(<span class="self">self</span>.operation.short_name);
+        <span class="kw">let </span>name = sanitize_snake_case_name(<span class="self">self</span>.operation.short_name)<span class="question-mark">?</span>;
         <span class="kw">let </span>arguments = <span class="self">Self</span>::required_fields(<span class="self">self</span>.operation)
             .map(|field| {
                 <span class="kw">let </span>parameter_type = <span class="kw-2">&amp;</span>field.kind.parameter_type()<span class="question-mark">?</span>;

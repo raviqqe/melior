@@ -91,6 +91,9 @@
 <a href="#91" id="91">91</a>
 <a href="#92" id="92">92</a>
 <a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::error::Error;
 <span class="kw">use </span>comrak::{arena_tree::NodeEdge, format_commonmark, nodes::NodeValue, parse_document, Arena};
 <span class="kw">use </span>convert_case::{Case, Casing};
@@ -99,11 +102,11 @@
 
 <span class="kw">const </span>RESERVED_NAMES: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[<span class="string">&quot;name&quot;</span>, <span class="string">&quot;operation&quot;</span>, <span class="string">&quot;builder&quot;</span>];
 
-<span class="kw">pub fn </span>sanitize_snake_case_name(name: <span class="kw-2">&amp;</span>str) -&gt; Ident {
+<span class="kw">pub fn </span>sanitize_snake_case_name(name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, Error&gt; {
     sanitize_name(<span class="kw-2">&amp;</span>name.to_case(Case::Snake))
 }
 
-<span class="kw">fn </span>sanitize_name(name: <span class="kw-2">&amp;</span>str) -&gt; Ident {
+<span class="kw">fn </span>sanitize_name(name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, Error&gt; {
     <span class="comment">// Replace any &quot;.&quot; with &quot;_&quot;
     </span><span class="kw">let </span><span class="kw-2">mut </span>name = name.replace(<span class="string">&#39;.&#39;</span>, <span class="string">&quot;_&quot;</span>);
 
@@ -112,15 +115,15 @@
         || name
             .chars()
             .next()
-            .expect(<span class="string">&quot;name has at least one char&quot;</span>)
-            .is_numeric()
+            .ok_or_else(|| Error::InvalidIdentifier(name.clone()))<span class="question-mark">?
+            </span>.is_numeric()
     {
         name = <span class="macro">format!</span>(<span class="string">&quot;_{}&quot;</span>, name);
     }
 
     <span class="comment">// Try to parse the string as an ident, and prefix the identifier
     // with &quot;r#&quot; if it is not a valid identifier.
-    </span>syn::parse_str::&lt;Ident&gt;(<span class="kw-2">&amp;</span>name).unwrap_or(<span class="macro">format_ident!</span>(<span class="string">&quot;r#{}&quot;</span>, name))
+    </span><span class="prelude-val">Ok</span>(syn::parse_str::&lt;Ident&gt;(<span class="kw-2">&amp;</span>name).unwrap_or(<span class="macro">format_ident!</span>(<span class="string">&quot;r#{}&quot;</span>, name)))
 }
 
 <span class="kw">pub fn </span>sanitize_documentation(string: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
@@ -155,17 +158,20 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>sanitize_name_with_dot() {
-        <span class="macro">assert_eq!</span>(sanitize_snake_case_name(<span class="string">&quot;foo.bar&quot;</span>), <span class="string">&quot;foo_bar&quot;</span>);
+        <span class="macro">assert_eq!</span>(sanitize_snake_case_name(<span class="string">&quot;foo.bar&quot;</span>).unwrap(), <span class="string">&quot;foo_bar&quot;</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>sanitize_name_with_dot_and_underscore() {
-        <span class="macro">assert_eq!</span>(sanitize_snake_case_name(<span class="string">&quot;foo.bar_baz&quot;</span>), <span class="string">&quot;foo_bar_baz&quot;</span>);
+        <span class="macro">assert_eq!</span>(
+            sanitize_snake_case_name(<span class="string">&quot;foo.bar_baz&quot;</span>).unwrap(),
+            <span class="string">&quot;foo_bar_baz&quot;
+        </span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>sanitize_reserved_name() {
-        <span class="macro">assert_eq!</span>(sanitize_snake_case_name(<span class="string">&quot;builder&quot;</span>), <span class="string">&quot;_builder&quot;</span>);
+        <span class="macro">assert_eq!</span>(sanitize_snake_case_name(<span class="string">&quot;builder&quot;</span>).unwrap(), <span class="string">&quot;_builder&quot;</span>);
     }
 
     <span class="attr">#[test]

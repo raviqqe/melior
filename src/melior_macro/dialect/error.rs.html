@@ -94,6 +94,10 @@
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     error,
     fmt::{<span class="self">self</span>, Display, Formatter},
@@ -107,6 +111,7 @@
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub enum </span>Error {
+    InvalidIdentifier(String),
     Io(io::Error),
     Ods(SourceError&lt;OdsError&gt;),
     Parse(tblgen::Error),
@@ -121,7 +126,7 @@
             <span class="self">Self</span>::TableGen(error) =&gt; error.add_source_info(info).into(),
             <span class="self">Self</span>::Ods(error) =&gt; error.add_source_info(info).into(),
             <span class="self">Self</span>::Parse(error) =&gt; <span class="self">Self</span>::Parse(error.add_source_info(info)),
-            <span class="self">Self</span>::Io(<span class="kw">_</span>) | <span class="self">Self</span>::Syn(<span class="kw">_</span>) | <span class="self">Self</span>::Utf8(<span class="kw">_</span>) =&gt; <span class="self">self</span>,
+            <span class="self">Self</span>::InvalidIdentifier(<span class="kw">_</span>) | <span class="self">Self</span>::Io(<span class="kw">_</span>) | <span class="self">Self</span>::Syn(<span class="kw">_</span>) | <span class="self">Self</span>::Utf8(<span class="kw">_</span>) =&gt; <span class="self">self</span>,
         }
     }
 }
@@ -129,6 +134,9 @@
 <span class="kw">impl </span>Display <span class="kw">for </span>Error {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
+            <span class="self">Self</span>::InvalidIdentifier(identifier) =&gt; {
+                <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid identifier: {identifier}&quot;</span>)
+            }
             <span class="self">Self</span>::Io(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;{error}&quot;</span>),
             <span class="self">Self</span>::Ods(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;invalid ODS input: {error}&quot;</span>),
             <span class="self">Self</span>::Parse(error) =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to parse TableGen source: {error}&quot;</span>),

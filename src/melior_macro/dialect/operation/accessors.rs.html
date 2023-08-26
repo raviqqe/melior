@@ -458,7 +458,7 @@
 
     <span class="kw">pub fn </span>accessors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
         <span class="kw">let </span>setter = {
-            <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;set_{}&quot;</span>, <span class="self">self</span>.name));
+            <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;set_{}&quot;</span>, <span class="self">self</span>.name))<span class="question-mark">?</span>;
             <span class="kw">if let </span><span class="prelude-val">Some</span>(body) = <span class="self">self</span>.setter_impl() {
                 <span class="kw">let </span>parameter_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.parameter_type()<span class="question-mark">?</span>;
 
@@ -472,7 +472,7 @@
             }
         };
         <span class="kw">let </span>remover = {
-            <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;remove_{}&quot;</span>, <span class="self">self</span>.name));
+            <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;remove_{}&quot;</span>, <span class="self">self</span>.name))<span class="question-mark">?</span>;
             <span class="self">self</span>.remover_impl().map_or(<span class="macro">quote!</span>(), |body| {
                 <span class="macro">quote! </span>{
                     <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {

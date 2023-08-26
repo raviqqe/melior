@@ -173,7 +173,7 @@
             dialect.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>),
         ))<span class="question-mark">?
     </span>);
-    <span class="kw">let </span>name = sanitize_snake_case_name(name);
+    <span class="kw">let </span>name = sanitize_snake_case_name(name)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
         <span class="attr">#[doc = #doc]
