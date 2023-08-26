@@ -6,11 +6,11 @@ use quote::format_ident;
 
 const RESERVED_NAMES: &[&str] = &["name", "operation", "builder"];
 
-pub fn sanitize_snake_case_name(name: &str) -> Ident {
+pub fn sanitize_snake_case_name(name: &str) -> Result<Ident, Error> {
     sanitize_name(&name.to_case(Case::Snake))
 }
 
-fn sanitize_name(name: &str) -> Ident {
+fn sanitize_name(name: &str) -> Result<Ident, Error> {
     // Replace any "." with "_"
     let mut name = name.replace('.', "_");
 
@@ -19,7 +19,7 @@ fn sanitize_name(name: &str) -> Ident {
         || name
             .chars()
             .next()
-            .expect("name has at least one char")
+            .ok_or_else(|| Error::InvalidIdentifier(name.clone()))?
             .is_numeric()
     {
         name = format!("_{}", name);
@@ -27,7 +27,7 @@ fn sanitize_name(name: &str) -> Ident {
 
     // Try to parse the string as an ident, and prefix the identifier
     // with "r#" if it is not a valid identifier.
-    syn::parse_str::<Ident>(&name).unwrap_or(format_ident!("r#{}", name))
+    Ok(syn::parse_str::<Ident>(&name).unwrap_or(format_ident!("r#{}", name)))
 }
 
 pub fn sanitize_documentation(string: &str) -> Result<String, Error> {
@@ -62,17 +62,20 @@ mod tests {
 
     #[test]
     fn sanitize_name_with_dot() {
-        assert_eq!(sanitize_snake_case_name("foo.bar"), "foo_bar");
+        assert_eq!(sanitize_snake_case_name("foo.bar").unwrap(), "foo_bar");
     }
 
     #[test]
     fn sanitize_name_with_dot_and_underscore() {
-        assert_eq!(sanitize_snake_case_name("foo.bar_baz"), "foo_bar_baz");
+        assert_eq!(
+            sanitize_snake_case_name("foo.bar_baz").unwrap(),
+            "foo_bar_baz"
+        );
     }
 
     #[test]
     fn sanitize_reserved_name() {
-        assert_eq!(sanitize_snake_case_name("builder"), "_builder");
+        assert_eq!(sanitize_snake_case_name("builder").unwrap(), "_builder");
     }
 
     #[test]

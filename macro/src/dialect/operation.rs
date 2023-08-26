@@ -278,15 +278,15 @@ pub struct OperationField<'a> {
 }
 
 impl<'a> OperationField<'a> {
-    fn new(name: &'a str, kind: FieldKind<'a>) -> Self {
-        Self {
+    fn new(name: &'a str, kind: FieldKind<'a>) -> Result<Self, Error> {
+        Ok(Self {
             name,
-            sanitized_name: sanitize_snake_case_name(name),
+            sanitized_name: sanitize_snake_case_name(name)?,
             kind,
-        }
+        })
     }
 
-    fn new_attribute(name: &'a str, constraint: AttributeConstraint<'a>) -> Self {
+    fn new_attribute(name: &'a str, constraint: AttributeConstraint<'a>) -> Result<Self, Error> {
         Self::new(name, FieldKind::Attribute { constraint })
     }
 
@@ -294,7 +294,7 @@ impl<'a> OperationField<'a> {
         name: &'a str,
         constraint: RegionConstraint<'a>,
         sequence_info: SequenceInfo,
-    ) -> Self {
+    ) -> Result<Self, Error> {
         Self::new(
             name,
             FieldKind::Region {
@@ -308,7 +308,7 @@ impl<'a> OperationField<'a> {
         name: &'a str,
         constraint: SuccessorConstraint<'a>,
         sequence_info: SequenceInfo,
-    ) -> Self {
+    ) -> Result<Self, Error> {
         Self::new(
             name,
             FieldKind::Successor {
@@ -324,7 +324,7 @@ impl<'a> OperationField<'a> {
         kind: ElementKind,
         sequence_info: SequenceInfo,
         variadic_kind: VariadicKind,
-    ) -> Self {
+    ) -> Result<Self, Error> {
         Self::new(
             name,
             FieldKind::Element {
@@ -372,7 +372,7 @@ impl<'a> Operation<'a> {
             .args()
             .enumerate()
             .map(|(index, (name, value))| {
-                Ok(OperationField::new_successor(
+                OperationField::new_successor(
                     name,
                     SuccessorConstraint::new(
                         value
@@ -380,7 +380,7 @@ impl<'a> Operation<'a> {
                             .map_err(|error: tblgen::Error| error.set_location(def))?,
                     ),
                     SequenceInfo { index, len },
-                ))
+                )
             })
             .collect()
     }
@@ -392,7 +392,7 @@ impl<'a> Operation<'a> {
             .args()
             .enumerate()
             .map(|(index, (name, value))| {
-                Ok(OperationField::new_region(
+                OperationField::new_region(
                     name,
                     RegionConstraint::new(
                         value
@@ -400,7 +400,7 @@ impl<'a> Operation<'a> {
                             .map_err(|error: tblgen::Error| error.set_location(def))?,
                     ),
                     SequenceInfo { index, len },
-                ))
+                )
             })
             .collect()
     }
@@ -516,7 +516,7 @@ impl<'a> Operation<'a> {
                         variadic_kind,
                     )
                 })
-                .collect::<Vec<_>>(),
+                .collect::<Result<Vec<_>, _>>()?,
             num_variable_length,
         ))
     }
@@ -529,12 +529,9 @@ impl<'a> Operation<'a> {
             .filter(|(_, arg_def)| arg_def.subclass_of("Attr"))
             .map(|(name, arg_def)| {
                 // TODO: Replace assert! with Result
-                assert!(!name.is_empty());
                 assert!(!arg_def.subclass_of("DerivedAttr"));
-                Ok(OperationField::new_attribute(
-                    name,
-                    AttributeConstraint::new(*arg_def),
-                ))
+
+                OperationField::new_attribute(name, AttributeConstraint::new(*arg_def))
             })
             .collect()
     }
@@ -548,15 +545,13 @@ impl<'a> Operation<'a> {
                 def.subclass_of("Attr").then_some(def)
             })
             .map(|def| {
-                def.subclass_of("DerivedAttr")
-                    .then_some(())
-                    .ok_or_else(|| {
-                        OdsError::ExpectedSuperClass("DerivedAttr").with_location(def)
-                    })?;
-                Ok(OperationField::new_attribute(
-                    def.name()?,
-                    AttributeConstraint::new(def),
-                ))
+                if def.subclass_of("DerivedAttr") {
+                    OperationField::new_attribute(def.name()?, AttributeConstraint::new(def))
+                } else {
+                    Err(OdsError::ExpectedSuperClass("DerivedAttr")
+                        .with_location(def)
+                        .into())
+                }
             })
             .collect()
     }
