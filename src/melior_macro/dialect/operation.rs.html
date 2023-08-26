@@ -915,7 +915,7 @@
     }
 }
 
-<span class="kw">pub struct </span>VariadicKindIter&lt;I&gt; {
+<span class="kw">struct </span>VariadicKindIter&lt;I&gt; {
     current: VariadicKind,
     iter: I,
 }
@@ -1185,17 +1185,17 @@
             .iter()
             .filter(|(<span class="kw">_</span>, constraint)| constraint.has_variable_length())
             .count();
-        <span class="kw">let </span>variadic_iter = VariadicKindIter::new(
-            elements.iter().map(|(<span class="kw">_</span>, constraint)| constraint),
-            num_variable_length,
-            same_size,
-            attr_sized,
-        );
+
         <span class="prelude-val">Ok</span>((
             elements
                 .iter()
                 .enumerate()
-                .zip(variadic_iter)
+                .zip(VariadicKindIter::new(
+                    elements.iter().map(|(<span class="kw">_</span>, constraint)| constraint),
+                    num_variable_length,
+                    same_size,
+                    attr_sized,
+                ))
                 .map(|((index, (name, constraint)), variadic_kind)| {
                     OperationField::new_element(
                         name,
