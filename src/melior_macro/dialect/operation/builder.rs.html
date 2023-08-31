@@ -260,169 +260,24 @@
 <a href="#260" id="260">260</a>
 <a href="#261" id="261">261</a>
 <a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-<a href="#293" id="293">293</a>
-<a href="#294" id="294">294</a>
-<a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
-<a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::iter::repeat;
+</pre></div><pre class="rust"><code><span class="kw">mod </span>type_state_item;
+<span class="kw">mod </span>type_state_list;
 
+<span class="kw">use </span><span class="self">self</span>::{type_state_item::TypeStateItem, type_state_list::TypeStateList};
 <span class="kw">use super</span>::{
     <span class="kw">super</span>::{error::Error, utility::sanitize_snake_case_name},
     FieldKind, Operation, OperationField,
 };
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
 <span class="kw">use </span>quote::{format_ident, quote};
-<span class="kw">use </span>syn::GenericArgument;
 
-<span class="attr">#[derive(Debug)]
-</span><span class="kw">struct </span>TypeStateItem {
-    field_name: String,
-    generic_param: GenericArgument,
-}
-
-<span class="kw">impl </span>TypeStateItem {
-    <span class="kw">pub fn </span>new(index: usize, field_name: String) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            generic_param: {
-                <span class="kw">let </span>ident = <span class="macro">format_ident!</span>(<span class="string">&quot;T{}&quot;</span>, index);
-                syn::parse2(<span class="macro">quote!</span>(#ident)).expect(<span class="string">&quot;Ident is a valid GenericArgument&quot;</span>)
-            },
-            field_name,
-        }
-    }
-}
-
-<span class="attr">#[derive(Debug)]
-</span><span class="kw">struct </span>TypeStateList {
-    items: Vec&lt;TypeStateItem&gt;,
-    unset: GenericArgument,
-    set: GenericArgument,
-}
-
-<span class="kw">impl </span>TypeStateList {
-    <span class="kw">pub fn </span>new(items: Vec&lt;TypeStateItem&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            items,
-            unset: syn::parse2(<span class="macro">quote!</span>(::melior::dialect::ods::__private::Unset)).unwrap(),
-            set: syn::parse2(<span class="macro">quote!</span>(::melior::dialect::ods::__private::Set)).unwrap(),
-        }
-    }
-
-    <span class="kw">pub fn </span>items(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>TypeStateItem&gt; {
-        <span class="self">self</span>.items.iter()
-    }
-
-    <span class="kw">pub fn </span>parameters(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; {
-        <span class="self">self</span>.items().map(|item| <span class="kw-2">&amp;</span>item.generic_param)
-    }
-
-    <span class="kw">pub fn </span>parameters_without&lt;<span class="lifetime">&#39;a</span>&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
-        field_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; + <span class="lifetime">&#39;_ </span>{
-        <span class="self">self</span>.items()
-            .filter(<span class="kw">move </span>|item| item.field_name != field_name)
-            .map(|item| <span class="kw-2">&amp;</span>item.generic_param)
-    }
-
-    <span class="kw">pub fn </span>arguments_replace&lt;<span class="lifetime">&#39;a</span>&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
-        field_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-        argument: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>GenericArgument,
-    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; + <span class="lifetime">&#39;_ </span>{
-        <span class="self">self</span>.items().map(<span class="kw">move </span>|item| {
-            <span class="kw">if </span>item.field_name == field_name {
-                argument
-            } <span class="kw">else </span>{
-                <span class="kw-2">&amp;</span>item.generic_param
-            }
-        })
-    }
-
-    <span class="kw">pub fn </span>arguments_all&lt;<span class="lifetime">&#39;a</span>&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
-        argument: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>GenericArgument,
-    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; + <span class="lifetime">&#39;_ </span>{
-        repeat(argument).take(<span class="self">self</span>.items.len())
-    }
-}
-
-<span class="kw">pub struct </span>OperationBuilder&lt;<span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; {
-    operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;,
+<span class="kw">pub struct </span>OperationBuilder&lt;<span class="lifetime">&#39;o</span>&gt; {
+    operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;,
     type_state: TypeStateList,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; OperationBuilder&lt;<span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">pub fn </span>new(operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;o</span>&gt; OperationBuilder&lt;<span class="lifetime">&#39;o</span>&gt; {
+    <span class="kw">pub fn </span>new(operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             operation,
             type_state: <span class="self">Self</span>::create_type_state(operation)<span class="question-mark">?</span>,
@@ -493,8 +348,8 @@
                 <span class="macro">quote!</span>()
             } <span class="kw">else </span>{
                 <span class="kw">let </span>parameters = <span class="self">self</span>.type_state.parameters_without(field.name);
-                <span class="kw">let </span>arguments_set = <span class="self">self</span>.type_state.arguments_replace(field.name, <span class="kw-2">&amp;</span><span class="self">self</span>.type_state.set);
-                <span class="kw">let </span>arguments_unset = <span class="self">self</span>.type_state.arguments_replace(field.name, <span class="kw-2">&amp;</span><span class="self">self</span>.type_state.unset);
+                <span class="kw">let </span>arguments_set = <span class="self">self</span>.type_state.arguments_set(field.name, <span class="bool-val">true</span>);
+                <span class="kw">let </span>arguments_unset = <span class="self">self</span>.type_state.arguments_set(field.name, <span class="bool-val">false</span>);
                 <span class="macro">quote! </span>{
                     <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, #(#parameters),<span class="kw-2">*</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_unset),<span class="kw-2">*</span>&gt; {
                         <span class="kw">pub fn </span>#name(<span class="kw-2">mut </span><span class="self">self</span>, #argument) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_set),<span class="kw-2">*</span>&gt; {
@@ -515,8 +370,8 @@
     <span class="kw">pub fn </span>builder(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
         <span class="kw">let </span>field_names = <span class="self">self
             </span>.type_state
-            .items()
-            .map(|field| sanitize_snake_case_name(<span class="kw-2">&amp;</span>field.field_name))
+            .field_names()
+            .map(sanitize_snake_case_name)
             .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>phantom_fields =
@@ -563,17 +418,16 @@
 
     <span class="kw">fn </span>create_build_fn(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenStream {
         <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier();
-        <span class="kw">let </span>arguments_set = <span class="self">self</span>.type_state.arguments_all(<span class="kw-2">&amp;</span><span class="self">self</span>.type_state.set);
+        <span class="kw">let </span>arguments = <span class="self">self</span>.type_state.arguments_all_set(<span class="bool-val">true</span>);
         <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.operation.class_name);
         <span class="kw">let </span>error = <span class="macro">format!</span>(<span class="string">&quot;should be a valid {class_name}&quot;</span>);
-        <span class="kw">let </span>maybe_infer = <span class="kw">if </span><span class="self">self</span>.operation.can_infer_type {
-            <span class="macro">quote! </span>{ .enable_result_type_inference() }
-        } <span class="kw">else </span>{
-            <span class="macro">quote! </span>{}
-        };
+        <span class="kw">let </span>maybe_infer = <span class="self">self
+            </span>.operation
+            .can_infer_type
+            .then_some(<span class="macro">quote! </span>{ .enable_result_type_inference() });
 
         <span class="macro">quote! </span>{
-            <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_set),<span class="kw-2">*</span>&gt; {
+            <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
                 <span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; #class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
                     <span class="self">self</span>.builder #maybe_infer.build().try_into().expect(#error)
                 }
@@ -584,10 +438,10 @@
     <span class="kw">fn </span>create_new_fn(<span class="kw-2">&amp;</span><span class="self">self</span>, phantoms: <span class="kw-2">&amp;</span>[TokenStream]) -&gt; TokenStream {
         <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier();
         <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.operation.full_name;
-        <span class="kw">let </span>arguments_unset = <span class="self">self</span>.type_state.arguments_all(<span class="kw-2">&amp;</span><span class="self">self</span>.type_state.unset);
+        <span class="kw">let </span>arguments = <span class="self">self</span>.type_state.arguments_all_set(<span class="bool-val">false</span>);
 
         <span class="macro">quote! </span>{
-            <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_unset),<span class="kw-2">*</span>&gt; {
+            <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
                 <span class="kw">pub fn </span>new(location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
                     <span class="self">Self </span>{
                         context: <span class="kw">unsafe </span>{ location.context().to_ref() },
@@ -601,11 +455,11 @@
 
     <span class="kw">pub fn </span>create_op_builder_fn(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenStream {
         <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier();
-        <span class="kw">let </span>arguments_unset = <span class="self">self</span>.type_state.arguments_all(<span class="kw-2">&amp;</span><span class="self">self</span>.type_state.unset);
+        <span class="kw">let </span>arguments = <span class="self">self</span>.type_state.arguments_all_set(<span class="bool-val">false</span>);
         <span class="macro">quote! </span>{
             <span class="kw">pub fn </span>builder(
                 location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;
-            ) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_unset),<span class="kw-2">*</span>&gt; {
+            ) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
                 #builder_ident::new(location)
             }
         }
@@ -655,7 +509,7 @@
             })
     }
 
-    <span class="kw">fn </span>create_type_state(operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;TypeStateList, Error&gt; {
+    <span class="kw">fn </span>create_type_state(operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;TypeStateList, Error&gt; {
         <span class="prelude-val">Ok</span>(TypeStateList::new(
             <span class="self">Self</span>::required_fields(operation)
                 .enumerate()
