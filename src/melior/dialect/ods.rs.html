@@ -102,10 +102,22 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Experimental dialect operations and their builders generated automatically
 //! from TableGen files.
 
-</span><span class="macro">melior_macro::dialect! </span>{
+</span><span class="attr">#[doc(hidden)]
+</span><span class="kw">pub mod </span>__private {
+    <span class="kw">pub struct </span>Set;
+    <span class="kw">pub struct </span>Unset;
+}
+
+<span class="macro">melior_macro::dialect! </span>{
     name: <span class="string">&quot;affine&quot;</span>,
     tablegen: <span class="string">r#&quot;include &quot;mlir/Dialect/Affine/IR/AffineOps.td&quot;&quot;#
 </span>}

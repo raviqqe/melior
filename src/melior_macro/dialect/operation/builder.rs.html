@@ -333,99 +333,86 @@
 <a href="#333" id="333">333</a>
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
-<a href="#342" id="342">342</a>
-<a href="#343" id="343">343</a>
-<a href="#344" id="344">344</a>
-<a href="#345" id="345">345</a>
-<a href="#346" id="346">346</a>
-<a href="#347" id="347">347</a>
-<a href="#348" id="348">348</a>
-<a href="#349" id="349">349</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::iter::repeat;
+
+<span class="kw">use super</span>::{
     <span class="kw">super</span>::{error::Error, utility::sanitize_snake_case_name},
     FieldKind, Operation, OperationField,
 };
-<span class="kw">use </span>convert_case::{Case, Casing};
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
 <span class="kw">use </span>quote::{format_ident, quote};
+<span class="kw">use </span>syn::GenericArgument;
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">struct </span>TypeStateItem {
     field_name: String,
-    yes: Ident,
-    no: Ident,
-    any: Ident,
+    generic_param: GenericArgument,
 }
 
 <span class="kw">impl </span>TypeStateItem {
-    <span class="kw">pub fn </span>new(class_name: <span class="kw-2">&amp;</span>str, field_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>new_field_name = field_name.to_string().to_case(Case::Pascal);
+    <span class="kw">pub fn </span>new(index: usize, field_name: String) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            field_name: field_name.to_string(),
-            yes: <span class="macro">format_ident!</span>(<span class="string">&quot;{}__Yes__{}&quot;</span>, class_name, new_field_name),
-            no: <span class="macro">format_ident!</span>(<span class="string">&quot;{}__No__{}&quot;</span>, class_name, new_field_name),
-            any: <span class="macro">format_ident!</span>(<span class="string">&quot;{}__Any__{}&quot;</span>, class_name, new_field_name),
+            generic_param: {
+                <span class="kw">let </span>ident = <span class="macro">format_ident!</span>(<span class="string">&quot;T{}&quot;</span>, index);
+                syn::parse2(<span class="macro">quote!</span>(#ident)).expect(<span class="string">&quot;Ident is a valid GenericArgument&quot;</span>)
+            },
+            field_name,
         }
     }
 }
 
 <span class="attr">#[derive(Debug)]
-</span><span class="kw">struct </span>TypeStateList(Vec&lt;TypeStateItem&gt;);
+</span><span class="kw">struct </span>TypeStateList {
+    items: Vec&lt;TypeStateItem&gt;,
+    unset: GenericArgument,
+    set: GenericArgument,
+}
 
 <span class="kw">impl </span>TypeStateList {
-    <span class="kw">pub fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>TypeStateItem&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.iter()
+    <span class="kw">pub fn </span>new(items: Vec&lt;TypeStateItem&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            items,
+            unset: syn::parse2(<span class="macro">quote!</span>(::melior::dialect::ods::__private::Unset)).unwrap(),
+            set: syn::parse2(<span class="macro">quote!</span>(::melior::dialect::ods::__private::Set)).unwrap(),
+        }
     }
 
-    <span class="kw">pub fn </span>iter_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Ident&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.iter().map(|item| <span class="kw-2">&amp;</span>item.any)
+    <span class="kw">pub fn </span>items(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>TypeStateItem&gt; {
+        <span class="self">self</span>.items.iter()
     }
 
-    <span class="kw">pub fn </span>iter_any_without&lt;<span class="lifetime">&#39;a</span>&gt;(
+    <span class="kw">pub fn </span>parameters(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; {
+        <span class="self">self</span>.items().map(|item| <span class="kw-2">&amp;</span>item.generic_param)
+    }
+
+    <span class="kw">pub fn </span>parameters_without&lt;<span class="lifetime">&#39;a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
         field_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
-    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Ident&gt; + <span class="lifetime">&#39;_ </span>{
-        <span class="self">self</span>.<span class="number">0</span>.iter().filter_map(<span class="kw">move </span>|item| {
-            <span class="kw">if </span>item.field_name != field_name {
-                <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>item.any)
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>}
-        })
+    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; + <span class="lifetime">&#39;_ </span>{
+        <span class="self">self</span>.items()
+            .filter(<span class="kw">move </span>|item| item.field_name != field_name)
+            .map(|item| <span class="kw-2">&amp;</span>item.generic_param)
     }
 
-    <span class="kw">pub fn </span>iter_set_yes&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, field_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Ident&gt; + <span class="lifetime">&#39;_ </span>{
-        <span class="self">self</span>.<span class="number">0</span>.iter().map(<span class="kw">move </span>|item| {
+    <span class="kw">pub fn </span>arguments_replace&lt;<span class="lifetime">&#39;a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        field_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
+        argument: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>GenericArgument,
+    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; + <span class="lifetime">&#39;_ </span>{
+        <span class="self">self</span>.items().map(<span class="kw">move </span>|item| {
             <span class="kw">if </span>item.field_name == field_name {
-                <span class="kw-2">&amp;</span>item.yes
+                argument
             } <span class="kw">else </span>{
-                <span class="kw-2">&amp;</span>item.any
+                <span class="kw-2">&amp;</span>item.generic_param
             }
         })
     }
 
-    <span class="kw">pub fn </span>iter_set_no&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, field_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Ident&gt; + <span class="lifetime">&#39;_ </span>{
-        <span class="self">self</span>.<span class="number">0</span>.iter().map(<span class="kw">move </span>|item| {
-            <span class="kw">if </span>item.field_name == field_name {
-                <span class="kw-2">&amp;</span>item.no
-            } <span class="kw">else </span>{
-                <span class="kw-2">&amp;</span>item.any
-            }
-        })
-    }
-
-    <span class="kw">pub fn </span>iter_yes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Ident&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.iter().map(|item| <span class="kw-2">&amp;</span>item.yes)
-    }
-
-    <span class="kw">pub fn </span>iter_no(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Ident&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.iter().map(|item| <span class="kw-2">&amp;</span>item.no)
+    <span class="kw">pub fn </span>arguments_all&lt;<span class="lifetime">&#39;a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        argument: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>GenericArgument,
+    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; + <span class="lifetime">&#39;_ </span>{
+        repeat(argument).take(<span class="self">self</span>.items.len())
     }
 }
 
@@ -442,7 +429,7 @@
         })
     }
 
-    <span class="kw">pub fn </span>methods&lt;<span class="lifetime">&#39;a</span>&gt;(
+    <span class="kw">pub fn </span>create_builder_fns&lt;<span class="lifetime">&#39;a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
         field_names: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[Ident],
         phantoms: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[TokenStream],
@@ -493,10 +480,10 @@
             };
 
             <span class="prelude-val">Ok</span>(<span class="kw">if </span>field.kind.is_optional()<span class="question-mark">? </span>{
-                <span class="kw">let </span>iter_any = <span class="self">self</span>.type_state.iter_any().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+                <span class="kw">let </span>parameters = <span class="self">self</span>.type_state.parameters().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
                 <span class="macro">quote! </span>{
-                    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, #(#iter_any),<span class="kw-2">*</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#iter_any),<span class="kw-2">*</span>&gt; {
-                        <span class="kw">pub fn </span>#name(<span class="kw-2">mut </span><span class="self">self</span>, #argument) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#iter_any),<span class="kw-2">*</span>&gt; {
+                    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, #(#parameters),<span class="kw-2">*</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#parameters),<span class="kw-2">*</span>&gt; {
+                        <span class="kw">pub fn </span>#name(<span class="kw-2">mut </span><span class="self">self</span>, #argument) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#parameters),<span class="kw-2">*</span>&gt; {
                             <span class="self">self</span>.builder = <span class="self">self</span>.builder.#add(#add_arguments);
                             <span class="self">self
                         </span>}
@@ -505,13 +492,12 @@
             } <span class="kw">else if </span>field.kind.is_result() &amp;&amp; <span class="self">self</span>.operation.can_infer_type {
                 <span class="macro">quote!</span>()
             } <span class="kw">else </span>{
-                <span class="kw">let </span>iter_any_without =
-                    <span class="self">self</span>.type_state.iter_any_without(field.name);
-                <span class="kw">let </span>iter_set_yes = <span class="self">self</span>.type_state.iter_set_yes(field.name);
-                <span class="kw">let </span>iter_set_no = <span class="self">self</span>.type_state.iter_set_no(field.name);
+                <span class="kw">let </span>parameters = <span class="self">self</span>.type_state.parameters_without(field.name);
+                <span class="kw">let </span>arguments_set = <span class="self">self</span>.type_state.arguments_replace(field.name, <span class="kw-2">&amp;</span><span class="self">self</span>.type_state.set);
+                <span class="kw">let </span>arguments_unset = <span class="self">self</span>.type_state.arguments_replace(field.name, <span class="kw-2">&amp;</span><span class="self">self</span>.type_state.unset);
                 <span class="macro">quote! </span>{
-                    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, #(#iter_any_without),<span class="kw-2">*</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#iter_set_no),<span class="kw-2">*</span>&gt; {
-                        <span class="kw">pub fn </span>#name(<span class="kw-2">mut </span><span class="self">self</span>, #argument) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#iter_set_yes),<span class="kw-2">*</span>&gt; {
+                    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, #(#parameters),<span class="kw-2">*</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_unset),<span class="kw-2">*</span>&gt; {
+                        <span class="kw">pub fn </span>#name(<span class="kw-2">mut </span><span class="self">self</span>, #argument) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_set),<span class="kw-2">*</span>&gt; {
                             <span class="self">self</span>.builder = <span class="self">self</span>.builder.#add(#add_arguments);
                             <span class="kw">let </span><span class="self">Self </span>{ context, <span class="kw-2">mut </span>builder, #(#field_names),* } = <span class="self">self</span>;
                             #builder_ident {
@@ -527,102 +513,105 @@
     }
 
     <span class="kw">pub fn </span>builder(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
-        <span class="kw">let </span>type_state_structs = <span class="self">self</span>.type_state_structs();
-        <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier();
-
         <span class="kw">let </span>field_names = <span class="self">self
             </span>.type_state
-            .iter()
+            .items()
             .map(|field| sanitize_snake_case_name(<span class="kw-2">&amp;</span>field.field_name))
             .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>fields = <span class="self">self
-            </span>.type_state
-            .iter_any()
-            .zip(<span class="kw-2">&amp;</span>field_names)
-            .map(|(r#type, name)| {
-                <span class="macro">quote! </span>{
-                    #name: ::std::marker::PhantomData&lt;#r#type&gt;
-                }
-            });
+        <span class="kw">let </span>phantom_fields =
+            <span class="self">self</span>.type_state
+                .parameters()
+                .zip(<span class="kw-2">&amp;</span>field_names)
+                .map(|(r#type, name)| {
+                    <span class="macro">quote! </span>{
+                        #name: ::std::marker::PhantomData&lt;#r#type&gt;
+                    }
+                });
 
-        <span class="kw">let </span>phantoms = field_names
+        <span class="kw">let </span>phantom_arguments = field_names
             .iter()
             .map(|name| <span class="macro">quote! </span>{ #name: ::std::marker::PhantomData })
             .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-        <span class="kw">let </span>methods = <span class="self">self
-            </span>.methods(<span class="kw-2">&amp;</span>field_names, phantoms.as_slice())
+        <span class="kw">let </span>builder_fns = <span class="self">self
+            </span>.create_builder_fns(<span class="kw-2">&amp;</span>field_names, phantom_arguments.as_slice())
             .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>new = {
-            <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.operation.full_name;
-            <span class="kw">let </span>iter_no = <span class="self">self</span>.type_state.iter_no();
-            <span class="kw">let </span>phantoms = phantoms.clone();
-            <span class="macro">quote! </span>{
-                <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#iter_no),<span class="kw-2">*</span>&gt; {
-                    <span class="kw">pub fn </span>new(location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
-                        <span class="self">Self </span>{
-                            context: <span class="kw">unsafe </span>{ location.context().to_ref() },
-                            builder: ::melior::ir::operation::OperationBuilder::new(#name, location),
-                            #(#phantoms),*
-                        }
-                    }
-                }
-            }
-        };
+        <span class="kw">let </span>new = <span class="self">self</span>.create_new_fn(phantom_arguments.as_slice());
+        <span class="kw">let </span>build = <span class="self">self</span>.create_build_fn();
 
-        <span class="kw">let </span>build = {
-            <span class="kw">let </span>iter_yes = <span class="self">self</span>.type_state.iter_yes();
-            <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.operation.class_name);
-            <span class="kw">let </span>error = <span class="macro">format!</span>(<span class="string">&quot;should be a valid {class_name}&quot;</span>);
-            <span class="kw">let </span>maybe_infer = <span class="kw">if </span><span class="self">self</span>.operation.can_infer_type {
-                <span class="macro">quote! </span>{ .enable_result_type_inference() }
-            } <span class="kw">else </span>{
-                <span class="macro">quote! </span>{}
-            };
-
-            <span class="macro">quote! </span>{
-                <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#iter_yes),<span class="kw-2">*</span>&gt; {
-                    <span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; #class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
-                        <span class="self">self</span>.builder #maybe_infer.build().try_into().expect(#error)
-                    }
-                }
-            }
-        };
-
+        <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier();
         <span class="kw">let </span>doc = <span class="macro">format!</span>(<span class="string">&quot;Builder for {}&quot;</span>, <span class="self">self</span>.operation.summary);
-        <span class="kw">let </span>iter_any = <span class="self">self</span>.type_state.iter_any();
+        <span class="kw">let </span>iter_arguments = <span class="self">self</span>.type_state.parameters();
 
         <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
-            #type_state_structs
-
             <span class="attr">#[doc = #doc]
-            </span><span class="kw">pub struct </span>#builder_ident &lt;<span class="lifetime">&#39;c</span>, #(#iter_any),* &gt; {
+            </span><span class="kw">pub struct </span>#builder_ident &lt;<span class="lifetime">&#39;c</span>, #(#iter_arguments),* &gt; {
                 builder: ::melior::ir::operation::OperationBuilder&lt;<span class="lifetime">&#39;c</span>&gt;,
                 context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context,
-                #(#fields),*
+                #(#phantom_fields),*
             }
 
             #new
 
-            #(#methods)*
+            #(#builder_fns)*
 
             #build
         })
     }
 
+    <span class="kw">fn </span>create_build_fn(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenStream {
+        <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier();
+        <span class="kw">let </span>arguments_set = <span class="self">self</span>.type_state.arguments_all(<span class="kw-2">&amp;</span><span class="self">self</span>.type_state.set);
+        <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.operation.class_name);
+        <span class="kw">let </span>error = <span class="macro">format!</span>(<span class="string">&quot;should be a valid {class_name}&quot;</span>);
+        <span class="kw">let </span>maybe_infer = <span class="kw">if </span><span class="self">self</span>.operation.can_infer_type {
+            <span class="macro">quote! </span>{ .enable_result_type_inference() }
+        } <span class="kw">else </span>{
+            <span class="macro">quote! </span>{}
+        };
+
+        <span class="macro">quote! </span>{
+            <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_set),<span class="kw-2">*</span>&gt; {
+                <span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; #class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
+                    <span class="self">self</span>.builder #maybe_infer.build().try_into().expect(#error)
+                }
+            }
+        }
+    }
+
+    <span class="kw">fn </span>create_new_fn(<span class="kw-2">&amp;</span><span class="self">self</span>, phantoms: <span class="kw-2">&amp;</span>[TokenStream]) -&gt; TokenStream {
+        <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier();
+        <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.operation.full_name;
+        <span class="kw">let </span>arguments_unset = <span class="self">self</span>.type_state.arguments_all(<span class="kw-2">&amp;</span><span class="self">self</span>.type_state.unset);
+
+        <span class="macro">quote! </span>{
+            <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_unset),<span class="kw-2">*</span>&gt; {
+                <span class="kw">pub fn </span>new(location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
+                    <span class="self">Self </span>{
+                        context: <span class="kw">unsafe </span>{ location.context().to_ref() },
+                        builder: ::melior::ir::operation::OperationBuilder::new(#name, location),
+                        #(#phantoms),*
+                    }
+                }
+            }
+        }
+    }
+
     <span class="kw">pub fn </span>create_op_builder_fn(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenStream {
         <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier();
-        <span class="kw">let </span>iter_no = <span class="self">self</span>.type_state.iter_no();
+        <span class="kw">let </span>arguments_unset = <span class="self">self</span>.type_state.arguments_all(<span class="kw-2">&amp;</span><span class="self">self</span>.type_state.unset);
         <span class="macro">quote! </span>{
-            <span class="kw">pub fn </span>builder(location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#iter_no),<span class="kw-2">*</span>&gt; {
+            <span class="kw">pub fn </span>builder(
+                location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;
+            ) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments_unset),<span class="kw-2">*</span>&gt; {
                 #builder_ident::new(location)
             }
         }
     }
 
-    <span class="kw">pub fn </span>default_constructor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
+    <span class="kw">pub fn </span>create_default_constructor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
         <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.operation.class_name);
         <span class="kw">let </span>name = sanitize_snake_case_name(<span class="self">self</span>.operation.short_name)<span class="question-mark">?</span>;
         <span class="kw">let </span>arguments = <span class="self">Self</span>::required_fields(<span class="self">self</span>.operation)
@@ -667,33 +656,16 @@
     }
 
     <span class="kw">fn </span>create_type_state(operation: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Operation&lt;<span class="lifetime">&#39;o</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;TypeStateList, Error&gt; {
-        <span class="prelude-val">Ok</span>(TypeStateList(
+        <span class="prelude-val">Ok</span>(TypeStateList::new(
             <span class="self">Self</span>::required_fields(operation)
-                .map(|field| <span class="prelude-val">Ok</span>(TypeStateItem::new(operation.class_name, field<span class="question-mark">?</span>.name)))
+                .enumerate()
+                .map(|(index, field)| <span class="prelude-val">Ok</span>(TypeStateItem::new(index, field<span class="question-mark">?</span>.name.to_string())))
                 .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, Error&gt;&gt;()<span class="question-mark">?</span>,
         ))
     }
 
     <span class="kw">fn </span>builder_identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Ident {
         <span class="macro">format_ident!</span>(<span class="string">&quot;{}Builder&quot;</span>, <span class="self">self</span>.operation.class_name)
-    }
-
-    <span class="kw">fn </span>type_state_structs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenStream {
-        <span class="self">self</span>.type_state
-            .iter()
-            .map(|item| {
-                <span class="kw">let </span>yes = <span class="kw-2">&amp;</span>item.yes;
-                <span class="kw">let </span>no = <span class="kw-2">&amp;</span>item.no;
-                <span class="macro">quote! </span>{
-                    <span class="attr">#[allow(non_camel_case_types)]
-                    #[doc(hidden)]
-                    </span><span class="kw">pub struct </span>#yes;
-                    <span class="attr">#[allow(non_camel_case_types)]
-                    #[doc(hidden)]
-                    </span><span class="kw">pub struct </span>#no;
-                }
-            })
-            .collect()
     }
 }
 </code></pre></div></section></main></body></html>

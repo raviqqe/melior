@@ -650,6 +650,8 @@
 <a href="#650" id="650">650</a>
 <a href="#651" id="651">651</a>
 <a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 
@@ -1253,7 +1255,9 @@
         <span class="kw">let </span>builder = OperationBuilder::new(<span class="self">self</span>).expect(<span class="string">&quot;valid builder generator&quot;</span>);
         <span class="kw">let </span>builder_tokens = builder.builder().expect(<span class="string">&quot;valid builder&quot;</span>);
         <span class="kw">let </span>builder_fn = builder.create_op_builder_fn();
-        <span class="kw">let </span>default_constructor = builder.default_constructor().expect(<span class="string">&quot;valid constructor&quot;</span>);
+        <span class="kw">let </span>default_constructor = builder
+            .create_default_constructor()
+            .expect(<span class="string">&quot;valid constructor&quot;</span>);
         <span class="kw">let </span>summary = <span class="kw-2">&amp;</span><span class="self">self</span>.summary;
         <span class="kw">let </span>description =
             sanitize_documentation(<span class="kw-2">&amp;</span><span class="self">self</span>.description).expect(<span class="string">&quot;valid Markdown documentation&quot;</span>);
