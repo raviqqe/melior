@@ -1,93 +1,21 @@
-use std::iter::repeat;
+mod type_state_item;
+mod type_state_list;
 
+use self::{type_state_item::TypeStateItem, type_state_list::TypeStateList};
 use super::{
     super::{error::Error, utility::sanitize_snake_case_name},
     FieldKind, Operation, OperationField,
 };
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use syn::GenericArgument;
 
-#[derive(Debug)]
-struct TypeStateItem {
-    field_name: String,
-    generic_param: GenericArgument,
-}
-
-impl TypeStateItem {
-    pub fn new(index: usize, field_name: String) -> Self {
-        Self {
-            generic_param: {
-                let ident = format_ident!("T{}", index);
-                syn::parse2(quote!(#ident)).expect("Ident is a valid GenericArgument")
-            },
-            field_name,
-        }
-    }
-}
-
-#[derive(Debug)]
-struct TypeStateList {
-    items: Vec<TypeStateItem>,
-    unset: GenericArgument,
-    set: GenericArgument,
-}
-
-impl TypeStateList {
-    pub fn new(items: Vec<TypeStateItem>) -> Self {
-        Self {
-            items,
-            unset: syn::parse2(quote!(::melior::dialect::ods::__private::Unset)).unwrap(),
-            set: syn::parse2(quote!(::melior::dialect::ods::__private::Set)).unwrap(),
-        }
-    }
-
-    pub fn items(&self) -> impl Iterator<Item = &TypeStateItem> {
-        self.items.iter()
-    }
-
-    pub fn parameters(&self) -> impl Iterator<Item = &GenericArgument> {
-        self.items().map(|item| &item.generic_param)
-    }
-
-    pub fn parameters_without<'a>(
-        &'a self,
-        field_name: &'a str,
-    ) -> impl Iterator<Item = &GenericArgument> + '_ {
-        self.items()
-            .filter(move |item| item.field_name != field_name)
-            .map(|item| &item.generic_param)
-    }
-
-    pub fn arguments_replace<'a>(
-        &'a self,
-        field_name: &'a str,
-        argument: &'a GenericArgument,
-    ) -> impl Iterator<Item = &GenericArgument> + '_ {
-        self.items().map(move |item| {
-            if item.field_name == field_name {
-                argument
-            } else {
-                &item.generic_param
-            }
-        })
-    }
-
-    pub fn arguments_all<'a>(
-        &'a self,
-        argument: &'a GenericArgument,
-    ) -> impl Iterator<Item = &GenericArgument> + '_ {
-        repeat(argument).take(self.items.len())
-    }
-}
-
-pub struct OperationBuilder<'o, 'c> {
-    operation: &'c Operation<'o>,
+pub struct OperationBuilder<'o> {
+    operation: &'o Operation<'o>,
     type_state: TypeStateList,
 }
 
-impl<'o, 'c> OperationBuilder<'o, 'c> {
-    pub fn new(operation: &'c Operation<'o>) -> Result<Self, Error> {
+impl<'o> OperationBuilder<'o> {
+    pub fn new(operation: &'o Operation<'o>) -> Result<Self, Error> {
         Ok(Self {
             operation,
             type_state: Self::create_type_state(operation)?,
@@ -158,8 +86,8 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
                 quote!()
             } else {
                 let parameters = self.type_state.parameters_without(field.name);
-                let arguments_set = self.type_state.arguments_replace(field.name, &self.type_state.set);
-                let arguments_unset = self.type_state.arguments_replace(field.name, &self.type_state.unset);
+                let arguments_set = self.type_state.arguments_set(field.name, true);
+                let arguments_unset = self.type_state.arguments_set(field.name, false);
                 quote! {
                     impl<'c, #(#parameters),*> #builder_ident<'c, #(#arguments_unset),*> {
                         pub fn #name(mut self, #argument) -> #builder_ident<'c, #(#arguments_set),*> {
@@ -180,8 +108,8 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
     pub fn builder(&self) -> Result<TokenStream, Error> {
         let field_names = self
             .type_state
-            .items()
-            .map(|field| sanitize_snake_case_name(&field.field_name))
+            .field_names()
+            .map(sanitize_snake_case_name)
             .collect::<Result<Vec<_>, _>>()?;
 
         let phantom_fields =
@@ -228,17 +156,16 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
 
     fn create_build_fn(&self) -> TokenStream {
         let builder_ident = self.builder_identifier();
-        let arguments_set = self.type_state.arguments_all(&self.type_state.set);
+        let arguments = self.type_state.arguments_all_set(true);
         let class_name = format_ident!("{}", &self.operation.class_name);
         let error = format!("should be a valid {class_name}");
-        let maybe_infer = if self.operation.can_infer_type {
-            quote! { .enable_result_type_inference() }
-        } else {
-            quote! {}
-        };
+        let maybe_infer = self
+            .operation
+            .can_infer_type
+            .then_some(quote! { .enable_result_type_inference() });
 
         quote! {
-            impl<'c> #builder_ident<'c, #(#arguments_set),*> {
+            impl<'c> #builder_ident<'c, #(#arguments),*> {
                 pub fn build(self) -> #class_name<'c> {
                     self.builder #maybe_infer.build().try_into().expect(#error)
                 }
@@ -249,10 +176,10 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
     fn create_new_fn(&self, phantoms: &[TokenStream]) -> TokenStream {
         let builder_ident = self.builder_identifier();
         let name = &self.operation.full_name;
-        let arguments_unset = self.type_state.arguments_all(&self.type_state.unset);
+        let arguments = self.type_state.arguments_all_set(false);
 
         quote! {
-            impl<'c> #builder_ident<'c, #(#arguments_unset),*> {
+            impl<'c> #builder_ident<'c, #(#arguments),*> {
                 pub fn new(location: ::melior::ir::Location<'c>) -> Self {
                     Self {
                         context: unsafe { location.context().to_ref() },
@@ -266,11 +193,11 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
 
     pub fn create_op_builder_fn(&self) -> TokenStream {
         let builder_ident = self.builder_identifier();
-        let arguments_unset = self.type_state.arguments_all(&self.type_state.unset);
+        let arguments = self.type_state.arguments_all_set(false);
         quote! {
             pub fn builder(
                 location: ::melior::ir::Location<'c>
-            ) -> #builder_ident<'c, #(#arguments_unset),*> {
+            ) -> #builder_ident<'c, #(#arguments),*> {
                 #builder_ident::new(location)
             }
         }
@@ -320,7 +247,7 @@ impl<'o, 'c> OperationBuilder<'o, 'c> {
             })
     }
 
-    fn create_type_state(operation: &'c Operation<'o>) -> Result<TypeStateList, Error> {
+    fn create_type_state(operation: &'o Operation<'o>) -> Result<TypeStateList, Error> {
         Ok(TypeStateList::new(
             Self::required_fields(operation)
                 .enumerate()
