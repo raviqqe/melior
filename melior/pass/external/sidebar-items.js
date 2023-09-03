@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["create_external"],"trait":["ExternalPass"]};
+window.SIDEBAR_ITEMS = {"fn":["create_external"],"struct":["ExternalPass"],"trait":["RunExternalPass"]};

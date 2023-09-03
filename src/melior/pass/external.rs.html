@@ -297,6 +297,40 @@
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! External passes
 
 </span><span class="kw">use </span><span class="kw">super</span>::Pass;
@@ -306,25 +340,55 @@
     ContextRef, StringRef,
 };
 <span class="kw">use </span>mlir_sys::{
-    mlirCreateExternalPass, MlirContext, MlirExternalPass, MlirExternalPassCallbacks,
-    MlirLogicalResult, MlirOperation,
+    mlirCreateExternalPass, mlirExternalPassSignalFailure, MlirContext, MlirExternalPass,
+    MlirExternalPassCallbacks, MlirLogicalResult, MlirOperation,
 };
-<span class="kw">use </span>std::{mem::transmute, ptr::drop_in_place};
+<span class="kw">use </span>std::{marker::PhantomData, mem::transmute, ptr::drop_in_place};
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_construct&lt;<span class="lifetime">&#39;a</span>, T: ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) {
+<span class="attr">#[derive(Clone, Copy, Debug)]
+</span><span class="kw">pub struct </span>ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt; {
+    raw: MlirExternalPass,
+    _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>MlirExternalPass&gt;,
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="doccomment">/// Signals that the pass has failed.
+    </span><span class="kw">pub fn </span>signal_failure(<span class="self">self</span>) {
+        <span class="kw">unsafe </span>{ mlirExternalPassSignalFailure(<span class="self">self</span>.raw) }
+    }
+
+    <span class="doccomment">/// Converts an external pass to a raw object.
+    </span><span class="kw">pub fn </span>to_raw(<span class="self">self</span>) -&gt; MlirExternalPass {
+        <span class="self">self</span>.raw
+    }
+
+    <span class="doccomment">/// Creates an external pass handle from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    </span><span class="kw">pub const unsafe fn </span>from_raw(raw: MlirExternalPass) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            raw,
+            _reference: PhantomData,
+        }
+    }
+}
+
+<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_construct&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) {
     pass.as_mut()
         .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
         .construct();
 }
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_destruct&lt;<span class="lifetime">&#39;a</span>, T: ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) {
+<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_destruct&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) {
     pass.as_mut()
         .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
         .destruct();
     drop_in_place(pass);
 }
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_initialize&lt;<span class="lifetime">&#39;a</span>, T: ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(
+<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_initialize&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(
     ctx: MlirContext,
     pass: <span class="kw-2">*mut </span>T,
 ) -&gt; MlirLogicalResult {
@@ -334,17 +398,20 @@
     MlirLogicalResult { value: <span class="number">1 </span>}
 }
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_run&lt;<span class="lifetime">&#39;a</span>, T: ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(
+<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_run&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(
     op: MlirOperation,
-    _mlir_pass: MlirExternalPass,
+    mlir_pass: MlirExternalPass,
     pass: <span class="kw-2">*mut </span>T,
 ) {
     pass.as_mut()
         .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
-        .run(OperationRef::from_raw(op))
+        .run(
+            OperationRef::from_raw(op),
+            ExternalPass::from_raw(mlir_pass),
+        )
 }
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_clone&lt;<span class="lifetime">&#39;a</span>, T: ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) -&gt; <span class="kw-2">*mut </span>T {
+<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_clone&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) -&gt; <span class="kw-2">*mut </span>T {
     Box::&lt;T&gt;::into_raw(Box::new(
         pass.as_mut()
             .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
@@ -364,14 +431,14 @@
 /// ```
 /// use melior::{
 ///     ir::OperationRef,
-///     pass::ExternalPass,
+///     pass::{ExternalPass, RunExternalPass},
 ///     ContextRef,
 /// };
 ///
 /// #[derive(Clone, Debug)]
 /// struct ExamplePass;
 ///
-/// impl&lt;&#39;c&gt; ExternalPass&lt;&#39;c&gt; for ExamplePass {
+/// impl&lt;&#39;c&gt; RunExternalPass&lt;&#39;c&gt; for ExamplePass {
 ///     fn construct(&amp;mut self) {
 ///         println!(&quot;Constructed pass!&quot;);
 ///     }
@@ -380,23 +447,23 @@
 ///         println!(&quot;Initialize called!&quot;);
 ///     }
 ///
-///     fn run(&amp;mut self, operation: OperationRef&lt;&#39;c, &#39;_&gt;) {
+///     fn run(&amp;mut self, operation: OperationRef&lt;&#39;c, &#39;_&gt;, _pass: ExternalPass&lt;&#39;_&gt;) {
 ///         operation.dump();
 ///     }
 /// }
 /// ```
-</span><span class="kw">pub trait </span>ExternalPass&lt;<span class="lifetime">&#39;c</span>&gt;: Sized + Clone {
+</span><span class="kw">pub trait </span>RunExternalPass&lt;<span class="lifetime">&#39;c</span>&gt;: Sized + Clone {
     <span class="kw">fn </span>construct(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {}
     <span class="kw">fn </span>destruct(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {}
     <span class="kw">fn </span>initialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: ContextRef&lt;<span class="lifetime">&#39;c</span>&gt;);
-    <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;);
+    <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, pass: ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;);
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, F: FnMut(OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;) + Clone&gt; ExternalPass&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>F {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, F: FnMut(OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;) + Clone&gt; RunExternalPass&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>F {
     <span class="kw">fn </span>initialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _context: ContextRef&lt;<span class="lifetime">&#39;c</span>&gt;) {}
 
-    <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;) {
-        <span class="self">self</span>(operation)
+    <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, pass: ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;) {
+        <span class="self">self</span>(operation, pass)
     }
 }
 
@@ -407,7 +474,7 @@
 /// ```
 /// use melior::{
 ///     ir::{r#type::TypeId, OperationRef},
-///     pass::create_external,
+///     pass::{create_external, ExternalPass},
 /// };
 ///
 /// #[repr(align(8))]
@@ -416,7 +483,7 @@
 /// static EXAMPLE_PASS: PassId = PassId;
 ///
 /// create_external(
-///     |operation: OperationRef| {
+///     |operation: OperationRef, _pass: ExternalPass| {
 ///         operation.dump();
 ///     },
 ///     TypeId::create(&amp;EXAMPLE_PASS),
@@ -427,7 +494,7 @@
 ///     &amp;[],
 /// );
 /// ```
-</span><span class="kw">pub fn </span>create_external&lt;<span class="lifetime">&#39;c</span>, T: ExternalPass&lt;<span class="lifetime">&#39;c</span>&gt;&gt;(
+</span><span class="kw">pub fn </span>create_external&lt;<span class="lifetime">&#39;c</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;c</span>&gt;&gt;(
     pass: T,
     pass_id: TypeId,
     name: <span class="kw-2">&amp;</span>str,
@@ -506,7 +573,7 @@
             value: i32,
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; ExternalPass&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>TestPass {
+        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; RunExternalPass&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>TestPass {
             <span class="kw">fn </span>construct(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
                 <span class="macro">assert_eq!</span>(<span class="self">self</span>.value, <span class="number">10</span>);
             }
@@ -520,7 +587,7 @@
                 <span class="self">self</span>.value = <span class="number">20</span>;
             }
 
-            <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;) {
+            <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, _pass: ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;) {
                 <span class="macro">assert_eq!</span>(<span class="self">self</span>.value, <span class="number">20</span>);
                 <span class="self">self</span>.value = <span class="number">30</span>;
                 <span class="macro">assert!</span>(operation.verify());
@@ -563,7 +630,7 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>external_fn_pass() {
+    </span><span class="kw">fn </span>external_fn_pass_failure() {
         <span class="kw">static </span>TEST_FN_PASS: PassId = PassId;
 
         <span class="kw">let </span>context = create_test_context();
@@ -572,7 +639,7 @@
         <span class="kw">let </span>pass_manager = PassManager::new(<span class="kw-2">&amp;</span>context);
 
         pass_manager.add_pass(create_external(
-            |operation: OperationRef| {
+            |operation: OperationRef, pass: ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;| {
                 <span class="macro">assert!</span>(operation.verify());
                 <span class="macro">assert!</span>(
                     operation
@@ -585,6 +652,7 @@
                         .name()
                         == Identifier::new(<span class="kw-2">&amp;</span>operation.context(), <span class="string">&quot;func.func&quot;</span>)
                 );
+                pass.signal_failure();
             },
             TypeId::create(<span class="kw-2">&amp;</span>TEST_FN_PASS),
             <span class="string">&quot;test closure&quot;</span>,
@@ -593,7 +661,7 @@
             <span class="string">&quot;&quot;</span>,
             <span class="kw-2">&amp;</span>[DialectHandle::func()],
         ));
-        pass_manager.run(<span class="kw-2">&amp;mut </span>module).unwrap();
+        <span class="macro">assert!</span>(pass_manager.run(<span class="kw-2">&amp;mut </span>module).is_err());
     }
 }
 </code></pre></div></section></main></body></html>
