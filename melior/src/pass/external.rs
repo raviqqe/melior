@@ -7,25 +7,55 @@ use crate::{
     ContextRef, StringRef,
 };
 use mlir_sys::{
-    mlirCreateExternalPass, MlirContext, MlirExternalPass, MlirExternalPassCallbacks,
-    MlirLogicalResult, MlirOperation,
+    mlirCreateExternalPass, mlirExternalPassSignalFailure, MlirContext, MlirExternalPass,
+    MlirExternalPassCallbacks, MlirLogicalResult, MlirOperation,
 };
-use std::{mem::transmute, ptr::drop_in_place};
+use std::{marker::PhantomData, mem::transmute, ptr::drop_in_place};
 
-unsafe extern "C" fn callback_construct<'a, T: ExternalPass<'a>>(pass: *mut T) {
+#[derive(Clone, Copy, Debug)]
+pub struct ExternalPass<'a> {
+    raw: MlirExternalPass,
+    _reference: PhantomData<&'a MlirExternalPass>,
+}
+
+impl<'a> ExternalPass<'a> {
+    /// Signals that the pass has failed.
+    pub fn signal_failure(self) {
+        unsafe { mlirExternalPassSignalFailure(self.raw) }
+    }
+
+    /// Converts an external pass to a raw object.
+    pub fn to_raw(self) -> MlirExternalPass {
+        self.raw
+    }
+
+    /// Creates an external pass handle from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub const unsafe fn from_raw(raw: MlirExternalPass) -> Self {
+        Self {
+            raw,
+            _reference: PhantomData,
+        }
+    }
+}
+
+unsafe extern "C" fn callback_construct<'a, T: RunExternalPass<'a>>(pass: *mut T) {
     pass.as_mut()
         .expect("pass should be valid when called")
         .construct();
 }
 
-unsafe extern "C" fn callback_destruct<'a, T: ExternalPass<'a>>(pass: *mut T) {
+unsafe extern "C" fn callback_destruct<'a, T: RunExternalPass<'a>>(pass: *mut T) {
     pass.as_mut()
         .expect("pass should be valid when called")
         .destruct();
     drop_in_place(pass);
 }
 
-unsafe extern "C" fn callback_initialize<'a, T: ExternalPass<'a>>(
+unsafe extern "C" fn callback_initialize<'a, T: RunExternalPass<'a>>(
     ctx: MlirContext,
     pass: *mut T,
 ) -> MlirLogicalResult {
@@ -35,17 +65,20 @@ unsafe extern "C" fn callback_initialize<'a, T: ExternalPass<'a>>(
     MlirLogicalResult { value: 1 }
 }
 
-unsafe extern "C" fn callback_run<'a, T: ExternalPass<'a>>(
+unsafe extern "C" fn callback_run<'a, T: RunExternalPass<'a>>(
     op: MlirOperation,
-    _mlir_pass: MlirExternalPass,
+    mlir_pass: MlirExternalPass,
     pass: *mut T,
 ) {
     pass.as_mut()
         .expect("pass should be valid when called")
-        .run(OperationRef::from_raw(op))
+        .run(
+            OperationRef::from_raw(op),
+            ExternalPass::from_raw(mlir_pass),
+        )
 }
 
-unsafe extern "C" fn callback_clone<'a, T: ExternalPass<'a>>(pass: *mut T) -> *mut T {
+unsafe extern "C" fn callback_clone<'a, T: RunExternalPass<'a>>(pass: *mut T) -> *mut T {
     Box::<T>::into_raw(Box::new(
         pass.as_mut()
             .expect("pass should be valid when called")
@@ -65,14 +98,14 @@ unsafe extern "C" fn callback_clone<'a, T: ExternalPass<'a>>(pass: *mut T) -> *m
 /// ```
 /// use melior::{
 ///     ir::OperationRef,
-///     pass::ExternalPass,
+///     pass::{ExternalPass, RunExternalPass},
 ///     ContextRef,
 /// };
 ///
 /// #[derive(Clone, Debug)]
 /// struct ExamplePass;
 ///
-/// impl<'c> ExternalPass<'c> for ExamplePass {
+/// impl<'c> RunExternalPass<'c> for ExamplePass {
 ///     fn construct(&mut self) {
 ///         println!("Constructed pass!");
 ///     }
@@ -81,23 +114,23 @@ unsafe extern "C" fn callback_clone<'a, T: ExternalPass<'a>>(pass: *mut T) -> *m
 ///         println!("Initialize called!");
 ///     }
 ///
-///     fn run(&mut self, operation: OperationRef<'c, '_>) {
+///     fn run(&mut self, operation: OperationRef<'c, '_>, _pass: ExternalPass<'_>) {
 ///         operation.dump();
 ///     }
 /// }
 /// ```
-pub trait ExternalPass<'c>: Sized + Clone {
+pub trait RunExternalPass<'c>: Sized + Clone {
     fn construct(&mut self) {}
     fn destruct(&mut self) {}
     fn initialize(&mut self, context: ContextRef<'c>);
-    fn run(&mut self, operation: OperationRef<'c, '_>);
+    fn run(&mut self, operation: OperationRef<'c, '_>, pass: ExternalPass<'_>);
 }
 
-impl<'c, F: FnMut(OperationRef<'c, '_>) + Clone> ExternalPass<'c> for F {
+impl<'c, F: FnMut(OperationRef<'c, '_>, ExternalPass<'_>) + Clone> RunExternalPass<'c> for F {
     fn initialize(&mut self, _context: ContextRef<'c>) {}
 
-    fn run(&mut self, operation: OperationRef<'c, '_>) {
-        self(operation)
+    fn run(&mut self, operation: OperationRef<'c, '_>, pass: ExternalPass<'_>) {
+        self(operation, pass)
     }
 }
 
@@ -108,7 +141,7 @@ impl<'c, F: FnMut(OperationRef<'c, '_>) + Clone> ExternalPass<'c> for F {
 /// ```
 /// use melior::{
 ///     ir::{r#type::TypeId, OperationRef},
-///     pass::create_external,
+///     pass::{create_external, ExternalPass},
 /// };
 ///
 /// #[repr(align(8))]
@@ -117,7 +150,7 @@ impl<'c, F: FnMut(OperationRef<'c, '_>) + Clone> ExternalPass<'c> for F {
 /// static EXAMPLE_PASS: PassId = PassId;
 ///
 /// create_external(
-///     |operation: OperationRef| {
+///     |operation: OperationRef, _pass: ExternalPass| {
 ///         operation.dump();
 ///     },
 ///     TypeId::create(&EXAMPLE_PASS),
@@ -128,7 +161,7 @@ impl<'c, F: FnMut(OperationRef<'c, '_>) + Clone> ExternalPass<'c> for F {
 ///     &[],
 /// );
 /// ```
-pub fn create_external<'c, T: ExternalPass<'c>>(
+pub fn create_external<'c, T: RunExternalPass<'c>>(
     pass: T,
     pass_id: TypeId,
     name: &str,
@@ -207,7 +240,7 @@ mod tests {
             value: i32,
         }
 
-        impl<'c> ExternalPass<'c> for TestPass {
+        impl<'c> RunExternalPass<'c> for TestPass {
             fn construct(&mut self) {
                 assert_eq!(self.value, 10);
             }
@@ -221,7 +254,7 @@ mod tests {
                 self.value = 20;
             }
 
-            fn run(&mut self, operation: OperationRef<'c, '_>) {
+            fn run(&mut self, operation: OperationRef<'c, '_>, _pass: ExternalPass<'_>) {
                 assert_eq!(self.value, 20);
                 self.value = 30;
                 assert!(operation.verify());
@@ -264,7 +297,7 @@ mod tests {
     }
 
     #[test]
-    fn external_fn_pass() {
+    fn external_fn_pass_failure() {
         static TEST_FN_PASS: PassId = PassId;
 
         let context = create_test_context();
@@ -273,7 +306,7 @@ mod tests {
         let pass_manager = PassManager::new(&context);
 
         pass_manager.add_pass(create_external(
-            |operation: OperationRef| {
+            |operation: OperationRef, pass: ExternalPass<'_>| {
                 assert!(operation.verify());
                 assert!(
                     operation
@@ -286,6 +319,7 @@ mod tests {
                         .name()
                         == Identifier::new(&operation.context(), "func.func")
                 );
+                pass.signal_failure();
             },
             TypeId::create(&TEST_FN_PASS),
             "test closure",
@@ -294,6 +328,6 @@ mod tests {
             "",
             &[DialectHandle::func()],
         ));
-        pass_manager.run(&mut module).unwrap();
+        assert!(pass_manager.run(&mut module).is_err());
     }
 }
