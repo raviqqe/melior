@@ -8,7 +8,7 @@ tensor. If the dimension index is out of bounds, the behavior is undefined.</p>
 %c0 = arith.constant 0 : index
 %x = tensor.dim %A, %c0 : tensor&lt;4x?xf32&gt;
 
-// Returns the dynamic dimension of %A.
+// Return the dynamic dimension of %A.
 %c1 = arith.constant 1 : index
 %y = tensor.dim %A, %c1 : memref&lt;4x?xf32&gt;
 

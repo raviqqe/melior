@@ -8,6 +8,9 @@ determined using <code>indices</code>. The matrix being loaded into is the resul
 <code>leadDimension</code> attribute specifies the leading dimension size of the source
 matrix which eventually allows the lowering to determine the size of each
 row.  If the <code>transpose</code> attribute is present then the op does a transposed load.</p>
+<p>For integer types, the resulting <code>!gpu.mma_matrix</code> type needs to specify the
+signedness of the data if the matrix type is an <code>A</code> or <code>B</code> operand for
+<code>gpu.subgroup_mma_compute</code>.</p>
 <p>This op is often meant to be used along with <code>gpu.subgroup_mma_store_matrix</code> and
 <code>gpu.subgroup_mma_compute</code>.</p>
 <p>Example:</p>

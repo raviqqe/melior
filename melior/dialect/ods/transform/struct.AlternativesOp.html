@@ -37,16 +37,16 @@ number of results, which should also match the number and the types of the
 “alternatives” op results.</p>
 <p>Remark: this op allows one to implement a simple “try” construct as follows:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%result = transform.alternatives %scope {
-^bb0(%arg0: !pdl.operation):
+^bb0(%arg0: !transform.any_op):
   // Try a fallible transformation.
   %0 = transform.fallible %arg0 // ...
   // If succeeded, yield the the result of the transformation.
-  transform.yield %0 : !pdl.operation
+  transform.yield %0 : !transform.any_op
 }, {
-^bb0(%arg0: !pdl.operation):
+^bb0(%arg0: !transform.any_op):
   // Otherwise, the second alternative is tried and it always succeeds by
   // returning the original handle.
-  transform.yield %arg0 : !pdl.operation
+  transform.yield %arg0 : !transform.any_op
 }
 </code></pre></div></div></details><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-AlternativesOp%3C'c%3E" class="impl"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#103-106">source</a><a href="#impl-AlternativesOp%3C'c%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'c&gt; <a class="struct" href="struct.AlternativesOp.html" title="struct melior::dialect::ods::transform::AlternativesOp">AlternativesOp</a>&lt;'c&gt;</h3></section></summary><div class="impl-items"><section id="method.name" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#103-106">source</a><h4 class="code-header">pub fn <a href="#method.name" class="fn">name</a>() -&gt; &amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.72.0/std/primitive.str.html">str</a></h4></section><section id="method.operation" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#103-106">source</a><h4 class="code-header">pub fn <a href="#method.operation" class="fn">operation</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../../ir/operation/struct.Operation.html" title="struct melior::ir::operation::Operation">Operation</a>&lt;'c&gt;</h4></section><section id="method.builder" class="method"><a class="srclink rightside" href="../../../../src/melior/dialect/ods.rs.html#103-106">source</a><h4 class="code-header">pub fn <a href="#method.builder" class="fn">builder</a>(
     location: <a class="struct" href="../../../ir/struct.Location.html" title="struct melior::ir::Location">Location</a>&lt;'c&gt;

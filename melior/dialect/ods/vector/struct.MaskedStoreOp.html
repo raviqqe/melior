@@ -7,6 +7,10 @@ no action is taken for the element. Informally the semantics are:</p>
 if (mask[1]) base[i+1] = value[1]
 etc.
 </code></pre></div>
+<p>If a mask bit is set and the corresponding index is out-of-bounds for the
+given base, the behavior is undefined. If a mask bit is not set, no value
+is stored regardless of the index, and the index is allowed to be
+out-of-bounds.</p>
 <p>The masked store can be used directly where applicable, or can be used
 during progressively lowering to bring other memory operations closer to
 hardware ISA support for a masked store. The semantics of the operation

@@ -23,6 +23,10 @@ the return value is the input value (i.e. func(%x) =&gt; return %x).
 As a practical example, setting <code>left=identity</code> and <code>right=identity</code>
 would be equivalent to a union operation where non-overlapping values
 in the inputs are copied to the output unchanged.</p>
+<p>Due to the possibility of empty regions, i.e. lack of a value for certain
+cases, the result of this operation may only feed directly into the output
+of the <code>linalg.generic</code> operation or into into a custom reduction
+<code>sparse_tensor.reduce</code> operation that follows in the same region.</p>
 <p>Example of isEqual applied to intersecting elements only:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%C = bufferization.alloc_tensor...
 %0 = linalg.generic #trait

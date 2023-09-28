@@ -4,11 +4,15 @@ by a base with indices and a 1-D mask vector. When the mask is set, the
 next element is read from memory. Otherwise, the corresponding element
 is taken from a 1-D pass-through vector. Informally the semantics are:</p>
 <div class="example-wrap"><pre class="language-text"><code>index = i
-result[0] := mask[0] ? base[index++] : pass_thru[0]
-result[1] := mask[1] ? base[index++] : pass_thru[1]
+result[0] := if mask[0] then base[index++] else pass_thru[0]
+result[1] := if mask[1] then base[index++] else pass_thru[1]
 etc.
 </code></pre></div>
 <p>Note that the index increment is done conditionally.</p>
+<p>If a mask bit is set and the corresponding index is out-of-bounds for the
+given base, the behavior is undefined. If a mask bit is not set, the value
+comes from the pass-through vector regardless of the index, and the index is
+allowed to be out-of-bounds.</p>
 <p>The expand load can be used directly where applicable, or can be used
 during progressively lowering to bring other memory operations closer to
 hardware ISA support for an expand. The semantics of the operation closely

@@ -3,10 +3,14 @@
 by a base with indices and a 1-D mask vector. When the mask is set, the
 element is read from memory. Otherwise, the corresponding element is taken
 from a 1-D pass-through vector. Informally the semantics are:</p>
-<div class="example-wrap"><pre class="language-text"><code>result[0] := mask[0] ? base[i+0] : pass_thru[0]
-result[1] := mask[1] ? base[i+1] : pass_thru[1]
+<div class="example-wrap"><pre class="language-text"><code>result[0] := if mask[0] then base[i + 0] else pass_thru[0]
+result[1] := if mask[1] then base[i + 1] else pass_thru[1]
 etc.
 </code></pre></div>
+<p>If a mask bit is set and the corresponding index is out-of-bounds for the
+given base, the behavior is undefined. If a mask bit is not set, the value
+comes from the pass-through vector regardless of the index, and the index is
+allowed to be out-of-bounds.</p>
 <p>The masked load can be used directly where applicable, or can be used
 during progressively lowering to bring other memory operations closer to
 hardware ISA support for a masked load. The semantics of the operation

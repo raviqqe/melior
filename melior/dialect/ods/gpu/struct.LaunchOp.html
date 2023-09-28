@@ -13,20 +13,25 @@ x,y,z dimensions. When a lower-dimensional kernel is required, unused sizes
 must be explicitly set to <code>1</code>.  The last operand is optional and corresponds
 to the amount of dynamic shared memory a kernel’s workgroup should be
 allocated; when this operand is not present, a zero size is assumed.</p>
-<p>The body region has <em>twelve</em> arguments, grouped as follows:</p>
+<p>The body region has at least <em>twelve</em> arguments, grouped as follows:</p>
 <ul>
 <li>three arguments that contain block identifiers along x,y,z dimensions;</li>
 <li>three arguments that contain thread identifiers along x,y,z dimensions;</li>
 <li>operands of the <code>gpu.launch</code> operation as is (i.e. the operands for
 grid and block sizes).</li>
+<li>a variadic number of Workgroup memory attributions.</li>
+<li>a variadic number of Private memory attributions.</li>
 </ul>
 <p>Syntax:</p>
 <div class="example-wrap"><pre class="language-text"><code>operation ::= `gpu.launch` (`async` (`[` ssa-id-list `]`)? )?
                          `block` `(` ssa-id-list `)` `in` ssa-reassignment
                          `threads` `(` ssa-id-list `)` `in` ssa-reassignment
                          (dynamic_shared_memory_size ssa-use)?
+                         memory-attribution
                          region attr-dict?
 ssa-reassignment ::= `(` ssa-id `=` ssa-use (`,` ssa-id `=` ssa-use)* `)`
+memory-attribution ::= (`workgroup` `(` ssa-id-and-type-list `)`)?
+                       (`private` `(` ssa-id-and-type-list `)`)?
 </code></pre></div>
 <p>Example:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>gpu.launch blocks(%bx, %by, %bz) in (%sz_bx = %0, %sz_by = %1, %sz_bz = %2)
@@ -53,6 +58,18 @@ ssa-reassignment ::= `(` ssa-id `=` ssa-use (`,` ssa-id `=` ssa-use)* `)`
      %num_tx : index, %num_ty : index, %num_tz : index)
   &quot;some_op&quot;(%bx, %tx) : (index, index) -&gt; ()
   %3 = &quot;memref.load&quot;(%val1, %bx) : (memref&lt;?xf32, 1&gt;, index) -&gt; f32
+}
+
+// Launch with memory attributions.
+gpu.launch blocks(%bx, %by, %bz) in (%sz_bx = %0, %sz_by = %1, %sz_bz = %2)
+           threads(%tx, %ty, %tz) in (%sz_tx = %3, %sz_ty = %4, %sz_tz = %5)
+           workgroup(%workgroup: memref&lt;32xf32, 3&gt;)
+           private(%private: memref&lt;1xf32, 5&gt;) {
+  // Block and thread identifiers, as well as block/grid sizes are
+  // immediately usable inside body region.
+  &quot;some_op&quot;(%bx, %tx) : (index, index) -&gt; ()
+  // Assuming %val1 is defined outside the gpu.launch region.
+  %42 = load %workgroup[%bx] : memref&lt;32xf32, 3&gt;
 }
 </code></pre></div>
 <p>Rationale: using operation/block arguments gives analyses a clear way of

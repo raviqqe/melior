@@ -131,6 +131,7 @@
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>dialect;
 <span class="kw">mod </span>operation;
@@ -217,7 +218,8 @@
     convert_result(pass::generate(identifiers.identifiers(), |<span class="kw-2">mut </span>name| {
         name = name.strip_prefix(<span class="string">&quot;Conversion&quot;</span>).unwrap();
         name = name.strip_prefix(<span class="string">&quot;Convert&quot;</span>).unwrap_or(name);
-        name.strip_suffix(<span class="string">&quot;ConversionPass&quot;</span>).unwrap_or(name).into()
+        name = name.strip_suffix(<span class="string">&quot;ConversionPass&quot;</span>).unwrap_or(name);
+        name.strip_suffix(<span class="string">&quot;Pass&quot;</span>).unwrap_or(name).into()
     }))
 }
 

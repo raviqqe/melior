@@ -239,6 +239,7 @@
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::OperationPassManager;
 <span class="kw">use crate</span>::{
     context::Context, ir::Module, logical_result::LogicalResult, pass::Pass, string_ref::StringRef,
@@ -247,7 +248,7 @@
 <span class="kw">use </span>mlir_sys::{
     mlirPassManagerAddOwnedPass, mlirPassManagerCreate, mlirPassManagerDestroy,
     mlirPassManagerEnableIRPrinting, mlirPassManagerEnableVerifier,
-    mlirPassManagerGetAsOpPassManager, mlirPassManagerGetNestedUnder, mlirPassManagerRun,
+    mlirPassManagerGetAsOpPassManager, mlirPassManagerGetNestedUnder, mlirPassManagerRunOnOp,
     MlirPassManager,
 };
 <span class="kw">use </span>std::marker::PhantomData;
@@ -295,8 +296,9 @@
 
     <span class="doccomment">/// Runs passes added to a pass manager against a module.
     </span><span class="kw">pub fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, module: <span class="kw-2">&amp;mut </span>Module) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
-        <span class="kw">let </span>result =
-            LogicalResult::from_raw(<span class="kw">unsafe </span>{ mlirPassManagerRun(<span class="self">self</span>.raw, module.to_raw()) });
+        <span class="kw">let </span>result = LogicalResult::from_raw(<span class="kw">unsafe </span>{
+            mlirPassManagerRunOnOp(<span class="self">self</span>.raw, module.as_operation().to_raw())
+        });
 
         <span class="kw">if </span>result.is_success() {
             <span class="prelude-val">Ok</span>(())
@@ -442,7 +444,7 @@
 
         <span class="macro">assert_eq!</span>(
             manager.as_operation_pass_manager().to_string(),
-            <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}))&quot;
+            <span class="string">&quot;any(func.func(print-op-stats{json=false}))&quot;
         </span>);
         <span class="macro">assert_eq!</span>(
             function_manager.to_string(),

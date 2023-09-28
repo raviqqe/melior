@@ -44,46 +44,55 @@ MLIR:</p>
   { permutation_map : (d0,d1,d2,d3) -&gt; (d2,0,d0) } :
   memref&lt;?x?x?x?xf32&gt;, vector&lt;3x4x5xf32&gt;
 </code></pre></div>
-<p>This operation always reads a slice starting at <code>%A[%expr1, %expr2, %expr3, %expr4]</code>. The size of the slice is 3 along d2 and 5 along d0, so the slice
-is: <code>%A[%expr1 : %expr1 + 5, %expr2, %expr3:%expr3 + 3, %expr4]</code></p>
+<p>This operation always reads a slice starting at <code>%A[%expr1, %expr2, %expr3, %expr4]</code>. The size of the slice can be inferred from the resulting vector
+shape and walking back through the permutation map: 3 along d2 and 5 along
+d0, so the slice is: <code>%A[%expr1 : %expr1 + 5, %expr2, %expr3:%expr3 + 3, %expr4]</code></p>
 <p>That slice needs to be read into a <code>vector&lt;3x4x5xf32&gt;</code>. Since the
 permutation map is not full rank, there must be a broadcast along vector
 dimension <code>1</code>.</p>
 <p>A notional lowering of vector.transfer_read could generate code resembling:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>// %expr1, %expr2, %expr3, %expr4 defined before this point
-%tmp = alloc() : vector&lt;3x4x5xf32&gt;
-%view_in_tmp = &quot;element_type_cast&quot;(%tmp) : memref&lt;1xvector&lt;3x4x5xf32&gt;&gt;
+// alloc a temporary buffer for performing the &quot;gather&quot; of the slice.
+%tmp = memref.alloc() : memref&lt;vector&lt;3x4x5xf32&gt;&gt;
 for %i = 0 to 3 {
   affine.for %j = 0 to 4 {
     affine.for %k = 0 to 5 {
-      %a = load %A[%expr1 + %k, %expr2, %expr3 + %i, %expr4] :
-        memref&lt;?x?x?x?xf32&gt;
-      store %tmp[%i, %j, %k] : vector&lt;3x4x5xf32&gt;
+      // Note that this load does not involve %j.
+      %a = load %A[%expr1 + %k, %expr2, %expr3 + %i, %expr4] : memref&lt;?x?x?x?xf32&gt;
+      // Update the temporary gathered slice with the individual element
+      %slice = memref.load %tmp : memref&lt;vector&lt;3x4x5xf32&gt;&gt; -&gt; vector&lt;3x4x5xf32&gt;
+      %updated = vector.insert %a, %slice[%i, %j, %k] : f32 into vector&lt;3x4x5xf32&gt;
+      memref.store %updated, %temp : memref&lt;vector&lt;3x4x5xf32&gt;&gt;
 }}}
-%c0 = arith.constant 0 : index
-%vec = load %view_in_tmp[%c0] : vector&lt;3x4x5xf32&gt;
+// At this point we gathered the elements from the original
+// memref into the desired vector layout, stored in the `%tmp` allocation.
+%vec = memref.load %tmp : memref&lt;vector&lt;3x4x5xf32&gt;&gt; -&gt; vector&lt;3x4x5xf32&gt;
 </code></pre></div>
 <p>On a GPU one could then map <code>i</code>, <code>j</code>, <code>k</code> to blocks and threads. Notice that
-the temporary storage footprint is <code>3 * 5</code> values but <code>3 * 4 * 5</code> values are
-actually transferred between <code>%A</code> and <code>%tmp</code>.</p>
-<p>Alternatively, if a notional vector broadcast operation were available, the
-lowered code would resemble:</p>
+the temporary storage footprint could conceptually be only <code>3 * 5</code> values but
+<code>3 * 4 * 5</code> values are actually transferred between <code>%A</code> and <code>%tmp</code>.</p>
+<p>Alternatively, if a notional vector broadcast operation were available, we
+could avoid the loop on <code>%j</code> and the lowered code would resemble:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>// %expr1, %expr2, %expr3, %expr4 defined before this point
-%tmp = alloc() : vector&lt;3x4x5xf32&gt;
-%view_in_tmp = &quot;element_type_cast&quot;(%tmp) : memref&lt;1xvector&lt;3x4x5xf32&gt;&gt;
+%tmp = memref.alloc() : memref&lt;vector&lt;3x4x5xf32&gt;&gt;
 for %i = 0 to 3 {
   affine.for %k = 0 to 5 {
-    %a = load %A[%expr1 + %k, %expr2, %expr3 + %i, %expr4] :
-      memref&lt;?x?x?x?xf32&gt;
-    store %tmp[%i, 0, %k] : vector&lt;3x4x5xf32&gt;
+    %a = load %A[%expr1 + %k, %expr2, %expr3 + %i, %expr4] : memref&lt;?x?x?x?xf32&gt;
+    %slice = memref.load %tmp : memref&lt;vector&lt;3x4x5xf32&gt;&gt; -&gt; vector&lt;3x4x5xf32&gt;
+    // Here we only store to the first element in dimension one
+    %updated = vector.insert %a, %slice[%i, 0, %k] : f32 into vector&lt;3x4x5xf32&gt;
+    memref.store %updated, %temp : memref&lt;vector&lt;3x4x5xf32&gt;&gt;
 }}
-%c0 = arith.constant 0 : index
-%tmpvec = load %view_in_tmp[%c0] : vector&lt;3x4x5xf32&gt;
+// At this point we gathered the elements from the original
+// memref into the desired vector layout, stored in the `%tmp` allocation.
+// However we haven&#39;t replicated them alongside the first dimension, we need
+// to broadcast now.
+%partialVec = load %tmp : memref&lt;vector&lt;3x4x5xf32&gt;&gt; -&gt; vector&lt;3x4x5xf32&gt;
 %vec = broadcast %tmpvec, 1 : vector&lt;3x4x5xf32&gt;
 </code></pre></div>
 <p>where <code>broadcast</code> broadcasts from element 0 to all others along the
-specified dimension. This time, the temporary storage footprint is <code>3 * 5</code>
-values which is the same amount of data as the <code>3 * 5</code> values transferred.
+specified dimension. This time, the number of loaded element is <code>3 * 5</code>
+values.
 An additional <code>1</code> broadcast is required. On a GPU this broadcast could be
 implemented using a warp-shuffle if loop <code>j</code> were mapped to <code>threadIdx.x</code>.</p>
 <p>Syntax</p>
@@ -94,7 +103,7 @@ implemented using a warp-shuffle if loop <code>j</code> were mapped to <code>thr
 <div class="example-wrap"><pre class="language-mlir"><code>// Read the slice `%A[%i0, %i1:%i1+256, %i2:%i2+32]` into vector&lt;32x256xf32&gt;
 // and pad with %f0 to handle the boundary case:
 %f0 = arith.constant 0.0f : f32
-for %i0 = 0 to %0 {
+affine.for %i0 = 0 to %0 {
   affine.for %i1 = 0 to %1 step 256 {
     affine.for %i2 = 0 to %2 step 32 {
       %v = vector.transfer_read %A[%i0, %i1, %i2], (%f0)
@@ -104,7 +113,7 @@ for %i0 = 0 to %0 {
 
 // or equivalently (rewrite with vector.transpose)
 %f0 = arith.constant 0.0f : f32
-for %i0 = 0 to %0 {
+affine.for %i0 = 0 to %0 {
   affine.for %i1 = 0 to %1 step 256 {
     affine.for %i2 = 0 to %2 step 32 {
       %v0 = vector.transfer_read %A[%i0, %i1, %i2], (%f0)
@@ -117,7 +126,7 @@ for %i0 = 0 to %0 {
 // Read the slice `%A[%i0, %i1]` (i.e. the element `%A[%i0, %i1]`) into
 // vector&lt;128xf32&gt;. The underlying implementation will require a 1-D vector
 // broadcast:
-for %i0 = 0 to %0 {
+affine.for %i0 = 0 to %0 {
   affine.for %i1 = 0 to %1 {
     %3 = vector.transfer_read %A[%i0, %i1]
          {permutation_map: (d0, d1) -&gt; (0)} :

@@ -15,8 +15,7 @@ the base memref strides in each dimension.</li>
 <p>The representation based on offsets, sizes and strides support a
 partially-static specification via attributes specified through the
 <code>static_offsets</code>, <code>static_sizes</code> and <code>static_strides</code> arguments. A special
-sentinel value ShapedType::kDynamic and
-ShapedType::kDynamic encodes that the corresponding entry has
+sentinel value ShapedType::kDynamic encodes that the corresponding entry has
 a dynamic value.</p>
 <p>A subview operation may additionally reduce the rank of the resulting view
 by removing dimensions that are statically known to be of size 1.</p>

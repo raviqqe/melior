@@ -9,7 +9,7 @@ shorthand-bound ::= ssa-id | `-`? integer-literal
 </code></pre></div>
 <p>The <code>affine.for</code> operation represents an affine loop nest. It has one region
 containing its body. This region must contain one block that terminates with
-<a href="#affineyield-affineyieldop"><code>affine.yield</code></a>. <em>Note:</em> when
+<a href="#affineyield-mliraffineyieldop"><code>affine.yield</code></a>. <em>Note:</em> when
 <code>affine.for</code> is printed in custom format, the terminator is omitted. The
 block has one argument of <a href="Builtin.md/#indextype"><code>index</code></a> type that
 represents the induction variable of the loop.</p>

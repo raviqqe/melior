@@ -23,7 +23,7 @@ upper triangle of a matrix.</p>
 </code></pre></div>
 <p>Example of selecting lower triangle of a matrix:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>%C = bufferization.alloc_tensor...
-%0 = linalg.generic #trait
+%1 = linalg.generic #trait
    ins(%A: tensor&lt;?x?xf64, #CSR&gt;)
   outs(%C: tensor&lt;?x?xf64, #CSR&gt;) {
   ^bb0(%a: f64, %c: f64) :

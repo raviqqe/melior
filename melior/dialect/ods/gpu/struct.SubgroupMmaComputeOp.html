@@ -6,10 +6,13 @@ operation using all the threads in a subgroup.</p>
 as <code>C += A * B</code>. The op returns a <code>!gpu.mma_matrix</code> which contains the result of
 the operation held by all threads in a subgroup. <code>a_transpose</code> or
 <code>b_transpose</code> if present, signify that the respective operand was loaded in a
-transposed manner. The transpose opernads are required to map to correct
+transposed manner. The transpose operands are required to map to correct
 underlying intrisics but they currently do not seem to affect correctness
 even if they are absent given that the operands were loaded correctly using
 the <code>transpose</code> attribute in <code>gpu.subgroup_mma_load_matrix</code> op.</p>
+<p>For integer types, the <code>A</code> and <code>B</code> matrices carry their signedness with their
+types. The accumulator type is expected to be signless and imply a signed integer
+with a greater width than the other two operands.</p>
 <p>This op is meant to be used along with <code>gpu.subgroup_mma_store_matrix</code> and
 <code>gpu.subgroup_mma_load_matrix</code> ops.</p>
 <p>Example:</p>

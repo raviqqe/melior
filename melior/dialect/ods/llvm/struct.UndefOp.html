@@ -2,7 +2,7 @@
 <p>Unlike LLVM IR, MLIR does not have first-class undefined values. Such values
 must be created as SSA values using <code>llvm.mlir.undef</code>. This operation has no
 operands or attributes. It creates an undefined value of the specified LLVM
-IR dialect type wrapping an LLVM IR structure type.</p>
+IR dialect type.</p>
 <p>Example:</p>
 <div class="example-wrap"><pre class="language-mlir"><code>// Create a structure with a 32-bit integer followed by a float.
 %0 = llvm.mlir.undef : !llvm.struct&lt;(i32, f32)&gt;

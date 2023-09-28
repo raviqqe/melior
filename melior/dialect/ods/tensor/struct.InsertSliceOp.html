@@ -18,8 +18,7 @@ dimension.</li>
 <p>The representation based on offsets, sizes and strides support a
 partially-static specification via attributes specified through the
 <code>static_offsets</code>, <code>static_sizes</code> and <code>static_strides</code> arguments. A special
-sentinel value ShapedType::kDynamic and
-ShapedType::kDynamic encodes that the corresponding entry has
+sentinel value ShapedType::kDynamic encodes that the corresponding entry has
 a dynamic value.</p>
 <p>After buffer allocation, the “insert_slice” op is expected to lower into a
 memref.subview op.</p>

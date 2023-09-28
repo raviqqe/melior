@@ -28,7 +28,7 @@ boundary.  This is consistent with the fact that memref.alloc supports such
 an optional alignment attribute. Note that in ISO C standard, neither alloc
 nor realloc supports alignment, though there is aligned_alloc but not
 aligned_realloc.</p>
-<div class="example-wrap"><pre class="language-mlir"><code>%3 = memref.ralloc %src {alignment = 8} : memref&lt;64xf32&gt; to memref&lt;124xf32&gt;
+<div class="example-wrap"><pre class="language-mlir"><code>%3 = memref.realloc %src {alignment = 8} : memref&lt;64xf32&gt; to memref&lt;124xf32&gt;
 </code></pre></div>
 <p>Referencing the memref through the old SSA value after realloc is undefined
 behavior.</p>

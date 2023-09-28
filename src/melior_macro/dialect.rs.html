@@ -121,7 +121,7 @@
 <span class="kw">use </span>std::{env, fmt::Display, path::Path, process::Command, str};
 <span class="kw">use </span>tblgen::{record::Record, record_keeper::RecordKeeper, TableGenParser};
 
-<span class="kw">const </span>LLVM_MAJOR_VERSION: usize = <span class="number">16</span>;
+<span class="kw">const </span>LLVM_MAJOR_VERSION: usize = <span class="number">17</span>;
 
 <span class="kw">pub fn </span>generate_dialect(input: DialectInput) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>td_parser = TableGenParser::new();
