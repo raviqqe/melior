@@ -108,3 +108,89 @@ melior_macro::dialect! {
     name: "vector",
     tablegen: r#"include "mlir/Dialect/Vector/IR/VectorOps.td""#
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        dialect::{
+            arith, func,
+            llvm::{
+                attributes::{linkage, Linkage},
+                r#type::{function, opaque_pointer},
+            },
+        },
+        ir::{
+            attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
+            r#type::{FunctionType, IntegerType},
+            Block, Location, Module, Region,
+        },
+        pass::{self, PassManager},
+        test::create_test_context,
+        Context,
+    };
+
+    fn convert_module<'c>(context: &'c Context, module: &mut Module<'c>) {
+        let pass_manager = PassManager::new(context);
+
+        pass_manager.add_pass(pass::conversion::create_func_to_llvm());
+        pass_manager
+            .nested_under("func.func")
+            .add_pass(pass::conversion::create_arith_to_llvm());
+        pass_manager
+            .nested_under("func.func")
+            .add_pass(pass::conversion::create_index_to_llvm());
+        pass_manager.add_pass(pass::conversion::create_scf_to_control_flow());
+        pass_manager.add_pass(pass::conversion::create_control_flow_to_llvm());
+        pass_manager.add_pass(pass::conversion::create_finalize_mem_ref_to_llvm());
+
+        assert_eq!(pass_manager.run(module), Ok(()));
+        assert!(module.as_operation().verify());
+    }
+
+    #[test]
+    fn compile_ods_llvm_alloca() {
+        let context = create_test_context();
+
+        let location = Location::unknown(&context);
+        let mut module = Module::new(location);
+        let integer_type = IntegerType::new(&context, 64).into();
+        let ptr_type = crate::dialect::llvm::r#type::opaque_pointer(&context);
+
+        module.body().append_operation(func::func(
+            &context,
+            StringAttribute::new(&context, "foo"),
+            TypeAttribute::new(FunctionType::new(&context, &[integer_type], &[]).into()),
+            {
+                let block = Block::new(&[(integer_type, location)]);
+
+                let alloca_size = block.argument(0).unwrap().into();
+
+                block.append_operation(
+                    llvm::AllocaOpBuilder::new(location)
+                        .alignment(IntegerAttribute::new(
+                            8,
+                            IntegerType::new(&context, 64).into(),
+                        ))
+                        .array_size(alloca_size)
+                        .res(ptr_type)
+                        .build()
+                        .into(),
+                );
+
+                block.append_operation(func::r#return(&[], location));
+
+                let region = Region::new();
+                region.append_block(block);
+                region
+            },
+            &[],
+            location,
+        ));
+
+        convert_module(&context, &mut module);
+
+        assert!(module.as_operation().verify());
+        insta::assert_display_snapshot!(module.as_operation());
+    }
+}
