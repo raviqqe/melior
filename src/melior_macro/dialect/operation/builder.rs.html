@@ -313,7 +313,7 @@
 
                     <span class="macro">quote! </span>{
                         <span class="kw-2">&amp;</span>[(
-                            ::melior::ir::Identifier::new(<span class="self">self</span>.context, #name_string),
+                            ::melior::ir::Identifier::new(<span class="kw">unsafe </span>{ <span class="self">self</span>.context.to_ref() }, #name_string),
                             #name.into(),
                         )]
                     }
@@ -404,7 +404,7 @@
             <span class="attr">#[doc = #doc]
             </span><span class="kw">pub struct </span>#builder_ident &lt;<span class="lifetime">&#39;c</span>, #(#iter_arguments),* &gt; {
                 builder: ::melior::ir::operation::OperationBuilder&lt;<span class="lifetime">&#39;c</span>&gt;,
-                context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context,
+                context: ::melior::ContextRef&lt;<span class="lifetime">&#39;c</span>&gt;,
                 #(#phantom_fields),*
             }
 
@@ -444,7 +444,7 @@
             <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
                 <span class="kw">pub fn </span>new(location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
                     <span class="self">Self </span>{
-                        context: <span class="kw">unsafe </span>{ location.context().to_ref() },
+                        context: location.context(),
                         builder: ::melior::ir::operation::OperationBuilder::new(#name, location),
                         #(#phantoms),*
                     }
