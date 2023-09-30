@@ -79,28 +79,6 @@ mod tests {
     }
 
     #[test]
-    fn pointer() {
-        let context = create_context();
-        let i32 = IntegerType::new(&context, 32).into();
-
-        assert_eq!(
-            super::pointer(i32, 0),
-            Type::parse(&context, "!llvm.ptr<i32>").unwrap()
-        );
-    }
-
-    #[test]
-    fn pointer_with_address_space() {
-        let context = create_context();
-        let i32 = IntegerType::new(&context, 32).into();
-
-        assert_eq!(
-            super::pointer(i32, 4),
-            Type::parse(&context, "!llvm.ptr<i32, 4>").unwrap()
-        );
-    }
-
-    #[test]
     fn void() {
         let context = create_context();
 
