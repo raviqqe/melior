@@ -676,7 +676,7 @@ checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
 
 [[package]]
 name = "melior"
-version = "0.12.1"
+version = "0.12.2"
 dependencies = [
  "criterion",
  "dashmap",
@@ -690,7 +690,7 @@ dependencies = [
 
 [[package]]
 name = "melior-macro"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "comrak",
  "convert_case",
