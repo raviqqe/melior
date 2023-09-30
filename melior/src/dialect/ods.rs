@@ -117,7 +117,7 @@ mod tests {
         ir::{
             attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
             r#type::{FunctionType, IntegerType},
-            Block, Location, Module, Region,
+            Block, Location, Module, Region, Type,
         },
         pass::{self, PassManager},
         test::create_test_context,
@@ -142,34 +142,29 @@ mod tests {
         assert!(module.as_operation().verify());
     }
 
-    #[test]
-    fn compile_llvm_alloca() {
-        let context = create_test_context();
-
+    fn test_operation<'c>(
+        name: &str,
+        context: &'c Context,
+        argument_types: &[Type<'c>],
+        callback: impl FnOnce(&Block<'c>),
+    ) {
         let location = Location::unknown(&context);
         let mut module = Module::new(location);
-        let integer_type = IntegerType::new(&context, 64).into();
 
         module.body().append_operation(func::func(
             &context,
             StringAttribute::new(&context, "foo"),
-            TypeAttribute::new(FunctionType::new(&context, &[integer_type], &[]).into()),
+            TypeAttribute::new(FunctionType::new(&context, argument_types, &[]).into()),
             {
-                let block = Block::new(&[(integer_type, location)]);
-
-                let alloca_size = block.argument(0).unwrap().into();
-                let i64_type = IntegerType::new(&context, 64);
-
-                block.append_operation(
-                    llvm::alloca(
-                        dialect::llvm::r#type::pointer(i64_type.into(), 0).into(),
-                        alloca_size,
-                        location,
-                    )
-                    .into(),
+                let block = Block::new(
+                    &argument_types
+                        .iter()
+                        .copied()
+                        .map(|r#type| (r#type, location))
+                        .collect::<Vec<_>>(),
                 );
 
-                block.append_operation(func::r#return(&[], location));
+                callback(&block);
 
                 let region = Region::new();
                 region.append_block(block);
@@ -182,51 +177,54 @@ mod tests {
         convert_module(&context, &mut module);
 
         assert!(module.as_operation().verify());
-        insta::assert_display_snapshot!(module.as_operation());
+        insta::assert_display_snapshot!(name, module.as_operation());
+    }
+
+    #[test]
+    fn compile_llvm_alloca() {
+        let context = create_test_context();
+        let location = Location::unknown(&context);
+        let integer_type = IntegerType::new(&context, 64).into();
+
+        test_operation("alloc", &context, &[integer_type], |block| {
+            let alloca_size = block.argument(0).unwrap().into();
+            let i64_type = IntegerType::new(&context, 64);
+
+            block.append_operation(
+                llvm::alloca(
+                    dialect::llvm::r#type::pointer(i64_type.into(), 0).into(),
+                    alloca_size,
+                    location,
+                )
+                .into(),
+            );
+
+            block.append_operation(func::r#return(&[], location));
+        });
     }
 
     #[test]
     fn compile_llvm_alloca_builder() {
         let context = create_test_context();
-
         let location = Location::unknown(&context);
-        let mut module = Module::new(location);
         let integer_type = IntegerType::new(&context, 64).into();
         let ptr_type = dialect::llvm::r#type::opaque_pointer(&context);
 
-        module.body().append_operation(func::func(
-            &context,
-            StringAttribute::new(&context, "foo"),
-            TypeAttribute::new(FunctionType::new(&context, &[integer_type], &[]).into()),
-            {
-                let block = Block::new(&[(integer_type, location)]);
+        test_operation("alloc_builder", &context, &[integer_type], |block| {
+            let alloca_size = block.argument(0).unwrap().into();
+            let i64_type = IntegerType::new(&context, 64);
 
-                let alloca_size = block.argument(0).unwrap().into();
-                let i64_type = IntegerType::new(&context, 64);
+            block.append_operation(
+                llvm::AllocaOpBuilder::new(location)
+                    .alignment(IntegerAttribute::new(8, i64_type.into()))
+                    .elem_type(TypeAttribute::new(i64_type.into()))
+                    .array_size(alloca_size)
+                    .res(ptr_type)
+                    .build()
+                    .into(),
+            );
 
-                block.append_operation(
-                    llvm::AllocaOpBuilder::new(location)
-                        .alignment(IntegerAttribute::new(8, i64_type.into()))
-                        .elem_type(TypeAttribute::new(i64_type.into()))
-                        .array_size(alloca_size)
-                        .res(ptr_type)
-                        .build()
-                        .into(),
-                );
-
-                block.append_operation(func::r#return(&[], location));
-
-                let region = Region::new();
-                region.append_block(block);
-                region
-            },
-            &[],
-            location,
-        ));
-
-        convert_module(&context, &mut module);
-
-        assert!(module.as_operation().verify());
-        insta::assert_display_snapshot!(module.as_operation());
+            block.append_operation(func::r#return(&[], location));
+        });
     }
 }
