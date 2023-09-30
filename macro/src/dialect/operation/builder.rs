@@ -51,7 +51,7 @@ impl<'o> OperationBuilder<'o> {
 
                     quote! {
                         &[(
-                            ::melior::ir::Identifier::new(self.context, #name_string),
+                            ::melior::ir::Identifier::new(unsafe { self.context.to_ref() }, #name_string),
                             #name.into(),
                         )]
                     }
@@ -142,7 +142,7 @@ impl<'o> OperationBuilder<'o> {
             #[doc = #doc]
             pub struct #builder_ident <'c, #(#iter_arguments),* > {
                 builder: ::melior::ir::operation::OperationBuilder<'c>,
-                context: &'c ::melior::Context,
+                context: ::melior::ContextRef<'c>,
                 #(#phantom_fields),*
             }
 
@@ -182,7 +182,7 @@ impl<'o> OperationBuilder<'o> {
             impl<'c> #builder_ident<'c, #(#arguments),*> {
                 pub fn new(location: ::melior::ir::Location<'c>) -> Self {
                     Self {
-                        context: unsafe { location.context().to_ref() },
+                        context: location.context(),
                         builder: ::melior::ir::operation::OperationBuilder::new(#name, location),
                         #(#phantoms),*
                     }

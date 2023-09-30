@@ -108,3 +108,123 @@ melior_macro::dialect! {
     name: "vector",
     tablegen: r#"include "mlir/Dialect/Vector/IR/VectorOps.td""#
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        dialect::{self, func},
+        ir::{
+            attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
+            r#type::{FunctionType, IntegerType},
+            Block, Location, Module, Region, Type,
+        },
+        pass::{self, PassManager},
+        test::create_test_context,
+        Context,
+    };
+
+    fn convert_module<'c>(context: &'c Context, module: &mut Module<'c>) {
+        let pass_manager = PassManager::new(context);
+
+        pass_manager.add_pass(pass::conversion::create_func_to_llvm());
+        pass_manager
+            .nested_under("func.func")
+            .add_pass(pass::conversion::create_arith_to_llvm());
+        pass_manager
+            .nested_under("func.func")
+            .add_pass(pass::conversion::create_index_to_llvm());
+        pass_manager.add_pass(pass::conversion::create_scf_to_control_flow());
+        pass_manager.add_pass(pass::conversion::create_control_flow_to_llvm());
+        pass_manager.add_pass(pass::conversion::create_finalize_mem_ref_to_llvm());
+
+        assert_eq!(pass_manager.run(module), Ok(()));
+        assert!(module.as_operation().verify());
+    }
+
+    fn test_operation<'c>(
+        name: &str,
+        context: &'c Context,
+        argument_types: &[Type<'c>],
+        callback: impl FnOnce(&Block<'c>),
+    ) {
+        let location = Location::unknown(&context);
+        let mut module = Module::new(location);
+
+        module.body().append_operation(func::func(
+            &context,
+            StringAttribute::new(&context, "foo"),
+            TypeAttribute::new(FunctionType::new(&context, argument_types, &[]).into()),
+            {
+                let block = Block::new(
+                    &argument_types
+                        .iter()
+                        .copied()
+                        .map(|r#type| (r#type, location))
+                        .collect::<Vec<_>>(),
+                );
+
+                callback(&block);
+
+                let region = Region::new();
+                region.append_block(block);
+                region
+            },
+            &[],
+            location,
+        ));
+
+        convert_module(&context, &mut module);
+
+        assert!(module.as_operation().verify());
+        insta::assert_display_snapshot!(name, module.as_operation());
+    }
+
+    #[test]
+    fn compile_llvm_alloca() {
+        let context = create_test_context();
+        let location = Location::unknown(&context);
+        let integer_type = IntegerType::new(&context, 64).into();
+
+        test_operation("alloc", &context, &[integer_type], |block| {
+            let alloca_size = block.argument(0).unwrap().into();
+            let i64_type = IntegerType::new(&context, 64);
+
+            block.append_operation(
+                llvm::alloca(
+                    dialect::llvm::r#type::pointer(i64_type.into(), 0).into(),
+                    alloca_size,
+                    location,
+                )
+                .into(),
+            );
+
+            block.append_operation(func::r#return(&[], location));
+        });
+    }
+
+    #[test]
+    fn compile_llvm_alloca_builder() {
+        let context = create_test_context();
+        let location = Location::unknown(&context);
+        let integer_type = IntegerType::new(&context, 64).into();
+        let ptr_type = dialect::llvm::r#type::opaque_pointer(&context);
+
+        test_operation("alloc_builder", &context, &[integer_type], |block| {
+            let alloca_size = block.argument(0).unwrap().into();
+            let i64_type = IntegerType::new(&context, 64);
+
+            block.append_operation(
+                llvm::AllocaOpBuilder::new(location)
+                    .alignment(IntegerAttribute::new(8, i64_type.into()))
+                    .elem_type(TypeAttribute::new(i64_type.into()))
+                    .array_size(alloca_size)
+                    .res(ptr_type)
+                    .build()
+                    .into(),
+            );
+
+            block.append_operation(func::r#return(&[], location));
+        });
+    }
+}
