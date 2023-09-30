@@ -5,8 +5,8 @@ use crate::{
     ir::{Type, TypeLike},
 };
 use mlir_sys::{
-    mlirLLVMArrayTypeGet, mlirLLVMFunctionTypeGet, mlirLLVMPointerTypeGet,
-    mlirLLVMStructTypeLiteralGet, mlirLLVMVoidTypeGet,
+    mlirLLVMArrayTypeGet, mlirLLVMFunctionTypeGet, mlirLLVMStructTypeLiteralGet,
+    mlirLLVMVoidTypeGet,
 };
 
 // TODO Check if the `llvm` dialect is loaded on use of those functions.
