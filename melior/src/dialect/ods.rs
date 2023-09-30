@@ -113,13 +113,7 @@ melior_macro::dialect! {
 mod tests {
     use super::*;
     use crate::{
-        dialect::{
-            arith, func,
-            llvm::{
-                attributes::{linkage, Linkage},
-                r#type::{function, opaque_pointer},
-            },
-        },
+        dialect::{self, func},
         ir::{
             attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
             r#type::{FunctionType, IntegerType},
@@ -149,13 +143,13 @@ mod tests {
     }
 
     #[test]
-    fn compile_ods_llvm_alloca() {
+    fn compile_llvm_alloca() {
         let context = create_test_context();
 
         let location = Location::unknown(&context);
         let mut module = Module::new(location);
         let integer_type = IntegerType::new(&context, 64).into();
-        let ptr_type = crate::dialect::llvm::r#type::opaque_pointer(&context);
+        let ptr_type = dialect::llvm::r#type::opaque_pointer(&context);
 
         module.body().append_operation(func::func(
             &context,
@@ -165,13 +159,12 @@ mod tests {
                 let block = Block::new(&[(integer_type, location)]);
 
                 let alloca_size = block.argument(0).unwrap().into();
+                let i64_type = IntegerType::new(&context, 64);
 
                 block.append_operation(
                     llvm::AllocaOpBuilder::new(location)
-                        .alignment(IntegerAttribute::new(
-                            8,
-                            IntegerType::new(&context, 64).into(),
-                        ))
+                        .alignment(IntegerAttribute::new(8, i64_type.into()))
+                        .elem_type(TypeAttribute::new(i64_type.into()))
                         .array_size(alloca_size)
                         .res(ptr_type)
                         .build()
