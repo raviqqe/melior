@@ -149,6 +149,49 @@ mod tests {
         let location = Location::unknown(&context);
         let mut module = Module::new(location);
         let integer_type = IntegerType::new(&context, 64).into();
+
+        module.body().append_operation(func::func(
+            &context,
+            StringAttribute::new(&context, "foo"),
+            TypeAttribute::new(FunctionType::new(&context, &[integer_type], &[]).into()),
+            {
+                let block = Block::new(&[(integer_type, location)]);
+
+                let alloca_size = block.argument(0).unwrap().into();
+                let i64_type = IntegerType::new(&context, 64);
+
+                block.append_operation(
+                    llvm::alloca(
+                        dialect::llvm::r#type::pointer(i64_type.into(), 0).into(),
+                        alloca_size,
+                        location,
+                    )
+                    .into(),
+                );
+
+                block.append_operation(func::r#return(&[], location));
+
+                let region = Region::new();
+                region.append_block(block);
+                region
+            },
+            &[],
+            location,
+        ));
+
+        convert_module(&context, &mut module);
+
+        assert!(module.as_operation().verify());
+        insta::assert_display_snapshot!(module.as_operation());
+    }
+
+    #[test]
+    fn compile_llvm_alloca_builder() {
+        let context = create_test_context();
+
+        let location = Location::unknown(&context);
+        let mut module = Module::new(location);
+        let integer_type = IntegerType::new(&context, 64).into();
         let ptr_type = dialect::llvm::r#type::opaque_pointer(&context);
 
         module.body().append_operation(func::func(
