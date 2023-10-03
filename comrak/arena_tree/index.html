@@ -4,7 +4,7 @@ MIT license (per Cargo.toml).</p>
 <p>Any non-trivial tree involves reference cycles
 (e.g. if a node has a first child, the parent of the child is that node).
 To enable this, nodes need to live in an arena allocator
-such as <code>arena::TypedArena</code> distrubuted with rustc (which is <code>#[unstable]</code> as of this writing)
+such as <code>arena::TypedArena</code> distributed with rustc (which is <code>#[unstable]</code> as of this writing)
 or <a href="https://crates.io/crates/typed-arena"><code>typed_arena::Arena</code></a>.</p>
 <p>If you need mutability in the node’s <code>data</code>,
 make it a cell (<code>Cell</code> or <code>RefCell</code>) or use cells inside of it.</p>

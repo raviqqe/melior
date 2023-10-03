@@ -26,7 +26,13 @@ var sourcesIndex = JSON.parse('{\
 "crossbeam_deque":["",[],["deque.rs","lib.rs"]],\
 "crossbeam_epoch":["",[["sync",[],["list.rs","mod.rs","once_lock.rs","queue.rs"]]],["atomic.rs","collector.rs","default.rs","deferred.rs","epoch.rs","guard.rs","internal.rs","lib.rs"]],\
 "crossbeam_utils":["",[["atomic",[],["atomic_cell.rs","consume.rs","mod.rs","seq_lock.rs"]],["sync",[],["mod.rs","once_lock.rs","parker.rs","sharded_lock.rs","wait_group.rs"]]],["backoff.rs","cache_padded.rs","lib.rs","thread.rs"]],\
+"darling":["",[],["lib.rs","macros_public.rs"]],\
+"darling_core":["",[["ast",[],["data.rs","generics.rs","mod.rs"]],["codegen",[],["attr_extractor.rs","default_expr.rs","error.rs","field.rs","from_attributes_impl.rs","from_derive_impl.rs","from_field.rs","from_meta_impl.rs","from_type_param.rs","from_variant_impl.rs","mod.rs","outer_from_impl.rs","postfix_transform.rs","trait_impl.rs","variant.rs","variant_data.rs"]],["error",[],["kind.rs","mod.rs"]],["options",[],["core.rs","forward_attrs.rs","from_attributes.rs","from_derive.rs","from_field.rs","from_meta.rs","from_type_param.rs","from_variant.rs","input_field.rs","input_variant.rs","mod.rs","outer_from.rs","shape.rs"]],["usage",[],["generics_ext.rs","ident_set.rs","lifetimes.rs","mod.rs","options.rs","type_params.rs"]],["util",[],["flag.rs","ident_string.rs","ignored.rs","mod.rs","over_ride.rs","parse_attribute.rs","path_list.rs","path_to_string.rs","shape.rs","spanned_value.rs","with_original.rs"]]],["derive.rs","from_attributes.rs","from_derive_input.rs","from_field.rs","from_generic_param.rs","from_generics.rs","from_meta.rs","from_type_param.rs","from_variant.rs","lib.rs","macros_private.rs","macros_public.rs"]],\
+"darling_macro":["",[],["lib.rs"]],\
 "dashmap":["",[["mapref",[],["entry.rs","mod.rs","multiple.rs","one.rs"]],["setref",[],["mod.rs","multiple.rs","one.rs"]]],["iter.rs","iter_set.rs","lib.rs","lock.rs","read_only.rs","set.rs","t.rs","try_result.rs","util.rs"]],\
+"derive_builder":["",[],["error.rs","lib.rs"]],\
+"derive_builder_core":["",[["macro_options",[],["darling_opts.rs","mod.rs"]]],["block.rs","build_method.rs","builder.rs","builder_field.rs","change_span.rs","default_expression.rs","deprecation_notes.rs","doc_comment.rs","initializer.rs","lib.rs","options.rs","setter.rs"]],\
+"derive_builder_macro":["",[],["lib.rs"]],\
 "deunicode":["",[],["lib.rs"]],\
 "either":["",[],["lib.rs"]],\
 "entities":["",[],["entities.rs","lib.rs"]],\
@@ -35,6 +41,7 @@ var sourcesIndex = JSON.parse('{\
 "half":["",[["bfloat",[],["convert.rs"]],["binary16",[],["convert.rs"]]],["bfloat.rs","binary16.rs","lib.rs","slice.rs"]],\
 "hashbrown":["",[["external_trait_impls",[],["mod.rs"]],["raw",[],["alloc.rs","bitmask.rs","mod.rs","sse2.rs"]]],["lib.rs","macros.rs","map.rs","scopeguard.rs","set.rs"]],\
 "heck":["",[],["kebab.rs","lib.rs","lower_camel.rs","shouty_kebab.rs","shouty_snake.rs","snake.rs","title.rs","train.rs","upper_camel.rs"]],\
+"ident_case":["",[],["lib.rs"]],\
 "is_terminal":["",[],["lib.rs"]],\
 "itertools":["",[["adaptors",[],["coalesce.rs","map.rs","mod.rs","multi_product.rs"]]],["combinations.rs","combinations_with_replacement.rs","concat_impl.rs","cons_tuples_impl.rs","diff.rs","duplicates_impl.rs","either_or_both.rs","exactly_one_err.rs","extrema_set.rs","flatten_ok.rs","format.rs","free.rs","group_map.rs","groupbylazy.rs","grouping_map.rs","impl_macros.rs","intersperse.rs","k_smallest.rs","kmerge_impl.rs","lazy_buffer.rs","lib.rs","merge_join.rs","minmax.rs","multipeek_impl.rs","pad_tail.rs","peek_nth.rs","peeking_take_while.rs","permutations.rs","powerset.rs","process_results_impl.rs","put_back_n_impl.rs","rciter_impl.rs","repeatn.rs","size_hint.rs","sources.rs","tee.rs","tuple_impl.rs","unique_impl.rs","unziptuple.rs","with_position.rs","zip_eq_impl.rs","zip_longest.rs","ziptuple.rs"]],\
 "itoa":["",[],["lib.rs","udiv128.rs"]],\
@@ -75,7 +82,6 @@ var sourcesIndex = JSON.parse('{\
 "slug":["",[],["lib.rs"]],\
 "smallvec":["",[],["lib.rs"]],\
 "strsim":["",[],["lib.rs"]],\
-"syn":["",[["gen",[],["clone.rs","debug.rs","eq.rs","hash.rs","visit_mut.rs"]]],["attr.rs","bigint.rs","buffer.rs","custom_keyword.rs","custom_punctuation.rs","data.rs","derive.rs","discouraged.rs","drops.rs","error.rs","export.rs","expr.rs","ext.rs","file.rs","gen_helper.rs","generics.rs","group.rs","ident.rs","item.rs","lib.rs","lifetime.rs","lit.rs","lookahead.rs","mac.rs","macros.rs","meta.rs","op.rs","parse.rs","parse_macro_input.rs","parse_quote.rs","pat.rs","path.rs","print.rs","punctuated.rs","restriction.rs","sealed.rs","span.rs","spanned.rs","stmt.rs","thread.rs","token.rs","tt.rs","ty.rs","verbatim.rs","whitespace.rs"]],\
 "syntect":["",[["highlighting",[],["highlighter.rs","mod.rs","selector.rs","style.rs","theme.rs","theme_set.rs"]],["parsing",[],["mod.rs","parser.rs","regex.rs","scope.rs","syntax_definition.rs","syntax_set.rs"]]],["dumps.rs","easy.rs","escape.rs","html.rs","lib.rs","util.rs","utils.rs"]],\
 "tblgen":["",[],["error.rs","init.rs","lib.rs","record.rs","record_keeper.rs","string_ref.rs","util.rs"]],\
 "terminal_size":["",[],["lib.rs","unix.rs"]],\

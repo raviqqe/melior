@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.18.0/src/strings.rs`."><title>strings.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.1 (d5c2e9c34 2023-09-13)" data-channel="1.72.1" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../comrak/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.19.0/src/strings.rs`."><title>strings.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.1 (d5c2e9c34 2023-09-13)" data-channel="1.72.1" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../comrak/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -342,11 +342,50 @@
 <a href="#342" id="342">342</a>
 <a href="#343" id="343">343</a>
 <a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::ctype::{ispunct, isspace};
 <span class="kw">use </span><span class="kw">crate</span>::entity;
 <span class="kw">use </span><span class="kw">crate</span>::parser::AutolinkType;
 <span class="kw">use </span>std::ptr;
 <span class="kw">use </span>std::str;
+
+<span class="attr">#[derive(PartialEq, Eq)]
+</span><span class="kw">pub enum </span>Case {
+    Preserve,
+    DontPreserve,
+}
 
 <span class="kw">pub fn </span>unescape(v: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) {
     <span class="kw">let </span><span class="kw-2">mut </span>r = <span class="number">0</span>;
@@ -355,6 +394,10 @@
 
     <span class="kw">while </span>r &lt; v.len() {
         <span class="kw">if </span>v[r] == <span class="string">b&#39;\\&#39; </span>&amp;&amp; r + <span class="number">1 </span>&lt; v.len() &amp;&amp; ispunct(v[r + <span class="number">1</span>]) {
+            <span class="kw">if </span>v[r + <span class="number">1</span>] == <span class="string">b&#39;\\&#39; </span>{
+                r += <span class="number">1</span>;
+            }
+
             <span class="kw">if let </span><span class="prelude-val">Some</span>(prev) = prev {
                 <span class="kw">let </span>window = <span class="kw-2">&amp;mut </span>v[(prev + <span class="number">1 </span>- found)..r];
                 shift_buf_left(window, found);
@@ -581,7 +624,7 @@
     <span class="bool-val">true
 </span>}
 
-<span class="kw">pub fn </span>normalize_label(i: <span class="kw-2">&amp;</span>str) -&gt; String {
+<span class="kw">pub fn </span>normalize_label(i: <span class="kw-2">&amp;</span>str, casing: Case) -&gt; String {
     <span class="comment">// trim_slice only removes bytes from start and end that match isspace();
     // result is UTF-8.
     </span><span class="kw">let </span>i = <span class="kw">unsafe </span>{ str::from_utf8_unchecked(trim_slice(i.as_bytes())) };
@@ -589,15 +632,16 @@
     <span class="kw">let </span><span class="kw-2">mut </span>v = String::with_capacity(i.len());
     <span class="kw">let </span><span class="kw-2">mut </span>last_was_whitespace = <span class="bool-val">false</span>;
     <span class="kw">for </span>c <span class="kw">in </span>i.chars() {
-        <span class="kw">for </span>e <span class="kw">in </span>c.to_lowercase() {
-            <span class="kw">if </span>e.is_whitespace() {
-                <span class="kw">if </span>!last_was_whitespace {
-                    last_was_whitespace = <span class="bool-val">true</span>;
-                    v.push(<span class="string">&#39; &#39;</span>);
-                }
-            } <span class="kw">else </span>{
-                last_was_whitespace = <span class="bool-val">false</span>;
-                v.push(e);
+        <span class="kw">if </span>c.is_whitespace() {
+            <span class="kw">if </span>!last_was_whitespace {
+                last_was_whitespace = <span class="bool-val">true</span>;
+                v.push(<span class="string">&#39; &#39;</span>);
+            }
+        } <span class="kw">else </span>{
+            last_was_whitespace = <span class="bool-val">false</span>;
+            <span class="kw">match </span>casing {
+                Case::Preserve =&gt; v.push(c),
+                Case::DontPreserve =&gt; v.push_str(<span class="kw-2">&amp;</span>c.to_lowercase().to_string()),
             }
         }
     }
@@ -652,7 +696,8 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">pub mod </span>tests {
-    <span class="kw">use super</span>::{normalize_code, split_off_front_matter};
+    <span class="kw">use super</span>::{normalize_code, normalize_label, split_off_front_matter};
+    <span class="kw">use </span><span class="kw">crate</span>::strings::Case;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>normalize_code_handles_lone_newline() {
@@ -684,6 +729,27 @@
             </span>),
             <span class="prelude-val">Some</span>((<span class="string">&quot;!@#\r\n\r\nfoo: \n!@# \r\nquux\n!@#\r\n\n&quot;</span>, <span class="string">&quot;\nYes!\n&quot;</span>))
         );
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>normalize_label_lowercase() {
+        <span class="macro">assert_eq!</span>(
+            normalize_label(<span class="string">&quot;  Foo\u{A0}BAR  &quot;</span>, Case::DontPreserve),
+            <span class="string">&quot;foo bar&quot;
+        </span>);
+        <span class="macro">assert_eq!</span>(
+            normalize_label(<span class="string">&quot;  FooİBAR  &quot;</span>, Case::DontPreserve),
+            <span class="string">&quot;fooi\u{307}bar&quot;
+        </span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>normalize_label_preserve() {
+        <span class="macro">assert_eq!</span>(
+            normalize_label(<span class="string">&quot;  Foo\u{A0}BAR  &quot;</span>, Case::Preserve),
+            <span class="string">&quot;Foo BAR&quot;
+        </span>);
+        <span class="macro">assert_eq!</span>(normalize_label(<span class="string">&quot;  FooİBAR  &quot;</span>, Case::Preserve), <span class="string">&quot;FooİBAR&quot;</span>);
     }
 }
 </code></pre></div></section></main></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.18.0/src/parser/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.1 (d5c2e9c34 2023-09-13)" data-channel="1.72.1" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../comrak/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.19.0/src/parser/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.1 (d5c2e9c34 2023-09-13)" data-channel="1.72.1" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../comrak/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2193,6 +2193,81 @@
 <a href="#2193" id="2193">2193</a>
 <a href="#2194" id="2194">2194</a>
 <a href="#2195" id="2195">2195</a>
+<a href="#2196" id="2196">2196</a>
+<a href="#2197" id="2197">2197</a>
+<a href="#2198" id="2198">2198</a>
+<a href="#2199" id="2199">2199</a>
+<a href="#2200" id="2200">2200</a>
+<a href="#2201" id="2201">2201</a>
+<a href="#2202" id="2202">2202</a>
+<a href="#2203" id="2203">2203</a>
+<a href="#2204" id="2204">2204</a>
+<a href="#2205" id="2205">2205</a>
+<a href="#2206" id="2206">2206</a>
+<a href="#2207" id="2207">2207</a>
+<a href="#2208" id="2208">2208</a>
+<a href="#2209" id="2209">2209</a>
+<a href="#2210" id="2210">2210</a>
+<a href="#2211" id="2211">2211</a>
+<a href="#2212" id="2212">2212</a>
+<a href="#2213" id="2213">2213</a>
+<a href="#2214" id="2214">2214</a>
+<a href="#2215" id="2215">2215</a>
+<a href="#2216" id="2216">2216</a>
+<a href="#2217" id="2217">2217</a>
+<a href="#2218" id="2218">2218</a>
+<a href="#2219" id="2219">2219</a>
+<a href="#2220" id="2220">2220</a>
+<a href="#2221" id="2221">2221</a>
+<a href="#2222" id="2222">2222</a>
+<a href="#2223" id="2223">2223</a>
+<a href="#2224" id="2224">2224</a>
+<a href="#2225" id="2225">2225</a>
+<a href="#2226" id="2226">2226</a>
+<a href="#2227" id="2227">2227</a>
+<a href="#2228" id="2228">2228</a>
+<a href="#2229" id="2229">2229</a>
+<a href="#2230" id="2230">2230</a>
+<a href="#2231" id="2231">2231</a>
+<a href="#2232" id="2232">2232</a>
+<a href="#2233" id="2233">2233</a>
+<a href="#2234" id="2234">2234</a>
+<a href="#2235" id="2235">2235</a>
+<a href="#2236" id="2236">2236</a>
+<a href="#2237" id="2237">2237</a>
+<a href="#2238" id="2238">2238</a>
+<a href="#2239" id="2239">2239</a>
+<a href="#2240" id="2240">2240</a>
+<a href="#2241" id="2241">2241</a>
+<a href="#2242" id="2242">2242</a>
+<a href="#2243" id="2243">2243</a>
+<a href="#2244" id="2244">2244</a>
+<a href="#2245" id="2245">2245</a>
+<a href="#2246" id="2246">2246</a>
+<a href="#2247" id="2247">2247</a>
+<a href="#2248" id="2248">2248</a>
+<a href="#2249" id="2249">2249</a>
+<a href="#2250" id="2250">2250</a>
+<a href="#2251" id="2251">2251</a>
+<a href="#2252" id="2252">2252</a>
+<a href="#2253" id="2253">2253</a>
+<a href="#2254" id="2254">2254</a>
+<a href="#2255" id="2255">2255</a>
+<a href="#2256" id="2256">2256</a>
+<a href="#2257" id="2257">2257</a>
+<a href="#2258" id="2258">2258</a>
+<a href="#2259" id="2259">2259</a>
+<a href="#2260" id="2260">2260</a>
+<a href="#2261" id="2261">2261</a>
+<a href="#2262" id="2262">2262</a>
+<a href="#2263" id="2263">2263</a>
+<a href="#2264" id="2264">2264</a>
+<a href="#2265" id="2265">2265</a>
+<a href="#2266" id="2266">2266</a>
+<a href="#2267" id="2267">2267</a>
+<a href="#2268" id="2268">2268</a>
+<a href="#2269" id="2269">2269</a>
+<a href="#2270" id="2270">2270</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>autolink;
 <span class="kw">mod </span>inlines;
 <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
@@ -2203,13 +2278,14 @@
 <span class="kw">use </span><span class="kw">crate</span>::arena_tree::Node;
 <span class="kw">use </span><span class="kw">crate</span>::ctype::{isdigit, isspace};
 <span class="kw">use </span><span class="kw">crate</span>::entity;
-<span class="kw">use </span><span class="kw">crate</span>::nodes::{<span class="self">self</span>, Sourcepos};
+<span class="kw">use </span><span class="kw">crate</span>::nodes::{<span class="self">self</span>, NodeFootnoteDefinition, Sourcepos};
 <span class="kw">use </span><span class="kw">crate</span>::nodes::{
     Ast, AstNode, ListDelimType, ListType, NodeCodeBlock, NodeDescriptionItem, NodeHeading,
     NodeHtmlBlock, NodeList, NodeValue,
 };
 <span class="kw">use </span><span class="kw">crate</span>::scanners;
-<span class="kw">use </span><span class="kw">crate</span>::strings::{<span class="self">self</span>, split_off_front_matter};
+<span class="kw">use </span><span class="kw">crate</span>::strings::{<span class="self">self</span>, split_off_front_matter, Case};
+<span class="kw">use </span>derive_builder::Builder;
 <span class="kw">use </span>std::cell::RefCell;
 <span class="kw">use </span>std::cmp::min;
 <span class="kw">use </span>std::collections::HashMap;
@@ -2224,6 +2300,12 @@
 
 <span class="kw">const </span>TAB_STOP: usize = <span class="number">4</span>;
 <span class="kw">const </span>CODE_INDENT: usize = <span class="number">4</span>;
+
+<span class="comment">// Very deeply nested lists can cause quadratic performance issues.
+// This constant is used in open_new_blocks() to limit the nesting
+// depth. It is unlikely that a non-contrived markdown document will
+// be nested this deeply.
+</span><span class="kw">const </span>MAX_LIST_DEPTH: usize = <span class="number">100</span>;
 
 <span class="macro">macro_rules! </span>node_matches {
     (<span class="macro-nonterminal">$node</span>:expr, $( <span class="macro-nonterminal">$pat</span>:pat )|+) =&gt; {{
@@ -2240,7 +2322,7 @@
 </span><span class="kw">pub fn </span>parse_document&lt;<span class="lifetime">&#39;a</span>&gt;(
     arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
     buffer: <span class="kw-2">&amp;</span>str,
-    options: <span class="kw-2">&amp;</span>ComrakOptions,
+    options: <span class="kw-2">&amp;</span>Options,
 ) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
     parse_document_with_broken_link_callback(arena, buffer, options, <span class="prelude-val">None</span>)
 }
@@ -2256,7 +2338,7 @@
 /// described in the [GFM spec](https://github.github.com/gfm/#matches).
 ///
 /// ```
-/// use comrak::{Arena, parse_document_with_broken_link_callback, format_html, ComrakOptions};
+/// use comrak::{Arena, parse_document_with_broken_link_callback, format_html, Options};
 /// use comrak::nodes::{AstNode, NodeValue};
 ///
 /// # fn main() -&gt; std::io::Result&lt;()&gt; {
@@ -2266,7 +2348,7 @@
 /// let root = parse_document_with_broken_link_callback(
 ///     &amp;arena,
 ///     &quot;# Cool input!\nWow look at this cool [link][foo]. A [broken link] renders as text.&quot;,
-///     &amp;ComrakOptions::default(),
+///     &amp;Options::default(),
 ///     Some(&amp;mut |link_ref: &amp;str| match link_ref {
 ///         &quot;foo&quot; =&gt; Some((
 ///             &quot;https://www.rust-lang.org/&quot;.to_string(),
@@ -2277,7 +2359,7 @@
 /// );
 ///
 /// let mut output = Vec::new();
-/// format_html(root, &amp;ComrakOptions::default(), &amp;mut output)?;
+/// format_html(root, &amp;Options::default(), &amp;mut output)?;
 /// let output_str = std::str::from_utf8(&amp;output).expect(&quot;invalid UTF-8&quot;);
 /// assert_eq!(output_str, &quot;&lt;h1&gt;Cool input!&lt;/h1&gt;\n&lt;p&gt;Wow look at this cool \
 ///                 &lt;a href=\&quot;https://www.rust-lang.org/\&quot; title=\&quot;The Rust Language\&quot;&gt;link&lt;/a&gt;. \
@@ -2288,7 +2370,7 @@
 </span><span class="kw">pub fn </span>parse_document_with_broken_link_callback&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;c</span>&gt;(
     arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
     buffer: <span class="kw-2">&amp;</span>str,
-    options: <span class="kw-2">&amp;</span>ComrakOptions,
+    options: <span class="kw-2">&amp;</span>Options,
     callback: <span class="prelude-ty">Option</span>&lt;Callback&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
 ) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">let </span>root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; = arena.alloc(Node::new(RefCell::new(Ast {
@@ -2327,35 +2409,37 @@
     last_line_length: usize,
     last_buffer_ended_with_cr: bool,
     total_size: usize,
-    options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>ComrakOptions,
+    options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
     callback: <span class="prelude-ty">Option</span>&lt;Callback&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
 }
 
 <span class="attr">#[derive(Default, Debug, Clone)]
 #[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
 </span><span class="doccomment">/// Umbrella options struct.
-</span><span class="kw">pub struct </span>ComrakOptions {
+</span><span class="kw">pub struct </span>Options {
     <span class="doccomment">/// Enable CommonMark extensions.
-    </span><span class="kw">pub </span>extension: ComrakExtensionOptions,
+    </span><span class="kw">pub </span>extension: ExtensionOptions,
 
     <span class="doccomment">/// Configure parse-time options.
-    </span><span class="kw">pub </span>parse: ComrakParseOptions,
+    </span><span class="kw">pub </span>parse: ParseOptions,
 
     <span class="doccomment">/// Configure render-time options.
-    </span><span class="kw">pub </span>render: ComrakRenderOptions,
+    </span><span class="kw">pub </span>render: RenderOptions,
 }
 
-<span class="attr">#[derive(Default, Debug, Clone)]
+<span class="attr">#[non_exhaustive]
+#[derive(Default, Debug, Clone, Builder)]
+#[builder(default)]
 #[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
 </span><span class="doccomment">/// Options to select extensions.
-</span><span class="kw">pub struct </span>ComrakExtensionOptions {
+</span><span class="kw">pub struct </span>ExtensionOptions {
     <span class="doccomment">/// Enables the
     /// [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-)
     /// from the GFM spec.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.strikethrough = true;
     /// assert_eq!(markdown_to_html(&quot;Hello ~world~ there.\n&quot;, &amp;options),
     ///            &quot;&lt;p&gt;Hello &lt;del&gt;world&lt;/del&gt; there.&lt;/p&gt;\n&quot;);
@@ -2367,8 +2451,8 @@
     /// from the GFM spec.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.tagfilter = true;
     /// options.render.unsafe_ = true;
     /// assert_eq!(markdown_to_html(&quot;Hello &lt;xmp&gt;.\n\n&lt;xmp&gt;&quot;, &amp;options),
@@ -2380,8 +2464,8 @@
     /// from the GFM spec.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.table = true;
     /// assert_eq!(markdown_to_html(&quot;| a | b |\n|---|---|\n| c | d |\n&quot;, &amp;options),
     ///            &quot;&lt;table&gt;\n&lt;thead&gt;\n&lt;tr&gt;\n&lt;th&gt;a&lt;/th&gt;\n&lt;th&gt;b&lt;/th&gt;\n&lt;/tr&gt;\n&lt;/thead&gt;\n\
@@ -2393,8 +2477,8 @@
     /// from the GFM spec.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.autolink = true;
     /// assert_eq!(markdown_to_html(&quot;Hello www.github.com.\n&quot;, &amp;options),
     ///            &quot;&lt;p&gt;Hello &lt;a href=\&quot;http://www.github.com\&quot;&gt;www.github.com&lt;/a&gt;.&lt;/p&gt;\n&quot;);
@@ -2409,12 +2493,12 @@
     /// rendered.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.tasklist = true;
     /// options.render.unsafe_ = true;
     /// assert_eq!(markdown_to_html(&quot;* [x] Done\n* [ ] Not done\n&quot;, &amp;options),
-    ///            &quot;&lt;ul&gt;\n&lt;li&gt;&lt;input type=\&quot;checkbox\&quot; disabled=\&quot;\&quot; checked=\&quot;\&quot; /&gt; Done&lt;/li&gt;\n\
+    ///            &quot;&lt;ul&gt;\n&lt;li&gt;&lt;input type=\&quot;checkbox\&quot; checked=\&quot;\&quot; disabled=\&quot;\&quot; /&gt; Done&lt;/li&gt;\n\
     ///            &lt;li&gt;&lt;input type=\&quot;checkbox\&quot; disabled=\&quot;\&quot; /&gt; Not done&lt;/li&gt;\n&lt;/ul&gt;\n&quot;);
     /// ```
     </span><span class="kw">pub </span>tasklist: bool,
@@ -2422,8 +2506,8 @@
     <span class="doccomment">/// Enables the superscript Comrak extension.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.superscript = true;
     /// assert_eq!(markdown_to_html(&quot;e = mc^2^.\n&quot;, &amp;options),
     ///            &quot;&lt;p&gt;e = mc&lt;sup&gt;2&lt;/sup&gt;.&lt;/p&gt;\n&quot;);
@@ -2433,8 +2517,8 @@
     <span class="doccomment">/// Enables the header IDs Comrak extension.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.header_ids = Some(&quot;user-content-&quot;.to_string());
     /// assert_eq!(markdown_to_html(&quot;# README\n&quot;, &amp;options),
     ///            &quot;&lt;h1&gt;&lt;a href=\&quot;#readme\&quot; aria-hidden=\&quot;true\&quot; class=\&quot;anchor\&quot; id=\&quot;user-content-readme\&quot;&gt;&lt;/a&gt;README&lt;/h1&gt;\n&quot;);
@@ -2447,11 +2531,11 @@
     /// [Kramdown](https://kramdown.gettalong.org/syntax.html#footnotes).
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.footnotes = true;
     /// assert_eq!(markdown_to_html(&quot;Hi[^x].\n\n[^x]: A greeting.\n&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;Hi&lt;sup class=\&quot;footnote-ref\&quot;&gt;&lt;a href=\&quot;#fn-1\&quot; id=\&quot;fnref-1\&quot; data-footnote-ref&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;\n&lt;section class=\&quot;footnotes\&quot; data-footnotes&gt;\n&lt;ol&gt;\n&lt;li id=\&quot;fn-1\&quot;&gt;\n&lt;p&gt;A greeting. &lt;a href=\&quot;#fnref-1\&quot; class=\&quot;footnote-backref\&quot; data-footnote-backref aria-label=\&quot;Back to content\&quot;&gt;↩&lt;/a&gt;&lt;/p&gt;\n&lt;/li&gt;\n&lt;/ol&gt;\n&lt;/section&gt;\n&quot;);
+    ///            &quot;&lt;p&gt;Hi&lt;sup class=\&quot;footnote-ref\&quot;&gt;&lt;a href=\&quot;#fn-x\&quot; id=\&quot;fnref-x\&quot; data-footnote-ref&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;\n&lt;section class=\&quot;footnotes\&quot; data-footnotes&gt;\n&lt;ol&gt;\n&lt;li id=\&quot;fn-x\&quot;&gt;\n&lt;p&gt;A greeting. &lt;a href=\&quot;#fnref-x\&quot; class=\&quot;footnote-backref\&quot; data-footnote-backref data-footnote-backref-idx=\&quot;1\&quot; aria-label=\&quot;Back to reference 1\&quot;&gt;↩&lt;/a&gt;&lt;/p&gt;\n&lt;/li&gt;\n&lt;/ol&gt;\n&lt;/section&gt;\n&quot;);
     /// ```
     </span><span class="kw">pub </span>footnotes: bool,
 
@@ -2475,8 +2559,8 @@
     /// ```
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.description_lists = true;
     /// assert_eq!(markdown_to_html(&quot;Term\n\n: Definition&quot;, &amp;options),
     ///            &quot;&lt;dl&gt;&lt;dt&gt;Term&lt;/dt&gt;\n&lt;dd&gt;\n&lt;p&gt;Definition&lt;/p&gt;\n&lt;/dd&gt;\n&lt;/dl&gt;\n&quot;);
@@ -2501,18 +2585,18 @@
     /// ```
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// options.extension.front_matter_delimiter = Some(&quot;---&quot;.to_owned());
     /// assert_eq!(
     ///     markdown_to_html(&quot;---\nlayout: post\n---\nText\n&quot;, &amp;options),
-    ///     markdown_to_html(&quot;Text\n&quot;, &amp;ComrakOptions::default()));
+    ///     markdown_to_html(&quot;Text\n&quot;, &amp;Options::default()));
     /// ```
     ///
     /// ```
-    /// # use comrak::{format_commonmark, Arena, ComrakOptions};
+    /// # use comrak::{format_commonmark, Arena, Options};
     /// use comrak::parse_document;
-    /// let mut options = ComrakOptions::default();
+    /// let mut options = Options::default();
     /// options.extension.front_matter_delimiter = Some(&quot;---&quot;.to_owned());
     /// let arena = Arena::new();
     /// let input =&quot;---\nlayout: post\n---\nText\n&quot;;
@@ -2524,12 +2608,12 @@
     </span><span class="kw">pub </span>front_matter_delimiter: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
     <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
-    </span><span class="doccomment">/// Available if &quot;shortcodes&quot; feature is enabled.  Phrases wrapped inside of &#39;:&#39; blocks will be
-    /// replaced with emojis.
+    #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)))]
+    </span><span class="doccomment">/// Phrases wrapped inside of &#39;:&#39; blocks will be replaced with emojis.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// assert_eq!(markdown_to_html(&quot;Happy Friday! :smile:&quot;, &amp;options),
     ///            &quot;&lt;p&gt;Happy Friday! :smile:&lt;/p&gt;\n&quot;);
     ///
@@ -2540,15 +2624,17 @@
     </span><span class="kw">pub </span>shortcodes: bool,
 }
 
-<span class="attr">#[derive(Default, Debug, Clone)]
+<span class="attr">#[non_exhaustive]
+#[derive(Default, Debug, Clone, Builder)]
+#[builder(default)]
 #[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
 </span><span class="doccomment">/// Options for parser functions.
-</span><span class="kw">pub struct </span>ComrakParseOptions {
+</span><span class="kw">pub struct </span>ParseOptions {
     <span class="doccomment">/// Punctuation (quotes, full-stops and hyphens) are converted into &#39;smart&#39; punctuation.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// assert_eq!(markdown_to_html(&quot;&#39;Hello,&#39; \&quot;world\&quot; ...&quot;, &amp;options),
     ///            &quot;&lt;p&gt;&#39;Hello,&#39; &amp;quot;world&amp;quot; ...&lt;/p&gt;\n&quot;);
     ///
@@ -2561,8 +2647,8 @@
     <span class="doccomment">/// The default info string for fenced code blocks.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// assert_eq!(markdown_to_html(&quot;```\nfn hello();\n```\n&quot;, &amp;options),
     ///            &quot;&lt;pre&gt;&lt;code&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n&quot;);
     ///
@@ -2574,18 +2660,35 @@
 
     <span class="doccomment">/// Whether or not a simple `x` or `X` is used for tasklist or any other symbol is allowed.
     </span><span class="kw">pub </span>relaxed_tasklist_matching: bool,
+
+    <span class="doccomment">/// Relax parsing of autolinks, allowing links to be detected inside brackets.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
+    /// options.extension.autolink = true;
+    /// assert_eq!(markdown_to_html(&quot;[https://foo.com]&quot;, &amp;options),
+    ///            &quot;&lt;p&gt;[https://foo.com]&lt;/p&gt;\n&quot;);
+    ///
+    /// options.parse.relaxed_autolinks = true;
+    /// assert_eq!(markdown_to_html(&quot;[https://foo.com]&quot;, &amp;options),
+    ///            &quot;&lt;p&gt;[&lt;a href=\&quot;https://foo.com\&quot;&gt;https://foo.com&lt;/a&gt;]&lt;/p&gt;\n&quot;);
+    /// ```
+    </span><span class="kw">pub </span>relaxed_autolinks: bool,
 }
 
-<span class="attr">#[derive(Default, Debug, Clone, Copy)]
+<span class="attr">#[non_exhaustive]
+#[derive(Default, Debug, Clone, Copy, Builder)]
+#[builder(default)]
 #[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
 </span><span class="doccomment">/// Options for formatter functions.
-</span><span class="kw">pub struct </span>ComrakRenderOptions {
+</span><span class="kw">pub struct </span>RenderOptions {
     <span class="doccomment">/// [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) in the input
     /// translate into hard line breaks in the output.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// assert_eq!(markdown_to_html(&quot;Hello.\nWorld.\n&quot;, &amp;options),
     ///            &quot;&lt;p&gt;Hello.\nWorld.&lt;/p&gt;\n&quot;);
     ///
@@ -2598,8 +2701,8 @@
     <span class="doccomment">/// GitHub-style `&lt;pre lang=&quot;xyz&quot;&gt;` is used for fenced code blocks with info tags.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// assert_eq!(markdown_to_html(&quot;``` rust\nfn hello();\n```\n&quot;, &amp;options),
     ///            &quot;&lt;pre&gt;&lt;code class=\&quot;language-rust\&quot;&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n&quot;);
     ///
@@ -2612,8 +2715,8 @@
     <span class="doccomment">/// Enable full info strings for code blocks
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// assert_eq!(markdown_to_html(&quot;``` rust extra info\nfn hello();\n```\n&quot;, &amp;options),
     ///            &quot;&lt;pre&gt;&lt;code class=\&quot;language-rust\&quot;&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n&quot;);
     ///
@@ -2627,10 +2730,10 @@
     <span class="doccomment">/// The wrap column when outputting CommonMark.
     ///
     /// ```
-    /// # use comrak::{parse_document, ComrakOptions, format_commonmark};
+    /// # use comrak::{parse_document, Options, format_commonmark};
     /// # fn main() {
     /// # let arena = typed_arena::Arena::new();
-    /// let mut options = ComrakOptions::default();
+    /// let mut options = Options::default();
     /// let node = parse_document(&amp;arena, &quot;hello hello hello hello hello hello&quot;, &amp;options);
     /// let mut output = vec![];
     /// format_commonmark(node, &amp;options, &amp;mut output).unwrap();
@@ -2649,8 +2752,8 @@
     <span class="doccomment">/// Allow rendering of raw HTML and potentially dangerous links.
     ///
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// let input = &quot;&lt;script&gt;\nalert(&#39;xyz&#39;);\n&lt;/script&gt;\n\n\
     ///              Possibly &lt;marquee&gt;annoying&lt;/marquee&gt;.\n\n\
     ///              [Dangerous](javascript:alert(document.cookie)).\n\n\
@@ -2673,8 +2776,8 @@
 
     <span class="doccomment">/// Escape raw HTML instead of clobbering it.
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
     /// let input = &quot;&lt;i&gt;italic text&lt;/i&gt;&quot;;
     ///
     /// assert_eq!(markdown_to_html(input, &amp;options),
@@ -2693,8 +2796,8 @@
     /// * `ListStyleType::Star` to use `*`
     ///
     /// ```rust
-    /// # use comrak::{markdown_to_commonmark, ComrakOptions, ListStyleType};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_commonmark, Options, ListStyleType};
+    /// let mut options = Options::default();
     /// let input = &quot;- one\n- two\n- three&quot;;
     /// assert_eq!(markdown_to_commonmark(input, &amp;options),
     ///            &quot;- one\n- two\n- three\n&quot;); // default is Dash
@@ -2714,8 +2817,8 @@
     /// Not yet compatible with extension.description_lists.
     ///
     /// ```rust
-    /// # use comrak::{markdown_to_commonmark_xml, ComrakOptions};
-    /// let mut options = ComrakOptions::default();
+    /// # use comrak::{markdown_to_commonmark_xml, Options};
+    /// let mut options = Options::default();
     /// options.render.sourcepos = true;
     /// let input = &quot;Hello *world*!&quot;;
     /// let xml = markdown_to_commonmark_xml(input, &amp;options);
@@ -2724,25 +2827,29 @@
     </span><span class="kw">pub </span>sourcepos: bool,
 }
 
-<span class="attr">#[derive(Default, Debug)]
+<span class="attr">#[non_exhaustive]
+#[derive(Default, Debug, Clone, Builder)]
+#[builder(default)]
 </span><span class="doccomment">/// Umbrella plugins struct.
-</span><span class="kw">pub struct </span>ComrakPlugins&lt;<span class="lifetime">&#39;p</span>&gt; {
+</span><span class="kw">pub struct </span>Plugins&lt;<span class="lifetime">&#39;p</span>&gt; {
     <span class="doccomment">/// Configure render-time plugins.
-    </span><span class="kw">pub </span>render: ComrakRenderPlugins&lt;<span class="lifetime">&#39;p</span>&gt;,
+    </span><span class="kw">pub </span>render: RenderPlugins&lt;<span class="lifetime">&#39;p</span>&gt;,
 }
 
-<span class="attr">#[derive(Default)]
+<span class="attr">#[non_exhaustive]
+#[derive(Default, Clone, Builder)]
+#[builder(default)]
 </span><span class="doccomment">/// Plugins for alternative rendering.
-</span><span class="kw">pub struct </span>ComrakRenderPlugins&lt;<span class="lifetime">&#39;p</span>&gt; {
+</span><span class="kw">pub struct </span>RenderPlugins&lt;<span class="lifetime">&#39;p</span>&gt; {
     <span class="doccomment">/// Provide a syntax highlighter adapter implementation for syntax
     /// highlighting of codefence blocks.
     /// ```
-    /// # use comrak::{markdown_to_html, ComrakOptions, ComrakPlugins, markdown_to_html_with_plugins};
+    /// # use comrak::{markdown_to_html, Options, Plugins, markdown_to_html_with_plugins};
     /// # use comrak::adapters::SyntaxHighlighterAdapter;
     /// use std::collections::HashMap;
     /// use std::io::{self, Write};
-    /// let options = ComrakOptions::default();
-    /// let mut plugins = ComrakPlugins::default();
+    /// let options = Options::default();
+    /// let mut plugins = Plugins::default();
     /// let input = &quot;```rust\nfn main&lt;&#39;a&gt;();\n```&quot;;
     ///
     /// assert_eq!(markdown_to_html_with_plugins(input, &amp;options, &amp;plugins),
@@ -2775,9 +2882,9 @@
     </span><span class="kw">pub </span>heading_adapter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;p </span><span class="kw">dyn </span>HeadingAdapter&gt;,
 }
 
-<span class="kw">impl </span>Debug <span class="kw">for </span>ComrakRenderPlugins&lt;<span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>Debug <span class="kw">for </span>RenderPlugins&lt;<span class="lifetime">&#39;_</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">&quot;ComrakRenderPlugins&quot;</span>)
+        f.debug_struct(<span class="string">&quot;RenderPlugins&quot;</span>)
             .field(
                 <span class="string">&quot;codefence_syntax_highlighter&quot;</span>,
                 <span class="kw-2">&amp;</span><span class="string">&quot;impl SyntaxHighlighterAdapter&quot;</span>,
@@ -2795,13 +2902,15 @@
 <span class="kw">struct </span>FootnoteDefinition&lt;<span class="lifetime">&#39;a</span>&gt; {
     ix: <span class="prelude-ty">Option</span>&lt;u32&gt;,
     node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+    name: String,
+    total_references: u32,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; Parser&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>new(
         arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
         root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
-        options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>ComrakOptions,
+        options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
         callback: <span class="prelude-ty">Option</span>&lt;Callback&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
         Parser {
@@ -3136,11 +3245,13 @@
         <span class="kw">let </span><span class="kw-2">mut </span>nl: NodeList = NodeList::default();
         <span class="kw">let </span><span class="kw-2">mut </span>sc: scanners::SetextChar = scanners::SetextChar::Equals;
         <span class="kw">let </span><span class="kw-2">mut </span>maybe_lazy = <span class="macro">node_matches!</span>(<span class="self">self</span>.current, NodeValue::Paragraph);
+        <span class="kw">let </span><span class="kw-2">mut </span>depth = <span class="number">0</span>;
 
         <span class="kw">while </span>!<span class="macro">node_matches!</span>(
             container,
             NodeValue::CodeBlock(..) | NodeValue::HtmlBlock(..)
         ) {
+            depth += <span class="number">1</span>;
             <span class="self">self</span>.find_first_nonspace(line);
             <span class="kw">let </span>indented = <span class="self">self</span>.indent &gt;= CODE_INDENT;
 
@@ -3264,6 +3375,7 @@
                 <span class="self">self</span>.advance_offset(line, adv, <span class="bool-val">false</span>);
             } <span class="kw">else if </span>!indented
                 &amp;&amp; <span class="self">self</span>.options.extension.footnotes
+                &amp;&amp; depth &lt; MAX_LIST_DEPTH
                 &amp;&amp; unwrap_into(
                     scanners::footnote_definition(<span class="kw-2">&amp;</span>line[<span class="self">self</span>.first_nonspace..]),
                     <span class="kw-2">&amp;mut </span>matched,
@@ -3275,7 +3387,10 @@
                 <span class="self">self</span>.advance_offset(line, offset, <span class="bool-val">false</span>);
                 <span class="kw-2">*</span>container = <span class="self">self</span>.add_child(
                     container,
-                    NodeValue::FootnoteDefinition(str::from_utf8(c).unwrap().to_string()),
+                    NodeValue::FootnoteDefinition(NodeFootnoteDefinition {
+                        name: str::from_utf8(c).unwrap().to_string(),
+                        total_references: <span class="number">0</span>,
+                    }),
                     <span class="self">self</span>.first_nonspace + <span class="number">1</span>,
                 );
                 container.data.borrow_mut().internal_offset = matched;
@@ -3291,7 +3406,8 @@
                 }
             } <span class="kw">else if </span>(!indented || <span class="macro">node_matches!</span>(container, NodeValue::List(..)))
                 &amp;&amp; <span class="self">self</span>.indent &lt; <span class="number">4
-                </span>&amp;&amp; unwrap_into_2(
+                </span>&amp;&amp; depth &lt; MAX_LIST_DEPTH
+                &amp;&amp; unwrap_into_2(
                     parse_list_marker(
                         line,
                         <span class="self">self</span>.first_nonspace,
@@ -3949,14 +4065,22 @@
         <span class="kw">let </span><span class="kw-2">mut </span>ix = <span class="number">0</span>;
         <span class="self">Self</span>::find_footnote_references(<span class="self">self</span>.root, <span class="kw-2">&amp;mut </span>map, <span class="kw-2">&amp;mut </span>ix);
 
+        <span class="kw">if </span>!map.is_empty() {
+            <span class="comment">// In order for references to be found inside footnote definitions,
+            // such as `[^1]: another reference[^2]`,
+            // the node needed to remain in the AST. Now we can remove them.
+            </span><span class="self">Self</span>::cleanup_footnote_definitions(<span class="self">self</span>.root);
+        }
+
         <span class="kw">if </span>ix &gt; <span class="number">0 </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>v = map.into_values().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
             v.sort_unstable_by(|a, b| a.ix.cmp(<span class="kw-2">&amp;</span>b.ix));
             <span class="kw">for </span>f <span class="kw">in </span>v {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(ix) = f.ix {
+                <span class="kw">if </span>f.ix.is_some() {
                     <span class="kw">match </span>f.node.data.borrow_mut().value {
-                        NodeValue::FootnoteDefinition(<span class="kw-2">ref mut </span>name) =&gt; {
-                            <span class="kw-2">*</span>name = <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, ix);
+                        NodeValue::FootnoteDefinition(<span class="kw-2">ref mut </span>nfd) =&gt; {
+                            nfd.name = f.name.to_string();
+                            nfd.total_references = f.total_references;
                         }
                         <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
                     }
@@ -3971,11 +4095,15 @@
         map: <span class="kw-2">&amp;mut </span>HashMap&lt;String, FootnoteDefinition&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
     ) {
         <span class="kw">match </span>node.data.borrow().value {
-            NodeValue::FootnoteDefinition(<span class="kw-2">ref </span>name) =&gt; {
-                node.detach();
+            NodeValue::FootnoteDefinition(<span class="kw-2">ref </span>nfd) =&gt; {
                 map.insert(
-                    strings::normalize_label(name),
-                    FootnoteDefinition { ix: <span class="prelude-val">None</span>, node },
+                    strings::normalize_label(<span class="kw-2">&amp;</span>nfd.name, Case::DontPreserve),
+                    FootnoteDefinition {
+                        ix: <span class="prelude-val">None</span>,
+                        node,
+                        name: strings::normalize_label(<span class="kw-2">&amp;</span>nfd.name, Case::Preserve),
+                        total_references: <span class="number">0</span>,
+                    },
                 );
             }
             <span class="kw">_ </span>=&gt; {
@@ -3994,8 +4122,9 @@
         <span class="kw">let </span><span class="kw-2">mut </span>ast = node.data.borrow_mut();
         <span class="kw">let </span><span class="kw-2">mut </span>replace = <span class="prelude-val">None</span>;
         <span class="kw">match </span>ast.value {
-            NodeValue::FootnoteReference(<span class="kw-2">ref mut </span>name) =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>footnote) = map.get_mut(name) {
+            NodeValue::FootnoteReference(<span class="kw-2">ref mut </span>nfr) =&gt; {
+                <span class="kw">let </span>normalized = strings::normalize_label(<span class="kw-2">&amp;</span>nfr.name, Case::DontPreserve);
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>footnote) = map.get_mut(<span class="kw-2">&amp;</span>normalized) {
                     <span class="kw">let </span>ix = <span class="kw">match </span>footnote.ix {
                         <span class="prelude-val">Some</span>(ix) =&gt; ix,
                         <span class="prelude-val">None </span>=&gt; {
@@ -4004,9 +4133,12 @@
                             <span class="kw-2">*</span>ixp
                         }
                     };
-                    <span class="kw-2">*</span>name = <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, ix);
+                    footnote.total_references += <span class="number">1</span>;
+                    nfr.ref_num = footnote.total_references;
+                    nfr.ix = ix;
+                    nfr.name = strings::normalize_label(<span class="kw-2">&amp;</span>footnote.name, Case::Preserve);
                 } <span class="kw">else </span>{
-                    replace = <span class="prelude-val">Some</span>(name.clone());
+                    replace = <span class="prelude-val">Some</span>(nfr.name.clone());
                 }
             }
             <span class="kw">_ </span>=&gt; {
@@ -4020,6 +4152,19 @@
             label.insert_str(<span class="number">0</span>, <span class="string">&quot;[^&quot;</span>);
             label.push(<span class="string">&#39;]&#39;</span>);
             ast.value = NodeValue::Text(label);
+        }
+    }
+
+    <span class="kw">fn </span>cleanup_footnote_definitions(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+        <span class="kw">match </span>node.data.borrow().value {
+            NodeValue::FootnoteDefinition(<span class="kw">_</span>) =&gt; {
+                node.detach();
+            }
+            <span class="kw">_ </span>=&gt; {
+                <span class="kw">for </span>n <span class="kw">in </span>node.children() {
+                    <span class="self">Self</span>::cleanup_footnote_definitions(n);
+                }
+            }
         }
     }
 
@@ -4095,7 +4240,12 @@
         }
 
         <span class="kw">if </span><span class="self">self</span>.options.extension.autolink {
-            autolink::process_autolinks(<span class="self">self</span>.arena, node, text);
+            autolink::process_autolinks(
+                <span class="self">self</span>.arena,
+                node,
+                text,
+                <span class="self">self</span>.options.parse.relaxed_autolinks,
+            );
         }
     }
 
@@ -4205,7 +4355,7 @@
             }
         }
 
-        lab = strings::normalize_label(<span class="kw-2">&amp;</span>lab);
+        lab = strings::normalize_label(<span class="kw-2">&amp;</span>lab, Case::DontPreserve);
         <span class="kw">if </span>!lab.is_empty() {
             subj.refmap.map.entry(lab).or_insert(Reference {
                 url: String::from_utf8(strings::clean_url(url)).unwrap(),
@@ -4373,7 +4523,7 @@
 
 <span class="attr">#[derive(Debug, Clone, Copy)]
 #[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
-</span><span class="doccomment">/// Options for bulleted list redering in markdown. See `link_style` in [ComrakRenderOptions] for more details.
+</span><span class="doccomment">/// Options for bulleted list redering in markdown. See `link_style` in [RenderOptions] for more details.
 </span><span class="kw">pub enum </span>ListStyleType {
     <span class="doccomment">/// The `-` character
     </span>Dash = <span class="number">45</span>,

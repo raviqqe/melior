@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.18.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.1 (d5c2e9c34 2023-09-13)" data-channel="1.72.1" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../comrak/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.19.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.1 (d5c2e9c34 2023-09-13)" data-channel="1.72.1" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../comrak/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -162,17 +162,27 @@
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! A 100% [CommonMark](http://commonmark.org/) and [GFM](https://github.github.com/gfm/)
 //! compatible Markdown parser.  Source repository is at &lt;https://github.com/kivikakk/comrak&gt;.
 //!
-//! The design is based on [cmark](https://github.com/github/cmark), so familiarity with that will
-//! help.
+//! The design is based on [cmark-gfm](https://github.com/github/cmark-gfm), so
+//! familiarity with that will help.
 //!
 //! You can use `comrak::markdown_to_html` directly:
 //!
 //! ```
-//! use comrak::{markdown_to_html, ComrakOptions};
-//! assert_eq!(markdown_to_html(&quot;Hello, **世界**!&quot;, &amp;ComrakOptions::default()),
+//! use comrak::{markdown_to_html, Options};
+//! assert_eq!(markdown_to_html(&quot;Hello, **世界**!&quot;, &amp;Options::default()),
 //!            &quot;&lt;p&gt;Hello, &lt;strong&gt;世界&lt;/strong&gt;!&lt;/p&gt;\n&quot;);
 //! ```
 //!
@@ -180,7 +190,7 @@
 //! formatter:
 //!
 //! ```
-//! use comrak::{Arena, parse_document, format_html, ComrakOptions};
+//! use comrak::{Arena, parse_document, format_html, Options};
 //! use comrak::nodes::{AstNode, NodeValue};
 //!
 //! # fn main() {
@@ -190,7 +200,7 @@
 //! let root = parse_document(
 //!     &amp;arena,
 //!     &quot;This is my input.\n\n1. Also my input.\n2. Certainly my input.\n&quot;,
-//!     &amp;ComrakOptions::default());
+//!     &amp;Options::default());
 //!
 //! fn iter_nodes&lt;&#39;a, F&gt;(node: &amp;&#39;a AstNode&lt;&#39;a&gt;, f: &amp;F)
 //!     where F : Fn(&amp;&#39;a AstNode&lt;&#39;a&gt;) {
@@ -211,7 +221,7 @@
 //! });
 //!
 //! let mut html = vec![];
-//! format_html(root, &amp;ComrakOptions::default(), &amp;mut html).unwrap();
+//! format_html(root, &amp;Options::default(), &amp;mut html).unwrap();
 //!
 //! assert_eq!(
 //!     String::from_utf8(html).unwrap(),
@@ -223,7 +233,8 @@
 //! # }
 //! ```
 
-</span><span class="attr">#![deny(
+</span><span class="attr">#![cfg_attr(docsrs, feature(doc_cfg))]
+#![deny(
     missing_docs,
     missing_debug_implementations,
     missing_copy_implementations,
@@ -263,29 +274,38 @@
 <span class="kw">pub use </span>html::format_document_with_plugins <span class="kw">as </span>format_html_with_plugins;
 <span class="kw">pub use </span>html::Anchorizer;
 <span class="kw">pub use </span>parser::{
-    parse_document, parse_document_with_broken_link_callback, ComrakExtensionOptions,
-    ComrakOptions, ComrakParseOptions, ComrakPlugins, ComrakRenderOptions, ComrakRenderPlugins,
-    ListStyleType,
+    parse_document, parse_document_with_broken_link_callback, ExtensionOptions,
+    ExtensionOptionsBuilder, ListStyleType, Options, ParseOptions, ParseOptionsBuilder, Plugins,
+    PluginsBuilder, RenderOptions, RenderOptionsBuilder, RenderPlugins, RenderPluginsBuilder,
 };
 <span class="kw">pub use </span>typed_arena::Arena;
 <span class="kw">pub use </span>xml::format_document <span class="kw">as </span>format_xml;
 <span class="kw">pub use </span>xml::format_document_with_plugins <span class="kw">as </span>format_xml_with_plugins;
 
+<span class="doccomment">/// Legacy naming of [`ExtensionOptions`]
+</span><span class="kw">pub type </span>ComrakExtensionOptions = ExtensionOptions;
+<span class="doccomment">/// Legacy naming of [`Options`]
+</span><span class="kw">pub type </span>ComrakOptions = Options;
+<span class="doccomment">/// Legacy naming of [`ParseOptions`]
+</span><span class="kw">pub type </span>ComrakParseOptions = ParseOptions;
+<span class="doccomment">/// Legacy naming of [`Plugins`]
+</span><span class="kw">pub type </span>ComrakPlugins&lt;<span class="lifetime">&#39;a</span>&gt; = Plugins&lt;<span class="lifetime">&#39;a</span>&gt;;
+<span class="doccomment">/// Legacy naming of [`RenderOptions`]
+</span><span class="kw">pub type </span>ComrakRenderOptions = RenderOptions;
+<span class="doccomment">/// Legacy naming of [`RenderPlugins`]
+</span><span class="kw">pub type </span>ComrakRenderPlugins&lt;<span class="lifetime">&#39;a</span>&gt; = RenderPlugins&lt;<span class="lifetime">&#39;a</span>&gt;;
+
 <span class="doccomment">/// Render Markdown to HTML.
 ///
 /// See the documentation of the crate root for an example.
-</span><span class="kw">pub fn </span>markdown_to_html(md: <span class="kw-2">&amp;</span>str, options: <span class="kw-2">&amp;</span>ComrakOptions) -&gt; String {
-    markdown_to_html_with_plugins(md, options, <span class="kw-2">&amp;</span>ComrakPlugins::default())
+</span><span class="kw">pub fn </span>markdown_to_html(md: <span class="kw-2">&amp;</span>str, options: <span class="kw-2">&amp;</span>Options) -&gt; String {
+    markdown_to_html_with_plugins(md, options, <span class="kw-2">&amp;</span>Plugins::default())
 }
 
 <span class="doccomment">/// Render Markdown to HTML using plugins.
 ///
 /// See the documentation of the crate root for an example.
-</span><span class="kw">pub fn </span>markdown_to_html_with_plugins(
-    md: <span class="kw-2">&amp;</span>str,
-    options: <span class="kw-2">&amp;</span>ComrakOptions,
-    plugins: <span class="kw-2">&amp;</span>ComrakPlugins,
-) -&gt; String {
+</span><span class="kw">pub fn </span>markdown_to_html_with_plugins(md: <span class="kw-2">&amp;</span>str, options: <span class="kw-2">&amp;</span>Options, plugins: <span class="kw-2">&amp;</span>Plugins) -&gt; String {
     <span class="kw">let </span>arena = Arena::new();
     <span class="kw">let </span>root = parse_document(<span class="kw-2">&amp;</span>arena, md, options);
     <span class="kw">let </span><span class="kw-2">mut </span>bw = BufWriter::new(Vec::new());
@@ -299,7 +319,7 @@
 }
 
 <span class="doccomment">/// Render Markdown back to CommonMark.
-</span><span class="kw">pub fn </span>markdown_to_commonmark(md: <span class="kw-2">&amp;</span>str, options: <span class="kw-2">&amp;</span>ComrakOptions) -&gt; String {
+</span><span class="kw">pub fn </span>markdown_to_commonmark(md: <span class="kw-2">&amp;</span>str, options: <span class="kw-2">&amp;</span>Options) -&gt; String {
     <span class="kw">let </span>arena = Arena::new();
     <span class="kw">let </span>root = parse_document(<span class="kw-2">&amp;</span>arena, md, options);
     <span class="kw">let </span><span class="kw-2">mut </span>bw = BufWriter::new(Vec::new());
@@ -309,16 +329,16 @@
 
 <span class="doccomment">/// Render Markdown to CommonMark XML.
 /// See https://github.com/commonmark/commonmark-spec/blob/master/CommonMark.dtd.
-</span><span class="kw">pub fn </span>markdown_to_commonmark_xml(md: <span class="kw-2">&amp;</span>str, options: <span class="kw-2">&amp;</span>ComrakOptions) -&gt; String {
-    markdown_to_commonmark_xml_with_plugins(md, options, <span class="kw-2">&amp;</span>ComrakPlugins::default())
+</span><span class="kw">pub fn </span>markdown_to_commonmark_xml(md: <span class="kw-2">&amp;</span>str, options: <span class="kw-2">&amp;</span>Options) -&gt; String {
+    markdown_to_commonmark_xml_with_plugins(md, options, <span class="kw-2">&amp;</span>Plugins::default())
 }
 
 <span class="doccomment">/// Render Markdown to CommonMark XML using plugins.
 /// See https://github.com/commonmark/commonmark-spec/blob/master/CommonMark.dtd.
 </span><span class="kw">pub fn </span>markdown_to_commonmark_xml_with_plugins(
     md: <span class="kw-2">&amp;</span>str,
-    options: <span class="kw-2">&amp;</span>ComrakOptions,
-    plugins: <span class="kw-2">&amp;</span>ComrakPlugins,
+    options: <span class="kw-2">&amp;</span>Options,
+    plugins: <span class="kw-2">&amp;</span>Plugins,
 ) -&gt; String {
     <span class="kw">let </span>arena = Arena::new();
     <span class="kw">let </span>root = parse_document(<span class="kw-2">&amp;</span>arena, md, options);

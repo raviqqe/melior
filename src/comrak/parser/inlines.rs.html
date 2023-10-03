@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.18.0/src/parser/inlines.rs`."><title>inlines.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.1 (d5c2e9c34 2023-09-13)" data-channel="1.72.1" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../comrak/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.19.0/src/parser/inlines.rs`."><title>inlines.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.1 (d5c2e9c34 2023-09-13)" data-channel="1.72.1" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../comrak/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1500,17 +1500,57 @@
 <a href="#1500" id="1500">1500</a>
 <a href="#1501" id="1501">1501</a>
 <a href="#1502" id="1502">1502</a>
+<a href="#1503" id="1503">1503</a>
+<a href="#1504" id="1504">1504</a>
+<a href="#1505" id="1505">1505</a>
+<a href="#1506" id="1506">1506</a>
+<a href="#1507" id="1507">1507</a>
+<a href="#1508" id="1508">1508</a>
+<a href="#1509" id="1509">1509</a>
+<a href="#1510" id="1510">1510</a>
+<a href="#1511" id="1511">1511</a>
+<a href="#1512" id="1512">1512</a>
+<a href="#1513" id="1513">1513</a>
+<a href="#1514" id="1514">1514</a>
+<a href="#1515" id="1515">1515</a>
+<a href="#1516" id="1516">1516</a>
+<a href="#1517" id="1517">1517</a>
+<a href="#1518" id="1518">1518</a>
+<a href="#1519" id="1519">1519</a>
+<a href="#1520" id="1520">1520</a>
+<a href="#1521" id="1521">1521</a>
+<a href="#1522" id="1522">1522</a>
+<a href="#1523" id="1523">1523</a>
+<a href="#1524" id="1524">1524</a>
+<a href="#1525" id="1525">1525</a>
+<a href="#1526" id="1526">1526</a>
+<a href="#1527" id="1527">1527</a>
+<a href="#1528" id="1528">1528</a>
+<a href="#1529" id="1529">1529</a>
+<a href="#1530" id="1530">1530</a>
+<a href="#1531" id="1531">1531</a>
+<a href="#1532" id="1532">1532</a>
+<a href="#1533" id="1533">1533</a>
+<a href="#1534" id="1534">1534</a>
+<a href="#1535" id="1535">1535</a>
+<a href="#1536" id="1536">1536</a>
+<a href="#1537" id="1537">1537</a>
+<a href="#1538" id="1538">1538</a>
+<a href="#1539" id="1539">1539</a>
+<a href="#1540" id="1540">1540</a>
+<a href="#1541" id="1541">1541</a>
+<a href="#1542" id="1542">1542</a>
+<a href="#1543" id="1543">1543</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::arena_tree::Node;
 <span class="kw">use </span><span class="kw">crate</span>::ctype::{ispunct, isspace};
 <span class="kw">use </span><span class="kw">crate</span>::entity;
-<span class="kw">use </span><span class="kw">crate</span>::nodes::{Ast, AstNode, NodeCode, NodeLink, NodeValue, Sourcepos};
+<span class="kw">use </span><span class="kw">crate</span>::nodes::{Ast, AstNode, NodeCode, NodeFootnoteReference, NodeLink, NodeValue, Sourcepos};
 <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
 </span><span class="kw">use </span><span class="kw">crate</span>::parser::shortcodes::NodeShortCode;
-<span class="kw">use </span><span class="kw">crate</span>::parser::{
-    unwrap_into_2, unwrap_into_copy, AutolinkType, Callback, ComrakOptions, Reference,
-};
+<span class="kw">use </span><span class="kw">crate</span>::parser::{unwrap_into_2, unwrap_into_copy, AutolinkType, Callback, Options, Reference};
 <span class="kw">use </span><span class="kw">crate</span>::scanners;
 <span class="kw">use </span><span class="kw">crate</span>::strings;
+<span class="kw">use </span><span class="kw">crate</span>::strings::Case;
 <span class="kw">use </span>std::cell::{Cell, RefCell};
 <span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::convert::TryFrom;
@@ -1524,7 +1564,7 @@
 
 <span class="kw">pub struct </span>Subject&lt;<span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;r</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;c</span>: <span class="lifetime">&#39;subj</span>, <span class="lifetime">&#39;subj</span>&gt; {
     <span class="kw">pub </span>arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>ComrakOptions,
+    options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
     <span class="kw">pub </span>input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;i </span>[u8],
     line: usize,
     <span class="kw">pub </span>pos: usize,
@@ -1608,7 +1648,7 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;r</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;subj</span>&gt; Subject&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;r</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;subj</span>&gt; {
     <span class="kw">pub fn </span>new(
         arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-        options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>ComrakOptions,
+        options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
         input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;i </span>[u8],
         line: usize,
         block_offset: usize,
@@ -1964,12 +2004,7 @@
         <span class="comment">// At this point the entire delimiter stack from `stack_bottom` up has
         // been scanned for matches, everything left is just text. Pop it all
         // off.
-        </span><span class="kw">while </span><span class="self">self
-            </span>.last_delimiter
-            .map_or(<span class="bool-val">false</span>, |d| d.position &gt;= stack_bottom)
-        {
-            <span class="self">self</span>.remove_delimiter(<span class="self">self</span>.last_delimiter.unwrap());
-        }
+        </span><span class="self">self</span>.remove_delimiters(stack_bottom);
     }
 
     <span class="kw">fn </span>remove_delimiter(<span class="kw-2">&amp;mut </span><span class="self">self</span>, delimiter: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;) {
@@ -1981,6 +2016,15 @@
         }
         <span class="kw">if </span>delimiter.prev.get().is_some() {
             delimiter.prev.get().unwrap().next.set(delimiter.next.get());
+        }
+    }
+
+    <span class="kw">fn </span>remove_delimiters(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stack_bottom: usize) {
+        <span class="kw">while </span><span class="self">self
+            </span>.last_delimiter
+            .map_or(<span class="bool-val">false</span>, |d| d.position &gt;= stack_bottom)
+        {
+            <span class="self">self</span>.remove_delimiter(<span class="self">self</span>.last_delimiter.unwrap());
         }
     }
 
@@ -2699,7 +2743,7 @@
         }
 
         <span class="comment">// Need to normalize both to lookup in refmap and to call callback
-        </span><span class="kw">let </span>lab = strings::normalize_label(<span class="kw-2">&amp;</span>lab);
+        </span><span class="kw">let </span>lab = strings::normalize_label(<span class="kw-2">&amp;</span>lab, Case::DontPreserve);
         <span class="kw">let </span><span class="kw-2">mut </span>reff = <span class="kw">if </span>found_label {
             <span class="self">self</span>.refmap.lookup(<span class="kw-2">&amp;</span>lab)
         } <span class="kw">else </span>{
@@ -2718,43 +2762,81 @@
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>text: <span class="prelude-ty">Option</span>&lt;String&gt; = <span class="prelude-val">None</span>;
+        <span class="kw">let </span>bracket_inl_text = <span class="self">self</span>.brackets[brackets_len - <span class="number">1</span>].inl_text;
+
         <span class="kw">if </span><span class="self">self</span>.options.extension.footnotes
-            &amp;&amp; <span class="kw">match </span><span class="self">self</span>.brackets[brackets_len - <span class="number">1</span>].inl_text.next_sibling() {
+            &amp;&amp; <span class="kw">match </span>bracket_inl_text.next_sibling() {
                 <span class="prelude-val">Some</span>(n) =&gt; {
-                    text = n.data.borrow().value.text().cloned();
-                    text.is_some() &amp;&amp; n.next_sibling().is_none()
+                    <span class="kw">if </span>n.data.borrow().value.text().is_some() {
+                        n.data
+                            .borrow()
+                            .value
+                            .text()
+                            .unwrap()
+                            .as_bytes()
+                            .starts_with(<span class="kw-2">&amp;</span>[<span class="string">b&#39;^&#39;</span>])
+                    } <span class="kw">else </span>{
+                        <span class="bool-val">false
+                    </span>}
                 }
                 <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
             }
         {
-            <span class="kw">let </span>text = text.unwrap();
-            <span class="kw">if </span>text.len() &gt; <span class="number">1 </span>&amp;&amp; text.as_bytes()[<span class="number">0</span>] == <span class="string">b&#39;^&#39; </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>text = String::new();
+            <span class="kw">let </span><span class="kw-2">mut </span>sibling_iterator = bracket_inl_text.following_siblings();
+
+            <span class="self">self</span>.pos = initial_pos;
+
+            <span class="comment">// Skip the initial node, which holds the `[`
+            </span>sibling_iterator.next().unwrap();
+
+            <span class="comment">// The footnote name could have been parsed into multiple text/htmlinline nodes.
+            // For example `[^_foo]` gives `^`, `_`, and `foo`. So pull them together.
+            // Since we&#39;re handling the closing bracket, the only siblings at this point are
+            // related to the footnote name.
+            </span><span class="kw">for </span>sibling <span class="kw">in </span>sibling_iterator {
+                <span class="kw">match </span>sibling.data.borrow().value {
+                    NodeValue::Text(<span class="kw-2">ref </span>literal) | NodeValue::HtmlInline(<span class="kw-2">ref </span>literal) =&gt; {
+                        text.push_str(literal);
+                    }
+                    <span class="kw">_ </span>=&gt; {}
+                };
+            }
+
+            <span class="kw">if </span>text.len() &gt; <span class="number">1 </span>{
                 <span class="kw">let </span>inl = <span class="self">self</span>.make_inline(
-                    NodeValue::FootnoteReference(text[<span class="number">1</span>..].to_string()),
+                    NodeValue::FootnoteReference(NodeFootnoteReference {
+                        name: text[<span class="number">1</span>..].to_string(),
+                        ref_num: <span class="number">0</span>,
+                        ix: <span class="number">0</span>,
+                    }),
                     <span class="comment">// Overridden immediately below.
                     </span><span class="self">self</span>.pos,
                     <span class="self">self</span>.pos,
                 );
-                inl.data.borrow_mut().sourcepos.start.column = <span class="self">self</span>.brackets[brackets_len - <span class="number">1</span>]
-                    .inl_text
-                    .data
-                    .borrow()
-                    .sourcepos
-                    .start
-                    .column;
+                inl.data.borrow_mut().sourcepos.start.column =
+                    bracket_inl_text.data.borrow().sourcepos.start.column;
                 inl.data.borrow_mut().sourcepos.end.column = usize::try_from(
                     <span class="self">self</span>.pos <span class="kw">as </span>isize + <span class="self">self</span>.column_offset + <span class="self">self</span>.block_offset <span class="kw">as </span>isize,
                 )
                 .unwrap();
-                <span class="self">self</span>.brackets[brackets_len - <span class="number">1</span>].inl_text.insert_before(inl);
-                <span class="self">self</span>.brackets[brackets_len - <span class="number">1</span>]
-                    .inl_text
-                    .next_sibling()
-                    .unwrap()
-                    .detach();
-                <span class="self">self</span>.brackets[brackets_len - <span class="number">1</span>].inl_text.detach();
-                <span class="self">self</span>.process_emphasis(<span class="self">self</span>.brackets[brackets_len - <span class="number">1</span>].position);
+                bracket_inl_text.insert_before(inl);
+
+                <span class="comment">// detach all the nodes, including bracket_inl_text
+                </span>sibling_iterator = bracket_inl_text.following_siblings();
+                <span class="kw">for </span>sibling <span class="kw">in </span>sibling_iterator {
+                    <span class="kw">match </span>sibling.data.borrow().value {
+                        NodeValue::Text(<span class="kw">_</span>) | NodeValue::HtmlInline(<span class="kw">_</span>) =&gt; {
+                            sibling.detach();
+                        }
+                        <span class="kw">_ </span>=&gt; {}
+                    };
+                }
+
+                <span class="comment">// We don&#39;t need to process emphasis for footnote names, so cleanup
+                // any outstanding delimiters
+                </span><span class="self">self</span>.remove_delimiters(<span class="self">self</span>.brackets[brackets_len - <span class="number">1</span>].position);
+
                 <span class="self">self</span>.brackets.pop();
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             }
