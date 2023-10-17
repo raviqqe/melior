@@ -81,7 +81,7 @@
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::PassManager;
-<span class="kw">use crate</span>::{pass::Pass, string_ref::StringRef};
+<span class="kw">use crate</span>::{pass::Pass, string_ref::StringRef, Context};
 <span class="kw">use </span>mlir_sys::{
     mlirOpPassManagerAddOwnedPass, mlirOpPassManagerGetNestedUnder, mlirPrintPassPipeline,
     MlirOpPassManager, MlirStringRef,
@@ -94,19 +94,19 @@
 
 <span class="doccomment">/// An operation pass manager.
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>OperationPassManager&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">pub struct </span>OperationPassManager&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     raw: MlirOpPassManager,
-    _parent: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>PassManager&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    _parent: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>PassManager&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationPassManager&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; OperationPassManager&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Gets an operation pass manager for nested operations corresponding to a
     /// given name.
-    </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_raw(mlirOpPassManagerGetNestedUnder(
                 <span class="self">self</span>.raw,
-                StringRef::from(name).to_raw(),
+                StringRef::from_str(context, name).to_raw(),
             ))
         }
     }
@@ -134,7 +134,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>OperationPassManager&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>OperationPassManager&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">let </span><span class="kw-2">mut </span>data = (formatter, <span class="prelude-val">Ok</span>(()));
 

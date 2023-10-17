@@ -240,6 +240,8 @@
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
 <a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::OperationPassManager;
 <span class="kw">use crate</span>::{
     context::Context, ir::Module, logical_result::LogicalResult, pass::Pass, string_ref::StringRef,
@@ -270,11 +272,11 @@
 
     <span class="doccomment">/// Gets an operation pass manager for nested operations corresponding to a
     /// given name.
-    </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; OperationPassManager {
+    </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, name: <span class="kw-2">&amp;</span>str) -&gt; OperationPassManager {
         <span class="kw">unsafe </span>{
             OperationPassManager::from_raw(mlirPassManagerGetNestedUnder(
                 <span class="self">self</span>.raw,
-                StringRef::from(name).to_raw(),
+                StringRef::from_str(context, name).to_raw(),
             ))
         }
     }
@@ -420,15 +422,15 @@
 
         <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
         manager
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="kw-2">&amp;</span>context, <span class="string">&quot;func.func&quot;</span>)
             .add_pass(pass::transform::create_print_op_stats());
 
         <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
 
         <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
         manager
-            .nested_under(<span class="string">&quot;builtin.module&quot;</span>)
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="kw-2">&amp;</span>context, <span class="string">&quot;builtin.module&quot;</span>)
+            .nested_under(<span class="kw-2">&amp;</span>context, <span class="string">&quot;func.func&quot;</span>)
             .add_pass(pass::transform::create_print_op_stats());
 
         <span class="macro">assert_eq!</span>(manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
@@ -438,7 +440,7 @@
     </span><span class="kw">fn </span>print_pass_pipeline() {
         <span class="kw">let </span>context = create_test_context();
         <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
-        <span class="kw">let </span>function_manager = manager.nested_under(<span class="string">&quot;func.func&quot;</span>);
+        <span class="kw">let </span>function_manager = manager.nested_under(<span class="kw-2">&amp;</span>context, <span class="string">&quot;func.func&quot;</span>);
 
         function_manager.add_pass(pass::transform::create_print_op_stats());
 
@@ -458,6 +460,7 @@
         <span class="kw">let </span>manager = PassManager::new(<span class="kw-2">&amp;</span>context);
 
         <span class="macro">insta::assert_display_snapshot!</span>(parse_pass_pipeline(
+            <span class="kw-2">&amp;</span>context,
             manager.as_operation_pass_manager(),
             <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}),\
                 func.func(print-op-stats{json=false}))&quot;
@@ -468,6 +471,7 @@
 
         <span class="macro">assert_eq!</span>(
             parse_pass_pipeline(
+                <span class="kw-2">&amp;</span>context,
                 manager.as_operation_pass_manager(),
                 <span class="string">&quot;builtin.module(func.func(print-op-stats{json=false}),\
                 func.func(print-op-stats{json=false}))&quot;

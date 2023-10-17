@@ -367,6 +367,7 @@
 <a href="#367" id="367">367</a>
 <a href="#368" id="368">368</a>
 <a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! `cf` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -388,7 +389,7 @@
     message: <span class="kw-2">&amp;</span>str,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;cf.assert&quot;</span>, location)
+    OperationBuilder::new(context, <span class="string">&quot;cf.assert&quot;</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
             Identifier::new(context, <span class="string">&quot;msg&quot;</span>),
             StringAttribute::new(context, message).into(),
@@ -399,11 +400,12 @@
 
 <span class="doccomment">/// Creates a `cf.br` operation.
 </span><span class="kw">pub fn </span>br&lt;<span class="lifetime">&#39;c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
     successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;,
     destination_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;cf.br&quot;</span>, location)
+    OperationBuilder::new(context, <span class="string">&quot;cf.br&quot;</span>, location)
         .add_operands(destination_operands)
         .add_successors(<span class="kw-2">&amp;</span>[successor])
         .build()
@@ -419,7 +421,7 @@
     false_successor_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;cf.cond_br&quot;</span>, location)
+    OperationBuilder::new(context, <span class="string">&quot;cf.cond_br&quot;</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
             Identifier::new(context, <span class="string">&quot;operand_segment_sizes&quot;</span>),
             DenseI32ArrayAttribute::new(
@@ -458,7 +460,7 @@
         .chain(case_destinations.iter().copied())
         .unzip();
 
-    <span class="prelude-val">Ok</span>(OperationBuilder::new(<span class="string">&quot;cf.switch&quot;</span>, location)
+    <span class="prelude-val">Ok</span>(OperationBuilder::new(context, <span class="string">&quot;cf.switch&quot;</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[
             (
                 Identifier::new(context, <span class="string">&quot;case_values&quot;</span>),
@@ -552,7 +554,7 @@
 
                 block.append_operation(assert(<span class="kw-2">&amp;</span>context, operand, <span class="string">&quot;assert message&quot;</span>, location));
 
-                block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
+                block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
 
                 <span class="kw">let </span>region = Region::new();
                 region.append_block(block);
@@ -591,9 +593,9 @@
                     .result(<span class="number">0</span>)
                     .unwrap();
 
-                block.append_operation(br(<span class="kw-2">&amp;</span>dest_block, <span class="kw-2">&amp;</span>[operand.into()], location));
+                block.append_operation(br(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>dest_block, <span class="kw-2">&amp;</span>[operand.into()], location));
 
-                dest_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
+                dest_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
 
                 <span class="kw">let </span>region = Region::new();
                 region.append_block(block);
@@ -658,8 +660,8 @@
                     location,
                 ));
 
-                true_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
-                false_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
+                true_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
+                false_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
 
                 <span class="kw">let </span>region = Region::new();
                 region.append_block(block);
@@ -717,9 +719,9 @@
                     .unwrap(),
                 );
 
-                default_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
-                first_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
-                second_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
+                default_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
+                first_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
+                second_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
 
                 <span class="kw">let </span>region = Region::new();
                 region.append_block(block);

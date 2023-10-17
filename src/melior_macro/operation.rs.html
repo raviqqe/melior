@@ -122,6 +122,12 @@
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
 <a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>proc_macro2::Ident;
 <span class="kw">use </span>quote::quote;
@@ -137,23 +143,25 @@
         stream.extend(TokenStream::from(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #document]
             </span><span class="kw">pub fn </span>#name&lt;<span class="lifetime">&#39;c</span>&gt;(
+                context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
                 lhs: <span class="kw">crate</span>::ir::Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
                 rhs: <span class="kw">crate</span>::ir::Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
                 location: <span class="kw">crate</span>::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;,
             ) -&gt; <span class="kw">crate</span>::ir::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-                binary_operator(#operation_name, lhs, rhs, location)
+                binary_operator(context, #operation_name, lhs, rhs, location)
             }
         }));
     }
 
     stream.extend(TokenStream::from(<span class="macro">quote! </span>{
         <span class="kw">fn </span>binary_operator&lt;<span class="lifetime">&#39;c</span>&gt;(
+            context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
             name: <span class="kw-2">&amp;</span>str,
             lhs: <span class="kw">crate</span>::ir::Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
             rhs: <span class="kw">crate</span>::ir::Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
             location: <span class="kw">crate</span>::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;,
         ) -&gt; <span class="kw">crate</span>::ir::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-            <span class="kw">crate</span>::ir::operation::OperationBuilder::new(name, location)
+            <span class="kw">crate</span>::ir::operation::OperationBuilder::new(<span class="kw-2">&amp;</span>context, name, location)
                 .add_operands(<span class="kw-2">&amp;</span>[lhs, rhs])
                 .enable_result_type_inference()
                 .build()
@@ -173,21 +181,23 @@
         stream.extend(TokenStream::from(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #document]
             </span><span class="kw">pub fn </span>#name&lt;<span class="lifetime">&#39;c</span>&gt;(
+                context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
                 value: <span class="kw">crate</span>::ir::Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
                 location: <span class="kw">crate</span>::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;,
             ) -&gt; <span class="kw">crate</span>::ir::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-                unary_operator(#operation_name, value, location)
+                unary_operator(context, #operation_name, value, location)
             }
         }));
     }
 
     stream.extend(TokenStream::from(<span class="macro">quote! </span>{
         <span class="kw">fn </span>unary_operator&lt;<span class="lifetime">&#39;c</span>&gt;(
+            context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
             name: <span class="kw-2">&amp;</span>str,
             value: <span class="kw">crate</span>::ir::Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
             location: <span class="kw">crate</span>::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;,
         ) -&gt; <span class="kw">crate</span>::ir::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-            <span class="kw">crate</span>::ir::operation::OperationBuilder::new(name, location)
+            <span class="kw">crate</span>::ir::operation::OperationBuilder::new(<span class="kw-2">&amp;</span>context, name, location)
                 .add_operands(<span class="kw-2">&amp;</span>[value])
                 .enable_result_type_inference()
                 .build()
@@ -210,23 +220,25 @@
         stream.extend(TokenStream::from(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #document]
             </span><span class="kw">pub fn </span>#name&lt;<span class="lifetime">&#39;c</span>&gt;(
+                context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
                 value: <span class="kw">crate</span>::ir::Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
                 r#type: <span class="kw">crate</span>::ir::Type&lt;<span class="lifetime">&#39;c</span>&gt;,
                 location: <span class="kw">crate</span>::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;,
             ) -&gt; <span class="kw">crate</span>::ir::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-                typed_unary_operator(#operation_name, value, r#type, location)
+                typed_unary_operator(context, #operation_name, value, r#type, location)
             }
         }));
     }
 
     stream.extend(TokenStream::from(<span class="macro">quote! </span>{
         <span class="kw">fn </span>typed_unary_operator&lt;<span class="lifetime">&#39;c</span>&gt;(
+            context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
             name: <span class="kw-2">&amp;</span>str,
             value: <span class="kw">crate</span>::ir::Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
             r#type: <span class="kw">crate</span>::ir::Type&lt;<span class="lifetime">&#39;c</span>&gt;,
             location: <span class="kw">crate</span>::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;,
         ) -&gt; <span class="kw">crate</span>::ir::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-            <span class="kw">crate</span>::ir::operation::OperationBuilder::new(name, location)
+            <span class="kw">crate</span>::ir::operation::OperationBuilder::new(<span class="kw-2">&amp;</span>context, name, location)
                 .add_operands(<span class="kw-2">&amp;</span>[value])
                 .add_results(<span class="kw-2">&amp;</span>[r#type])
                 .build()

@@ -209,7 +209,7 @@
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_raw(mlirLocationFileLineColGet(
                 context.to_raw(),
-                StringRef::from(filename).to_raw(),
+                StringRef::from_str(context, filename).to_raw(),
                 line <span class="kw">as </span>u32,
                 column <span class="kw">as </span>u32,
             ))
@@ -233,7 +233,7 @@
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_raw(mlirLocationNameGet(
                 context.to_raw(),
-                StringRef::from(name).to_raw(),
+                StringRef::from_str(context, name).to_raw(),
                 child.to_raw(),
             ))
         }

@@ -267,22 +267,13 @@
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{
     diagnostic::{Diagnostic, DiagnosticHandlerId},
     dialect::{Dialect, DialectRegistry},
     logical_result::LogicalResult,
     string_ref::StringRef,
 };
+<span class="kw">use </span>dashmap::DashMap;
 <span class="kw">use </span>mlir_sys::{
     mlirContextAppendDialectRegistry, mlirContextAttachDiagnosticHandler, mlirContextCreate,
     mlirContextDestroy, mlirContextDetachDiagnosticHandler, mlirContextEnableMultithreading,
@@ -291,7 +282,10 @@
     mlirContextIsRegisteredOperation, mlirContextLoadAllAvailableDialects,
     mlirContextSetAllowUnregisteredDialects, MlirContext, MlirDiagnostic, MlirLogicalResult,
 };
-<span class="kw">use </span>std::{ffi::c_void, marker::PhantomData, mem::transmute, ops::Deref};
+<span class="kw">use </span>std::{
+    ffi::{c_void, CString},
+    marker::PhantomData,
+};
 
 <span class="doccomment">/// A context of IR, dialects, and passes.
 ///
@@ -300,6 +294,9 @@
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Context {
     raw: MlirContext,
+    <span class="comment">// We need to pass null-terminated strings to functions in the MLIR API although
+    // Rust&#39;s strings are not.
+    </span>string_cache: DashMap&lt;CString, ()&gt;,
 }
 
 <span class="kw">impl </span>Context {
@@ -307,6 +304,7 @@
     </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             raw: <span class="kw">unsafe </span>{ mlirContextCreate() },
+            string_cache: Default::default(),
         }
     }
 
@@ -325,7 +323,7 @@
         <span class="kw">unsafe </span>{
             Dialect::from_raw(mlirContextGetOrLoadDialect(
                 <span class="self">self</span>.raw,
-                StringRef::from(name).to_raw(),
+                StringRef::from_str(<span class="self">self</span>, name).to_raw(),
             ))
         }
     }
@@ -357,7 +355,9 @@
 
     <span class="doccomment">/// Returns `true` if a given operation is registered in a context.
     </span><span class="kw">pub fn </span>is_registered_operation(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; bool {
-        <span class="kw">unsafe </span>{ mlirContextIsRegisteredOperation(<span class="self">self</span>.raw, StringRef::from(name).to_raw()) }
+        <span class="kw">unsafe </span>{
+            mlirContextIsRegisteredOperation(<span class="self">self</span>.raw, StringRef::from_str(<span class="self">self</span>, name).to_raw())
+        }
     }
 
     <span class="doccomment">/// Converts a context into a raw object.
@@ -395,6 +395,10 @@
     </span><span class="kw">pub fn </span>detach_diagnostic_handler(<span class="kw-2">&amp;</span><span class="self">self</span>, id: DiagnosticHandlerId) {
         <span class="kw">unsafe </span>{ mlirContextDetachDiagnosticHandler(<span class="self">self</span>.to_raw(), id.to_raw()) }
     }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>string_cache(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>DashMap&lt;CString, ()&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.string_cache
+    }
 }
 
 <span class="kw">impl </span>Drop <span class="kw">for </span>Context {
@@ -425,22 +429,6 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; ContextRef&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="doccomment">/// Gets a context.
-    ///
-    /// This function is different from `deref` because the correct lifetime is
-    /// kept for the return type.
-    ///
-    /// # Safety
-    ///
-    /// The returned reference is safe to use only in the lifetime scope of the
-    /// context reference.
-    </span><span class="kw">pub unsafe fn </span>to_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context {
-        <span class="comment">// As we can&#39;t deref ContextRef&lt;&#39;a&gt; into `&amp;&#39;a Context`, we forcibly cast its
-        // lifetime here to extend it from the lifetime of `ObjectRef&lt;&#39;a&gt;` itself into
-        // `&#39;a`.
-        </span>transmute(<span class="self">self</span>)
-    }
-
     <span class="doccomment">/// Creates a context reference from a raw object.
     ///
     /// # Safety
@@ -451,14 +439,6 @@
             raw,
             _reference: Default::default(),
         }
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>ContextRef&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">type </span>Target = Context;
-
-    <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
-        <span class="kw">unsafe </span>{ transmute(<span class="self">self</span>) }
     }
 }
 

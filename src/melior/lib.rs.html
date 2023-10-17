@@ -272,6 +272,14 @@
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
 <a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../README.md&quot;</span>)]
 
 </span><span class="kw">extern crate </span><span class="self">self </span><span class="kw">as </span>melior;
@@ -348,12 +356,17 @@
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
 
             <span class="kw">let </span>sum = block.append_operation(arith::addi(
+                <span class="kw-2">&amp;</span>context,
                 block.argument(<span class="number">0</span>).unwrap().into(),
                 block.argument(<span class="number">1</span>).unwrap().into(),
                 location,
             ));
 
-            block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[sum.result(<span class="number">0</span>).unwrap().into()], location));
+            block.append_operation(func::r#return(
+                <span class="kw-2">&amp;</span>context,
+                <span class="kw-2">&amp;</span>[sum.result(<span class="number">0</span>).unwrap().into()],
+                location,
+            ));
 
             <span class="kw">let </span>region = Region::new();
             region.append_block(block);
@@ -398,7 +411,7 @@
             ));
 
             <span class="kw">let </span>dim = function_block.append_operation(
-                OperationBuilder::new(<span class="string">&quot;memref.dim&quot;</span>, location)
+                OperationBuilder::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;memref.dim&quot;</span>, location)
                     .add_operands(<span class="kw-2">&amp;</span>[
                         function_block.argument(<span class="number">0</span>).unwrap().into(),
                         zero.result(<span class="number">0</span>).unwrap().into(),
@@ -419,7 +432,7 @@
                 <span class="kw">let </span>f32_type = Type::float32(<span class="kw-2">&amp;</span>context);
 
                 <span class="kw">let </span>lhs = loop_block.append_operation(
-                    OperationBuilder::new(<span class="string">&quot;memref.load&quot;</span>, location)
+                    OperationBuilder::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;memref.load&quot;</span>, location)
                         .add_operands(<span class="kw-2">&amp;</span>[
                             function_block.argument(<span class="number">0</span>).unwrap().into(),
                             loop_block.argument(<span class="number">0</span>).unwrap().into(),
@@ -429,7 +442,7 @@
                 );
 
                 <span class="kw">let </span>rhs = loop_block.append_operation(
-                    OperationBuilder::new(<span class="string">&quot;memref.load&quot;</span>, location)
+                    OperationBuilder::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;memref.load&quot;</span>, location)
                         .add_operands(<span class="kw-2">&amp;</span>[
                             function_block.argument(<span class="number">1</span>).unwrap().into(),
                             loop_block.argument(<span class="number">0</span>).unwrap().into(),
@@ -439,13 +452,14 @@
                 );
 
                 <span class="kw">let </span>add = loop_block.append_operation(arith::addf(
+                    <span class="kw-2">&amp;</span>context,
                     lhs.result(<span class="number">0</span>).unwrap().into(),
                     rhs.result(<span class="number">0</span>).unwrap().into(),
                     location,
                 ));
 
                 loop_block.append_operation(
-                    OperationBuilder::new(<span class="string">&quot;memref.store&quot;</span>, location)
+                    OperationBuilder::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;memref.store&quot;</span>, location)
                         .add_operands(<span class="kw-2">&amp;</span>[
                             add.result(<span class="number">0</span>).unwrap().into(),
                             function_block.argument(<span class="number">0</span>).unwrap().into(),
@@ -454,10 +468,11 @@
                         .build(),
                 );
 
-                loop_block.append_operation(scf::r#yield(<span class="kw-2">&amp;</span>[], location));
+                loop_block.append_operation(scf::r#yield(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
             }
 
             function_block.append_operation(scf::r#for(
+                <span class="kw-2">&amp;</span>context,
                 zero.result(<span class="number">0</span>).unwrap().into(),
                 dim.result(<span class="number">0</span>).unwrap().into(),
                 one.result(<span class="number">0</span>).unwrap().into(),
@@ -469,7 +484,7 @@
                 location,
             ));
 
-            function_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
+            function_block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
 
             <span class="kw">let </span>function_region = Region::new();
             function_region.append_block(function_block);
@@ -509,7 +524,7 @@
             rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
         ) -&gt; Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
             block
-                .append_operation(arith::addi(lhs, rhs, Location::unknown(context)))
+                .append_operation(arith::addi(context, lhs, rhs, Location::unknown(context)))
                 .result(<span class="number">0</span>)
                 .unwrap()
                 .into()
@@ -525,6 +540,7 @@
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
 
                 block.append_operation(func::r#return(
+                    <span class="kw-2">&amp;</span>context,
                     <span class="kw-2">&amp;</span>[compile_add(
                         <span class="kw-2">&amp;</span>context,
                         <span class="kw-2">&amp;</span>block,

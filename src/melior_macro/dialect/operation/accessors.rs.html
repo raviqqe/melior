@@ -341,7 +341,7 @@
                             <span class="kw">let </span>attribute =
                                 ::melior::ir::attribute::DenseI32ArrayAttribute::&lt;<span class="lifetime">&#39;c</span>&gt;::try_from(
                                     <span class="self">self</span>.operation
-                                        .attribute(#attribute_name)<span class="question-mark">?
+                                        .attribute(context, #attribute_name)<span class="question-mark">?
                                 </span>)<span class="question-mark">?</span>;
                             <span class="kw">let </span>start = (<span class="number">0</span>..#index)
                                 .map(|index| attribute.element(index))
@@ -406,11 +406,11 @@
                 <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
                 <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>{
-                    <span class="macro">quote! </span>{ <span class="self">self</span>.operation.attribute(#name).is_some() }
+                    <span class="macro">quote! </span>{ <span class="self">self</span>.operation.attribute(context, #name).is_some() }
                 } <span class="kw">else </span>{
                     <span class="macro">quote! </span>{
                         <span class="self">self</span>.operation
-                            .attribute(#name)<span class="question-mark">?
+                            .attribute(context, #name)<span class="question-mark">?
                             </span>.try_into()
                             .map_err(::melior::Error::from)
                     }
@@ -426,7 +426,7 @@
 
                 <span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>|| constraint.is_optional()<span class="question-mark">? </span>{
                     <span class="prelude-val">Some</span>(<span class="macro">quote! </span>{
-                      <span class="self">self</span>.operation.remove_attribute(#name)
+                      <span class="self">self</span>.operation.remove_attribute(context, #name)
                     })
                 } <span class="kw">else </span>{
                     <span class="prelude-val">None
@@ -445,14 +445,14 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>{
             <span class="macro">quote! </span>{
                 <span class="kw">if </span>value {
-                  <span class="self">self</span>.operation.set_attribute(#name, Attribute::unit(<span class="kw-2">&amp;</span><span class="self">self</span>.operation.context()));
+                  <span class="self">self</span>.operation.set_attribute(context, #name, Attribute::unit(<span class="kw-2">&amp;</span><span class="self">self</span>.operation.context()));
                 } <span class="kw">else </span>{
-                  <span class="self">self</span>.operation.remove_attribute(#name)
+                  <span class="self">self</span>.operation.remove_attribute(context, #name)
                 }
             }
         } <span class="kw">else </span>{
             <span class="macro">quote! </span>{
-                <span class="self">self</span>.operation.set_attribute(#name, <span class="kw-2">&amp;</span>value.into());
+                <span class="self">self</span>.operation.set_attribute(context, #name, <span class="kw-2">&amp;</span>value.into());
             }
         }))
     }
@@ -465,7 +465,7 @@
                 <span class="kw">let </span>parameter_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.parameter_type()<span class="question-mark">?</span>;
 
                 <span class="macro">quote! </span>{
-                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: #parameter_type) {
+                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context, value: #parameter_type) {
                         #body
                     }
                 }
@@ -477,7 +477,7 @@
             <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;remove_{}&quot;</span>, <span class="self">self</span>.name))<span class="question-mark">?</span>;
             <span class="self">self</span>.remover_impl()<span class="question-mark">?</span>.map(|body| {
                 <span class="macro">quote! </span>{
-                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {
+                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {
                         #body
                     }
                 }
@@ -488,7 +488,7 @@
             <span class="kw">let </span>return_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.return_type()<span class="question-mark">?</span>;
             <span class="self">self</span>.getter_impl()<span class="question-mark">?</span>.map(|body| {
                 <span class="macro">quote! </span>{
-                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; #return_type {
+                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context) -&gt; #return_type {
                         #body
                     }
                 }

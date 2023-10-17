@@ -149,6 +149,10 @@
 <a href="#149" id="149">149</a>
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Utility functions.
 
 </span><span class="kw">use crate</span>::{
@@ -184,13 +188,17 @@
 }
 
 <span class="doccomment">/// Parses a pass pipeline.
-</span><span class="kw">pub fn </span>parse_pass_pipeline(manager: pass::OperationPassManager, source: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+</span><span class="kw">pub fn </span>parse_pass_pipeline(
+    context: <span class="kw-2">&amp;</span>Context,
+    manager: pass::OperationPassManager,
+    source: <span class="kw-2">&amp;</span>str,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>error_message = <span class="prelude-val">None</span>;
 
     <span class="kw">let </span>result = LogicalResult::from_raw(<span class="kw">unsafe </span>{
         mlirParsePassPipeline(
             manager.to_raw(),
-            StringRef::from(source).to_raw(),
+            StringRef::from_str(context, source).to_raw(),
             <span class="prelude-val">Some</span>(handle_parse_error),
             <span class="kw-2">&amp;mut </span>error_message <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_ as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
         )

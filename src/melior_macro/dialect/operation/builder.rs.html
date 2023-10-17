@@ -260,6 +260,7 @@
 <a href="#260" id="260">260</a>
 <a href="#261" id="261">261</a>
 <a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>type_state_item;
 <span class="kw">mod </span>type_state_list;
 
@@ -313,7 +314,7 @@
 
                     <span class="macro">quote! </span>{
                         <span class="kw-2">&amp;</span>[(
-                            ::melior::ir::Identifier::new(<span class="kw">unsafe </span>{ <span class="self">self</span>.context.to_ref() }, #name_string),
+                            ::melior::ir::Identifier::new(<span class="self">self</span>.context, #name_string),
                             #name.into(),
                         )]
                     }
@@ -404,7 +405,7 @@
             <span class="attr">#[doc = #doc]
             </span><span class="kw">pub struct </span>#builder_ident &lt;<span class="lifetime">&#39;c</span>, #(#iter_arguments),* &gt; {
                 builder: ::melior::ir::operation::OperationBuilder&lt;<span class="lifetime">&#39;c</span>&gt;,
-                context: ::melior::ContextRef&lt;<span class="lifetime">&#39;c</span>&gt;,
+                context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context,
                 #(#phantom_fields),*
             }
 
@@ -442,10 +443,10 @@
 
         <span class="macro">quote! </span>{
             <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
-                <span class="kw">pub fn </span>new(location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
+                <span class="kw">pub fn </span>new(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context, location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; <span class="self">Self </span>{
                     <span class="self">Self </span>{
-                        context: location.context(),
-                        builder: ::melior::ir::operation::OperationBuilder::new(#name, location),
+                        context,
+                        builder: ::melior::ir::operation::OperationBuilder::new(<span class="kw-2">&amp;</span>context, #name, location),
                         #(#phantoms),*
                     }
                 }
@@ -458,9 +459,10 @@
         <span class="kw">let </span>arguments = <span class="self">self</span>.type_state.arguments_all_set(<span class="bool-val">false</span>);
         <span class="macro">quote! </span>{
             <span class="kw">pub fn </span>builder(
+                context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context,
                 location: ::melior::ir::Location&lt;<span class="lifetime">&#39;c</span>&gt;
             ) -&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
-                #builder_ident::new(location)
+                #builder_ident::new(context, location)
             }
         }
     }
@@ -491,8 +493,8 @@
         <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
             <span class="attr">#[allow(clippy::too_many_arguments)]
             #[doc = #doc]
-            </span><span class="kw">pub fn </span>#name&lt;<span class="lifetime">&#39;c</span>&gt;(#(#arguments),<span class="kw-2">*</span>) -&gt; #class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
-                #class_name::builder(location)#(#builder_calls)<span class="kw-2">*</span>.build()
+            </span><span class="kw">pub fn </span>#name&lt;<span class="lifetime">&#39;c</span>&gt;(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context, #(#arguments),<span class="kw-2">*</span>) -&gt; #class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
+                #class_name::builder(context, location)#(#builder_calls)<span class="kw-2">*</span>.build()
             }
         })
     }

@@ -228,6 +228,7 @@
 <a href="#228" id="228">228</a>
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Experimental dialect operations and their builders generated automatically
 //! from TableGen files.
 
@@ -359,10 +360,10 @@
 
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
         pass_manager
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(context, <span class="string">&quot;func.func&quot;</span>)
             .add_pass(pass::conversion::create_arith_to_llvm());
         pass_manager
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(context, <span class="string">&quot;func.func&quot;</span>)
             .add_pass(pass::conversion::create_index_to_llvm());
         pass_manager.add_pass(pass::conversion::create_scf_to_control_flow());
         pass_manager.add_pass(pass::conversion::create_control_flow_to_llvm());
@@ -422,6 +423,7 @@
 
             block.append_operation(
                 llvm::alloca(
+                    <span class="kw-2">&amp;</span>context,
                     dialect::llvm::r#type::pointer(i64_type.into(), <span class="number">0</span>).into(),
                     alloca_size,
                     location,
@@ -429,7 +431,7 @@
                 .into(),
             );
 
-            block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
+            block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
         });
     }
 
@@ -445,7 +447,7 @@
             <span class="kw">let </span>i64_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
 
             block.append_operation(
-                llvm::AllocaOpBuilder::new(location)
+                llvm::AllocaOpBuilder::new(<span class="kw-2">&amp;</span>context, location)
                     .alignment(IntegerAttribute::new(<span class="number">8</span>, i64_type.into()))
                     .elem_type(TypeAttribute::new(i64_type.into()))
                     .array_size(alloca_size)
@@ -454,7 +456,7 @@
                     .into(),
             );
 
-            block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
+            block.append_operation(func::r#return(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));
         });
     }
 }

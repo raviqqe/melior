@@ -92,9 +92,19 @@
 <a href="#92" id="92">92</a>
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>dashmap::DashMap;
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::Context;
 <span class="kw">use </span>mlir_sys::{mlirStringRefCreateFromCString, mlirStringRefEqual, MlirStringRef};
-<span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>std::{
     ffi::CString,
     marker::PhantomData,
@@ -102,24 +112,31 @@
     str::{<span class="self">self</span>, Utf8Error},
 };
 
-<span class="comment">// We need to pass null-terminated strings to functions in the MLIR API although
-// Rust&#39;s strings are not.
-</span><span class="kw">static </span>STRING_CACHE: Lazy&lt;DashMap&lt;CString, ()&gt;&gt; = Lazy::new(Default::default);
-
 <span class="doccomment">/// A string reference.
 </span><span class="comment">// https://mlir.llvm.org/docs/CAPI/#stringref
 //
 // TODO The documentation says string refs do not have to be null-terminated.
 // But it looks like some functions do not handle strings not null-terminated?
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>StringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">pub struct </span>StringRef&lt;<span class="lifetime">&#39;c</span>&gt; {
     raw: MlirStringRef,
-    _parent: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>()&gt;,
+    _parent: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; StringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; StringRef&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">pub fn </span>from_str(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, string: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>string = context
+            .string_cache()
+            .entry(CString::new(string).unwrap())
+            .or_default()
+            .key()
+            .as_ptr();
+
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirStringRefCreateFromCString(string)) }
+    }
+
     <span class="doccomment">/// Converts a string reference into a `str`.
-    </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, Utf8Error&gt; {
+    </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>str, Utf8Error&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>bytes = slice::from_raw_parts(<span class="self">self</span>.raw.data <span class="kw">as </span><span class="kw-2">*mut </span>u8, <span class="self">self</span>.raw.length);
 
@@ -157,33 +174,38 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Eq <span class="kw">for </span>StringRef&lt;<span class="lifetime">&#39;a</span>&gt; {}
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>StringRef&lt;<span class="lifetime">&#39;static</span>&gt; {
-    <span class="kw">fn </span>from(string: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>entry = STRING_CACHE
-            .entry(CString::new(string).unwrap())
-            .or_insert_with(Default::default);
-
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirStringRefCreateFromCString(entry.key().as_ptr())) }
-    }
-}
-
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>equal() {
-        <span class="macro">assert_eq!</span>(StringRef::from(<span class="string">&quot;foo&quot;</span>), StringRef::from(<span class="string">&quot;foo&quot;</span>));
+        <span class="kw">let </span>context = Context::new();
+
+        <span class="macro">assert_eq!</span>(
+            StringRef::from_str(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringRef::from_str(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>)
+        );
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>equal_str() {
-        <span class="macro">assert_eq!</span>(StringRef::from(<span class="string">&quot;foo&quot;</span>).as_str().unwrap(), <span class="string">&quot;foo&quot;</span>);
+        <span class="kw">let </span>context = Context::new();
+
+        <span class="macro">assert_eq!</span>(
+            StringRef::from_str(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>).as_str().unwrap(),
+            <span class="string">&quot;foo&quot;
+        </span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>not_equal() {
-        <span class="macro">assert_ne!</span>(StringRef::from(<span class="string">&quot;foo&quot;</span>), StringRef::from(<span class="string">&quot;bar&quot;</span>));
+        <span class="kw">let </span>context = Context::new();
+
+        <span class="macro">assert_ne!</span>(
+            StringRef::from_str(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringRef::from_str(<span class="kw-2">&amp;</span>context, <span class="string">&quot;bar&quot;</span>)
+        );
     }
 }
 </code></pre></div></section></main></body></html>

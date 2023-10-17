@@ -258,6 +258,14 @@
 <a href="#258" id="258">258</a>
 <a href="#259" id="259">259</a>
 <a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! `index` dialect.
 
 </span><span class="kw">use </span><span class="kw">super</span>::arith::CmpiPredicate;
@@ -277,7 +285,7 @@
     value: IntegerAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;index.constant&quot;</span>, location)
+    OperationBuilder::new(context, <span class="string">&quot;index.constant&quot;</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;value&quot;</span>), value.into())])
         .enable_result_type_inference()
         .build()
@@ -291,7 +299,7 @@
     rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
     location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
 ) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;index.cmp&quot;</span>, location)
+    OperationBuilder::new(context, <span class="string">&quot;index.cmp&quot;</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
             Identifier::new(context, <span class="string">&quot;pred&quot;</span>),
             Attribute::parse(
@@ -365,6 +373,7 @@
         <span class="kw">let </span>name = name.as_string_ref().as_str().unwrap();
 
         block.append_operation(func::r#return(
+            context,
             <span class="kw-2">&amp;</span>[block.append_operation(operation).result(<span class="number">0</span>).unwrap().into()],
             location,
         ));
@@ -440,6 +449,7 @@
                 <span class="kw-2">&amp;</span>context,
                 |block| {
                     casts(
+                        <span class="kw-2">&amp;</span>context,
                         block.argument(<span class="number">0</span>).unwrap().into(),
                         IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into(),
                         Location::unknown(<span class="kw-2">&amp;</span>context),
@@ -461,6 +471,7 @@
                 <span class="kw-2">&amp;</span>context,
                 |block| {
                     castu(
+                        <span class="kw-2">&amp;</span>context,
                         block.argument(<span class="number">0</span>).unwrap().into(),
                         IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into(),
                         Location::unknown(<span class="kw-2">&amp;</span>context),
@@ -489,12 +500,17 @@
             <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location), (integer_type, location)]);
 
             <span class="kw">let </span>sum = block.append_operation(add(
+                <span class="kw-2">&amp;</span>context,
                 block.argument(<span class="number">0</span>).unwrap().into(),
                 block.argument(<span class="number">1</span>).unwrap().into(),
                 location,
             ));
 
-            block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[sum.result(<span class="number">0</span>).unwrap().into()], location));
+            block.append_operation(func::r#return(
+                <span class="kw-2">&amp;</span>context,
+                <span class="kw-2">&amp;</span>[sum.result(<span class="number">0</span>).unwrap().into()],
+                location,
+            ));
 
             <span class="kw">let </span>region = Region::new();
             region.append_block(block);

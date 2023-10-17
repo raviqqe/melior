@@ -37,7 +37,7 @@
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_raw(mlirStringAttrGet(
                 context.to_raw(),
-                StringRef::from(string).to_raw(),
+                StringRef::from_str(context, string).to_raw(),
             ))
         }
     }

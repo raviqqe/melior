@@ -161,7 +161,24 @@
 <a href="#161" id="161">161</a>
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
-</pre></div><pre class="rust"><code><span class="kw">use crate</span>::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Error};
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+</pre></div><pre class="rust"><code><span class="kw">use crate</span>::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Context, Error};
 <span class="kw">use </span>mlir_sys::{
     mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineDumpToObjectFile,
     mlirExecutionEngineInvokePacked, mlirExecutionEngineRegisterSymbol, MlirExecutionEngine,
@@ -174,8 +191,9 @@
 
 <span class="kw">impl </span>ExecutionEngine {
     <span class="doccomment">/// Creates an execution engine.
-    </span><span class="kw">pub fn </span>new(
-        module: <span class="kw-2">&amp;</span>Module,
+    </span><span class="kw">pub fn </span>new&lt;<span class="lifetime">&#39;c</span>&gt;(
+        context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
+        module: <span class="kw-2">&amp;</span>Module&lt;<span class="lifetime">&#39;c</span>&gt;,
         optimization_level: usize,
         shared_library_paths: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str],
         enable_object_dump: bool,
@@ -188,7 +206,7 @@
                     shared_library_paths.len() <span class="kw">as </span>i32,
                     shared_library_paths
                         .iter()
-                        .map(|<span class="kw-2">&amp;</span>string| StringRef::from(string).to_raw())
+                        .map(|<span class="kw-2">&amp;</span>string| StringRef::from_str(context, string).to_raw())
                         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
                         .as_ptr(),
                     enable_object_dump,
@@ -205,10 +223,15 @@
     /// This function modifies memory locations pointed by the `arguments`
     /// argument. If those pointers are invalid or misaligned, calling this
     /// function might result in undefined behavior.
-    </span><span class="kw">pub unsafe fn </span>invoke_packed(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str, arguments: <span class="kw-2">&amp;mut </span>[<span class="kw-2">*mut </span>()]) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+    </span><span class="kw">pub unsafe fn </span>invoke_packed(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        context: <span class="kw-2">&amp;</span>Context,
+        name: <span class="kw-2">&amp;</span>str,
+        arguments: <span class="kw-2">&amp;mut </span>[<span class="kw-2">*mut </span>()],
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="kw">let </span>result = LogicalResult::from_raw(mlirExecutionEngineInvokePacked(
             <span class="self">self</span>.raw,
-            StringRef::from(name).to_raw(),
+            StringRef::from_str(context, name).to_raw(),
             arguments.as_mut_ptr() <span class="kw">as _</span>,
         ));
 
@@ -226,13 +249,22 @@
     /// This function makes a pointer accessible to the execution engine. If a
     /// given pointer is invalid or misaligned, calling this function might
     /// result in undefined behavior.
-    </span><span class="kw">pub unsafe fn </span>register_symbol(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str, ptr: <span class="kw-2">*mut </span>()) {
-        mlirExecutionEngineRegisterSymbol(<span class="self">self</span>.raw, StringRef::from(name).to_raw(), ptr <span class="kw">as _</span>);
+    </span><span class="kw">pub unsafe fn </span>register_symbol(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span>Context, name: <span class="kw-2">&amp;</span>str, ptr: <span class="kw-2">*mut </span>()) {
+        mlirExecutionEngineRegisterSymbol(
+            <span class="self">self</span>.raw,
+            StringRef::from_str(context, name).to_raw(),
+            ptr <span class="kw">as _</span>,
+        );
     }
 
     <span class="doccomment">/// Dumps a module to an object file.
-    </span><span class="kw">pub fn </span>dump_to_object_file(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str) {
-        <span class="kw">unsafe </span>{ mlirExecutionEngineDumpToObjectFile(<span class="self">self</span>.raw, StringRef::from(path).to_raw()) }
+    </span><span class="kw">pub fn </span>dump_to_object_file(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span>Context, path: <span class="kw-2">&amp;</span>str) {
+        <span class="kw">unsafe </span>{
+            mlirExecutionEngineDumpToObjectFile(
+                <span class="self">self</span>.raw,
+                StringRef::from_str(context, path).to_raw(),
+            )
+        }
     }
 }
 
@@ -268,12 +300,12 @@
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
 
         pass_manager
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="kw-2">&amp;</span>context, <span class="string">&quot;func.func&quot;</span>)
             .add_pass(pass::conversion::create_arith_to_llvm());
 
         <span class="macro">assert_eq!</span>(pass_manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
 
-        <span class="kw">let </span>engine = ExecutionEngine::new(<span class="kw-2">&amp;</span>module, <span class="number">2</span>, <span class="kw-2">&amp;</span>[], <span class="bool-val">false</span>);
+        <span class="kw">let </span>engine = ExecutionEngine::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>module, <span class="number">2</span>, <span class="kw-2">&amp;</span>[], <span class="bool-val">false</span>);
 
         <span class="kw">let </span><span class="kw-2">mut </span>argument = <span class="number">42</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>result = -<span class="number">1</span>;
@@ -281,6 +313,7 @@
         <span class="macro">assert_eq!</span>(
             <span class="kw">unsafe </span>{
                 engine.invoke_packed(
+                    <span class="kw-2">&amp;</span>context,
                     <span class="string">&quot;add&quot;</span>,
                     <span class="kw-2">&amp;mut </span>[
                         <span class="kw-2">&amp;mut </span>argument <span class="kw">as </span><span class="kw-2">*mut </span>i32 <span class="kw">as </span><span class="kw-2">*mut </span>(),
@@ -316,12 +349,13 @@
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
 
         pass_manager
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="kw-2">&amp;</span>context, <span class="string">&quot;func.func&quot;</span>)
             .add_pass(pass::conversion::create_arith_to_llvm());
 
         <span class="macro">assert_eq!</span>(pass_manager.run(<span class="kw-2">&amp;mut </span>module), <span class="prelude-val">Ok</span>(()));
 
-        ExecutionEngine::new(<span class="kw-2">&amp;</span>module, <span class="number">2</span>, <span class="kw-2">&amp;</span>[], <span class="bool-val">true</span>).dump_to_object_file(<span class="string">&quot;/tmp/melior/test.o&quot;</span>);
+        ExecutionEngine::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>module, <span class="number">2</span>, <span class="kw-2">&amp;</span>[], <span class="bool-val">true</span>)
+            .dump_to_object_file(<span class="kw-2">&amp;</span>context, <span class="string">&quot;/tmp/melior/test.o&quot;</span>);
     }
 }
 </code></pre></div></section></main></body></html>

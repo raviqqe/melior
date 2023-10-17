@@ -115,11 +115,11 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Identifier&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="doccomment">/// Creates an identifier.
-    </span><span class="kw">pub fn </span>new(context: <span class="kw-2">&amp;</span>Context, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>new(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_raw(mlirIdentifierGet(
                 context.to_raw(),
-                StringRef::from(name).to_raw(),
+                StringRef::from_str(context, name).to_raw(),
             ))
         }
     }
