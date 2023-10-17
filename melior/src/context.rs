@@ -4,6 +4,7 @@ use crate::{
     logical_result::LogicalResult,
     string_ref::StringRef,
 };
+use dashmap::DashMap;
 use mlir_sys::{
     mlirContextAppendDialectRegistry, mlirContextAttachDiagnosticHandler, mlirContextCreate,
     mlirContextDestroy, mlirContextDetachDiagnosticHandler, mlirContextEnableMultithreading,
@@ -12,7 +13,10 @@ use mlir_sys::{
     mlirContextIsRegisteredOperation, mlirContextLoadAllAvailableDialects,
     mlirContextSetAllowUnregisteredDialects, MlirContext, MlirDiagnostic, MlirLogicalResult,
 };
-use std::{ffi::c_void, marker::PhantomData, mem::transmute, ops::Deref};
+use std::{
+    ffi::{c_void, CString},
+    marker::PhantomData,
+};
 
 /// A context of IR, dialects, and passes.
 ///
@@ -21,6 +25,9 @@ use std::{ffi::c_void, marker::PhantomData, mem::transmute, ops::Deref};
 #[derive(Debug)]
 pub struct Context {
     raw: MlirContext,
+    // We need to pass null-terminated strings to functions in the MLIR API although
+    // Rust's strings are not.
+    string_cache: DashMap<CString, ()>,
 }
 
 impl Context {
@@ -28,6 +35,7 @@ impl Context {
     pub fn new() -> Self {
         Self {
             raw: unsafe { mlirContextCreate() },
+            string_cache: Default::default(),
         }
     }
 
@@ -46,7 +54,7 @@ impl Context {
         unsafe {
             Dialect::from_raw(mlirContextGetOrLoadDialect(
                 self.raw,
-                StringRef::from(name).to_raw(),
+                StringRef::from_str(self, name).to_raw(),
             ))
         }
     }
@@ -78,7 +86,9 @@ impl Context {
 
     /// Returns `true` if a given operation is registered in a context.
     pub fn is_registered_operation(&self, name: &str) -> bool {
-        unsafe { mlirContextIsRegisteredOperation(self.raw, StringRef::from(name).to_raw()) }
+        unsafe {
+            mlirContextIsRegisteredOperation(self.raw, StringRef::from_str(self, name).to_raw())
+        }
     }
 
     /// Converts a context into a raw object.
@@ -116,6 +126,10 @@ impl Context {
     pub fn detach_diagnostic_handler(&self, id: DiagnosticHandlerId) {
         unsafe { mlirContextDetachDiagnosticHandler(self.to_raw(), id.to_raw()) }
     }
+
+    pub(crate) fn string_cache(&self) -> &DashMap<CString, ()> {
+        &self.string_cache
+    }
 }
 
 impl Drop for Context {
@@ -146,22 +160,6 @@ pub struct ContextRef<'c> {
 }
 
 impl<'c> ContextRef<'c> {
-    /// Gets a context.
-    ///
-    /// This function is different from `deref` because the correct lifetime is
-    /// kept for the return type.
-    ///
-    /// # Safety
-    ///
-    /// The returned reference is safe to use only in the lifetime scope of the
-    /// context reference.
-    pub unsafe fn to_ref(&self) -> &'c Context {
-        // As we can't deref ContextRef<'a> into `&'a Context`, we forcibly cast its
-        // lifetime here to extend it from the lifetime of `ObjectRef<'a>` itself into
-        // `'a`.
-        transmute(self)
-    }
-
     /// Creates a context reference from a raw object.
     ///
     /// # Safety
@@ -172,14 +170,6 @@ impl<'c> ContextRef<'c> {
             raw,
             _reference: Default::default(),
         }
-    }
-}
-
-impl<'a> Deref for ContextRef<'a> {
-    type Target = Context;
-
-    fn deref(&self) -> &Self::Target {
-        unsafe { transmute(self) }
     }
 }
 

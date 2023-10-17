@@ -28,7 +28,7 @@ impl<'c> Module<'c> {
         unsafe {
             Self::from_option_raw(mlirModuleCreateParse(
                 context.to_raw(),
-                StringRef::from(source).to_raw(),
+                StringRef::from_str(context, source).to_raw(),
             ))
         }
     }
@@ -126,7 +126,7 @@ mod tests {
         region.append_block(Block::new(&[]));
 
         let module = Module::from_operation(
-            OperationBuilder::new("builtin.module", Location::unknown(&context))
+            OperationBuilder::new(&context, "builtin.module", Location::unknown(&context))
                 .add_regions(vec![region])
                 .build(),
         )
@@ -141,7 +141,7 @@ mod tests {
         let context = create_test_context();
 
         assert!(Module::from_operation(
-            OperationBuilder::new("func.func", Location::unknown(&context),).build()
+            OperationBuilder::new(&context, "func.func", Location::unknown(&context),).build()
         )
         .is_none());
     }

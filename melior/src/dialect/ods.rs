@@ -129,10 +129,10 @@ mod tests {
 
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
         pass_manager
-            .nested_under("func.func")
+            .nested_under(context, "func.func")
             .add_pass(pass::conversion::create_arith_to_llvm());
         pass_manager
-            .nested_under("func.func")
+            .nested_under(context, "func.func")
             .add_pass(pass::conversion::create_index_to_llvm());
         pass_manager.add_pass(pass::conversion::create_scf_to_control_flow());
         pass_manager.add_pass(pass::conversion::create_control_flow_to_llvm());
@@ -192,6 +192,7 @@ mod tests {
 
             block.append_operation(
                 llvm::alloca(
+                    &context,
                     dialect::llvm::r#type::pointer(i64_type.into(), 0).into(),
                     alloca_size,
                     location,
@@ -199,7 +200,7 @@ mod tests {
                 .into(),
             );
 
-            block.append_operation(func::r#return(&[], location));
+            block.append_operation(func::r#return(&context, &[], location));
         });
     }
 
@@ -215,7 +216,7 @@ mod tests {
             let i64_type = IntegerType::new(&context, 64);
 
             block.append_operation(
-                llvm::AllocaOpBuilder::new(location)
+                llvm::AllocaOpBuilder::new(&context, location)
                     .alignment(IntegerAttribute::new(8, i64_type.into()))
                     .elem_type(TypeAttribute::new(i64_type.into()))
                     .array_size(alloca_size)
@@ -224,7 +225,7 @@ mod tests {
                     .into(),
             );
 
-            block.append_operation(func::r#return(&[], location));
+            block.append_operation(func::r#return(&context, &[], location));
         });
     }
 }

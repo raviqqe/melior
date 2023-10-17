@@ -1,4 +1,4 @@
-use crate::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Error};
+use crate::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Context, Error};
 use mlir_sys::{
     mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineDumpToObjectFile,
     mlirExecutionEngineInvokePacked, mlirExecutionEngineRegisterSymbol, MlirExecutionEngine,
@@ -11,8 +11,9 @@ pub struct ExecutionEngine {
 
 impl ExecutionEngine {
     /// Creates an execution engine.
-    pub fn new(
-        module: &Module,
+    pub fn new<'c>(
+        context: &'c Context,
+        module: &Module<'c>,
         optimization_level: usize,
         shared_library_paths: &[&str],
         enable_object_dump: bool,
@@ -25,7 +26,7 @@ impl ExecutionEngine {
                     shared_library_paths.len() as i32,
                     shared_library_paths
                         .iter()
-                        .map(|&string| StringRef::from(string).to_raw())
+                        .map(|&string| StringRef::from_str(context, string).to_raw())
                         .collect::<Vec<_>>()
                         .as_ptr(),
                     enable_object_dump,
@@ -42,10 +43,15 @@ impl ExecutionEngine {
     /// This function modifies memory locations pointed by the `arguments`
     /// argument. If those pointers are invalid or misaligned, calling this
     /// function might result in undefined behavior.
-    pub unsafe fn invoke_packed(&self, name: &str, arguments: &mut [*mut ()]) -> Result<(), Error> {
+    pub unsafe fn invoke_packed(
+        &self,
+        context: &Context,
+        name: &str,
+        arguments: &mut [*mut ()],
+    ) -> Result<(), Error> {
         let result = LogicalResult::from_raw(mlirExecutionEngineInvokePacked(
             self.raw,
-            StringRef::from(name).to_raw(),
+            StringRef::from_str(context, name).to_raw(),
             arguments.as_mut_ptr() as _,
         ));
 
@@ -63,13 +69,22 @@ impl ExecutionEngine {
     /// This function makes a pointer accessible to the execution engine. If a
     /// given pointer is invalid or misaligned, calling this function might
     /// result in undefined behavior.
-    pub unsafe fn register_symbol(&self, name: &str, ptr: *mut ()) {
-        mlirExecutionEngineRegisterSymbol(self.raw, StringRef::from(name).to_raw(), ptr as _);
+    pub unsafe fn register_symbol(&self, context: &Context, name: &str, ptr: *mut ()) {
+        mlirExecutionEngineRegisterSymbol(
+            self.raw,
+            StringRef::from_str(context, name).to_raw(),
+            ptr as _,
+        );
     }
 
     /// Dumps a module to an object file.
-    pub fn dump_to_object_file(&self, path: &str) {
-        unsafe { mlirExecutionEngineDumpToObjectFile(self.raw, StringRef::from(path).to_raw()) }
+    pub fn dump_to_object_file(&self, context: &Context, path: &str) {
+        unsafe {
+            mlirExecutionEngineDumpToObjectFile(
+                self.raw,
+                StringRef::from_str(context, path).to_raw(),
+            )
+        }
     }
 }
 
@@ -105,12 +120,12 @@ mod tests {
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
 
         pass_manager
-            .nested_under("func.func")
+            .nested_under(&context, "func.func")
             .add_pass(pass::conversion::create_arith_to_llvm());
 
         assert_eq!(pass_manager.run(&mut module), Ok(()));
 
-        let engine = ExecutionEngine::new(&module, 2, &[], false);
+        let engine = ExecutionEngine::new(&context, &module, 2, &[], false);
 
         let mut argument = 42;
         let mut result = -1;
@@ -118,6 +133,7 @@ mod tests {
         assert_eq!(
             unsafe {
                 engine.invoke_packed(
+                    &context,
                     "add",
                     &mut [
                         &mut argument as *mut i32 as *mut (),
@@ -153,11 +169,12 @@ mod tests {
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
 
         pass_manager
-            .nested_under("func.func")
+            .nested_under(&context, "func.func")
             .add_pass(pass::conversion::create_arith_to_llvm());
 
         assert_eq!(pass_manager.run(&mut module), Ok(()));
 
-        ExecutionEngine::new(&module, 2, &[], true).dump_to_object_file("/tmp/melior/test.o");
+        ExecutionEngine::new(&context, &module, 2, &[], true)
+            .dump_to_object_file(&context, "/tmp/melior/test.o");
     }
 }

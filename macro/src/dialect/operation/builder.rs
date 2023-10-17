@@ -51,7 +51,7 @@ impl<'o> OperationBuilder<'o> {
 
                     quote! {
                         &[(
-                            ::melior::ir::Identifier::new(unsafe { self.context.to_ref() }, #name_string),
+                            ::melior::ir::Identifier::new(self.context, #name_string),
                             #name.into(),
                         )]
                     }
@@ -142,7 +142,7 @@ impl<'o> OperationBuilder<'o> {
             #[doc = #doc]
             pub struct #builder_ident <'c, #(#iter_arguments),* > {
                 builder: ::melior::ir::operation::OperationBuilder<'c>,
-                context: ::melior::ContextRef<'c>,
+                context: &'c ::melior::Context,
                 #(#phantom_fields),*
             }
 
@@ -180,10 +180,10 @@ impl<'o> OperationBuilder<'o> {
 
         quote! {
             impl<'c> #builder_ident<'c, #(#arguments),*> {
-                pub fn new(location: ::melior::ir::Location<'c>) -> Self {
+                pub fn new(context: &'c ::melior::Context, location: ::melior::ir::Location<'c>) -> Self {
                     Self {
-                        context: location.context(),
-                        builder: ::melior::ir::operation::OperationBuilder::new(#name, location),
+                        context,
+                        builder: ::melior::ir::operation::OperationBuilder::new(&context, #name, location),
                         #(#phantoms),*
                     }
                 }
@@ -196,9 +196,10 @@ impl<'o> OperationBuilder<'o> {
         let arguments = self.type_state.arguments_all_set(false);
         quote! {
             pub fn builder(
+                context: &'c ::melior::Context,
                 location: ::melior::ir::Location<'c>
             ) -> #builder_ident<'c, #(#arguments),*> {
-                #builder_ident::new(location)
+                #builder_ident::new(context, location)
             }
         }
     }
@@ -229,8 +230,8 @@ impl<'o> OperationBuilder<'o> {
         Ok(quote! {
             #[allow(clippy::too_many_arguments)]
             #[doc = #doc]
-            pub fn #name<'c>(#(#arguments),*) -> #class_name<'c> {
-                #class_name::builder(location)#(#builder_calls)*.build()
+            pub fn #name<'c>(context: &'c ::melior::Context, #(#arguments),*) -> #class_name<'c> {
+                #class_name::builder(context, location)#(#builder_calls)*.build()
             }
         })
     }

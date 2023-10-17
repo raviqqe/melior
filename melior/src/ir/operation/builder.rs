@@ -20,10 +20,13 @@ pub struct OperationBuilder<'c> {
 
 impl<'c> OperationBuilder<'c> {
     /// Creates an operation builder.
-    pub fn new(name: &str, location: Location<'c>) -> Self {
+    pub fn new(context: &'c Context, name: &str, location: Location<'c>) -> Self {
         Self {
             raw: unsafe {
-                mlirOperationStateGet(StringRef::from(name).to_raw(), location.to_raw())
+                mlirOperationStateGet(
+                    StringRef::from_str(context, name).to_raw(),
+                    location.to_raw(),
+                )
             },
             _context: Default::default(),
         }
@@ -134,7 +137,7 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
 
-        OperationBuilder::new("foo", Location::unknown(&context)).build();
+        OperationBuilder::new(&context, "foo", Location::unknown(&context)).build();
     }
 
     #[test]
@@ -147,7 +150,7 @@ mod tests {
         let block = Block::new(&[(r#type, location)]);
         let argument = block.argument(0).unwrap().into();
 
-        OperationBuilder::new("foo", Location::unknown(&context))
+        OperationBuilder::new(&context, "foo", Location::unknown(&context))
             .add_operands(&[argument])
             .build();
     }
@@ -157,7 +160,7 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
 
-        OperationBuilder::new("foo", Location::unknown(&context))
+        OperationBuilder::new(&context, "foo", Location::unknown(&context))
             .add_results(&[Type::parse(&context, "i1").unwrap()])
             .build();
     }
@@ -167,7 +170,7 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
 
-        OperationBuilder::new("foo", Location::unknown(&context))
+        OperationBuilder::new(&context, "foo", Location::unknown(&context))
             .add_regions(vec![Region::new()])
             .build();
     }
@@ -177,7 +180,7 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
 
-        OperationBuilder::new("foo", Location::unknown(&context))
+        OperationBuilder::new(&context, "foo", Location::unknown(&context))
             .add_successors(&[&Block::new(&[])])
             .build();
     }
@@ -187,7 +190,7 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
 
-        OperationBuilder::new("foo", Location::unknown(&context))
+        OperationBuilder::new(&context, "foo", Location::unknown(&context))
             .add_attributes(&[(
                 Identifier::new(&context, "foo"),
                 Attribute::parse(&context, "unit").unwrap(),
@@ -206,7 +209,7 @@ mod tests {
         let argument = block.argument(0).unwrap().into();
 
         assert_eq!(
-            OperationBuilder::new("arith.addi", location)
+            OperationBuilder::new(&context, "arith.addi", location)
                 .add_operands(&[argument, argument])
                 .enable_result_type_inference()
                 .build()

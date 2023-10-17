@@ -17,7 +17,7 @@ pub fn constant<'c>(
     value: IntegerAttribute<'c>,
     location: Location<'c>,
 ) -> Operation<'c> {
-    OperationBuilder::new("index.constant", location)
+    OperationBuilder::new(context, "index.constant", location)
         .add_attributes(&[(Identifier::new(context, "value"), value.into())])
         .enable_result_type_inference()
         .build()
@@ -31,7 +31,7 @@ pub fn cmp<'c>(
     rhs: Value<'c, '_>,
     location: Location<'c>,
 ) -> Operation<'c> {
-    OperationBuilder::new("index.cmp", location)
+    OperationBuilder::new(context, "index.cmp", location)
         .add_attributes(&[(
             Identifier::new(context, "pred"),
             Attribute::parse(
@@ -105,6 +105,7 @@ mod tests {
         let name = name.as_string_ref().as_str().unwrap();
 
         block.append_operation(func::r#return(
+            context,
             &[block.append_operation(operation).result(0).unwrap().into()],
             location,
         ));
@@ -180,6 +181,7 @@ mod tests {
                 &context,
                 |block| {
                     casts(
+                        &context,
                         block.argument(0).unwrap().into(),
                         IntegerType::new(&context, 64).into(),
                         Location::unknown(&context),
@@ -201,6 +203,7 @@ mod tests {
                 &context,
                 |block| {
                     castu(
+                        &context,
                         block.argument(0).unwrap().into(),
                         IntegerType::new(&context, 64).into(),
                         Location::unknown(&context),
@@ -229,12 +232,17 @@ mod tests {
             let block = Block::new(&[(integer_type, location), (integer_type, location)]);
 
             let sum = block.append_operation(add(
+                &context,
                 block.argument(0).unwrap().into(),
                 block.argument(1).unwrap().into(),
                 location,
             ));
 
-            block.append_operation(func::r#return(&[sum.result(0).unwrap().into()], location));
+            block.append_operation(func::r#return(
+                &context,
+                &[sum.result(0).unwrap().into()],
+                location,
+            ));
 
             let region = Region::new();
             region.append_block(block);

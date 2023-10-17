@@ -74,12 +74,17 @@ mod tests {
             let block = Block::new(&[(integer_type, location), (integer_type, location)]);
 
             let sum = block.append_operation(arith::addi(
+                &context,
                 block.argument(0).unwrap().into(),
                 block.argument(1).unwrap().into(),
                 location,
             ));
 
-            block.append_operation(func::r#return(&[sum.result(0).unwrap().into()], location));
+            block.append_operation(func::r#return(
+                &context,
+                &[sum.result(0).unwrap().into()],
+                location,
+            ));
 
             let region = Region::new();
             region.append_block(block);
@@ -124,7 +129,7 @@ mod tests {
             ));
 
             let dim = function_block.append_operation(
-                OperationBuilder::new("memref.dim", location)
+                OperationBuilder::new(&context, "memref.dim", location)
                     .add_operands(&[
                         function_block.argument(0).unwrap().into(),
                         zero.result(0).unwrap().into(),
@@ -145,7 +150,7 @@ mod tests {
                 let f32_type = Type::float32(&context);
 
                 let lhs = loop_block.append_operation(
-                    OperationBuilder::new("memref.load", location)
+                    OperationBuilder::new(&context, "memref.load", location)
                         .add_operands(&[
                             function_block.argument(0).unwrap().into(),
                             loop_block.argument(0).unwrap().into(),
@@ -155,7 +160,7 @@ mod tests {
                 );
 
                 let rhs = loop_block.append_operation(
-                    OperationBuilder::new("memref.load", location)
+                    OperationBuilder::new(&context, "memref.load", location)
                         .add_operands(&[
                             function_block.argument(1).unwrap().into(),
                             loop_block.argument(0).unwrap().into(),
@@ -165,13 +170,14 @@ mod tests {
                 );
 
                 let add = loop_block.append_operation(arith::addf(
+                    &context,
                     lhs.result(0).unwrap().into(),
                     rhs.result(0).unwrap().into(),
                     location,
                 ));
 
                 loop_block.append_operation(
-                    OperationBuilder::new("memref.store", location)
+                    OperationBuilder::new(&context, "memref.store", location)
                         .add_operands(&[
                             add.result(0).unwrap().into(),
                             function_block.argument(0).unwrap().into(),
@@ -180,10 +186,11 @@ mod tests {
                         .build(),
                 );
 
-                loop_block.append_operation(scf::r#yield(&[], location));
+                loop_block.append_operation(scf::r#yield(&context, &[], location));
             }
 
             function_block.append_operation(scf::r#for(
+                &context,
                 zero.result(0).unwrap().into(),
                 dim.result(0).unwrap().into(),
                 one.result(0).unwrap().into(),
@@ -195,7 +202,7 @@ mod tests {
                 location,
             ));
 
-            function_block.append_operation(func::r#return(&[], location));
+            function_block.append_operation(func::r#return(&context, &[], location));
 
             let function_region = Region::new();
             function_region.append_block(function_block);
@@ -235,7 +242,7 @@ mod tests {
             rhs: Value<'c, '_>,
         ) -> Value<'c, 'a> {
             block
-                .append_operation(arith::addi(lhs, rhs, Location::unknown(context)))
+                .append_operation(arith::addi(context, lhs, rhs, Location::unknown(context)))
                 .result(0)
                 .unwrap()
                 .into()
@@ -251,6 +258,7 @@ mod tests {
                 let block = Block::new(&[(integer_type, location), (integer_type, location)]);
 
                 block.append_operation(func::r#return(
+                    &context,
                     &[compile_add(
                         &context,
                         &block,
