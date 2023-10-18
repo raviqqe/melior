@@ -360,10 +360,10 @@
 
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
         pass_manager
-            .nested_under(context, <span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="string">&quot;func.func&quot;</span>)
             .add_pass(pass::conversion::create_arith_to_llvm());
         pass_manager
-            .nested_under(context, <span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="string">&quot;func.func&quot;</span>)
             .add_pass(pass::conversion::create_index_to_llvm());
         pass_manager.add_pass(pass::conversion::create_scf_to_control_flow());
         pass_manager.add_pass(pass::conversion::create_control_flow_to_llvm());
@@ -379,13 +379,13 @@
         argument_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
         callback: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;),
     ) {
-        <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
+        <span class="kw">let </span>location = Location::unknown(context);
         <span class="kw">let </span><span class="kw-2">mut </span>module = Module::new(location);
 
         module.body().append_operation(func::func(
-            <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
-            TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, argument_types, <span class="kw-2">&amp;</span>[]).into()),
+            context,
+            StringAttribute::new(context, <span class="string">&quot;foo&quot;</span>),
+            TypeAttribute::new(FunctionType::new(context, argument_types, <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(
                     <span class="kw-2">&amp;</span>argument_types
@@ -405,7 +405,7 @@
             location,
         ));
 
-        convert_module(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;mut </span>module);
+        convert_module(context, <span class="kw-2">&amp;mut </span>module);
 
         <span class="macro">assert!</span>(module.as_operation().verify());
         <span class="macro">insta::assert_display_snapshot!</span>(name, module.as_operation());
@@ -424,7 +424,7 @@
             block.append_operation(
                 llvm::alloca(
                     <span class="kw-2">&amp;</span>context,
-                    dialect::llvm::r#type::pointer(i64_type.into(), <span class="number">0</span>).into(),
+                    dialect::llvm::r#type::pointer(i64_type.into(), <span class="number">0</span>),
                     alloca_size,
                     location,
                 )

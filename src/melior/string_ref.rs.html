@@ -103,11 +103,36 @@
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::Context;
-<span class="kw">use </span>mlir_sys::{mlirStringRefCreateFromCString, mlirStringRefEqual, MlirStringRef};
+<span class="kw">use </span>mlir_sys::{mlirStringRefEqual, MlirStringRef};
 <span class="kw">use </span>std::{
-    ffi::CString,
+    ffi::CStr,
     marker::PhantomData,
+    pin::Pin,
     slice,
     str::{<span class="self">self</span>, Utf8Error},
 };
@@ -118,25 +143,48 @@
 // TODO The documentation says string refs do not have to be null-terminated.
 // But it looks like some functions do not handle strings not null-terminated?
 </span><span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>StringRef&lt;<span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub struct </span>StringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
     raw: MlirStringRef,
-    _parent: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context&gt;,
+    _parent: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; StringRef&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">pub fn </span>from_str(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, string: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>string = context
-            .string_cache()
-            .entry(CString::new(string).unwrap())
-            .or_default()
-            .key()
-            .as_ptr();
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; StringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="doccomment">/// Creates a string reference.
+    </span><span class="kw">pub fn </span>new(string: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>string = MlirStringRef {
+            data: string.as_bytes().as_ptr() <span class="kw">as </span><span class="kw-2">*const </span>i8,
+            length: string.len(),
+        };
 
-        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirStringRefCreateFromCString(string)) }
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(string) }
+    }
+
+    <span class="doccomment">/// Converts a C-style string into a string reference.
+    </span><span class="kw">pub fn </span>from_c_str(string: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>CStr) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>string = MlirStringRef {
+            data: string.as_ptr(),
+            length: string.to_bytes_with_nul().len() - <span class="number">1</span>,
+        };
+
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(string) }
+    }
+
+    <span class="doccomment">/// Converts a string into a null-terminated string reference.
+    </span><span class="kw">pub fn </span>from_str(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Context, string: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>entry = context
+            .string_cache()
+            .entry(Pin::new(string.into()))
+            .or_default();
+        <span class="kw">let </span>string = MlirStringRef {
+            data: entry.key().as_bytes().as_ptr() <span class="kw">as </span><span class="kw-2">*const </span>i8,
+            length: entry.key().len(),
+        };
+
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(string) }
     }
 
     <span class="doccomment">/// Converts a string reference into a `str`.
-    </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>str, Utf8Error&gt; {
+    </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, Utf8Error&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>bytes = slice::from_raw_parts(<span class="self">self</span>.raw.data <span class="kw">as </span><span class="kw-2">*mut </span>u8, <span class="self">self</span>.raw.length);
 

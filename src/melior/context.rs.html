@@ -309,12 +309,6 @@
 <a href="#309" id="309">309</a>
 <a href="#310" id="310">310</a>
 <a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{
     diagnostic::{Diagnostic, DiagnosticHandlerId},
     dialect::{Dialect, DialectRegistry},
@@ -330,10 +324,7 @@
     mlirContextIsRegisteredOperation, mlirContextLoadAllAvailableDialects,
     mlirContextSetAllowUnregisteredDialects, MlirContext, MlirDiagnostic, MlirLogicalResult,
 };
-<span class="kw">use </span>std::{
-    ffi::{c_void, CString},
-    marker::PhantomData,
-};
+<span class="kw">use </span>std::{ffi::c_void, marker::PhantomData, pin::Pin};
 
 <span class="doccomment">/// A context of IR, dialects, and passes.
 ///
@@ -344,7 +335,7 @@
     raw: MlirContext,
     <span class="comment">// We need to pass null-terminated strings to functions in the MLIR API although
     // Rust&#39;s strings are not.
-    </span>string_cache: DashMap&lt;CString, ()&gt;,
+    </span>string_cache: DashMap&lt;Pin&lt;String&gt;, ()&gt;,
 }
 
 <span class="kw">impl </span>Context {
@@ -368,12 +359,9 @@
 
     <span class="doccomment">/// Gets or loads a dialect.
     </span><span class="kw">pub fn </span>get_or_load_dialect(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; Dialect {
-        <span class="kw">unsafe </span>{
-            Dialect::from_raw(mlirContextGetOrLoadDialect(
-                <span class="self">self</span>.raw,
-                StringRef::from_str(<span class="self">self</span>, name).to_raw(),
-            ))
-        }
+        <span class="kw">let </span>name = StringRef::new(name);
+
+        <span class="kw">unsafe </span>{ Dialect::from_raw(mlirContextGetOrLoadDialect(<span class="self">self</span>.raw, name.to_raw())) }
     }
 
     <span class="doccomment">/// Appends a dialect registry.
@@ -403,9 +391,9 @@
 
     <span class="doccomment">/// Returns `true` if a given operation is registered in a context.
     </span><span class="kw">pub fn </span>is_registered_operation(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; bool {
-        <span class="kw">unsafe </span>{
-            mlirContextIsRegisteredOperation(<span class="self">self</span>.raw, StringRef::from_str(<span class="self">self</span>, name).to_raw())
-        }
+        <span class="kw">let </span>name = StringRef::new(name);
+
+        <span class="kw">unsafe </span>{ mlirContextIsRegisteredOperation(<span class="self">self</span>.raw, name.to_raw()) }
     }
 
     <span class="doccomment">/// Converts a context into a raw object.
@@ -448,7 +436,7 @@
         <span class="kw">unsafe </span>{ ContextRef::from_raw(<span class="self">self</span>.to_raw()) }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>string_cache(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>DashMap&lt;CString, ()&gt; {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>string_cache(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>DashMap&lt;Pin&lt;String&gt;, ()&gt; {
         <span class="kw-2">&amp;</span><span class="self">self</span>.string_cache
     }
 }

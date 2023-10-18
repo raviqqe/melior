@@ -77,11 +77,8 @@
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::PassManager;
-<span class="kw">use crate</span>::{pass::Pass, string_ref::StringRef, Context};
+<span class="kw">use crate</span>::{pass::Pass, string_ref::StringRef};
 <span class="kw">use </span>mlir_sys::{
     mlirOpPassManagerAddOwnedPass, mlirOpPassManagerGetNestedUnder, mlirPrintPassPipeline,
     MlirOpPassManager, MlirStringRef,
@@ -102,13 +99,10 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; OperationPassManager&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Gets an operation pass manager for nested operations corresponding to a
     /// given name.
-    </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{
-            <span class="self">Self</span>::from_raw(mlirOpPassManagerGetNestedUnder(
-                <span class="self">self</span>.raw,
-                StringRef::from_str(context, name).to_raw(),
-            ))
-        }
+    </span><span class="kw">pub fn </span>nested_under(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>name = StringRef::new(name);
+
+        <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirOpPassManagerGetNestedUnder(<span class="self">self</span>.raw, name.to_raw())) }
     }
 
     <span class="doccomment">/// Adds a pass.
