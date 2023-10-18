@@ -15,6 +15,7 @@ fn string_ref_create(bencher: &mut Bencher) {
 
     bencher.iter(|| {
         for string in &strings {
+            #[allow(deprecated)]
             let _ = StringRef::from_str(&context, string.as_str());
         }
     });
@@ -25,6 +26,7 @@ fn string_ref_create_cached(bencher: &mut Bencher) {
 
     bencher.iter(|| {
         for _ in 0..ITERATION_COUNT {
+            #[allow(deprecated)]
             let _ = StringRef::from_str(&context, "foo");
         }
     });

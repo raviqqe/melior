@@ -184,42 +184,37 @@ impl<'c> Operation<'c> {
     }
 
     /// Gets a attribute with the given name.
-    pub fn attribute(&self, context: &'c Context, name: &str) -> Result<Attribute<'c>, Error> {
+    pub fn attribute(&self, name: &str) -> Result<Attribute<'c>, Error> {
         unsafe {
             Attribute::from_option_raw(mlirOperationGetAttributeByName(
                 self.raw,
-                StringRef::from_str(context, name).to_raw(),
+                StringRef::new(name).to_raw(),
             ))
         }
         .ok_or(Error::AttributeNotFound(name.into()))
     }
 
     /// Checks if the operation has a attribute with the given name.
-    pub fn has_attribute(&self, context: &'c Context, name: &str) -> bool {
-        self.attribute(context, name).is_ok()
+    pub fn has_attribute(&self, name: &str) -> bool {
+        self.attribute(name).is_ok()
     }
 
     /// Sets the attribute with the given name to the given attribute.
-    pub fn set_attribute(&mut self, context: &'c Context, name: &str, attribute: &Attribute<'c>) {
+    pub fn set_attribute(&mut self, name: &str, attribute: &Attribute<'c>) {
         unsafe {
             mlirOperationSetAttributeByName(
                 self.raw,
-                StringRef::from_str(context, name).to_raw(),
+                StringRef::new(name).to_raw(),
                 attribute.to_raw(),
             )
         }
     }
 
     /// Removes the attribute with the given name.
-    pub fn remove_attribute(&mut self, context: &'c Context, name: &str) -> Result<(), Error> {
-        unsafe {
-            mlirOperationRemoveAttributeByName(
-                self.raw,
-                StringRef::from_str(context, name).to_raw(),
-            )
-        }
-        .then_some(())
-        .ok_or(Error::AttributeNotFound(name.into()))
+    pub fn remove_attribute(&mut self, name: &str) -> Result<(), Error> {
+        unsafe { mlirOperationRemoveAttributeByName(self.raw, StringRef::new(name).to_raw()) }
+            .then_some(())
+            .ok_or(Error::AttributeNotFound(name.into()))
     }
 
     /// Gets the next operation in the same block.
@@ -436,7 +431,7 @@ mod tests {
     fn new() {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
-        OperationBuilder::new(&context, "foo", Location::unknown(&context))
+        OperationBuilder::new("foo", Location::unknown(&context))
             .build()
             .unwrap();
     }
@@ -447,7 +442,7 @@ mod tests {
         context.set_allow_unregistered_dialects(true);
 
         assert_eq!(
-            OperationBuilder::new(&context, "foo", Location::unknown(&context),)
+            OperationBuilder::new("foo", Location::unknown(&context),)
                 .build()
                 .unwrap()
                 .name(),
@@ -461,7 +456,7 @@ mod tests {
         context.set_allow_unregistered_dialects(true);
         let block = Block::new(&[]);
         let operation = block.append_operation(
-            OperationBuilder::new(&context, "foo", Location::unknown(&context))
+            OperationBuilder::new("foo", Location::unknown(&context))
                 .build()
                 .unwrap(),
         );
@@ -474,7 +469,7 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
         assert_eq!(
-            OperationBuilder::new(&context, "foo", Location::unknown(&context))
+            OperationBuilder::new("foo", Location::unknown(&context))
                 .build()
                 .unwrap()
                 .block(),
@@ -487,7 +482,7 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
         assert_eq!(
-            OperationBuilder::new(&context, "foo", Location::unknown(&context))
+            OperationBuilder::new("foo", Location::unknown(&context))
                 .build()
                 .unwrap()
                 .result(0)
@@ -505,7 +500,7 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
         assert_eq!(
-            OperationBuilder::new(&context, "foo", Location::unknown(&context),)
+            OperationBuilder::new("foo", Location::unknown(&context),)
                 .build()
                 .unwrap()
                 .region(0),
@@ -528,7 +523,7 @@ mod tests {
         let argument: Value = block.argument(0).unwrap().into();
 
         let operands = vec![argument, argument, argument];
-        let operation = OperationBuilder::new(&context, "foo", Location::unknown(&context))
+        let operation = OperationBuilder::new("foo", Location::unknown(&context))
             .add_operands(&operands)
             .build()
             .unwrap();
@@ -544,7 +539,7 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
 
-        let operation = OperationBuilder::new(&context, "foo", Location::unknown(&context))
+        let operation = OperationBuilder::new("foo", Location::unknown(&context))
             .add_regions(vec![Region::new()])
             .build()
             .unwrap();
@@ -560,27 +555,23 @@ mod tests {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
 
-        let mut operation = OperationBuilder::new(&context, "foo", Location::unknown(&context))
+        let mut operation = OperationBuilder::new("foo", Location::unknown(&context))
             .add_attributes(&[(
                 Identifier::new(&context, "foo"),
                 StringAttribute::new(&context, "bar").into(),
             )])
             .build()
             .unwrap();
-        assert!(operation.has_attribute(&context, "foo"));
+        assert!(operation.has_attribute("foo"));
         assert_eq!(
-            operation.attribute(&context, "foo").map(|a| a.to_string()),
+            operation.attribute("foo").map(|a| a.to_string()),
             Ok("\"bar\"".into())
         );
-        assert!(operation.remove_attribute(&context, "foo").is_ok());
-        assert!(operation.remove_attribute(&context, "foo").is_err());
-        operation.set_attribute(
-            &context,
-            "foo",
-            &StringAttribute::new(&context, "foo").into(),
-        );
+        assert!(operation.remove_attribute("foo").is_ok());
+        assert!(operation.remove_attribute("foo").is_err());
+        operation.set_attribute("foo", &StringAttribute::new(&context, "foo").into());
         assert_eq!(
-            operation.attribute(&context, "foo").map(|a| a.to_string()),
+            operation.attribute("foo").map(|a| a.to_string()),
             Ok("\"foo\"".into())
         );
         assert_eq!(
@@ -596,7 +587,7 @@ mod tests {
     fn clone() {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
-        let operation = OperationBuilder::new(&context, "foo", Location::unknown(&context))
+        let operation = OperationBuilder::new("foo", Location::unknown(&context))
             .build()
             .unwrap();
 
@@ -609,7 +600,7 @@ mod tests {
         context.set_allow_unregistered_dialects(true);
 
         assert_eq!(
-            OperationBuilder::new(&context, "foo", Location::unknown(&context),)
+            OperationBuilder::new("foo", Location::unknown(&context),)
                 .build()
                 .unwrap()
                 .to_string(),
@@ -625,7 +616,7 @@ mod tests {
         assert_eq!(
             format!(
                 "{:?}",
-                OperationBuilder::new(&context, "foo", Location::unknown(&context))
+                OperationBuilder::new("foo", Location::unknown(&context))
                     .build()
                     .unwrap()
             ),
@@ -639,7 +630,7 @@ mod tests {
         context.set_allow_unregistered_dialects(true);
 
         assert_eq!(
-            OperationBuilder::new(&context, "foo", Location::unknown(&context))
+            OperationBuilder::new("foo", Location::unknown(&context))
                 .build()
                 .unwrap()
                 .to_string_with_flags(

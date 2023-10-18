@@ -4,7 +4,7 @@ use super::Pass;
 use crate::{
     dialect::DialectHandle,
     ir::{r#type::TypeId, OperationRef},
-    Context, ContextRef, StringRef,
+    ContextRef, StringRef,
 };
 use mlir_sys::{
     mlirCreateExternalPass, mlirExternalPassSignalFailure, MlirContext, MlirExternalPass,
@@ -153,7 +153,6 @@ impl<'c, F: FnMut(OperationRef<'c, '_>, ExternalPass<'_>) + Clone> RunExternalPa
 /// let context = Context::new();
 ///
 /// create_external(
-///     &context,
 ///     |operation: OperationRef, _pass: ExternalPass| {
 ///         operation.dump();
 ///     },
@@ -167,7 +166,6 @@ impl<'c, F: FnMut(OperationRef<'c, '_>, ExternalPass<'_>) + Clone> RunExternalPa
 /// ```
 #[allow(clippy::too_many_arguments)]
 pub fn create_external<'c, T: RunExternalPass<'c>>(
-    context: &'c Context,
     pass: T,
     pass_id: TypeId,
     name: &str,
@@ -179,10 +177,10 @@ pub fn create_external<'c, T: RunExternalPass<'c>>(
     unsafe {
         Pass::from_raw(mlirCreateExternalPass(
             pass_id.to_raw(),
-            StringRef::from_str(context, name).to_raw(),
-            StringRef::from_str(context, argument).to_raw(),
-            StringRef::from_str(context, description).to_raw(),
-            StringRef::from_str(context, op_name).to_raw(),
+            StringRef::new(name).to_raw(),
+            StringRef::new(argument).to_raw(),
+            StringRef::new(description).to_raw(),
+            StringRef::new(op_name).to_raw(),
             dependent_dialects.len() as isize,
             dependent_dialects.as_ptr() as _,
             MlirExternalPassCallbacks {
@@ -225,7 +223,7 @@ mod tests {
             TypeAttribute::new(FunctionType::new(context, &[], &[]).into()),
             {
                 let block = Block::new(&[]);
-                block.append_operation(func::r#return(context, &[], location));
+                block.append_operation(func::r#return(&[], location));
 
                 let region = Region::new();
                 region.append_block(block);
@@ -280,9 +278,8 @@ mod tests {
         }
 
         impl<'c> TestPass<'c> {
-            fn into_pass(self, context: &Context) -> Pass {
+            fn into_pass(self) -> Pass {
                 create_external(
-                    context,
                     self,
                     TypeId::create(&TEST_PASS),
                     "test pass",
@@ -303,7 +300,7 @@ mod tests {
             context: &context,
             value: 10,
         };
-        pass_manager.add_pass(test_pass.into_pass(&context));
+        pass_manager.add_pass(test_pass.into_pass());
         pass_manager.run(&mut module).unwrap();
     }
 
@@ -317,7 +314,6 @@ mod tests {
         let pass_manager = PassManager::new(&context);
 
         pass_manager.add_pass(create_external(
-            &context,
             |operation: OperationRef, pass: ExternalPass<'_>| {
                 assert!(operation.verify());
                 assert!(

@@ -41,6 +41,7 @@ impl<'a> StringRef<'a> {
     }
 
     /// Converts a string into a null-terminated string reference.
+    #[deprecated]
     pub fn from_str(context: &'a Context, string: &str) -> Self {
         let entry = context
             .string_cache()
@@ -99,31 +100,16 @@ mod tests {
 
     #[test]
     fn equal() {
-        let context = Context::new();
-
-        assert_eq!(
-            StringRef::from_str(&context, "foo"),
-            StringRef::from_str(&context, "foo")
-        );
+        assert_eq!(StringRef::new("foo"), StringRef::new("foo"));
     }
 
     #[test]
     fn equal_str() {
-        let context = Context::new();
-
-        assert_eq!(
-            StringRef::from_str(&context, "foo").as_str().unwrap(),
-            "foo"
-        );
+        assert_eq!(StringRef::new("foo").as_str().unwrap(), "foo");
     }
 
     #[test]
     fn not_equal() {
-        let context = Context::new();
-
-        assert_ne!(
-            StringRef::from_str(&context, "foo"),
-            StringRef::from_str(&context, "bar")
-        );
+        assert_ne!(StringRef::new("foo"), StringRef::new("bar"));
     }
 }

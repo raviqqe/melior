@@ -62,7 +62,7 @@ fn allocate<'c>(
     alignment: Option<IntegerAttribute<'c>>,
     location: Location<'c>,
 ) -> Operation<'c> {
-    let mut builder = OperationBuilder::new(context, name, location);
+    let mut builder = OperationBuilder::new(name, location);
 
     builder = builder.add_attributes(&[(
         Identifier::new(context, "operand_segment_sizes"),
@@ -84,12 +84,11 @@ fn allocate<'c>(
 
 /// Create a `memref.cast` operation.
 pub fn cast<'c>(
-    context: &'c Context,
     value: Value<'c, '_>,
     r#type: MemRefType<'c>,
     location: Location<'c>,
 ) -> Operation<'c> {
-    OperationBuilder::new(context, "memref.cast", location)
+    OperationBuilder::new("memref.cast", location)
         .add_operands(&[value])
         .add_results(&[r#type.into()])
         .build()
@@ -97,12 +96,8 @@ pub fn cast<'c>(
 }
 
 /// Create a `memref.dealloc` operation.
-pub fn dealloc<'c>(
-    context: &'c Context,
-    value: Value<'c, '_>,
-    location: Location<'c>,
-) -> Operation<'c> {
-    OperationBuilder::new(context, "memref.dealloc", location)
+pub fn dealloc<'c>(value: Value<'c, '_>, location: Location<'c>) -> Operation<'c> {
+    OperationBuilder::new("memref.dealloc", location)
         .add_operands(&[value])
         .build()
         .expect("valid operation")
@@ -110,12 +105,11 @@ pub fn dealloc<'c>(
 
 /// Create a `memref.dim` operation.
 pub fn dim<'c>(
-    context: &'c Context,
     value: Value<'c, '_>,
     index: Value<'c, '_>,
     location: Location<'c>,
 ) -> Operation<'c> {
-    OperationBuilder::new(context, "memref.dim", location)
+    OperationBuilder::new("memref.dim", location)
         .add_operands(&[value, index])
         .enable_result_type_inference()
         .build()
@@ -129,7 +123,7 @@ pub fn get_global<'c>(
     r#type: MemRefType<'c>,
     location: Location<'c>,
 ) -> Operation<'c> {
-    OperationBuilder::new(context, "memref.get_global", location)
+    OperationBuilder::new("memref.get_global", location)
         .add_attributes(&[(
             Identifier::new(context, "name"),
             FlatSymbolRefAttribute::new(context, name).into(),
@@ -151,7 +145,7 @@ pub fn global<'c>(
     alignment: Option<IntegerAttribute<'c>>,
     location: Location<'c>,
 ) -> Operation<'c> {
-    let mut builder = OperationBuilder::new(context, "memref.global", location).add_attributes(&[
+    let mut builder = OperationBuilder::new("memref.global", location).add_attributes(&[
         (
             Identifier::new(context, "sym_name"),
             StringAttribute::new(context, name).into(),
@@ -190,12 +184,11 @@ pub fn global<'c>(
 
 /// Create a `memref.load` operation.
 pub fn load<'c>(
-    context: &'c Context,
     memref: Value<'c, '_>,
     indices: &[Value<'c, '_>],
     location: Location<'c>,
 ) -> Operation<'c> {
-    OperationBuilder::new(context, "memref.load", location)
+    OperationBuilder::new("memref.load", location)
         .add_operands(&[memref])
         .add_operands(indices)
         .enable_result_type_inference()
@@ -204,12 +197,8 @@ pub fn load<'c>(
 }
 
 /// Create a `memref.rank` operation.
-pub fn rank<'c>(
-    context: &'c Context,
-    value: Value<'c, '_>,
-    location: Location<'c>,
-) -> Operation<'c> {
-    OperationBuilder::new(context, "memref.rank", location)
+pub fn rank<'c>(value: Value<'c, '_>, location: Location<'c>) -> Operation<'c> {
+    OperationBuilder::new("memref.rank", location)
         .add_operands(&[value])
         .enable_result_type_inference()
         .build()
@@ -218,13 +207,12 @@ pub fn rank<'c>(
 
 /// Create a `memref.store` operation.
 pub fn store<'c>(
-    context: &'c Context,
     value: Value<'c, '_>,
     memref: Value<'c, '_>,
     indices: &[Value<'c, '_>],
     location: Location<'c>,
 ) -> Operation<'c> {
-    OperationBuilder::new(context, "memref.store", location)
+    OperationBuilder::new("memref.store", location)
         .add_operands(&[value, memref])
         .add_operands(indices)
         .build()
@@ -240,7 +228,7 @@ pub fn realloc<'c>(
     alignment: Option<IntegerAttribute<'c>>,
     location: Location<'c>,
 ) -> Operation<'c> {
-    let mut builder = OperationBuilder::new(context, "memref.realloc", location)
+    let mut builder = OperationBuilder::new("memref.realloc", location)
         .add_operands(&[value])
         .add_results(&[r#type.into()]);
 
@@ -277,7 +265,7 @@ mod tests {
             let block = Block::new(&[]);
 
             build_block(&block);
-            block.append_operation(func::r#return(context, &[], location));
+            block.append_operation(func::r#return(&[], location));
 
             let region = Region::new();
             region.append_block(block);
@@ -312,11 +300,7 @@ mod tests {
                 None,
                 location,
             ));
-            block.append_operation(dealloc(
-                &context,
-                memref.result(0).unwrap().into(),
-                location,
-            ));
+            block.append_operation(dealloc(memref.result(0).unwrap().into(), location));
         })
     }
 
@@ -378,7 +362,6 @@ mod tests {
             ));
 
             block.append_operation(cast(
-                &context,
                 memref.result(0).unwrap().into(),
                 Type::parse(&context, "memref<?xf64>")
                     .unwrap()
@@ -411,7 +394,6 @@ mod tests {
             ));
 
             block.append_operation(dim(
-                &context,
                 memref.result(0).unwrap().into(),
                 index.result(0).unwrap().into(),
                 location,
@@ -445,7 +427,7 @@ mod tests {
                 let block = Block::new(&[]);
 
                 block.append_operation(get_global(&context, "foo", mem_ref_type, location));
-                block.append_operation(func::r#return(&context, &[], location));
+                block.append_operation(func::r#return(&[], location));
 
                 let region = Region::new();
                 region.append_block(block);
@@ -526,12 +508,7 @@ mod tests {
                 None,
                 location,
             ));
-            block.append_operation(load(
-                &context,
-                memref.result(0).unwrap().into(),
-                &[],
-                location,
-            ));
+            block.append_operation(load(memref.result(0).unwrap().into(), &[], location));
         })
     }
 
@@ -557,7 +534,6 @@ mod tests {
             ));
 
             block.append_operation(load(
-                &context,
                 memref.result(0).unwrap().into(),
                 &[index.result(0).unwrap().into()],
                 location,
@@ -579,7 +555,7 @@ mod tests {
                 None,
                 location,
             ));
-            block.append_operation(rank(&context, memref.result(0).unwrap().into(), location));
+            block.append_operation(rank(memref.result(0).unwrap().into(), location));
         })
     }
 
@@ -605,7 +581,6 @@ mod tests {
             ));
 
             block.append_operation(store(
-                &context,
                 value.result(0).unwrap().into(),
                 memref.result(0).unwrap().into(),
                 &[],
@@ -642,7 +617,6 @@ mod tests {
             ));
 
             block.append_operation(store(
-                &context,
                 value.result(0).unwrap().into(),
                 memref.result(0).unwrap().into(),
                 &[index.result(0).unwrap().into()],
