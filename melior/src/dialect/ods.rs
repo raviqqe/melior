@@ -129,10 +129,10 @@ mod tests {
 
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
         pass_manager
-            .nested_under(context, "func.func")
+            .nested_under("func.func")
             .add_pass(pass::conversion::create_arith_to_llvm());
         pass_manager
-            .nested_under(context, "func.func")
+            .nested_under("func.func")
             .add_pass(pass::conversion::create_index_to_llvm());
         pass_manager.add_pass(pass::conversion::create_scf_to_control_flow());
         pass_manager.add_pass(pass::conversion::create_control_flow_to_llvm());
@@ -148,13 +148,13 @@ mod tests {
         argument_types: &[Type<'c>],
         callback: impl FnOnce(&Block<'c>),
     ) {
-        let location = Location::unknown(&context);
+        let location = Location::unknown(context);
         let mut module = Module::new(location);
 
         module.body().append_operation(func::func(
-            &context,
-            StringAttribute::new(&context, "foo"),
-            TypeAttribute::new(FunctionType::new(&context, argument_types, &[]).into()),
+            context,
+            StringAttribute::new(context, "foo"),
+            TypeAttribute::new(FunctionType::new(context, argument_types, &[]).into()),
             {
                 let block = Block::new(
                     &argument_types
@@ -174,7 +174,7 @@ mod tests {
             location,
         ));
 
-        convert_module(&context, &mut module);
+        convert_module(context, &mut module);
 
         assert!(module.as_operation().verify());
         insta::assert_display_snapshot!(name, module.as_operation());
@@ -193,7 +193,7 @@ mod tests {
             block.append_operation(
                 llvm::alloca(
                     &context,
-                    dialect::llvm::r#type::pointer(i64_type.into(), 0).into(),
+                    dialect::llvm::r#type::pointer(i64_type.into(), 0),
                     alloca_size,
                     location,
                 )

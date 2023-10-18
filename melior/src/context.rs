@@ -13,10 +13,7 @@ use mlir_sys::{
     mlirContextIsRegisteredOperation, mlirContextLoadAllAvailableDialects,
     mlirContextSetAllowUnregisteredDialects, MlirContext, MlirDiagnostic, MlirLogicalResult,
 };
-use std::{
-    ffi::{c_void, CString},
-    marker::PhantomData,
-};
+use std::{ffi::c_void, marker::PhantomData, pin::Pin};
 
 /// A context of IR, dialects, and passes.
 ///
@@ -27,7 +24,7 @@ pub struct Context {
     raw: MlirContext,
     // We need to pass null-terminated strings to functions in the MLIR API although
     // Rust's strings are not.
-    string_cache: DashMap<CString, ()>,
+    string_cache: DashMap<Pin<String>, ()>,
 }
 
 impl Context {
@@ -51,12 +48,9 @@ impl Context {
 
     /// Gets or loads a dialect.
     pub fn get_or_load_dialect(&self, name: &str) -> Dialect {
-        unsafe {
-            Dialect::from_raw(mlirContextGetOrLoadDialect(
-                self.raw,
-                StringRef::from_str(self, name).to_raw(),
-            ))
-        }
+        let name = StringRef::new(name);
+
+        unsafe { Dialect::from_raw(mlirContextGetOrLoadDialect(self.raw, name.to_raw())) }
     }
 
     /// Appends a dialect registry.
@@ -86,9 +80,9 @@ impl Context {
 
     /// Returns `true` if a given operation is registered in a context.
     pub fn is_registered_operation(&self, name: &str) -> bool {
-        unsafe {
-            mlirContextIsRegisteredOperation(self.raw, StringRef::from_str(self, name).to_raw())
-        }
+        let name = StringRef::new(name);
+
+        unsafe { mlirContextIsRegisteredOperation(self.raw, name.to_raw()) }
     }
 
     /// Converts a context into a raw object.
@@ -131,7 +125,7 @@ impl Context {
         unsafe { ContextRef::from_raw(self.to_raw()) }
     }
 
-    pub(crate) fn string_cache(&self) -> &DashMap<CString, ()> {
+    pub(crate) fn string_cache(&self) -> &DashMap<Pin<String>, ()> {
         &self.string_cache
     }
 }

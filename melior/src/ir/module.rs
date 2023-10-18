@@ -7,7 +7,7 @@ use mlir_sys::{
     mlirModuleCreateEmpty, mlirModuleCreateParse, mlirModuleDestroy, mlirModuleFromOperation,
     mlirModuleGetBody, mlirModuleGetContext, mlirModuleGetOperation, MlirModule,
 };
-use std::marker::PhantomData;
+use std::{ffi::CString, marker::PhantomData};
 
 /// A module.
 #[derive(Debug)]
@@ -24,13 +24,12 @@ impl<'c> Module<'c> {
 
     /// Parses a module.
     pub fn parse(context: &Context, source: &str) -> Option<Self> {
-        // TODO Should we allocate StringRef locally because sources can be big?
-        unsafe {
-            Self::from_option_raw(mlirModuleCreateParse(
-                context.to_raw(),
-                StringRef::from_str(context, source).to_raw(),
-            ))
-        }
+        // TODO Use a string not null-terminated.
+        // Somehow, we still need a null-terminated string for a source.
+        let source = CString::new(source).unwrap();
+        let source = StringRef::from_c_str(&source);
+
+        unsafe { Self::from_option_raw(mlirModuleCreateParse(context.to_raw(), source.to_raw())) }
     }
 
     /// Converts a module into an operation.
