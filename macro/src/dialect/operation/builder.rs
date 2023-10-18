@@ -167,7 +167,7 @@ impl<'o> OperationBuilder<'o> {
         quote! {
             impl<'c> #builder_ident<'c, #(#arguments),*> {
                 pub fn build(self) -> #class_name<'c> {
-                    self.builder #maybe_infer.build().try_into().expect(#error)
+                    self.builder #maybe_infer.build().expect("valid operation").try_into().expect(#error)
                 }
             }
         }

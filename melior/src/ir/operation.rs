@@ -224,15 +224,7 @@ impl<'c> Operation<'c> {
 
     /// Gets the next operation in the same block.
     pub fn next_in_block(&self) -> Option<OperationRef<'c, '_>> {
-        unsafe {
-            let operation = mlirOperationGetNextInBlock(self.raw);
-
-            if operation.ptr.is_null() {
-                None
-            } else {
-                Some(OperationRef::from_raw(operation))
-            }
-        }
+        unsafe { OperationRef::from_option_raw(mlirOperationGetNextInBlock(self.raw)) }
     }
 
     /// Verifies an operation.
@@ -272,6 +264,19 @@ impl<'c> Operation<'c> {
         Self {
             raw,
             _context: Default::default(),
+        }
+    }
+
+    /// Creates an optional operation from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_option_raw(raw: MlirOperation) -> Option<Self> {
+        if raw.ptr.is_null() {
+            None
+        } else {
+            Some(Self::from_raw(raw))
         }
     }
 
@@ -431,7 +436,9 @@ mod tests {
     fn new() {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
-        OperationBuilder::new(&context, "foo", Location::unknown(&context)).build();
+        OperationBuilder::new(&context, "foo", Location::unknown(&context))
+            .build()
+            .unwrap();
     }
 
     #[test]
@@ -442,6 +449,7 @@ mod tests {
         assert_eq!(
             OperationBuilder::new(&context, "foo", Location::unknown(&context),)
                 .build()
+                .unwrap()
                 .name(),
             Identifier::new(&context, "foo")
         );
@@ -453,7 +461,9 @@ mod tests {
         context.set_allow_unregistered_dialects(true);
         let block = Block::new(&[]);
         let operation = block.append_operation(
-            OperationBuilder::new(&context, "foo", Location::unknown(&context)).build(),
+            OperationBuilder::new(&context, "foo", Location::unknown(&context))
+                .build()
+                .unwrap(),
         );
 
         assert_eq!(operation.block().as_deref(), Some(&block));
@@ -466,6 +476,7 @@ mod tests {
         assert_eq!(
             OperationBuilder::new(&context, "foo", Location::unknown(&context))
                 .build()
+                .unwrap()
                 .block(),
             None
         );
@@ -478,6 +489,7 @@ mod tests {
         assert_eq!(
             OperationBuilder::new(&context, "foo", Location::unknown(&context))
                 .build()
+                .unwrap()
                 .result(0)
                 .unwrap_err(),
             Error::PositionOutOfBounds {
@@ -495,6 +507,7 @@ mod tests {
         assert_eq!(
             OperationBuilder::new(&context, "foo", Location::unknown(&context),)
                 .build()
+                .unwrap()
                 .region(0),
             Err(Error::PositionOutOfBounds {
                 name: "region",
@@ -517,7 +530,8 @@ mod tests {
         let operands = vec![argument, argument, argument];
         let operation = OperationBuilder::new(&context, "foo", Location::unknown(&context))
             .add_operands(&operands)
-            .build();
+            .build()
+            .unwrap();
 
         assert_eq!(
             operation.operands().skip(1).collect::<Vec<_>>(),
@@ -532,7 +546,8 @@ mod tests {
 
         let operation = OperationBuilder::new(&context, "foo", Location::unknown(&context))
             .add_regions(vec![Region::new()])
-            .build();
+            .build()
+            .unwrap();
 
         assert_eq!(
             operation.regions().collect::<Vec<_>>(),
@@ -550,7 +565,8 @@ mod tests {
                 Identifier::new(&context, "foo"),
                 StringAttribute::new(&context, "bar").into(),
             )])
-            .build();
+            .build()
+            .unwrap();
         assert!(operation.has_attribute(&context, "foo"));
         assert_eq!(
             operation.attribute(&context, "foo").map(|a| a.to_string()),
@@ -580,7 +596,9 @@ mod tests {
     fn clone() {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
-        let operation = OperationBuilder::new(&context, "foo", Location::unknown(&context)).build();
+        let operation = OperationBuilder::new(&context, "foo", Location::unknown(&context))
+            .build()
+            .unwrap();
 
         let _ = operation.clone();
     }
@@ -593,6 +611,7 @@ mod tests {
         assert_eq!(
             OperationBuilder::new(&context, "foo", Location::unknown(&context),)
                 .build()
+                .unwrap()
                 .to_string(),
             "\"foo\"() : () -> ()\n"
         );
@@ -606,7 +625,9 @@ mod tests {
         assert_eq!(
             format!(
                 "{:?}",
-                OperationBuilder::new(&context, "foo", Location::unknown(&context)).build()
+                OperationBuilder::new(&context, "foo", Location::unknown(&context))
+                    .build()
+                    .unwrap()
             ),
             "Operation(\n\"foo\"() : () -> ()\n)"
         );
@@ -620,6 +641,7 @@ mod tests {
         assert_eq!(
             OperationBuilder::new(&context, "foo", Location::unknown(&context))
                 .build()
+                .unwrap()
                 .to_string_with_flags(
                     OperationPrintingFlags::new()
                         .elide_large_elements_attributes(100)
