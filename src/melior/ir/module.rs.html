@@ -146,6 +146,9 @@
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{BlockRef, Location, Operation, OperationRef};
 <span class="kw">use crate</span>::{
     context::{Context, ContextRef},
@@ -276,7 +279,8 @@
         <span class="kw">let </span>module = Module::from_operation(
             OperationBuilder::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;builtin.module&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
                 .add_regions(<span class="macro">vec!</span>[region])
-                .build(),
+                .build()
+                .unwrap(),
         )
         .unwrap();
 
@@ -289,7 +293,9 @@
         <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert!</span>(Module::from_operation(
-            OperationBuilder::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context),).build()
+            OperationBuilder::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;func.func&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context),)
+                .build()
+                .unwrap()
         )
         .is_none());
     }

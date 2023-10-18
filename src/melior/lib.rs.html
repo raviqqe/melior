@@ -280,6 +280,10 @@
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
 <a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../README.md&quot;</span>)]
 
 </span><span class="kw">extern crate </span><span class="self">self </span><span class="kw">as </span>melior;
@@ -417,7 +421,8 @@
                         zero.result(<span class="number">0</span>).unwrap().into(),
                     ])
                     .add_results(<span class="kw-2">&amp;</span>[index_type])
-                    .build(),
+                    .build()
+                    .unwrap(),
             );
 
             <span class="kw">let </span>loop_block = Block::new(<span class="kw-2">&amp;</span>[(index_type, location)]);
@@ -438,7 +443,8 @@
                             loop_block.argument(<span class="number">0</span>).unwrap().into(),
                         ])
                         .add_results(<span class="kw-2">&amp;</span>[f32_type])
-                        .build(),
+                        .build()
+                        .unwrap(),
                 );
 
                 <span class="kw">let </span>rhs = loop_block.append_operation(
@@ -448,7 +454,8 @@
                             loop_block.argument(<span class="number">0</span>).unwrap().into(),
                         ])
                         .add_results(<span class="kw-2">&amp;</span>[f32_type])
-                        .build(),
+                        .build()
+                        .unwrap(),
                 );
 
                 <span class="kw">let </span>add = loop_block.append_operation(arith::addf(
@@ -465,7 +472,8 @@
                             function_block.argument(<span class="number">0</span>).unwrap().into(),
                             loop_block.argument(<span class="number">0</span>).unwrap().into(),
                         ])
-                        .build(),
+                        .build()
+                        .unwrap(),
                 );
 
                 loop_block.append_operation(scf::r#yield(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], location));

@@ -368,6 +368,10 @@
 <a href="#368" id="368">368</a>
 <a href="#369" id="369">369</a>
 <a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! `cf` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -396,6 +400,7 @@
         )])
         .add_operands(<span class="kw-2">&amp;</span>[argument])
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates a `cf.br` operation.
@@ -409,6 +414,7 @@
         .add_operands(destination_operands)
         .add_successors(<span class="kw-2">&amp;</span>[successor])
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates a `cf.cond_br` operation.
@@ -443,6 +449,7 @@
         )
         .add_successors(<span class="kw-2">&amp;</span>[true_successor, false_successor])
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates a `cf.switch` operation.
@@ -507,7 +514,8 @@
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
         )
         .add_successors(<span class="kw-2">&amp;</span>destinations)
-        .build())
+        .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>))
 }
 
 <span class="attr">#[cfg(test)]

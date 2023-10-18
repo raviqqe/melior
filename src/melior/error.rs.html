@@ -89,6 +89,10 @@
 <a href="#89" id="89">89</a>
 <a href="#90" id="90">90</a>
 <a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     convert::Infallible,
     error,
@@ -107,6 +111,7 @@
         value: String,
     },
     InvokeFunction,
+    OperationBuild,
     OperandNotFound(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str),
     OperationResultExpected(String),
     PositionOutOfBounds {
@@ -138,6 +143,9 @@
                 <span class="macro">write!</span>(formatter, <span class="string">&quot;element of {type} type expected: {value}&quot;</span>)
             }
             <span class="self">Self</span>::InvokeFunction =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;failed to invoke JIT-compiled function&quot;</span>),
+            <span class="self">Self</span>::OperationBuild =&gt; {
+                <span class="macro">write!</span>(formatter, <span class="string">&quot;operation build failed&quot;</span>)
+            }
             <span class="self">Self</span>::OperandNotFound(name) =&gt; {
                 <span class="macro">write!</span>(formatter, <span class="string">&quot;operand {name} not found&quot;</span>)
             }

@@ -430,7 +430,7 @@
         <span class="macro">quote! </span>{
             <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #builder_ident&lt;<span class="lifetime">&#39;c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
                 <span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; #class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
-                    <span class="self">self</span>.builder #maybe_infer.build().try_into().expect(#error)
+                    <span class="self">self</span>.builder #maybe_infer.build().expect(<span class="string">&quot;valid operation&quot;</span>).try_into().expect(#error)
                 }
             }
         }

@@ -87,6 +87,7 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{
     ir::{OperationRef, Value, ValueLike},
     Error,
@@ -162,7 +163,8 @@
         <span class="kw">let </span>r#type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap();
         <span class="kw">let </span>operation = OperationBuilder::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
             .add_results(<span class="kw-2">&amp;</span>[r#type])
-            .build();
+            .build()
+            .unwrap();
 
         <span class="macro">assert_eq!</span>(operation.result(<span class="number">0</span>).unwrap().result_number(), <span class="number">0</span>);
     }

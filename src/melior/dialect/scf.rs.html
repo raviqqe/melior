@@ -737,6 +737,13 @@
 <a href="#737" id="737">737</a>
 <a href="#738" id="738">738</a>
 <a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! `scf` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -758,6 +765,7 @@
         .add_operands(<span class="kw-2">&amp;</span>[condition])
         .add_operands(values)
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates a `scf.execute_region` operation.
@@ -771,6 +779,7 @@
         .add_results(result_types)
         .add_regions(<span class="macro">vec!</span>[region])
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates a `scf.for` operation.
@@ -786,6 +795,7 @@
         .add_operands(<span class="kw-2">&amp;</span>[start, end, step])
         .add_regions(<span class="macro">vec!</span>[region])
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates a `scf.if` operation.
@@ -802,6 +812,7 @@
         .add_results(result_types)
         .add_regions(<span class="macro">vec!</span>[then_region, else_region])
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates a `scf.index_switch` operation.
@@ -819,6 +830,7 @@
         .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;cases&quot;</span>), cases.into())])
         .add_regions(regions)
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates a `scf.while` operation.
@@ -835,6 +847,7 @@
         .add_results(result_types)
         .add_regions(<span class="macro">vec!</span>[before_region, after_region])
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates a `scf.yield` operation.
@@ -846,6 +859,7 @@
     OperationBuilder::new(context, <span class="string">&quot;scf.yield&quot;</span>, location)
         .add_operands(values)
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="attr">#[cfg(test)]

@@ -682,6 +682,9 @@
 <a href="#682" id="682">682</a>
 <a href="#683" id="683">683</a>
 <a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! `arith` dialect.
 
 </span><span class="kw">use crate</span>::{
@@ -704,6 +707,7 @@
         .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;value&quot;</span>), value)])
         .enable_result_type_inference()
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// `arith.cmpf` predicate
@@ -778,6 +782,7 @@
         .add_operands(<span class="kw-2">&amp;</span>[lhs, rhs])
         .enable_result_type_inference()
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates an `arith.select` operation.
@@ -792,6 +797,7 @@
         .add_operands(<span class="kw-2">&amp;</span>[condition, true_value, false_value])
         .add_results(<span class="kw-2">&amp;</span>[true_value.r#type()])
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="macro">melior_macro::binary_operations!</span>(

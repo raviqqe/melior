@@ -266,6 +266,8 @@
 <a href="#266" id="266">266</a>
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! `index` dialect.
 
 </span><span class="kw">use </span><span class="kw">super</span>::arith::CmpiPredicate;
@@ -289,6 +291,7 @@
         .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;value&quot;</span>), value.into())])
         .enable_result_type_inference()
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="doccomment">/// Creates an `index.cmp` operation.
@@ -322,6 +325,7 @@
         .add_operands(<span class="kw-2">&amp;</span>[lhs, rhs])
         .enable_result_type_inference()
         .build()
+        .expect(<span class="string">&quot;valid operation&quot;</span>)
 }
 
 <span class="macro">melior_macro::binary_operations!</span>(
