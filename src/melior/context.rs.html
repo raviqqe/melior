@@ -267,6 +267,54 @@
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{
     diagnostic::{Diagnostic, DiagnosticHandlerId},
     dialect::{Dialect, DialectRegistry},
@@ -396,6 +444,10 @@
         <span class="kw">unsafe </span>{ mlirContextDetachDiagnosticHandler(<span class="self">self</span>.to_raw(), id.to_raw()) }
     }
 
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>to_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ContextRef {
+        <span class="kw">unsafe </span>{ ContextRef::from_raw(<span class="self">self</span>.to_raw()) }
+    }
+
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>string_cache(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>DashMap&lt;CString, ()&gt; {
         <span class="kw-2">&amp;</span><span class="self">self</span>.string_cache
     }
@@ -416,6 +468,12 @@
 <span class="kw">impl </span>PartialEq <span class="kw">for </span>Context {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ mlirContextEqual(<span class="self">self</span>.raw, other.raw) }
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; PartialEq&lt;ContextRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>Context {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">&amp;</span>other: <span class="kw-2">&amp;</span>ContextRef&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; bool {
+        <span class="self">self</span>.to_ref() == other
     }
 }
 
@@ -442,13 +500,19 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; PartialEq <span class="kw">for </span>ContextRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; PartialEq <span class="kw">for </span>ContextRef&lt;<span class="lifetime">&#39;c</span>&gt; {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ mlirContextEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Eq <span class="kw">for </span>ContextRef&lt;<span class="lifetime">&#39;a</span>&gt; {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; PartialEq&lt;Context&gt; <span class="kw">for </span>ContextRef&lt;<span class="lifetime">&#39;c</span>&gt; {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Context) -&gt; bool {
+        <span class="self">self </span>== <span class="kw-2">&amp;</span>other.to_ref()
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Eq <span class="kw">for </span>ContextRef&lt;<span class="lifetime">&#39;c</span>&gt; {}
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
@@ -534,6 +598,38 @@
         </span>});
 
         context.detach_diagnostic_handler(id);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>compare_contexts() {
+        <span class="kw">let </span>one = Context::new();
+        <span class="kw">let </span>other = Context::new();
+
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>one, <span class="kw-2">&amp;</span>one);
+        <span class="macro">assert_ne!</span>(<span class="kw-2">&amp;</span>one, <span class="kw-2">&amp;</span>other);
+        <span class="macro">assert_ne!</span>(<span class="kw-2">&amp;</span>other, <span class="kw-2">&amp;</span>one);
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>other, <span class="kw-2">&amp;</span>other);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>compare_context_refs() {
+        <span class="kw">let </span>one = Context::new();
+        <span class="kw">let </span>other = Context::new();
+
+        <span class="kw">let </span>one_ref = one.to_ref();
+        <span class="kw">let </span>other_ref = other.to_ref();
+
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>one, <span class="kw-2">&amp;</span>one_ref);
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>one_ref, <span class="kw-2">&amp;</span>one);
+
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>other, <span class="kw-2">&amp;</span>other_ref);
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>other_ref, <span class="kw-2">&amp;</span>other);
+
+        <span class="macro">assert_ne!</span>(<span class="kw-2">&amp;</span>one, <span class="kw-2">&amp;</span>other_ref);
+        <span class="macro">assert_ne!</span>(<span class="kw-2">&amp;</span>other_ref, <span class="kw-2">&amp;</span>one);
+
+        <span class="macro">assert_ne!</span>(<span class="kw-2">&amp;</span>other, <span class="kw-2">&amp;</span>one_ref);
+        <span class="macro">assert_ne!</span>(<span class="kw-2">&amp;</span>one_ref, <span class="kw-2">&amp;</span>other);
     }
 }
 </code></pre></div></section></main></body></html>
