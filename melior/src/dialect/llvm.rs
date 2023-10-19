@@ -22,7 +22,7 @@ pub mod r#type;
 
 macro_rules! assert_operation {
     ($context:expr, $name:expr) => {
-        assert!(context.is_registered_operation(name));
+        assert!($context.is_registered_operation($name));
     };
 }
 
@@ -36,11 +36,11 @@ pub fn extract_value<'c>(
     result_type: Type<'c>,
     location: Location<'c>,
 ) -> Operation<'c> {
-    const name: &str = "llvm.extractvalue";
+    const NAME: &str = "llvm.extractvalue";
 
-    assert_operation!(context, name);
+    assert_operation!(context, NAME);
 
-    OperationBuilder::new(name, location)
+    OperationBuilder::new(NAME, location)
         .add_attributes(&[(Identifier::new(context, "position"), position.into())])
         .add_operands(&[container])
         .add_results(&[result_type])
