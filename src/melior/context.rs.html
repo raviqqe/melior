@@ -300,22 +300,12 @@
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{
     diagnostic::{Diagnostic, DiagnosticHandlerId},
     dialect::{Dialect, DialectRegistry},
     logical_result::LogicalResult,
     string_ref::StringRef,
 };
-<span class="kw">use </span>dashmap::DashMap;
 <span class="kw">use </span>mlir_sys::{
     mlirContextAppendDialectRegistry, mlirContextAttachDiagnosticHandler, mlirContextCreate,
     mlirContextDestroy, mlirContextDetachDiagnosticHandler, mlirContextEnableMultithreading,
@@ -324,7 +314,7 @@
     mlirContextIsRegisteredOperation, mlirContextLoadAllAvailableDialects,
     mlirContextSetAllowUnregisteredDialects, MlirContext, MlirDiagnostic, MlirLogicalResult,
 };
-<span class="kw">use </span>std::{ffi::c_void, marker::PhantomData, pin::Pin};
+<span class="kw">use </span>std::{ffi::c_void, marker::PhantomData};
 
 <span class="doccomment">/// A context of IR, dialects, and passes.
 ///
@@ -333,9 +323,6 @@
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Context {
     raw: MlirContext,
-    <span class="comment">// We need to pass null-terminated strings to functions in the MLIR API although
-    // Rust&#39;s strings are not.
-    </span>string_cache: DashMap&lt;Pin&lt;String&gt;, ()&gt;,
 }
 
 <span class="kw">impl </span>Context {
@@ -343,7 +330,6 @@
     </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             raw: <span class="kw">unsafe </span>{ mlirContextCreate() },
-            string_cache: Default::default(),
         }
     }
 
@@ -434,10 +420,6 @@
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>to_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ContextRef {
         <span class="kw">unsafe </span>{ ContextRef::from_raw(<span class="self">self</span>.to_raw()) }
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>string_cache(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>DashMap&lt;Pin&lt;String&gt;, ()&gt; {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.string_cache
     }
 }
 
