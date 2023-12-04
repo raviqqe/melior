@@ -16,22 +16,28 @@
 <a href="#16" id="16">16</a>
 <a href="#17" id="17">17</a>
 <a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Transform passes.
 
-</span><span class="macro">melior_macro::transform_passes!</span>(
-    mlirCreateTransformsCSE,
-    mlirCreateTransformsCanonicalizer,
-    mlirCreateTransformsControlFlowSink,
-    mlirCreateTransformsGenerateRuntimeVerification,
-    mlirCreateTransformsInliner,
-    mlirCreateTransformsLocationSnapshot,
-    mlirCreateTransformsLoopInvariantCodeMotion,
-    mlirCreateTransformsPrintOpStats,
-    mlirCreateTransformsSCCP,
-    mlirCreateTransformsStripDebugInfo,
-    mlirCreateTransformsSymbolDCE,
-    mlirCreateTransformsSymbolPrivatize,
-    mlirCreateTransformsTopologicalSort,
-    mlirCreateTransformsViewOpGraph,
+</span><span class="macro">melior_macro::passes!</span>(
+    <span class="string">&quot;Transforms&quot;</span>,
+    [
+        mlirCreateTransformsCSE,
+        mlirCreateTransformsCanonicalizer,
+        mlirCreateTransformsControlFlowSink,
+        mlirCreateTransformsGenerateRuntimeVerification,
+        mlirCreateTransformsInliner,
+        mlirCreateTransformsLocationSnapshot,
+        mlirCreateTransformsLoopInvariantCodeMotion,
+        mlirCreateTransformsPrintOpStats,
+        mlirCreateTransformsSCCP,
+        mlirCreateTransformsStripDebugInfo,
+        mlirCreateTransformsSymbolDCE,
+        mlirCreateTransformsSymbolPrivatize,
+        mlirCreateTransformsTopologicalSort,
+        mlirCreateTransformsViewOpGraph,
+    ]
 );
 </code></pre></div></section></main></body></html>

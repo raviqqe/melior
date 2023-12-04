@@ -96,42 +96,6 @@
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
 <a href="#98" id="98">98</a>
-<a href="#99" id="99">99</a>
-<a href="#100" id="100">100</a>
-<a href="#101" id="101">101</a>
-<a href="#102" id="102">102</a>
-<a href="#103" id="103">103</a>
-<a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
-<a href="#121" id="121">121</a>
-<a href="#122" id="122">122</a>
-<a href="#123" id="123">123</a>
-<a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
-<a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
-<a href="#131" id="131">131</a>
-<a href="#132" id="132">132</a>
-<a href="#133" id="133">133</a>
-<a href="#134" id="134">134</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>dialect;
 <span class="kw">mod </span>operation;
@@ -141,7 +105,7 @@
 <span class="kw">mod </span>utility;
 
 <span class="kw">use </span>dialect::DialectInput;
-<span class="kw">use </span>parse::{DialectOperationSet, IdentifierList};
+<span class="kw">use </span>parse::{DialectOperationSet, IdentifierList, PassSet};
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>quote::quote;
 <span class="kw">use </span>std::error::Error;
@@ -203,15 +167,6 @@
 }
 
 <span class="attr">#[proc_macro]
-</span><span class="kw">pub fn </span>async_passes(stream: TokenStream) -&gt; TokenStream {
-    <span class="kw">let </span>identifiers = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>IdentifierList);
-
-    convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix(<span class="string">&quot;Async&quot;</span>).unwrap().into()
-    }))
-}
-
-<span class="attr">#[proc_macro]
 </span><span class="kw">pub fn </span>conversion_passes(stream: TokenStream) -&gt; TokenStream {
     <span class="kw">let </span>identifiers = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>IdentifierList);
 
@@ -224,38 +179,11 @@
 }
 
 <span class="attr">#[proc_macro]
-</span><span class="kw">pub fn </span>gpu_passes(stream: TokenStream) -&gt; TokenStream {
-    <span class="kw">let </span>identifiers = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>IdentifierList);
+</span><span class="kw">pub fn </span>passes(stream: TokenStream) -&gt; TokenStream {
+    <span class="kw">let </span>set = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>PassSet);
 
-    convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix(<span class="string">&quot;GPU&quot;</span>).unwrap().into()
-    }))
-}
-
-<span class="attr">#[proc_macro]
-</span><span class="kw">pub fn </span>transform_passes(stream: TokenStream) -&gt; TokenStream {
-    <span class="kw">let </span>identifiers = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>IdentifierList);
-
-    convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix(<span class="string">&quot;Transforms&quot;</span>).unwrap().into()
-    }))
-}
-
-<span class="attr">#[proc_macro]
-</span><span class="kw">pub fn </span>linalg_passes(stream: TokenStream) -&gt; TokenStream {
-    <span class="kw">let </span>identifiers = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>IdentifierList);
-
-    convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix(<span class="string">&quot;Linalg&quot;</span>).unwrap().into()
-    }))
-}
-
-<span class="attr">#[proc_macro]
-</span><span class="kw">pub fn </span>sparse_tensor_passes(stream: TokenStream) -&gt; TokenStream {
-    <span class="kw">let </span>identifiers = <span class="macro">parse_macro_input!</span>(stream <span class="kw">as </span>IdentifierList);
-
-    convert_result(pass::generate(identifiers.identifiers(), |name| {
-        name.strip_prefix(<span class="string">&quot;SparseTensor&quot;</span>).unwrap().into()
+    convert_result(pass::generate(set.identifiers(), |name| {
+        name.strip_prefix(<span class="kw-2">&amp;</span>set.prefix().value()).unwrap().into()
     }))
 }
 
