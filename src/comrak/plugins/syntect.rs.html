@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.19.0/src/plugins/syntect.rs`."><title>syntect.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../comrak/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.20.0/src/plugins/syntect.rs`."><title>syntect.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../comrak/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -199,6 +199,51 @@
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Adapter for the Syntect syntax highlighter plugin.
 
 </span><span class="kw">use </span><span class="kw">crate</span>::adapters::SyntaxHighlighterAdapter;
@@ -207,7 +252,9 @@
 <span class="kw">use </span>std::io::{<span class="self">self</span>, Write};
 <span class="kw">use </span>syntect::easy::HighlightLines;
 <span class="kw">use </span>syntect::highlighting::{Color, ThemeSet};
-<span class="kw">use </span>syntect::html::{append_highlighted_html_for_styled_line, IncludeBackground};
+<span class="kw">use </span>syntect::html::{
+    append_highlighted_html_for_styled_line, ClassStyle, ClassedHTMLGenerator, IncludeBackground,
+};
 <span class="kw">use </span>syntect::parsing::{SyntaxReference, SyntaxSet};
 <span class="kw">use </span>syntect::util::LinesWithEndings;
 <span class="kw">use </span>syntect::Error;
@@ -215,37 +262,55 @@
 <span class="attr">#[derive(Debug)]
 </span><span class="doccomment">/// Syntect syntax highlighter plugin.
 </span><span class="kw">pub struct </span>SyntectAdapter {
-    theme: String,
+    theme: <span class="prelude-ty">Option</span>&lt;String&gt;,
     syntax_set: SyntaxSet,
     theme_set: ThemeSet,
 }
 
 <span class="kw">impl </span>SyntectAdapter {
     <span class="doccomment">/// Construct a new `SyntectAdapter` object and set the syntax highlighting theme.
-    </span><span class="kw">pub fn </span>new(theme: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+    /// If None is specified, apply CSS classes instead.
+    </span><span class="kw">pub fn </span>new(theme: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; <span class="self">Self </span>{
         SyntectAdapter {
-            theme: theme.into(),
+            theme: theme.map(String::from),
             syntax_set: SyntaxSet::load_defaults_newlines(),
             theme_set: ThemeSet::load_defaults(),
         }
     }
 
     <span class="kw">fn </span>highlight_html(<span class="kw-2">&amp;</span><span class="self">self</span>, code: <span class="kw-2">&amp;</span>str, syntax: <span class="kw-2">&amp;</span>SyntaxReference) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        <span class="comment">// syntect::html::highlighted_html_for_string, without the opening/closing &lt;pre&gt;.
-        </span><span class="kw">let </span>theme = <span class="kw-2">&amp;</span><span class="self">self</span>.theme_set.themes[<span class="kw-2">&amp;</span><span class="self">self</span>.theme];
-        <span class="kw">let </span><span class="kw-2">mut </span>highlighter = HighlightLines::new(syntax, theme);
-        <span class="kw">let </span><span class="kw-2">mut </span>output = String::new();
-        <span class="kw">let </span>bg = theme.settings.background.unwrap_or(Color::WHITE);
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.theme {
+            <span class="prelude-val">Some</span>(theme) =&gt; {
+                <span class="comment">// syntect::html::highlighted_html_for_string, without the opening/closing &lt;pre&gt;.
+                </span><span class="kw">let </span>theme = <span class="kw-2">&amp;</span><span class="self">self</span>.theme_set.themes[theme];
+                <span class="kw">let </span><span class="kw-2">mut </span>highlighter = HighlightLines::new(syntax, theme);
 
-        <span class="kw">for </span>line <span class="kw">in </span>LinesWithEndings::from(code) {
-            <span class="kw">let </span>regions = highlighter.highlight_line(line, <span class="kw-2">&amp;</span><span class="self">self</span>.syntax_set)<span class="question-mark">?</span>;
-            append_highlighted_html_for_styled_line(
-                <span class="kw-2">&amp;</span>regions[..],
-                IncludeBackground::IfDifferent(bg),
-                <span class="kw-2">&amp;mut </span>output,
-            )<span class="question-mark">?</span>;
+                <span class="kw">let </span>bg = theme.settings.background.unwrap_or(Color::WHITE);
+
+                <span class="kw">let </span><span class="kw-2">mut </span>output = String::new();
+                <span class="kw">for </span>line <span class="kw">in </span>LinesWithEndings::from(code) {
+                    <span class="kw">let </span>regions = highlighter.highlight_line(line, <span class="kw-2">&amp;</span><span class="self">self</span>.syntax_set)<span class="question-mark">?</span>;
+                    append_highlighted_html_for_styled_line(
+                        <span class="kw-2">&amp;</span>regions[..],
+                        IncludeBackground::IfDifferent(bg),
+                        <span class="kw-2">&amp;mut </span>output,
+                    )<span class="question-mark">?</span>;
+                }
+                <span class="prelude-val">Ok</span>(output)
+            }
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="comment">// fall back to HTML classes.
+                </span><span class="kw">let </span><span class="kw-2">mut </span>html_generator = ClassedHTMLGenerator::new_with_class_style(
+                    syntax,
+                    <span class="kw-2">&amp;</span><span class="self">self</span>.syntax_set,
+                    ClassStyle::Spaced,
+                );
+                <span class="kw">for </span>line <span class="kw">in </span>LinesWithEndings::from(code) {
+                    html_generator.parse_html_for_line_which_includes_newline(line)<span class="question-mark">?</span>;
+                }
+                <span class="prelude-val">Ok</span>(html_generator.finalize())
+            }
         }
-        <span class="prelude-val">Ok</span>(output)
     }
 }
 
@@ -283,16 +348,25 @@
         output: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write,
         attributes: HashMap&lt;String, String&gt;,
     ) -&gt; io::Result&lt;()&gt; {
-        <span class="kw">let </span>theme = <span class="kw-2">&amp;</span><span class="self">self</span>.theme_set.themes[<span class="kw-2">&amp;</span><span class="self">self</span>.theme];
-        <span class="kw">let </span>colour = theme.settings.background.unwrap_or(Color::WHITE);
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.theme {
+            <span class="prelude-val">Some</span>(theme) =&gt; {
+                <span class="kw">let </span>theme = <span class="kw-2">&amp;</span><span class="self">self</span>.theme_set.themes[theme];
+                <span class="kw">let </span>colour = theme.settings.background.unwrap_or(Color::WHITE);
 
-        <span class="kw">let </span>style = <span class="macro">format!</span>(
-            <span class="string">&quot;background-color:#{:02x}{:02x}{:02x};&quot;</span>,
-            colour.r, colour.g, colour.b
-        );
+                <span class="kw">let </span>style = <span class="macro">format!</span>(
+                    <span class="string">&quot;background-color:#{:02x}{:02x}{:02x};&quot;</span>,
+                    colour.r, colour.g, colour.b
+                );
 
-        <span class="kw">let </span><span class="kw-2">mut </span>pre_attributes = SyntectPreAttributes::new(attributes, <span class="kw-2">&amp;</span>style);
-        html::write_opening_tag(output, <span class="string">&quot;pre&quot;</span>, pre_attributes.iter_mut())
+                <span class="kw">let </span><span class="kw-2">mut </span>pre_attributes = SyntectPreAttributes::new(attributes, <span class="kw-2">&amp;</span>style);
+                html::write_opening_tag(output, <span class="string">&quot;pre&quot;</span>, pre_attributes.iter_mut())
+            }
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>attributes: HashMap&lt;<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str&gt; = HashMap::new();
+                attributes.insert(<span class="string">&quot;class&quot;</span>, <span class="string">&quot;syntax-highlighting&quot;</span>);
+                html::write_opening_tag(output, <span class="string">&quot;pre&quot;</span>, attributes)
+            }
+        }
     }
 
     <span class="kw">fn </span>write_code_tag(
@@ -352,7 +426,7 @@
     }
 }
 
-<span class="attr">#[derive(Debug, Default)]
+<span class="attr">#[derive(Debug)]
 </span><span class="doccomment">/// A builder for [`SyntectAdapter`].
 ///
 /// Allows customization of `Theme`, [`ThemeSet`], and [`SyntaxSet`].
@@ -362,25 +436,41 @@
     theme_set: <span class="prelude-ty">Option</span>&lt;ThemeSet&gt;,
 }
 
+<span class="kw">impl </span>Default <span class="kw">for </span>SyntectAdapterBuilder {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        SyntectAdapterBuilder {
+            theme: <span class="prelude-val">Some</span>(<span class="string">&quot;InspiredGitHub&quot;</span>.into()),
+            syntax_set: <span class="prelude-val">None</span>,
+            theme_set: <span class="prelude-val">None</span>,
+        }
+    }
+}
+
 <span class="kw">impl </span>SyntectAdapterBuilder {
-    <span class="doccomment">/// Creates a new empty [`SyntectAdapterBuilder`]
+    <span class="doccomment">/// Create a new empty [`SyntectAdapterBuilder`].
     </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         Default::default()
     }
 
-    <span class="doccomment">/// Sets the theme
+    <span class="doccomment">/// Set the theme.
     </span><span class="kw">pub fn </span>theme(<span class="kw-2">mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.theme.replace(s.into());
         <span class="self">self
     </span>}
 
-    <span class="doccomment">/// Sets the syntax set
+    <span class="doccomment">/// Uses CSS classes instead of a Syntect theme.
+    </span><span class="kw">pub fn </span>css(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.theme = <span class="prelude-val">None</span>;
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Set the syntax set.
     </span><span class="kw">pub fn </span>syntax_set(<span class="kw-2">mut </span><span class="self">self</span>, s: SyntaxSet) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.syntax_set.replace(s);
         <span class="self">self
     </span>}
 
-    <span class="doccomment">/// Sets the theme set
+    <span class="doccomment">/// Set the theme set.
     </span><span class="kw">pub fn </span>theme_set(<span class="kw-2">mut </span><span class="self">self</span>, s: ThemeSet) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.theme_set.replace(s);
         <span class="self">self
@@ -392,7 +482,7 @@
     /// - `theme_set`: [`ThemeSet::load_defaults()`]
     </span><span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; SyntectAdapter {
         SyntectAdapter {
-            theme: <span class="self">self</span>.theme.unwrap_or_else(|| <span class="string">&quot;InspiredGitHub&quot;</span>.into()),
+            theme: <span class="self">self</span>.theme,
             syntax_set: <span class="self">self
                 </span>.syntax_set
                 .unwrap_or_else(SyntaxSet::load_defaults_newlines),
