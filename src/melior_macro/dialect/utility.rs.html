@@ -94,6 +94,7 @@
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::error::Error;
 <span class="kw">use </span>comrak::{arena_tree::NodeEdge, format_commonmark, nodes::NodeValue, parse_document, Arena};
 <span class="kw">use </span>convert_case::{Case, Casing};
@@ -107,10 +108,10 @@
 }
 
 <span class="kw">fn </span>sanitize_name(name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, Error&gt; {
-    <span class="comment">// Replace any &quot;.&quot; with &quot;_&quot;
+    <span class="comment">// Replace any &quot;.&quot; with &quot;_&quot;.
     </span><span class="kw">let </span><span class="kw-2">mut </span>name = name.replace(<span class="string">&#39;.&#39;</span>, <span class="string">&quot;_&quot;</span>);
 
-    <span class="comment">// Add &quot;_&quot; suffix to avoid conflicts with existing methods
+    <span class="comment">// Add &quot;_&quot; suffix to avoid conflicts with existing methods.
     </span><span class="kw">if </span>RESERVED_NAMES.contains(<span class="kw-2">&amp;</span>name.as_str())
         || name
             .chars()
@@ -140,7 +141,8 @@
         };
 
         <span class="kw">if </span>block.info.is_empty() {
-            block.info = <span class="string">&quot;text&quot;</span>.into();
+            <span class="comment">// Mark them not in Rust to prevent documentation tests.
+            </span>block.info = <span class="string">&quot;text&quot;</span>.into();
         }
     }
 

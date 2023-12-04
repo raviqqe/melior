@@ -92,7 +92,7 @@
 
 <span class="kw">pub struct </span>DialectInput {
     name: String,
-    tablegen: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    table_gen: <span class="prelude-ty">Option</span>&lt;String&gt;,
     td_file: <span class="prelude-ty">Option</span>&lt;String&gt;,
     includes: Vec&lt;String&gt;,
 }
@@ -102,8 +102,8 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.name
     }
 
-    <span class="kw">pub fn </span>tablegen(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
-        <span class="self">self</span>.tablegen.as_deref()
+    <span class="kw">pub fn </span>table_gen(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
+        <span class="self">self</span>.table_gen.as_deref()
     }
 
     <span class="kw">pub fn </span>td_file(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
@@ -118,14 +118,14 @@
 <span class="kw">impl </span>Parse <span class="kw">for </span>DialectInput {
     <span class="kw">fn </span>parse(input: syn::parse::ParseStream) -&gt; syn::Result&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>name = <span class="prelude-val">None</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>tablegen = <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>table_gen = <span class="prelude-val">None</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>td_file = <span class="prelude-val">None</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>includes = <span class="macro">vec!</span>[];
 
         <span class="kw">for </span>item <span class="kw">in </span>Punctuated::&lt;InputField, <span class="macro">Token!</span>[,]&gt;::parse_terminated(input)<span class="question-mark">? </span>{
             <span class="kw">match </span>item {
                 InputField::Name(field) =&gt; name = <span class="prelude-val">Some</span>(field.value()),
-                InputField::TableGen(td) =&gt; tablegen = <span class="prelude-val">Some</span>(td.value()),
+                InputField::TableGen(td) =&gt; table_gen = <span class="prelude-val">Some</span>(td.value()),
                 InputField::TdFile(file) =&gt; td_file = <span class="prelude-val">Some</span>(file.value()),
                 InputField::Includes(field) =&gt; {
                     includes = field.into_iter().map(|literal| literal.value()).collect()
@@ -135,7 +135,7 @@
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             name: name.ok_or(input.error(<span class="string">&quot;dialect name required&quot;</span>))<span class="question-mark">?</span>,
-            tablegen,
+            table_gen,
             td_file,
             includes,
         })
@@ -157,7 +157,7 @@
 
         <span class="kw">if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;name&quot;</span>) {
             <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Name(input.parse()<span class="question-mark">?</span>))
-        } <span class="kw">else if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;tablegen&quot;</span>) {
+        } <span class="kw">else if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;table_gen&quot;</span>) {
             <span class="prelude-val">Ok</span>(<span class="self">Self</span>::TableGen(input.parse()<span class="question-mark">?</span>))
         } <span class="kw">else if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;td_file&quot;</span>) {
             <span class="prelude-val">Ok</span>(<span class="self">Self</span>::TdFile(input.parse()<span class="question-mark">?</span>))
