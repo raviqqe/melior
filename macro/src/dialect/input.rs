@@ -5,7 +5,7 @@ use syn::{bracketed, parse::Parse, punctuated::Punctuated, LitStr, Token};
 
 pub struct DialectInput {
     name: String,
-    tablegen: Option<String>,
+    table_gen: Option<String>,
     td_file: Option<String>,
     includes: Vec<String>,
 }
@@ -15,8 +15,8 @@ impl DialectInput {
         &self.name
     }
 
-    pub fn tablegen(&self) -> Option<&str> {
-        self.tablegen.as_deref()
+    pub fn table_gen(&self) -> Option<&str> {
+        self.table_gen.as_deref()
     }
 
     pub fn td_file(&self) -> Option<&str> {
@@ -31,14 +31,14 @@ impl DialectInput {
 impl Parse for DialectInput {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let mut name = None;
-        let mut tablegen = None;
+        let mut table_gen = None;
         let mut td_file = None;
         let mut includes = vec![];
 
         for item in Punctuated::<InputField, Token![,]>::parse_terminated(input)? {
             match item {
                 InputField::Name(field) => name = Some(field.value()),
-                InputField::TableGen(td) => tablegen = Some(td.value()),
+                InputField::TableGen(td) => table_gen = Some(td.value()),
                 InputField::TdFile(file) => td_file = Some(file.value()),
                 InputField::Includes(field) => {
                     includes = field.into_iter().map(|literal| literal.value()).collect()
@@ -48,7 +48,7 @@ impl Parse for DialectInput {
 
         Ok(Self {
             name: name.ok_or(input.error("dialect name required"))?,
-            tablegen,
+            table_gen,
             td_file,
             includes,
         })
@@ -70,7 +70,7 @@ impl Parse for InputField {
 
         if ident == format_ident!("name") {
             Ok(Self::Name(input.parse()?))
-        } else if ident == format_ident!("tablegen") {
+        } else if ident == format_ident!("table_gen") {
             Ok(Self::TableGen(input.parse()?))
         } else if ident == format_ident!("td_file") {
             Ok(Self::TdFile(input.parse()?))

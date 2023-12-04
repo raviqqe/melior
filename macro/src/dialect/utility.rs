@@ -11,10 +11,10 @@ pub fn sanitize_snake_case_name(name: &str) -> Result<Ident, Error> {
 }
 
 fn sanitize_name(name: &str) -> Result<Ident, Error> {
-    // Replace any "." with "_"
+    // Replace any "." with "_".
     let mut name = name.replace('.', "_");
 
-    // Add "_" suffix to avoid conflicts with existing methods
+    // Add "_" suffix to avoid conflicts with existing methods.
     if RESERVED_NAMES.contains(&name.as_str())
         || name
             .chars()
@@ -44,6 +44,7 @@ pub fn sanitize_documentation(string: &str) -> Result<String, Error> {
         };
 
         if block.info.is_empty() {
+            // Mark them not in Rust to prevent documentation tests.
             block.info = "text".into();
         }
     }
