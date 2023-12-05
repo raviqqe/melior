@@ -4,10 +4,12 @@ mod element_kind;
 mod field_kind;
 mod operation_field;
 mod sequence_info;
+mod variadic_kind;
 
 use self::element_kind::ElementKind;
 use self::operation_field::OperationField;
 use self::sequence_info::SequenceInfo;
+use self::variadic_kind::VariadicKind;
 use self::{builder::OperationBuilder, field_kind::FieldKind};
 use super::utility::sanitize_documentation;
 use crate::dialect::{
@@ -19,39 +21,6 @@ use quote::{format_ident, quote, ToTokens, TokenStreamExt};
 use tblgen::{error::WithLocation, record::Record};
 
 #[derive(Clone, Debug)]
-pub enum VariadicKind {
-    Simple {
-        seen_variable_length: bool,
-    },
-    SameSize {
-        variable_length_count: usize,
-        preceding_simple_count: usize,
-        preceding_variadic_count: usize,
-    },
-    AttrSized {},
-}
-
-impl VariadicKind {
-    pub fn new(variable_length_count: usize, same_size: bool, attr_sized: bool) -> Self {
-        if variable_length_count <= 1 {
-            VariadicKind::Simple {
-                seen_variable_length: false,
-            }
-        } else if same_size {
-            VariadicKind::SameSize {
-                variable_length_count,
-                preceding_simple_count: 0,
-                preceding_variadic_count: 0,
-            }
-        } else if attr_sized {
-            VariadicKind::AttrSized {}
-        } else {
-            unimplemented!()
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
 pub struct Operation<'a> {
     dialect_name: &'a str,
     short_name: &'a str,
