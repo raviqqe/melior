@@ -161,15 +161,15 @@ impl<'a> Operation<'a> {
             .collect()
     }
 
-    fn collect_traits(def: Record<'a>) -> Result<Vec<Trait>, Error> {
-        let mut work_list = vec![def.list_value("traits")?];
+    fn collect_traits(definition: Record<'a>) -> Result<Vec<Trait>, Error> {
+        let mut work_list = vec![definition.list_value("traits")?];
         let mut traits = Vec::new();
 
         while let Some(trait_def) = work_list.pop() {
             for value in trait_def.iter() {
                 let trait_def: Record = value
                     .try_into()
-                    .map_err(|error: tblgen::Error| error.set_location(def))?;
+                    .map_err(|error: tblgen::Error| error.set_location(definition))?;
 
                 if trait_def.subclass_of("TraitList") {
                     work_list.push(trait_def.list_value("traits")?);
@@ -186,15 +186,16 @@ impl<'a> Operation<'a> {
     }
 
     fn dag_constraints(
-        def: Record<'a>,
+        definition: Record<'a>,
         dag_field_name: &str,
     ) -> Result<Vec<(&'a str, Record<'a>)>, Error> {
-        def.dag_value(dag_field_name)?
+        definition
+            .dag_value(dag_field_name)?
             .args()
             .map(|(name, arg)| {
                 let mut arg_def: Record = arg
                     .try_into()
-                    .map_err(|error: tblgen::Error| error.set_location(def))?;
+                    .map_err(|error: tblgen::Error| error.set_location(definition))?;
 
                 if arg_def.subclass_of("OpVariable") {
                     arg_def = arg_def.def_value("constraint")?;
