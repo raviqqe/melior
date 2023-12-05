@@ -129,7 +129,7 @@
 
 <span class="kw">pub fn </span>sanitize_documentation(string: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
     <span class="kw">let </span>arena = Arena::new();
-    <span class="kw">let </span>node = parse_document(<span class="kw-2">&amp;</span>arena, string, <span class="kw-2">&amp;</span>Default::default());
+    <span class="kw">let </span>node = parse_document(<span class="kw-2">&amp;</span>arena, <span class="kw-2">&amp;</span>unindent::unindent(string), <span class="kw-2">&amp;</span>Default::default());
 
     <span class="kw">for </span>node <span class="kw">in </span>node.traverse() {
         <span class="kw">let </span>NodeEdge::Start(node) = node <span class="kw">else </span>{

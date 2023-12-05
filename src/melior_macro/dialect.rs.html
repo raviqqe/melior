@@ -102,7 +102,6 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>input;
 <span class="kw">mod </span>operation;
@@ -159,19 +158,18 @@
     dialect: Record,
     record_keeper: <span class="kw-2">&amp;</span>RecordKeeper,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;proc_macro2::TokenStream, Error&gt; {
+    <span class="kw">let </span>dialect_name = dialect.name()<span class="question-mark">?</span>;
     <span class="kw">let </span>operations = record_keeper
         .all_derived_definitions(<span class="string">&quot;Op&quot;</span>)
-        .map(Operation::from_def)
+        .map(Operation::new)
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?
         </span>.into_iter()
-        .filter(|operation| operation.dialect.name() == dialect.name())
+        .filter(|operation| operation.dialect_name() == dialect_name)
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
     <span class="kw">let </span>doc = <span class="macro">format!</span>(
         <span class="string">&quot;`{name}` dialect.\n\n{}&quot;</span>,
-        sanitize_documentation(<span class="kw-2">&amp;</span>unindent::unindent(
-            dialect.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>),
-        ))<span class="question-mark">?
+        sanitize_documentation(dialect.str_value(<span class="string">&quot;description&quot;</span>).unwrap_or(<span class="string">&quot;&quot;</span>),)<span class="question-mark">?
     </span>);
     <span class="kw">let </span>name = sanitize_snake_case_name(name)<span class="question-mark">?</span>;
 

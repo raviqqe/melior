@@ -278,7 +278,7 @@
 
                 <span class="prelude-val">Some</span>(<span class="kw">match </span>variadic_kind {
                     VariadicKind::Simple {
-                        seen_variable_length,
+                        variable_length_seen: seen_variable_length,
                     } =&gt; {
                         <span class="kw">if </span>constraint.is_optional() {
                             <span class="comment">// Optional element, and some singular elements.
@@ -314,14 +314,14 @@
                         }
                     }
                     VariadicKind::SameSize {
-                        num_variable_length,
-                        num_preceding_simple,
-                        num_preceding_variadic,
+                        variable_length_count,
+                        preceding_simple_count,
+                        preceding_variadic_count,
                     } =&gt; {
                         <span class="kw">let </span>compute_start_length = <span class="macro">quote! </span>{
-                            <span class="kw">let </span>total_var_len = <span class="self">self</span>.operation.#count() - #num_variable_length + <span class="number">1</span>;
-                            <span class="kw">let </span>group_len = total_var_len / #num_variable_length;
-                            <span class="kw">let </span>start = #num_preceding_simple + #num_preceding_variadic * group_len;
+                            <span class="kw">let </span>total_var_len = <span class="self">self</span>.operation.#count() - #variable_length_count + <span class="number">1</span>;
+                            <span class="kw">let </span>group_len = total_var_len / #variable_length_count;
+                            <span class="kw">let </span>start = #preceding_simple_count + #preceding_variadic_count * group_len;
                         };
                         <span class="kw">let </span>get_elements = <span class="kw">if </span>constraint.has_variable_length() {
                             <span class="macro">quote! </span>{
