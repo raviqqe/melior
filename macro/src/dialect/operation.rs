@@ -37,6 +37,76 @@ pub struct Operation<'a> {
 }
 
 impl<'a> Operation<'a> {
+    pub fn new(definition: Record<'a>) -> Result<Self, Error> {
+        let dialect = definition.def_value("opDialect")?;
+        let traits = Self::collect_traits(definition)?;
+        let has_trait = |name| traits.iter().any(|r#trait| r#trait.has_name(name));
+
+        let arguments = Self::dag_constraints(definition, "arguments")?;
+        let regions = Self::collect_regions(definition)?;
+        let (results, variable_length_results_count) = Self::collect_results(
+            definition,
+            has_trait("::mlir::OpTrait::SameVariadicResultSize"),
+            has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
+        )?;
+
+        let name = definition.name()?;
+        let class_name = if name.starts_with('_') {
+            name
+        } else if let Some(name) = name.split('_').nth(1) {
+            // Trim dialect prefix from name.
+            name
+        } else {
+            name
+        };
+        let short_name = definition.str_value("opName")?;
+
+        Ok(Self {
+            dialect_name: dialect.name()?,
+            short_name,
+            full_name: {
+                let dialect_name = dialect.string_value("name")?;
+
+                if dialect_name.is_empty() {
+                    short_name.into()
+                } else {
+                    format!("{dialect_name}.{short_name}")
+                }
+            },
+            class_name,
+            successors: Self::collect_successors(definition)?,
+            operands: Self::collect_operands(
+                &arguments,
+                has_trait("::mlir::OpTrait::SameVariadicOperandSize"),
+                has_trait("::mlir::OpTrait::AttrSizedOperandSegments"),
+            )?,
+            results,
+            attributes: Self::collect_attributes(&arguments)?,
+            derived_attributes: Self::collect_derived_attributes(definition)?,
+            can_infer_type: traits.iter().any(|r#trait| {
+                (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
+                    || r#trait.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
+                    && variable_length_results_count == 0
+                    || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
+            }),
+            summary: {
+                let summary = definition.str_value("summary")?;
+
+                [
+                    format!("[`{short_name}`]({class_name}) operation."),
+                    if summary.is_empty() {
+                        Default::default()
+                    } else {
+                        summary[0..1].to_uppercase() + &summary[1..] + "."
+                    },
+                ]
+                .join(" ")
+            },
+            description: sanitize_documentation(definition.str_value("description")?)?,
+            regions,
+        })
+    }
+
     pub fn dialect_name(&self) -> &str {
         self.dialect_name
     }
@@ -253,76 +323,6 @@ impl<'a> Operation<'a> {
                 }
             })
             .collect()
-    }
-
-    pub fn from_definition(definition: Record<'a>) -> Result<Self, Error> {
-        let dialect = definition.def_value("opDialect")?;
-        let traits = Self::collect_traits(definition)?;
-        let has_trait = |name| traits.iter().any(|r#trait| r#trait.has_name(name));
-
-        let arguments = Self::dag_constraints(definition, "arguments")?;
-        let regions = Self::collect_regions(definition)?;
-        let (results, variable_length_results_count) = Self::collect_results(
-            definition,
-            has_trait("::mlir::OpTrait::SameVariadicResultSize"),
-            has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
-        )?;
-
-        let name = definition.name()?;
-        let class_name = if name.starts_with('_') {
-            name
-        } else if let Some(name) = name.split('_').nth(1) {
-            // Trim dialect prefix from name.
-            name
-        } else {
-            name
-        };
-        let short_name = definition.str_value("opName")?;
-
-        Ok(Self {
-            dialect_name: dialect.name()?,
-            short_name,
-            full_name: {
-                let dialect_name = dialect.string_value("name")?;
-
-                if dialect_name.is_empty() {
-                    short_name.into()
-                } else {
-                    format!("{dialect_name}.{short_name}")
-                }
-            },
-            class_name,
-            successors: Self::collect_successors(definition)?,
-            operands: Self::collect_operands(
-                &arguments,
-                has_trait("::mlir::OpTrait::SameVariadicOperandSize"),
-                has_trait("::mlir::OpTrait::AttrSizedOperandSegments"),
-            )?,
-            results,
-            attributes: Self::collect_attributes(&arguments)?,
-            derived_attributes: Self::collect_derived_attributes(definition)?,
-            can_infer_type: traits.iter().any(|r#trait| {
-                (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
-                    || r#trait.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
-                    && variable_length_results_count == 0
-                    || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
-            }),
-            summary: {
-                let summary = definition.str_value("summary")?;
-
-                [
-                    format!("[`{short_name}`]({class_name}) operation."),
-                    if summary.is_empty() {
-                        Default::default()
-                    } else {
-                        summary[0..1].to_uppercase() + &summary[1..] + "."
-                    },
-                ]
-                .join(" ")
-            },
-            description: sanitize_documentation(definition.str_value("description")?)?,
-            regions,
-        })
     }
 }
 
