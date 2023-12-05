@@ -521,20 +521,20 @@ impl<'a> Operation<'a> {
             .collect()
     }
 
-    pub fn from_definition(def: Record<'a>) -> Result<Self, Error> {
-        let dialect = def.def_value("opDialect")?;
-        let traits = Self::collect_traits(def)?;
+    pub fn from_definition(definition: Record<'a>) -> Result<Self, Error> {
+        let dialect = definition.def_value("opDialect")?;
+        let traits = Self::collect_traits(definition)?;
         let has_trait = |name: &str| traits.iter().any(|r#trait| r#trait.has_name(name));
 
-        let arguments = Self::dag_constraints(def, "arguments")?;
-        let regions = Self::collect_regions(def)?;
+        let arguments = Self::dag_constraints(definition, "arguments")?;
+        let regions = Self::collect_regions(definition)?;
         let (results, num_variable_length_results) = Self::collect_results(
-            def,
+            definition,
             has_trait("::mlir::OpTrait::SameVariadicResultSize"),
             has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
         )?;
 
-        let name = def.name()?;
+        let name = definition.name()?;
         let class_name = if name.starts_with('_') {
             name
         } else if let Some(name) = name.split('_').nth(1) {
@@ -543,7 +543,7 @@ impl<'a> Operation<'a> {
         } else {
             name
         };
-        let short_name = def.str_value("opName")?;
+        let short_name = definition.str_value("opName")?;
 
         Ok(Self {
             dialect,
@@ -558,7 +558,7 @@ impl<'a> Operation<'a> {
                 }
             },
             class_name,
-            successors: Self::collect_successors(def)?,
+            successors: Self::collect_successors(definition)?,
             operands: Self::collect_operands(
                 &arguments,
                 has_trait("::mlir::OpTrait::SameVariadicOperandSize"),
@@ -566,7 +566,7 @@ impl<'a> Operation<'a> {
             )?,
             results,
             attributes: Self::collect_attributes(&arguments)?,
-            derived_attributes: Self::collect_derived_attributes(def)?,
+            derived_attributes: Self::collect_derived_attributes(definition)?,
             can_infer_type: traits.iter().any(|r#trait| {
                 (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
                     || r#trait.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
@@ -574,7 +574,7 @@ impl<'a> Operation<'a> {
                     || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
             }),
             summary: {
-                let summary = def.str_value("summary")?;
+                let summary = definition.str_value("summary")?;
 
                 if summary.is_empty() {
                     format!("[`{short_name}`]({class_name}) operation")
@@ -585,7 +585,7 @@ impl<'a> Operation<'a> {
                     )
                 }
             },
-            description: unindent::unindent(def.str_value("description")?),
+            description: unindent::unindent(definition.str_value("description")?),
             regions,
         })
     }
