@@ -1,190 +1,20 @@
 mod accessors;
 mod builder;
+mod element_kind;
+mod field_kind;
+mod operation_field;
 
-use self::builder::OperationBuilder;
-use super::utility::{sanitize_documentation, sanitize_snake_case_name};
+use self::element_kind::ElementKind;
+use self::operation_field::OperationField;
+use self::{builder::OperationBuilder, field_kind::FieldKind};
+use super::utility::sanitize_documentation;
 use crate::dialect::{
     error::{Error, OdsError},
     types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
 };
-use proc_macro2::{Ident, TokenStream};
+use proc_macro2::TokenStream;
 use quote::{format_ident, quote, ToTokens, TokenStreamExt};
-use syn::{parse_quote, Type};
-use tblgen::{
-    error::{SourceError, TableGenError, WithLocation},
-    record::Record,
-};
-
-#[derive(Debug, Clone, Copy)]
-pub enum ElementKind {
-    Operand,
-    Result,
-}
-
-impl ElementKind {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Self::Operand => "operand",
-            Self::Result => "result",
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub enum FieldKind<'a> {
-    Element {
-        kind: ElementKind,
-        constraint: TypeConstraint<'a>,
-        sequence_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    },
-    Attribute {
-        constraint: AttributeConstraint<'a>,
-    },
-    Successor {
-        constraint: SuccessorConstraint<'a>,
-        sequence_info: SequenceInfo,
-    },
-    Region {
-        constraint: RegionConstraint<'a>,
-        sequence_info: SequenceInfo,
-    },
-}
-
-impl<'a> FieldKind<'a> {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Self::Element { kind, .. } => kind.as_str(),
-            Self::Attribute { .. } => "attribute",
-            Self::Successor { .. } => "successor",
-            Self::Region { .. } => "region",
-        }
-    }
-
-    pub fn is_optional(&self) -> Result<bool, Error> {
-        Ok(match self {
-            Self::Element { constraint, .. } => constraint.is_optional(),
-            Self::Attribute { constraint, .. } => {
-                constraint.is_optional()? || constraint.has_default_value()?
-            }
-            Self::Successor { .. } | Self::Region { .. } => false,
-        })
-    }
-
-    pub fn is_result(&self) -> bool {
-        matches!(
-            self,
-            Self::Element {
-                kind: ElementKind::Result,
-                ..
-            }
-        )
-    }
-
-    pub fn parameter_type(&self) -> Result<Type, Error> {
-        Ok(match self {
-            Self::Element {
-                kind, constraint, ..
-            } => {
-                let base_type: Type = match kind {
-                    ElementKind::Operand => {
-                        parse_quote!(::melior::ir::Value<'c, '_>)
-                    }
-                    ElementKind::Result => {
-                        parse_quote!(::melior::ir::Type<'c>)
-                    }
-                };
-                if constraint.is_variadic() {
-                    parse_quote! { &[#base_type] }
-                } else {
-                    base_type
-                }
-            }
-            Self::Attribute { constraint } => {
-                if constraint.is_unit()? {
-                    parse_quote!(bool)
-                } else {
-                    let r#type: Type = syn::parse_str(constraint.storage_type()?)?;
-                    parse_quote!(#r#type<'c>)
-                }
-            }
-            Self::Successor { constraint, .. } => {
-                let r#type: Type = parse_quote!(&::melior::ir::Block<'c>);
-                if constraint.is_variadic() {
-                    parse_quote!(&[#r#type])
-                } else {
-                    r#type
-                }
-            }
-            Self::Region { constraint, .. } => {
-                let r#type: Type = parse_quote!(::melior::ir::Region<'c>);
-                if constraint.is_variadic() {
-                    parse_quote!(Vec<#r#type>)
-                } else {
-                    r#type
-                }
-            }
-        })
-    }
-
-    fn create_result_type(r#type: Type) -> Type {
-        parse_quote!(Result<#r#type, ::melior::Error>)
-    }
-
-    fn create_iterator_type(r#type: Type) -> Type {
-        parse_quote!(impl Iterator<Item = #r#type>)
-    }
-
-    pub fn return_type(&self) -> Result<Type, Error> {
-        Ok(match self {
-            Self::Element {
-                kind,
-                constraint,
-                variadic_kind,
-                ..
-            } => {
-                let base_type: Type = match kind {
-                    ElementKind::Operand => {
-                        parse_quote!(::melior::ir::Value<'c, '_>)
-                    }
-                    ElementKind::Result => {
-                        parse_quote!(::melior::ir::operation::OperationResult<'c, '_>)
-                    }
-                };
-                if !constraint.is_variadic() {
-                    Self::create_result_type(base_type)
-                } else if let VariadicKind::AttrSized {} = variadic_kind {
-                    Self::create_result_type(Self::create_iterator_type(base_type))
-                } else {
-                    Self::create_iterator_type(base_type)
-                }
-            }
-            Self::Attribute { constraint } => {
-                if constraint.is_unit()? {
-                    parse_quote!(bool)
-                } else {
-                    Self::create_result_type(self.parameter_type()?)
-                }
-            }
-            Self::Successor { constraint, .. } => {
-                let r#type: Type = parse_quote!(::melior::ir::BlockRef<'c, '_>);
-                if constraint.is_variadic() {
-                    Self::create_iterator_type(r#type)
-                } else {
-                    Self::create_result_type(r#type)
-                }
-            }
-            Self::Region { constraint, .. } => {
-                let r#type: Type = parse_quote!(::melior::ir::RegionRef<'c, '_>);
-                if constraint.is_variadic() {
-                    Self::create_iterator_type(r#type)
-                } else {
-                    Self::create_result_type(r#type)
-                }
-            }
-        })
-    }
-}
+use tblgen::{error::WithLocation, record::Record};
 
 #[derive(Debug, Clone)]
 pub struct SequenceInfo {
@@ -226,75 +56,8 @@ impl VariadicKind {
 }
 
 #[derive(Debug, Clone)]
-pub struct OperationField<'a> {
-    pub(crate) name: &'a str,
-    pub(crate) sanitized_name: Ident,
-    pub(crate) kind: FieldKind<'a>,
-}
-
-impl<'a> OperationField<'a> {
-    fn new(name: &'a str, kind: FieldKind<'a>) -> Result<Self, Error> {
-        Ok(Self {
-            name,
-            sanitized_name: sanitize_snake_case_name(name)?,
-            kind,
-        })
-    }
-
-    fn new_attribute(name: &'a str, constraint: AttributeConstraint<'a>) -> Result<Self, Error> {
-        Self::new(name, FieldKind::Attribute { constraint })
-    }
-
-    fn new_region(
-        name: &'a str,
-        constraint: RegionConstraint<'a>,
-        sequence_info: SequenceInfo,
-    ) -> Result<Self, Error> {
-        Self::new(
-            name,
-            FieldKind::Region {
-                constraint,
-                sequence_info,
-            },
-        )
-    }
-
-    fn new_successor(
-        name: &'a str,
-        constraint: SuccessorConstraint<'a>,
-        sequence_info: SequenceInfo,
-    ) -> Result<Self, Error> {
-        Self::new(
-            name,
-            FieldKind::Successor {
-                constraint,
-                sequence_info,
-            },
-        )
-    }
-
-    fn new_element(
-        name: &'a str,
-        constraint: TypeConstraint<'a>,
-        kind: ElementKind,
-        sequence_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    ) -> Result<Self, Error> {
-        Self::new(
-            name,
-            FieldKind::Element {
-                kind,
-                constraint,
-                sequence_info,
-                variadic_kind,
-            },
-        )
-    }
-}
-
-#[derive(Debug, Clone)]
 pub struct Operation<'a> {
-    dialect: Record<'a>,
+    dialect_name: &'a str,
     short_name: &'a str,
     full_name: String,
     class_name: &'a str,
@@ -310,8 +73,8 @@ pub struct Operation<'a> {
 }
 
 impl<'a> Operation<'a> {
-    pub fn dialect_name(&self) -> Result<&str, SourceError<TableGenError>> {
-        self.dialect.name()
+    pub fn dialect_name(&self) -> &str {
+        &self.dialect_name
     }
 
     pub fn fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
@@ -553,7 +316,7 @@ impl<'a> Operation<'a> {
         let short_name = definition.str_value("opName")?;
 
         Ok(Self {
-            dialect,
+            dialect_name: dialect.name()?.into(),
             short_name,
             full_name: {
                 let dialect_name = dialect.string_value("name")?;
