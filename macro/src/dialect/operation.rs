@@ -359,6 +359,7 @@ impl<'a> Operation<'a> {
 }
 
 impl<'a> ToTokens for Operation<'a> {
+    // TODO Compile values for proper error handling and remove `Result::expect()`.
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let class_name = format_ident!("{}", &self.class_name);
         let name = &self.full_name;
