@@ -173,7 +173,7 @@ enum TraitKind {
         #[allow(unused)]
         structural: bool,
     },
-    Pred {},
+    Pred,
     Internal {
         name: String,
     },
@@ -188,25 +188,25 @@ pub struct Trait {
 }
 
 impl Trait {
-    pub fn new(def: Record) -> Result<Self, Error> {
+    pub fn new(definition: Record) -> Result<Self, Error> {
         Ok(Self {
-            kind: if def.subclass_of("PredTrait") {
-                TraitKind::Pred {}
-            } else if def.subclass_of("InterfaceTrait") {
+            kind: if definition.subclass_of("PredTrait") {
+                TraitKind::Pred
+            } else if definition.subclass_of("InterfaceTrait") {
                 TraitKind::Interface {
-                    name: Self::name(def)?,
+                    name: Self::name(definition)?,
                 }
-            } else if def.subclass_of("NativeTrait") {
+            } else if definition.subclass_of("NativeTrait") {
                 TraitKind::Native {
-                    name: Self::name(def)?,
-                    structural: def.subclass_of("StructuralOpTrait"),
+                    name: Self::name(definition)?,
+                    structural: definition.subclass_of("StructuralOpTrait"),
                 }
-            } else if def.subclass_of("GenInternalTrait") {
+            } else if definition.subclass_of("GenInternalTrait") {
                 TraitKind::Internal {
-                    name: def.string_value("trait")?,
+                    name: definition.string_value("trait")?,
                 }
             } else {
-                return Err(OdsError::InvalidTrait.with_location(def).into());
+                return Err(OdsError::InvalidTrait.with_location(definition).into());
             },
         })
     }
@@ -220,9 +220,9 @@ impl Trait {
         }
     }
 
-    fn name(def: Record) -> Result<String, Error> {
-        let r#trait = def.string_value("trait")?;
-        let namespace = def.string_value("cppNamespace")?;
+    fn name(definition: Record) -> Result<String, Error> {
+        let r#trait = definition.string_value("trait")?;
+        let namespace = definition.string_value("cppNamespace")?;
 
         Ok(if namespace.is_empty() {
             r#trait
