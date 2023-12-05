@@ -81,7 +81,7 @@ impl<'a> OperationField<'a> {
                         quote! { #compute_start_length #get_elements }
                     }
                     VariadicKind::AttributeSized => {
-                        let attribute_name = format!("{}_segment_sizes", kind_str);
+                        let attribute_name = format!("{}_segment_sizes", kind.as_str());
                         let compute_start_length = quote! {
                             let attribute =
                                 ::melior::ir::attribute::DenseI32ArrayAttribute::<'c>::try_from(
