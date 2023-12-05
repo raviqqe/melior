@@ -576,14 +576,15 @@ impl<'a> Operation<'a> {
             summary: {
                 let summary = definition.str_value("summary")?;
 
-                if summary.is_empty() {
-                    format!("[`{short_name}`]({class_name}) operation.")
-                } else {
-                    format!(
-                        "[`{short_name}`]({class_name}) operation. {}.",
-                        summary[0..1].to_uppercase() + &summary[1..]
-                    )
-                }
+                [
+                    format!("[`{short_name}`]({class_name}) operation."),
+                    if summary.is_empty() {
+                        Default::default()
+                    } else {
+                        summary[0..1].to_uppercase() + &summary[1..] + "."
+                    },
+                ]
+                .join(" ")
             },
             description: unindent::unindent(definition.str_value("description")?),
             regions,
