@@ -3,9 +3,11 @@ mod builder;
 mod element_kind;
 mod field_kind;
 mod operation_field;
+mod sequence_info;
 
 use self::element_kind::ElementKind;
 use self::operation_field::OperationField;
+use self::sequence_info::SequenceInfo;
 use self::{builder::OperationBuilder, field_kind::FieldKind};
 use super::utility::sanitize_documentation;
 use crate::dialect::{
@@ -15,12 +17,6 @@ use crate::dialect::{
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote, ToTokens, TokenStreamExt};
 use tblgen::{error::WithLocation, record::Record};
-
-#[derive(Debug, Clone)]
-pub struct SequenceInfo {
-    index: usize,
-    len: usize,
-}
 
 #[derive(Clone, Debug)]
 pub enum VariadicKind {
