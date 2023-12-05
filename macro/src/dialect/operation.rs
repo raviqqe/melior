@@ -39,7 +39,7 @@ pub struct Operation<'a> {
 
 impl<'a> Operation<'a> {
     pub fn dialect_name(&self) -> &str {
-        &self.dialect_name
+        self.dialect_name
     }
 
     pub fn fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
@@ -281,7 +281,7 @@ impl<'a> Operation<'a> {
         let short_name = definition.str_value("opName")?;
 
         Ok(Self {
-            dialect_name: dialect.name()?.into(),
+            dialect_name: dialect.name()?,
             short_name,
             full_name: {
                 let dialect_name = dialect.string_value("name")?;
@@ -342,8 +342,7 @@ impl<'a> ToTokens for Operation<'a> {
             .create_default_constructor()
             .expect("valid constructor");
         let summary = &self.summary;
-        let description =
-            sanitize_documentation(&self.description).expect("valid Markdown documentation");
+        let description = &self.description;
 
         tokens.append_all(quote! {
             #[doc = #summary]

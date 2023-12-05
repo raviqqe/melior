@@ -3,8 +3,7 @@ use crate::dialect::{
     error::Error,
     types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, TypeConstraint},
 };
-use syn::parse_quote;
-use syn::Type;
+use syn::{parse_quote, Type};
 
 #[derive(Debug, Clone)]
 pub enum FieldKind<'a> {
