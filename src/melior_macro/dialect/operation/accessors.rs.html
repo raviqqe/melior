@@ -248,8 +248,6 @@
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{
     <span class="kw">super</span>::{error::Error, utility::sanitize_snake_case_name},
     ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind,
@@ -277,9 +275,7 @@
                 <span class="kw">let </span>name = <span class="self">self</span>.name;
 
                 <span class="prelude-val">Some</span>(<span class="kw">match </span>variadic_kind {
-                    VariadicKind::Simple {
-                        variable_length_seen: seen_variable_length,
-                    } =&gt; {
+                    VariadicKind::Simple { unfixed_seen } =&gt; {
                         <span class="kw">if </span>constraint.is_optional() {
                             <span class="comment">// Optional element, and some singular elements.
                             // Only present if the amount of groups is at least the number of
@@ -292,15 +288,15 @@
                               }
                             }
                         } <span class="kw">else if </span>constraint.is_variadic() {
-                            <span class="comment">// A variable length group
+                            <span class="comment">// A unfixed group
                             // Length computed by subtracting the amount of other
                             // singular elements from the number of elements.
                             </span><span class="macro">quote! </span>{
                               <span class="kw">let </span>group_length = <span class="self">self</span>.operation.#count() - #len + <span class="number">1</span>;
                               <span class="self">self</span>.operation.#plural().skip(#index).take(group_length)
                             }
-                        } <span class="kw">else if </span><span class="kw-2">*</span>seen_variable_length {
-                            <span class="comment">// Single element after variable length group
+                        } <span class="kw">else if </span><span class="kw-2">*</span>unfixed_seen {
+                            <span class="comment">// Single element after unfixed group
                             // Compute the length of that variable group and take the next element
                             </span><span class="macro">quote! </span>{
                                 <span class="kw">let </span>group_length = <span class="self">self</span>.operation.#count() - #len + <span class="number">1</span>;
@@ -314,16 +310,16 @@
                         }
                     }
                     VariadicKind::SameSize {
-                        variable_length_count,
+                        unfixed_count,
                         preceding_simple_count,
                         preceding_variadic_count,
                     } =&gt; {
                         <span class="kw">let </span>compute_start_length = <span class="macro">quote! </span>{
-                            <span class="kw">let </span>total_var_len = <span class="self">self</span>.operation.#count() - #variable_length_count + <span class="number">1</span>;
-                            <span class="kw">let </span>group_len = total_var_len / #variable_length_count;
+                            <span class="kw">let </span>total_var_len = <span class="self">self</span>.operation.#count() - #unfixed_count + <span class="number">1</span>;
+                            <span class="kw">let </span>group_len = total_var_len / #unfixed_count;
                             <span class="kw">let </span>start = #preceding_simple_count + #preceding_variadic_count * group_len;
                         };
-                        <span class="kw">let </span>get_elements = <span class="kw">if </span>constraint.has_variable_length() {
+                        <span class="kw">let </span>get_elements = <span class="kw">if </span>constraint.has_unfixed() {
                             <span class="macro">quote! </span>{
                                 <span class="self">self</span>.operation.#plural().skip(start).take(group_len)
                             }
@@ -335,7 +331,7 @@
 
                         <span class="macro">quote! </span>{ #compute_start_length #get_elements }
                     }
-                    VariadicKind::AttrSized {} =&gt; {
+                    VariadicKind::AttributeSized =&gt; {
                         <span class="kw">let </span>attribute_name = <span class="macro">format!</span>(<span class="string">&quot;{}_segment_sizes&quot;</span>, kind_str);
                         <span class="kw">let </span>compute_start_length = <span class="macro">quote! </span>{
                             <span class="kw">let </span>attribute =
@@ -350,7 +346,7 @@
                                 .sum::&lt;i32&gt;() <span class="kw">as </span>usize;
                             <span class="kw">let </span>group_len = attribute.element(#index)<span class="question-mark">? </span><span class="kw">as </span>usize;
                         };
-                        <span class="kw">let </span>get_elements = <span class="kw">if </span>!constraint.has_variable_length() {
+                        <span class="kw">let </span>get_elements = <span class="kw">if </span>!constraint.has_unfixed() {
                             <span class="macro">quote! </span>{
                                 <span class="self">self</span>.operation.#kind_ident(start)
                             }

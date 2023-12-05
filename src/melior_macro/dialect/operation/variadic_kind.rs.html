@@ -33,30 +33,30 @@
 </pre></div><pre class="rust"><code><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub enum </span>VariadicKind {
     Simple {
-        variable_length_seen: bool,
+        unfixed_seen: bool,
     },
     SameSize {
-        variable_length_count: usize,
+        unfixed_count: usize,
         preceding_simple_count: usize,
         preceding_variadic_count: usize,
     },
-    AttrSized {},
+    AttributeSized,
 }
 
 <span class="kw">impl </span>VariadicKind {
-    <span class="kw">pub fn </span>new(variable_length_count: usize, same_size: bool, attr_sized: bool) -&gt; <span class="self">Self </span>{
-        <span class="kw">if </span>variable_length_count &lt;= <span class="number">1 </span>{
-            VariadicKind::Simple {
-                variable_length_seen: <span class="bool-val">false</span>,
+    <span class="kw">pub fn </span>new(unfixed_count: usize, same_size: bool, attribute_sized: bool) -&gt; <span class="self">Self </span>{
+        <span class="kw">if </span>unfixed_count &lt;= <span class="number">1 </span>{
+            <span class="self">Self</span>::Simple {
+                unfixed_seen: <span class="bool-val">false</span>,
             }
         } <span class="kw">else if </span>same_size {
-            VariadicKind::SameSize {
-                variable_length_count,
+            <span class="self">Self</span>::SameSize {
+                unfixed_count,
                 preceding_simple_count: <span class="number">0</span>,
                 preceding_variadic_count: <span class="number">0</span>,
             }
-        } <span class="kw">else if </span>attr_sized {
-            VariadicKind::AttrSized {}
+        } <span class="kw">else if </span>attribute_sized {
+            <span class="self">Self</span>::AttributeSized
         } <span class="kw">else </span>{
             <span class="macro">unimplemented!</span>()
         }

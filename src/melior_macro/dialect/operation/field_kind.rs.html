@@ -290,7 +290,7 @@
                 };
                 <span class="kw">if </span>!constraint.is_variadic() {
                     <span class="self">Self</span>::create_result_type(base_type)
-                } <span class="kw">else if let </span>VariadicKind::AttrSized {} = variadic_kind {
+                } <span class="kw">else if let </span>VariadicKind::AttributeSized = variadic_kind {
                     <span class="self">Self</span>::create_result_type(<span class="self">Self</span>::create_iterator_type(base_type))
                 } <span class="kw">else </span>{
                     <span class="self">Self</span>::create_iterator_type(base_type)
