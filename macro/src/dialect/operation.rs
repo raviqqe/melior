@@ -163,7 +163,7 @@ impl<'a> Operation<'a> {
 
     fn collect_traits(definition: Record<'a>) -> Result<Vec<Trait>, Error> {
         let mut work_list = vec![definition.list_value("traits")?];
-        let mut traits = Vec::new();
+        let mut traits = vec![];
 
         while let Some(trait_definition) = work_list.pop() {
             for value in trait_definition.iter() {
