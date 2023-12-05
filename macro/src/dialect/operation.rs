@@ -577,10 +577,10 @@ impl<'a> Operation<'a> {
                 let summary = definition.str_value("summary")?;
 
                 if summary.is_empty() {
-                    format!("[`{short_name}`]({class_name}) operation")
+                    format!("[`{short_name}`]({class_name}) operation.")
                 } else {
                     format!(
-                        "[`{short_name}`]({class_name}) operation: {}",
+                        "[`{short_name}`]({class_name}) operation. {}.",
                         summary[0..1].to_uppercase() + &summary[1..]
                     )
                 }
