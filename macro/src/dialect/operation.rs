@@ -165,8 +165,8 @@ impl<'a> Operation<'a> {
         let mut work_list = vec![definition.list_value("traits")?];
         let mut traits = Vec::new();
 
-        while let Some(trait_def) = work_list.pop() {
-            for value in trait_def.iter() {
+        while let Some(trait_definition) = work_list.pop() {
+            for value in trait_definition.iter() {
                 let trait_def: Record = value
                     .try_into()
                     .map_err(|error: tblgen::Error| error.set_location(definition))?;
@@ -192,16 +192,16 @@ impl<'a> Operation<'a> {
         definition
             .dag_value(dag_field_name)?
             .args()
-            .map(|(name, arg)| {
-                let mut arg_def: Record = arg
+            .map(|(name, argument)| {
+                let mut argument_definition: Record = argument
                     .try_into()
                     .map_err(|error: tblgen::Error| error.set_location(definition))?;
 
-                if arg_def.subclass_of("OpVariable") {
-                    arg_def = arg_def.def_value("constraint")?;
+                if argument_definition.subclass_of("OpVariable") {
+                    argument_definition = argument_definition.def_value("constraint")?;
                 }
 
-                Ok((name, arg_def))
+                Ok((name, argument_definition))
             })
             .collect()
     }
