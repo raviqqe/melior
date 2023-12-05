@@ -586,7 +586,7 @@ impl<'a> Operation<'a> {
                 ]
                 .join(" ")
             },
-            description: unindent::unindent(definition.str_value("description")?),
+            description: sanitize_documentation(definition.str_value("description")?)?,
             regions,
         })
     }
