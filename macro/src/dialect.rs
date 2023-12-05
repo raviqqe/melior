@@ -59,7 +59,7 @@ fn generate_dialect_module(
         .map(Operation::from_definition)
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
-        .filter(|operation| operation.dialect.name() == dialect.name())
+        .filter(|operation| operation.dialect_name() == dialect.name())
         .collect::<Vec<_>>();
 
     let doc = format!(

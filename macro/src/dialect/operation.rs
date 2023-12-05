@@ -10,7 +10,10 @@ use crate::dialect::{
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote, ToTokens, TokenStreamExt};
 use syn::{parse_quote, Type};
-use tblgen::{error::WithLocation, record::Record};
+use tblgen::{
+    error::{SourceError, TableGenError, WithLocation},
+    record::Record,
+};
 
 #[derive(Debug, Clone, Copy)]
 pub enum ElementKind {
@@ -291,12 +294,12 @@ impl<'a> OperationField<'a> {
 
 #[derive(Debug, Clone)]
 pub struct Operation<'a> {
-    pub(crate) dialect: Record<'a>,
-    pub(crate) short_name: &'a str,
-    pub(crate) full_name: String,
-    pub(crate) class_name: &'a str,
-    pub(crate) summary: String,
-    pub(crate) can_infer_type: bool,
+    dialect: Record<'a>,
+    short_name: &'a str,
+    full_name: String,
+    class_name: &'a str,
+    summary: String,
+    can_infer_type: bool,
     description: String,
     regions: Vec<OperationField<'a>>,
     successors: Vec<OperationField<'a>>,
@@ -307,6 +310,10 @@ pub struct Operation<'a> {
 }
 
 impl<'a> Operation<'a> {
+    pub fn dialect_name(&self) -> Result<&str, SourceError<TableGenError>> {
+        self.dialect.name()
+    }
+
     pub fn fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
         self.results
             .iter()
