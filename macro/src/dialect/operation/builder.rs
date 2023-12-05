@@ -105,7 +105,7 @@ impl<'o> OperationBuilder<'o> {
         })
     }
 
-    pub fn builder(&self) -> Result<TokenStream, Error> {
+    pub fn to_tokens(&self) -> Result<TokenStream, Error> {
         let field_names = self
             .type_state
             .field_names()
