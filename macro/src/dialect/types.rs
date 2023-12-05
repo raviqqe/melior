@@ -173,7 +173,7 @@ enum TraitKind {
         #[allow(unused)]
         structural: bool,
     },
-    Pred,
+    Predicate,
     Internal {
         name: String,
     },
@@ -191,7 +191,7 @@ impl Trait {
     pub fn new(definition: Record) -> Result<Self, Error> {
         Ok(Self {
             kind: if definition.subclass_of("PredTrait") {
-                TraitKind::Pred
+                TraitKind::Predicate
             } else if definition.subclass_of("InterfaceTrait") {
                 TraitKind::Interface {
                     name: Self::name(definition)?,
@@ -216,7 +216,7 @@ impl Trait {
             TraitKind::Native { name, .. }
             | TraitKind::Internal { name }
             | TraitKind::Interface { name } => name == expected_name,
-            TraitKind::Pred => false,
+            TraitKind::Predicate => false,
         }
     }
 
