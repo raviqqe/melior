@@ -56,7 +56,7 @@ fn generate_dialect_module(
 ) -> Result<proc_macro2::TokenStream, Error> {
     let operations = record_keeper
         .all_derived_definitions("Op")
-        .map(Operation::from_def)
+        .map(Operation::from_definition)
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
         .filter(|operation| operation.dialect.name() == dialect.name())

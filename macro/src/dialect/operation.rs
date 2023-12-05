@@ -521,7 +521,7 @@ impl<'a> Operation<'a> {
             .collect()
     }
 
-    pub fn from_def(def: Record<'a>) -> Result<Self, Error> {
+    pub fn from_definition(def: Record<'a>) -> Result<Self, Error> {
         let dialect = def.def_value("opDialect")?;
         let traits = Self::collect_traits(def)?;
         let has_trait = |name: &str| traits.iter().any(|r#trait| r#trait.has_name(name));
