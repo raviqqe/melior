@@ -524,7 +524,7 @@ impl<'a> Operation<'a> {
     pub fn from_definition(definition: Record<'a>) -> Result<Self, Error> {
         let dialect = definition.def_value("opDialect")?;
         let traits = Self::collect_traits(definition)?;
-        let has_trait = |name: &str| traits.iter().any(|r#trait| r#trait.has_name(name));
+        let has_trait = |name| traits.iter().any(|r#trait| r#trait.has_name(name));
 
         let arguments = Self::dag_constraints(definition, "arguments")?;
         let regions = Self::collect_regions(definition)?;
