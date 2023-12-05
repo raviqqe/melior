@@ -1,7 +1,7 @@
 #[derive(Clone, Debug)]
 pub enum VariadicKind {
     Simple {
-        seen_variable_length: bool,
+        variable_length_seen: bool,
     },
     SameSize {
         variable_length_count: usize,
@@ -15,7 +15,7 @@ impl VariadicKind {
     pub fn new(variable_length_count: usize, same_size: bool, attr_sized: bool) -> Self {
         if variable_length_count <= 1 {
             VariadicKind::Simple {
-                seen_variable_length: false,
+                variable_length_seen: false,
             }
         } else if same_size {
             VariadicKind::SameSize {

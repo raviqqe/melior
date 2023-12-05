@@ -197,7 +197,7 @@ impl<'a> Operation<'a> {
 
             match &mut variadic_kind {
                 VariadicKind::Simple {
-                    seen_variable_length,
+                    variable_length_seen: seen_variable_length,
                 } => {
                     if constraint.has_variable_length() {
                         *seen_variable_length = true;

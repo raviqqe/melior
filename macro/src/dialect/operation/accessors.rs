@@ -26,7 +26,7 @@ impl<'a> OperationField<'a> {
 
                 Some(match variadic_kind {
                     VariadicKind::Simple {
-                        seen_variable_length,
+                        variable_length_seen: seen_variable_length,
                     } => {
                         if constraint.is_optional() {
                             // Optional element, and some singular elements.
