@@ -32,7 +32,7 @@ fn sanitize_name(name: &str) -> Result<Ident, Error> {
 
 pub fn sanitize_documentation(string: &str) -> Result<String, Error> {
     let arena = Arena::new();
-    let node = parse_document(&arena, string, &Default::default());
+    let node = parse_document(&arena, &unindent::unindent(string), &Default::default());
 
     for node in node.traverse() {
         let NodeEdge::Start(node) = node else {
