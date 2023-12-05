@@ -273,7 +273,7 @@ impl<'a> Operation<'a> {
         let class_name = if name.starts_with('_') {
             name
         } else if let Some(name) = name.split('_').nth(1) {
-            // Trim dialect prefix from name
+            // Trim dialect prefix from name.
             name
         } else {
             name
