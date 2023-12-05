@@ -124,6 +124,7 @@ impl<'a> Operation<'a> {
     fn collect_successors(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
         let successors_dag = definition.dag_value("successors")?;
         let len = successors_dag.num_args();
+
         successors_dag
             .args()
             .enumerate()
@@ -144,6 +145,7 @@ impl<'a> Operation<'a> {
     fn collect_regions(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
         let regions_dag = definition.dag_value("regions")?;
         let len = regions_dag.num_args();
+
         regions_dag
             .args()
             .enumerate()
