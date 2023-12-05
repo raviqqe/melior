@@ -306,8 +306,11 @@ impl<'a> Operation<'a> {
             .collect()
     }
 
-    fn collect_derived_attributes(def: Record<'a>) -> Result<Vec<OperationField<'a>>, Error> {
-        def.values()
+    fn collect_derived_attributes(
+        definition: Record<'a>,
+    ) -> Result<Vec<OperationField<'a>>, Error> {
+        definition
+            .values()
             .filter_map(|value| {
                 let Ok(def) = Record::try_from(value) else {
                     return None;
