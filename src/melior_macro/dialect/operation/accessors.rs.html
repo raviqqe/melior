@@ -247,7 +247,6 @@
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{
     <span class="kw">super</span>::{error::Error, utility::sanitize_snake_case_name},
     ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind,
@@ -264,10 +263,9 @@
                 sequence_info: SequenceInfo { index, len },
                 variadic_kind,
             } =&gt; {
-                <span class="kw">let </span>kind_str = kind.as_str();
-                <span class="kw">let </span>kind_ident = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, kind_str);
-                <span class="kw">let </span>plural = <span class="macro">format_ident!</span>(<span class="string">&quot;{}s&quot;</span>, kind_str);
-                <span class="kw">let </span>count = <span class="macro">format_ident!</span>(<span class="string">&quot;{}_count&quot;</span>, kind_str);
+                <span class="kw">let </span>kind_ident = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, kind.as_str());
+                <span class="kw">let </span>plural = <span class="macro">format_ident!</span>(<span class="string">&quot;{}s&quot;</span>, kind.as_str());
+                <span class="kw">let </span>count = <span class="macro">format_ident!</span>(<span class="string">&quot;{}_count&quot;</span>, kind.as_str());
                 <span class="kw">let </span>error_variant = <span class="kw">match </span>kind {
                     ElementKind::Operand =&gt; <span class="macro">quote!</span>(OperandNotFound),
                     ElementKind::Result =&gt; <span class="macro">quote!</span>(ResultNotFound),
@@ -332,7 +330,7 @@
                         <span class="macro">quote! </span>{ #compute_start_length #get_elements }
                     }
                     VariadicKind::AttributeSized =&gt; {
-                        <span class="kw">let </span>attribute_name = <span class="macro">format!</span>(<span class="string">&quot;{}_segment_sizes&quot;</span>, kind_str);
+                        <span class="kw">let </span>attribute_name = <span class="macro">format!</span>(<span class="string">&quot;{}_segment_sizes&quot;</span>, kind.as_str());
                         <span class="kw">let </span>compute_start_length = <span class="macro">quote! </span>{
                             <span class="kw">let </span>attribute =
                                 ::melior::ir::attribute::DenseI32ArrayAttribute::&lt;<span class="lifetime">&#39;c</span>&gt;::try_from(

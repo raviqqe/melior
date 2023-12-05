@@ -98,6 +98,9 @@
 <a href="#98" id="98">98</a>
 <a href="#99" id="99">99</a>
 <a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     error,
     fmt::{<span class="self">self</span>, Display, Formatter},
@@ -183,16 +186,19 @@
 </span><span class="kw">pub enum </span>OdsError {
     ExpectedSuperClass(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str),
     InvalidTrait,
+    UnexpectedSuperClass(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str),
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>OdsError {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::ExpectedSuperClass(class) =&gt; <span class="macro">write!</span>(
-                formatter,
-                <span class="string">&quot;expected this record to be a subclass of {class}&quot;</span>,
-            ),
+            <span class="self">Self</span>::ExpectedSuperClass(class) =&gt; {
+                <span class="macro">write!</span>(formatter, <span class="string">&quot;record should be a sub-class of {class}&quot;</span>,)
+            }
             <span class="self">Self</span>::InvalidTrait =&gt; <span class="macro">write!</span>(formatter, <span class="string">&quot;record is not a supported trait&quot;</span>),
+            <span class="self">Self</span>::UnexpectedSuperClass(class) =&gt; {
+                <span class="macro">write!</span>(formatter, <span class="string">&quot;record should not be a sub-class of {class}&quot;</span>,)
+            }
         }
     }
 }

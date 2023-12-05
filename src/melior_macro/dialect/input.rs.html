@@ -55,46 +55,17 @@
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
-<a href="#58" id="58">58</a>
-<a href="#59" id="59">59</a>
-<a href="#60" id="60">60</a>
-<a href="#61" id="61">61</a>
-<a href="#62" id="62">62</a>
-<a href="#63" id="63">63</a>
-<a href="#64" id="64">64</a>
-<a href="#65" id="65">65</a>
-<a href="#66" id="66">66</a>
-<a href="#67" id="67">67</a>
-<a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>proc_macro2::Ident;
-<span class="kw">use </span>quote::format_ident;
+</pre></div><pre class="rust"><code><span class="kw">mod </span>input_field;
+
+<span class="kw">use </span><span class="self">self</span>::input_field::InputField;
 <span class="kw">use </span>std::ops::Deref;
-<span class="kw">use </span>syn::{bracketed, parse::Parse, punctuated::Punctuated, LitStr, Token};
+<span class="kw">use </span>syn::{parse::Parse, punctuated::Punctuated, Token};
 
 <span class="kw">pub struct </span>DialectInput {
     name: String,
     table_gen: <span class="prelude-ty">Option</span>&lt;String&gt;,
     td_file: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    includes: Vec&lt;String&gt;,
+    include_directories: Vec&lt;String&gt;,
 }
 
 <span class="kw">impl </span>DialectInput {
@@ -110,8 +81,8 @@
         <span class="self">self</span>.td_file.as_deref()
     }
 
-    <span class="kw">pub fn </span>includes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>str&gt; {
-        <span class="self">self</span>.includes.iter().map(Deref::deref)
+    <span class="kw">pub fn </span>include_directories(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>str&gt; {
+        <span class="self">self</span>.include_directories.iter().map(Deref::deref)
     }
 }
 
@@ -127,7 +98,7 @@
                 InputField::Name(field) =&gt; name = <span class="prelude-val">Some</span>(field.value()),
                 InputField::TableGen(td) =&gt; table_gen = <span class="prelude-val">Some</span>(td.value()),
                 InputField::TdFile(file) =&gt; td_file = <span class="prelude-val">Some</span>(file.value()),
-                InputField::Includes(field) =&gt; {
+                InputField::IncludeDirectories(field) =&gt; {
                     includes = field.into_iter().map(|literal| literal.value()).collect()
                 }
             }
@@ -137,39 +108,8 @@
             name: name.ok_or(input.error(<span class="string">&quot;dialect name required&quot;</span>))<span class="question-mark">?</span>,
             table_gen,
             td_file,
-            includes,
+            include_directories: includes,
         })
-    }
-}
-
-<span class="kw">enum </span>InputField {
-    Name(LitStr),
-    TableGen(LitStr),
-    TdFile(LitStr),
-    Includes(Punctuated&lt;LitStr, <span class="macro">Token!</span>[,]&gt;),
-}
-
-<span class="kw">impl </span>Parse <span class="kw">for </span>InputField {
-    <span class="kw">fn </span>parse(input: syn::parse::ParseStream) -&gt; syn::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>ident = input.parse::&lt;Ident&gt;()<span class="question-mark">?</span>;
-
-        input.parse::&lt;<span class="macro">Token!</span>[:]&gt;()<span class="question-mark">?</span>;
-
-        <span class="kw">if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;name&quot;</span>) {
-            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Name(input.parse()<span class="question-mark">?</span>))
-        } <span class="kw">else if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;table_gen&quot;</span>) {
-            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::TableGen(input.parse()<span class="question-mark">?</span>))
-        } <span class="kw">else if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;td_file&quot;</span>) {
-            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::TdFile(input.parse()<span class="question-mark">?</span>))
-        } <span class="kw">else if </span>ident == <span class="macro">format_ident!</span>(<span class="string">&quot;include_dirs&quot;</span>) {
-            <span class="kw">let </span>content;
-            <span class="macro">bracketed!</span>(content <span class="kw">in </span>input);
-            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Includes(
-                Punctuated::&lt;LitStr, <span class="macro">Token!</span>[,]&gt;::parse_terminated(<span class="kw-2">&amp;</span>content)<span class="question-mark">?</span>,
-            ))
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(input.error(<span class="macro">format!</span>(<span class="string">&quot;invalid field {}&quot;</span>, ident)))
-        }
     }
 }
 </code></pre></div></section></main></body></html>

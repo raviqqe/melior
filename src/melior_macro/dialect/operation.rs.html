@@ -386,6 +386,13 @@
 <a href="#386" id="386">386</a>
 <a href="#387" id="387">387</a>
 <a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>element_kind;
@@ -404,7 +411,7 @@
     types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
 };
 <span class="kw">use </span>proc_macro2::TokenStream;
-<span class="kw">use </span>quote::{format_ident, quote, ToTokens, TokenStreamExt};
+<span class="kw">use </span>quote::{format_ident, quote};
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record};
 
 <span class="attr">#[derive(Clone, Debug)]
@@ -432,7 +439,7 @@
 
         <span class="kw">let </span>arguments = <span class="self">Self</span>::dag_constraints(definition, <span class="string">&quot;arguments&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>regions = <span class="self">Self</span>::collect_regions(definition)<span class="question-mark">?</span>;
-        <span class="kw">let </span>(results, unfixed_results_count) = <span class="self">Self</span>::collect_results(
+        <span class="kw">let </span>(results, unfixed_result_count) = <span class="self">Self</span>::collect_results(
             definition,
             has_trait(<span class="string">&quot;::mlir::OpTrait::SameVariadicResultSize&quot;</span>),
             has_trait(<span class="string">&quot;::mlir::OpTrait::AttrSizedResultSegments&quot;</span>),
@@ -474,7 +481,7 @@
             can_infer_type: traits.iter().any(|r#trait| {
                 (r#trait.has_name(<span class="string">&quot;::mlir::OpTrait::FirstAttrDerivedResultType&quot;</span>)
                     || r#trait.has_name(<span class="string">&quot;::mlir::OpTrait::SameOperandsAndResultType&quot;</span>))
-                    &amp;&amp; unfixed_results_count == <span class="number">0
+                    &amp;&amp; unfixed_result_count == <span class="number">0
                     </span>|| r#trait.has_name(<span class="string">&quot;::mlir::InferTypeOpInterface::Trait&quot;</span>) &amp;&amp; regions.is_empty()
             }),
             summary: {
@@ -502,16 +509,17 @@
     <span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt; + Clone {
         <span class="self">self</span>.results
             .iter()
-            .chain(<span class="self">self</span>.operands.iter())
-            .chain(<span class="self">self</span>.regions.iter())
-            .chain(<span class="self">self</span>.successors.iter())
-            .chain(<span class="self">self</span>.attributes.iter())
-            .chain(<span class="self">self</span>.derived_attributes.iter())
+            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.operands)
+            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.regions)
+            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.successors)
+            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.attributes)
+            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.derived_attributes)
     }
 
     <span class="kw">fn </span>collect_successors(definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
         <span class="kw">let </span>successors_dag = definition.dag_value(<span class="string">&quot;successors&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>len = successors_dag.num_args();
+
         successors_dag
             .args()
             .enumerate()
@@ -532,6 +540,7 @@
     <span class="kw">fn </span>collect_regions(definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
         <span class="kw">let </span>regions_dag = definition.dag_value(<span class="string">&quot;regions&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>len = regions_dag.num_args();
+
         regions_dag
             .args()
             .enumerate()
@@ -684,53 +693,58 @@
             .iter()
             .filter(|(<span class="kw">_</span>, definition)| definition.subclass_of(<span class="string">&quot;Attr&quot;</span>))
             .map(|(name, definition)| {
-                <span class="comment">// TODO: Replace assert! with Result
-                </span><span class="macro">assert!</span>(!definition.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>));
-
-                OperationField::new_attribute(name, AttributeConstraint::new(<span class="kw-2">*</span>definition))
+                <span class="kw">if </span>definition.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>) {
+                    <span class="prelude-val">Err</span>(OdsError::UnexpectedSuperClass(<span class="string">&quot;DerivedAttr&quot;</span>)
+                        .with_location(<span class="kw-2">*</span>definition)
+                        .into())
+                } <span class="kw">else </span>{
+                    OperationField::new_attribute(name, AttributeConstraint::new(<span class="kw-2">*</span>definition))
+                }
             })
             .collect()
     }
 
-    <span class="kw">fn </span>collect_derived_attributes(def: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, Error&gt; {
-        def.values()
+    <span class="kw">fn </span>collect_derived_attributes(
+        definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, Error&gt; {
+        definition
+            .values()
             .filter_map(|value| {
                 <span class="kw">let </span><span class="prelude-val">Ok</span>(def) = Record::try_from(value) <span class="kw">else </span>{
                     <span class="kw">return </span><span class="prelude-val">None</span>;
                 };
                 def.subclass_of(<span class="string">&quot;Attr&quot;</span>).then_some(def)
             })
-            .map(|def| {
-                <span class="kw">if </span>def.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>) {
-                    OperationField::new_attribute(def.name()<span class="question-mark">?</span>, AttributeConstraint::new(def))
+            .map(|definition| {
+                <span class="kw">if </span>definition.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>) {
+                    OperationField::new_attribute(
+                        definition.name()<span class="question-mark">?</span>,
+                        AttributeConstraint::new(definition),
+                    )
                 } <span class="kw">else </span>{
                     <span class="prelude-val">Err</span>(OdsError::ExpectedSuperClass(<span class="string">&quot;DerivedAttr&quot;</span>)
-                        .with_location(def)
+                        .with_location(definition)
                         .into())
                 }
             })
             .collect()
     }
-}
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ToTokens <span class="kw">for </span>Operation&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="comment">// TODO Compile values for proper error handling and remove `Result::expect()`.
-    </span><span class="kw">fn </span>to_tokens(<span class="kw-2">&amp;</span><span class="self">self</span>, tokens: <span class="kw-2">&amp;mut </span>TokenStream) {
+    <span class="kw">pub fn </span>to_tokens(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
         <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.class_name);
         <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.full_name;
         <span class="kw">let </span>accessors = <span class="self">self
             </span>.fields()
-            .map(|field| field.accessors().expect(<span class="string">&quot;valid accessors&quot;</span>));
-        <span class="kw">let </span>builder = OperationBuilder::new(<span class="self">self</span>).expect(<span class="string">&quot;valid builder generator&quot;</span>);
-        <span class="kw">let </span>builder_tokens = builder.builder().expect(<span class="string">&quot;valid builder&quot;</span>);
+            .map(|field| field.accessors())
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+        <span class="kw">let </span>builder = OperationBuilder::new(<span class="self">self</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>builder_tokens = builder.to_tokens()<span class="question-mark">?</span>;
         <span class="kw">let </span>builder_fn = builder.create_op_builder_fn();
-        <span class="kw">let </span>default_constructor = builder
-            .create_default_constructor()
-            .expect(<span class="string">&quot;valid constructor&quot;</span>);
+        <span class="kw">let </span>default_constructor = builder.create_default_constructor()<span class="question-mark">?</span>;
         <span class="kw">let </span>summary = <span class="kw-2">&amp;</span><span class="self">self</span>.summary;
         <span class="kw">let </span>description = <span class="kw-2">&amp;</span><span class="self">self</span>.description;
 
-        tokens.append_all(<span class="macro">quote! </span>{
+        <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
             <span class="attr">#[doc = #summary]
             #[doc = <span class="string">&quot;\n\n&quot;</span>]
             #[doc = #description]

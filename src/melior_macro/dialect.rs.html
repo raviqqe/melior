@@ -102,6 +102,12 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>input;
 <span class="kw">mod </span>operation;
@@ -134,7 +140,12 @@
     }
 
     <span class="comment">// spell-checker: disable-next-line
-    </span><span class="kw">for </span>path <span class="kw">in </span>input.includes().chain([<span class="kw-2">&amp;*</span>llvm_config(<span class="string">&quot;--includedir&quot;</span>)<span class="question-mark">?</span>]) {
+    </span><span class="kw">let </span>llvm_include_directory = llvm_config(<span class="string">&quot;--includedir&quot;</span>)<span class="question-mark">?</span>;
+
+    <span class="kw">for </span>path <span class="kw">in </span>input
+        .include_directories()
+        .chain([llvm_include_directory.as_str()])
+    {
         parser = parser.add_include_path(path);
     }
 
@@ -165,7 +176,8 @@
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?
         </span>.into_iter()
         .filter(|operation| operation.dialect_name() == dialect_name)
-        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        .map(|operation| operation.to_tokens())
+        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
     <span class="kw">let </span>doc = <span class="macro">format!</span>(
         <span class="string">&quot;`{name}` dialect.\n\n{}&quot;</span>,

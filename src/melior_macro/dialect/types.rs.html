@@ -406,7 +406,7 @@
         <span class="attr">#[allow(unused)]
         </span>structural: bool,
     },
-    Pred {},
+    Predicate,
     Internal {
         name: String,
     },
@@ -421,25 +421,25 @@
 }
 
 <span class="kw">impl </span>Trait {
-    <span class="kw">pub fn </span>new(def: Record) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+    <span class="kw">pub fn </span>new(definition: Record) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
-            kind: <span class="kw">if </span>def.subclass_of(<span class="string">&quot;PredTrait&quot;</span>) {
-                TraitKind::Pred {}
-            } <span class="kw">else if </span>def.subclass_of(<span class="string">&quot;InterfaceTrait&quot;</span>) {
+            kind: <span class="kw">if </span>definition.subclass_of(<span class="string">&quot;PredTrait&quot;</span>) {
+                TraitKind::Predicate
+            } <span class="kw">else if </span>definition.subclass_of(<span class="string">&quot;InterfaceTrait&quot;</span>) {
                 TraitKind::Interface {
-                    name: <span class="self">Self</span>::name(def)<span class="question-mark">?</span>,
+                    name: <span class="self">Self</span>::name(definition)<span class="question-mark">?</span>,
                 }
-            } <span class="kw">else if </span>def.subclass_of(<span class="string">&quot;NativeTrait&quot;</span>) {
+            } <span class="kw">else if </span>definition.subclass_of(<span class="string">&quot;NativeTrait&quot;</span>) {
                 TraitKind::Native {
-                    name: <span class="self">Self</span>::name(def)<span class="question-mark">?</span>,
-                    structural: def.subclass_of(<span class="string">&quot;StructuralOpTrait&quot;</span>),
+                    name: <span class="self">Self</span>::name(definition)<span class="question-mark">?</span>,
+                    structural: definition.subclass_of(<span class="string">&quot;StructuralOpTrait&quot;</span>),
                 }
-            } <span class="kw">else if </span>def.subclass_of(<span class="string">&quot;GenInternalTrait&quot;</span>) {
+            } <span class="kw">else if </span>definition.subclass_of(<span class="string">&quot;GenInternalTrait&quot;</span>) {
                 TraitKind::Internal {
-                    name: def.string_value(<span class="string">&quot;trait&quot;</span>)<span class="question-mark">?</span>,
+                    name: definition.string_value(<span class="string">&quot;trait&quot;</span>)<span class="question-mark">?</span>,
                 }
             } <span class="kw">else </span>{
-                <span class="kw">return </span><span class="prelude-val">Err</span>(OdsError::InvalidTrait.with_location(def).into());
+                <span class="kw">return </span><span class="prelude-val">Err</span>(OdsError::InvalidTrait.with_location(definition).into());
             },
         })
     }
@@ -448,14 +448,14 @@
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
             TraitKind::Native { name, .. }
             | TraitKind::Internal { name }
-            | TraitKind::Interface { name } =&gt; expected_name == name,
-            TraitKind::Pred {} =&gt; <span class="bool-val">false</span>,
+            | TraitKind::Interface { name } =&gt; name == expected_name,
+            TraitKind::Predicate =&gt; <span class="bool-val">false</span>,
         }
     }
 
-    <span class="kw">fn </span>name(def: Record) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        <span class="kw">let </span>r#trait = def.string_value(<span class="string">&quot;trait&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>namespace = def.string_value(<span class="string">&quot;cppNamespace&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>name(definition: Record) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
+        <span class="kw">let </span>r#trait = definition.string_value(<span class="string">&quot;trait&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>namespace = definition.string_value(<span class="string">&quot;cppNamespace&quot;</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="kw">if </span>namespace.is_empty() {
             r#trait
