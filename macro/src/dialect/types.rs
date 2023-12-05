@@ -215,8 +215,8 @@ impl Trait {
         match &self.kind {
             TraitKind::Native { name, .. }
             | TraitKind::Internal { name }
-            | TraitKind::Interface { name } => expected_name == name,
-            TraitKind::Pred {} => false,
+            | TraitKind::Interface { name } => name == expected_name,
+            TraitKind::Pred => false,
         }
     }
 
