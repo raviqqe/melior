@@ -64,7 +64,8 @@ fn generate_dialect_module(
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
         .filter(|operation| operation.dialect_name() == dialect_name)
-        .collect::<Vec<_>>();
+        .map(|operation| operation.to_tokens())
+        .collect::<Result<Vec<_>, _>>()?;
 
     let doc = format!(
         "`{name}` dialect.\n\n{}",

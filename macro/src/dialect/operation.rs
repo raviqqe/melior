@@ -16,7 +16,7 @@ use crate::dialect::{
     types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
 };
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote, ToTokens, TokenStreamExt};
+use quote::{format_ident, quote};
 use tblgen::{error::WithLocation, record::Record};
 
 #[derive(Clone, Debug)]
@@ -298,10 +298,13 @@ impl<'a> Operation<'a> {
             .iter()
             .filter(|(_, definition)| definition.subclass_of("Attr"))
             .map(|(name, definition)| {
-                // TODO: Replace assert! with Result
-                assert!(!definition.subclass_of("DerivedAttr"));
-
-                OperationField::new_attribute(name, AttributeConstraint::new(*definition))
+                if definition.subclass_of("DerivedAttr") {
+                    Err(OdsError::UnexpectedSuperClass("DerivedAttr")
+                        .with_location(*definition)
+                        .into())
+                } else {
+                    OperationField::new_attribute(name, AttributeConstraint::new(*definition))
+                }
             })
             .collect()
     }
@@ -317,37 +320,36 @@ impl<'a> Operation<'a> {
                 };
                 def.subclass_of("Attr").then_some(def)
             })
-            .map(|def| {
-                if def.subclass_of("DerivedAttr") {
-                    OperationField::new_attribute(def.name()?, AttributeConstraint::new(def))
+            .map(|definition| {
+                if definition.subclass_of("DerivedAttr") {
+                    OperationField::new_attribute(
+                        definition.name()?,
+                        AttributeConstraint::new(definition),
+                    )
                 } else {
                     Err(OdsError::ExpectedSuperClass("DerivedAttr")
-                        .with_location(def)
+                        .with_location(definition)
                         .into())
                 }
             })
             .collect()
     }
-}
 
-impl<'a> ToTokens for Operation<'a> {
-    // TODO Compile values for proper error handling and remove `Result::expect()`.
-    fn to_tokens(&self, tokens: &mut TokenStream) {
+    pub fn to_tokens(&self) -> Result<TokenStream, Error> {
         let class_name = format_ident!("{}", &self.class_name);
         let name = &self.full_name;
         let accessors = self
             .fields()
-            .map(|field| field.accessors().expect("valid accessors"));
-        let builder = OperationBuilder::new(self).expect("valid builder generator");
-        let builder_tokens = builder.to_tokens().expect("valid builder");
+            .map(|field| field.accessors())
+            .collect::<Result<Vec<_>, _>>()?;
+        let builder = OperationBuilder::new(self)?;
+        let builder_tokens = builder.to_tokens()?;
         let builder_fn = builder.create_op_builder_fn();
-        let default_constructor = builder
-            .create_default_constructor()
-            .expect("valid constructor");
+        let default_constructor = builder.create_default_constructor()?;
         let summary = &self.summary;
         let description = &self.description;
 
-        tokens.append_all(quote! {
+        Ok(quote! {
             #[doc = #summary]
             #[doc = "\n\n"]
             #[doc = #description]
