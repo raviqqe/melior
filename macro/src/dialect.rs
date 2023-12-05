@@ -57,7 +57,7 @@ fn generate_dialect_module(
     let dialect_name = dialect.name()?;
     let operations = record_keeper
         .all_derived_definitions("Op")
-        .map(Operation::from_definition)
+        .map(Operation::new)
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
         .filter(|operation| operation.dialect_name() == dialect_name)
