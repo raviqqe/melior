@@ -30,7 +30,10 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
     }
 
     // spell-checker: disable-next-line
-    for path in input.includes().chain([&*llvm_config("--includedir")?]) {
+    for path in input
+        .include_directories()
+        .chain([&*llvm_config("--includedir")?])
+    {
         parser = parser.add_include_path(path);
     }
 

@@ -8,7 +8,7 @@ pub struct DialectInput {
     name: String,
     table_gen: Option<String>,
     td_file: Option<String>,
-    includes: Vec<String>,
+    include_directories: Vec<String>,
 }
 
 impl DialectInput {
@@ -24,8 +24,8 @@ impl DialectInput {
         self.td_file.as_deref()
     }
 
-    pub fn includes(&self) -> impl Iterator<Item = &str> {
-        self.includes.iter().map(Deref::deref)
+    pub fn include_directories(&self) -> impl Iterator<Item = &str> {
+        self.include_directories.iter().map(Deref::deref)
     }
 }
 
@@ -51,7 +51,7 @@ impl Parse for DialectInput {
             name: name.ok_or(input.error("dialect name required"))?,
             table_gen,
             td_file,
-            includes,
+            include_directories: includes,
         })
     }
 }
