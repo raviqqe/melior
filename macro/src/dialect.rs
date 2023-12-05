@@ -29,10 +29,12 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
         parser = parser.add_source_file(file).map_err(create_syn_error)?;
     }
 
-    // spell-checker: disable-next-line
+    //  spell-checker: disable-next-line
+    let llvm_include_directory = llvm_config("--includedir")?;
+
     for path in input
         .include_directories()
-        .chain([&*llvm_config("--includedir")?])
+        .chain([llvm_include_directory.as_str()])
     {
         parser = parser.add_include_path(path);
     }
