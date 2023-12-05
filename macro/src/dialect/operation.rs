@@ -114,11 +114,11 @@ impl<'a> Operation<'a> {
     pub fn fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
         self.results
             .iter()
-            .chain(self.operands.iter())
-            .chain(self.regions.iter())
-            .chain(self.successors.iter())
-            .chain(self.attributes.iter())
-            .chain(self.derived_attributes.iter())
+            .chain(&self.operands)
+            .chain(&self.regions)
+            .chain(&self.successors)
+            .chain(&self.attributes)
+            .chain(&self.derived_attributes)
     }
 
     fn collect_successors(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
