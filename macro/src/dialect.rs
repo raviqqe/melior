@@ -30,7 +30,12 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
     }
 
     // spell-checker: disable-next-line
-    for path in input.includes().chain([&*llvm_config("--includedir")?]) {
+    let llvm_include_directory = llvm_config("--includedir")?;
+
+    for path in input
+        .include_directories()
+        .chain([llvm_include_directory.as_str()])
+    {
         parser = parser.add_include_path(path);
     }
 
@@ -61,7 +66,8 @@ fn generate_dialect_module(
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
         .filter(|operation| operation.dialect_name() == dialect_name)
-        .collect::<Vec<_>>();
+        .map(|operation| operation.to_tokens())
+        .collect::<Result<Vec<_>, _>>()?;
 
     let doc = format!(
         "`{name}` dialect.\n\n{}",

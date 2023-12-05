@@ -14,10 +14,9 @@ impl<'a> OperationField<'a> {
                 sequence_info: SequenceInfo { index, len },
                 variadic_kind,
             } => {
-                let kind_str = kind.as_str();
-                let kind_ident = format_ident!("{}", kind_str);
-                let plural = format_ident!("{}s", kind_str);
-                let count = format_ident!("{}_count", kind_str);
+                let kind_ident = format_ident!("{}", kind.as_str());
+                let plural = format_ident!("{}s", kind.as_str());
+                let count = format_ident!("{}_count", kind.as_str());
                 let error_variant = match kind {
                     ElementKind::Operand => quote!(OperandNotFound),
                     ElementKind::Result => quote!(ResultNotFound),
@@ -82,7 +81,7 @@ impl<'a> OperationField<'a> {
                         quote! { #compute_start_length #get_elements }
                     }
                     VariadicKind::AttributeSized => {
-                        let attribute_name = format!("{}_segment_sizes", kind_str);
+                        let attribute_name = format!("{}_segment_sizes", kind.as_str());
                         let compute_start_length = quote! {
                             let attribute =
                                 ::melior::ir::attribute::DenseI32ArrayAttribute::<'c>::try_from(

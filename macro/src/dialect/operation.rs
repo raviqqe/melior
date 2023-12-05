@@ -16,7 +16,7 @@ use crate::dialect::{
     types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
 };
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote, ToTokens, TokenStreamExt};
+use quote::{format_ident, quote};
 use tblgen::{error::WithLocation, record::Record};
 
 #[derive(Clone, Debug)]
@@ -44,7 +44,7 @@ impl<'a> Operation<'a> {
 
         let arguments = Self::dag_constraints(definition, "arguments")?;
         let regions = Self::collect_regions(definition)?;
-        let (results, unfixed_results_count) = Self::collect_results(
+        let (results, unfixed_result_count) = Self::collect_results(
             definition,
             has_trait("::mlir::OpTrait::SameVariadicResultSize"),
             has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
@@ -86,7 +86,7 @@ impl<'a> Operation<'a> {
             can_infer_type: traits.iter().any(|r#trait| {
                 (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
                     || r#trait.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
-                    && unfixed_results_count == 0
+                    && unfixed_result_count == 0
                     || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
             }),
             summary: {
@@ -114,16 +114,17 @@ impl<'a> Operation<'a> {
     pub fn fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
         self.results
             .iter()
-            .chain(self.operands.iter())
-            .chain(self.regions.iter())
-            .chain(self.successors.iter())
-            .chain(self.attributes.iter())
-            .chain(self.derived_attributes.iter())
+            .chain(&self.operands)
+            .chain(&self.regions)
+            .chain(&self.successors)
+            .chain(&self.attributes)
+            .chain(&self.derived_attributes)
     }
 
     fn collect_successors(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
         let successors_dag = definition.dag_value("successors")?;
         let len = successors_dag.num_args();
+
         successors_dag
             .args()
             .enumerate()
@@ -144,6 +145,7 @@ impl<'a> Operation<'a> {
     fn collect_regions(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
         let regions_dag = definition.dag_value("regions")?;
         let len = regions_dag.num_args();
+
         regions_dag
             .args()
             .enumerate()
@@ -296,53 +298,58 @@ impl<'a> Operation<'a> {
             .iter()
             .filter(|(_, definition)| definition.subclass_of("Attr"))
             .map(|(name, definition)| {
-                // TODO: Replace assert! with Result
-                assert!(!definition.subclass_of("DerivedAttr"));
-
-                OperationField::new_attribute(name, AttributeConstraint::new(*definition))
+                if definition.subclass_of("DerivedAttr") {
+                    Err(OdsError::UnexpectedSuperClass("DerivedAttr")
+                        .with_location(*definition)
+                        .into())
+                } else {
+                    OperationField::new_attribute(name, AttributeConstraint::new(*definition))
+                }
             })
             .collect()
     }
 
-    fn collect_derived_attributes(def: Record<'a>) -> Result<Vec<OperationField<'a>>, Error> {
-        def.values()
+    fn collect_derived_attributes(
+        definition: Record<'a>,
+    ) -> Result<Vec<OperationField<'a>>, Error> {
+        definition
+            .values()
             .filter_map(|value| {
                 let Ok(def) = Record::try_from(value) else {
                     return None;
                 };
                 def.subclass_of("Attr").then_some(def)
             })
-            .map(|def| {
-                if def.subclass_of("DerivedAttr") {
-                    OperationField::new_attribute(def.name()?, AttributeConstraint::new(def))
+            .map(|definition| {
+                if definition.subclass_of("DerivedAttr") {
+                    OperationField::new_attribute(
+                        definition.name()?,
+                        AttributeConstraint::new(definition),
+                    )
                 } else {
                     Err(OdsError::ExpectedSuperClass("DerivedAttr")
-                        .with_location(def)
+                        .with_location(definition)
                         .into())
                 }
             })
             .collect()
     }
-}
 
-impl<'a> ToTokens for Operation<'a> {
-    // TODO Compile values for proper error handling and remove `Result::expect()`.
-    fn to_tokens(&self, tokens: &mut TokenStream) {
+    pub fn to_tokens(&self) -> Result<TokenStream, Error> {
         let class_name = format_ident!("{}", &self.class_name);
         let name = &self.full_name;
         let accessors = self
             .fields()
-            .map(|field| field.accessors().expect("valid accessors"));
-        let builder = OperationBuilder::new(self).expect("valid builder generator");
-        let builder_tokens = builder.builder().expect("valid builder");
+            .map(|field| field.accessors())
+            .collect::<Result<Vec<_>, _>>()?;
+        let builder = OperationBuilder::new(self)?;
+        let builder_tokens = builder.to_tokens()?;
         let builder_fn = builder.create_op_builder_fn();
-        let default_constructor = builder
-            .create_default_constructor()
-            .expect("valid constructor");
+        let default_constructor = builder.create_default_constructor()?;
         let summary = &self.summary;
         let description = &self.description;
 
-        tokens.append_all(quote! {
+        Ok(quote! {
             #[doc = #summary]
             #[doc = "\n\n"]
             #[doc = #description]
