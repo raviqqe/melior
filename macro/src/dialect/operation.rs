@@ -44,7 +44,7 @@ impl<'a> Operation<'a> {
 
         let arguments = Self::dag_constraints(definition, "arguments")?;
         let regions = Self::collect_regions(definition)?;
-        let (results, unfixed_results_count) = Self::collect_results(
+        let (results, unfixed_result_count) = Self::collect_results(
             definition,
             has_trait("::mlir::OpTrait::SameVariadicResultSize"),
             has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
@@ -86,7 +86,7 @@ impl<'a> Operation<'a> {
             can_infer_type: traits.iter().any(|r#trait| {
                 (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
                     || r#trait.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
-                    && unfixed_results_count == 0
+                    && unfixed_result_count == 0
                     || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
             }),
             summary: {
