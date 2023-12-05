@@ -24,24 +24,24 @@ pub enum VariadicKind {
         seen_variable_length: bool,
     },
     SameSize {
-        num_variable_length: usize,
-        num_preceding_simple: usize,
-        num_preceding_variadic: usize,
+        variable_length_count: usize,
+        preceding_simple_count: usize,
+        preceding_variadic_count: usize,
     },
     AttrSized {},
 }
 
 impl VariadicKind {
-    pub fn new(num_variable_length: usize, same_size: bool, attr_sized: bool) -> Self {
-        if num_variable_length <= 1 {
+    pub fn new(variable_length_count: usize, same_size: bool, attr_sized: bool) -> Self {
+        if variable_length_count <= 1 {
             VariadicKind::Simple {
                 seen_variable_length: false,
             }
         } else if same_size {
             VariadicKind::SameSize {
-                num_variable_length,
-                num_preceding_simple: 0,
-                num_preceding_variadic: 0,
+                variable_length_count,
+                preceding_simple_count: 0,
+                preceding_variadic_count: 0,
             }
         } else if attr_sized {
             VariadicKind::AttrSized {}
@@ -83,8 +83,8 @@ impl<'a> Operation<'a> {
             .chain(self.derived_attributes.iter())
     }
 
-    fn collect_successors(def: Record<'a>) -> Result<Vec<OperationField>, Error> {
-        let successors_dag = def.dag_value("successors")?;
+    fn collect_successors(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
+        let successors_dag = definition.dag_value("successors")?;
         let len = successors_dag.num_args();
         successors_dag
             .args()
@@ -95,7 +95,7 @@ impl<'a> Operation<'a> {
                     SuccessorConstraint::new(
                         value
                             .try_into()
-                            .map_err(|error: tblgen::Error| error.set_location(def))?,
+                            .map_err(|error: tblgen::Error| error.set_location(definition))?,
                     ),
                     SequenceInfo { index, len },
                 )
@@ -103,8 +103,8 @@ impl<'a> Operation<'a> {
             .collect()
     }
 
-    fn collect_regions(def: Record<'a>) -> Result<Vec<OperationField>, Error> {
-        let regions_dag = def.dag_value("regions")?;
+    fn collect_regions(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
+        let regions_dag = definition.dag_value("regions")?;
         let len = regions_dag.num_args();
         regions_dag
             .args()
@@ -115,7 +115,7 @@ impl<'a> Operation<'a> {
                     RegionConstraint::new(
                         value
                             .try_into()
-                            .map_err(|error: tblgen::Error| error.set_location(def))?,
+                            .map_err(|error: tblgen::Error| error.set_location(definition))?,
                     ),
                     SequenceInfo { index, len },
                 )
@@ -207,11 +207,11 @@ impl<'a> Operation<'a> {
         same_size: bool,
         attr_sized: bool,
     ) -> Result<(Vec<OperationField<'a>>, usize), Error> {
-        let num_variable_length = elements
+        let variable_length_count = elements
             .iter()
             .filter(|(_, constraint)| constraint.has_variable_length())
             .count();
-        let mut variadic_kind = VariadicKind::new(num_variable_length, same_size, attr_sized);
+        let mut variadic_kind = VariadicKind::new(variable_length_count, same_size, attr_sized);
         let mut fields = vec![];
 
         for (index, (name, constraint)) in elements.iter().enumerate() {
@@ -235,21 +235,21 @@ impl<'a> Operation<'a> {
                     }
                 }
                 VariadicKind::SameSize {
-                    num_preceding_simple,
-                    num_preceding_variadic,
+                    preceding_simple_count,
+                    preceding_variadic_count,
                     ..
                 } => {
                     if constraint.has_variable_length() {
-                        *num_preceding_variadic += 1;
+                        *preceding_variadic_count += 1;
                     } else {
-                        *num_preceding_simple += 1;
+                        *preceding_simple_count += 1;
                     }
                 }
                 VariadicKind::AttrSized {} => {}
             }
         }
 
-        Ok((fields, num_variable_length))
+        Ok((fields, variable_length_count))
     }
 
     fn collect_attributes(
@@ -294,7 +294,7 @@ impl<'a> Operation<'a> {
 
         let arguments = Self::dag_constraints(definition, "arguments")?;
         let regions = Self::collect_regions(definition)?;
-        let (results, num_variable_length_results) = Self::collect_results(
+        let (results, variable_length_results_count) = Self::collect_results(
             definition,
             has_trait("::mlir::OpTrait::SameVariadicResultSize"),
             has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
@@ -336,7 +336,7 @@ impl<'a> Operation<'a> {
             can_infer_type: traits.iter().any(|r#trait| {
                 (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
                     || r#trait.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
-                    && num_variable_length_results == 0
+                    && variable_length_results_count == 0
                     || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
             }),
             summary: {

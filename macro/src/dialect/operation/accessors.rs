@@ -62,14 +62,14 @@ impl<'a> OperationField<'a> {
                         }
                     }
                     VariadicKind::SameSize {
-                        num_variable_length,
-                        num_preceding_simple,
-                        num_preceding_variadic,
+                        variable_length_count,
+                        preceding_simple_count,
+                        preceding_variadic_count,
                     } => {
                         let compute_start_length = quote! {
-                            let total_var_len = self.operation.#count() - #num_variable_length + 1;
-                            let group_len = total_var_len / #num_variable_length;
-                            let start = #num_preceding_simple + #num_preceding_variadic * group_len;
+                            let total_var_len = self.operation.#count() - #variable_length_count + 1;
+                            let group_len = total_var_len / #variable_length_count;
+                            let start = #preceding_simple_count + #preceding_variadic_count * group_len;
                         };
                         let get_elements = if constraint.has_variable_length() {
                             quote! {
