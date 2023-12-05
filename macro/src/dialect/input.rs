@@ -1,7 +1,8 @@
-use proc_macro2::Ident;
-use quote::format_ident;
+mod input_field;
+
+use self::input_field::InputField;
 use std::ops::Deref;
-use syn::{bracketed, parse::Parse, punctuated::Punctuated, LitStr, Token};
+use syn::{parse::Parse, punctuated::Punctuated, Token};
 
 pub struct DialectInput {
     name: String,
@@ -40,7 +41,7 @@ impl Parse for DialectInput {
                 InputField::Name(field) => name = Some(field.value()),
                 InputField::TableGen(td) => table_gen = Some(td.value()),
                 InputField::TdFile(file) => td_file = Some(file.value()),
-                InputField::Includes(field) => {
+                InputField::IncludeDirectories(field) => {
                     includes = field.into_iter().map(|literal| literal.value()).collect()
                 }
             }
@@ -52,36 +53,5 @@ impl Parse for DialectInput {
             td_file,
             includes,
         })
-    }
-}
-
-enum InputField {
-    Name(LitStr),
-    TableGen(LitStr),
-    TdFile(LitStr),
-    Includes(Punctuated<LitStr, Token![,]>),
-}
-
-impl Parse for InputField {
-    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let ident = input.parse::<Ident>()?;
-
-        input.parse::<Token![:]>()?;
-
-        if ident == format_ident!("name") {
-            Ok(Self::Name(input.parse()?))
-        } else if ident == format_ident!("table_gen") {
-            Ok(Self::TableGen(input.parse()?))
-        } else if ident == format_ident!("td_file") {
-            Ok(Self::TdFile(input.parse()?))
-        } else if ident == format_ident!("include_dirs") {
-            let content;
-            bracketed!(content in input);
-            Ok(Self::Includes(
-                Punctuated::<LitStr, Token![,]>::parse_terminated(&content)?,
-            ))
-        } else {
-            Err(input.error(format!("invalid field {}", ident)))
-        }
     }
 }
