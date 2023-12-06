@@ -6,6 +6,7 @@ mod utility;
 
 use self::{
     error::Error,
+    operation::generate_operation,
     utility::{sanitize_documentation, sanitize_snake_case_name},
 };
 pub use input::DialectInput;
@@ -64,9 +65,14 @@ fn generate_dialect_module(
         .all_derived_definitions("Op")
         .map(Operation::new)
         .collect::<Result<Vec<_>, _>>()?
-        .into_iter()
-        .filter(|operation| operation.dialect_name() == dialect_name)
-        .map(|operation| operation.to_tokens())
+        .iter()
+        .map(|operation| {
+            Ok::<_, Error>(if operation.dialect_name()? == dialect_name {
+                Some(generate_operation(operation)?)
+            } else {
+                None
+            })
+        })
         .collect::<Result<Vec<_>, _>>()?;
 
     let doc = format!(

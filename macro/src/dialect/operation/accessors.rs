@@ -153,31 +153,24 @@ impl<'a> OperationField<'a> {
                 Some(if constraint.is_unit()? {
                     quote! { self.operation.attribute(#name).is_some() }
                 } else {
-                    quote! {
-                        self.operation
-                            .attribute(#name)?
-                            .try_into()
-                            .map_err(::melior::Error::from)
-                    }
+                    // TODO Handle returning `melior::Attribute`.
+                    quote! { Ok(self.operation.attribute(#name)?.try_into()?) }
                 })
             }
         })
     }
 
     fn remover_impl(&self) -> Result<Option<TokenStream>, Error> {
-        Ok(match &self.kind {
-            FieldKind::Attribute { constraint } => {
+        Ok(if let FieldKind::Attribute { constraint } = &self.kind {
+            if constraint.is_unit()? || constraint.is_optional()? {
                 let name = &self.name;
 
-                if constraint.is_unit()? || constraint.is_optional()? {
-                    Some(quote! {
-                      self.operation.remove_attribute(#name)
-                    })
-                } else {
-                    None
-                }
+                Some(quote! { self.operation.remove_attribute(#name) })
+            } else {
+                None
             }
-            _ => None,
+        } else {
+            None
         })
     }
 
@@ -233,6 +226,7 @@ impl<'a> OperationField<'a> {
             let return_type = &self.kind.return_type()?;
             self.getter_impl()?.map(|body| {
                 quote! {
+                    #[allow(clippy::needless_question_mark)]
                     pub fn #ident(&self, context: &'c ::melior::Context) -> #return_type {
                         #body
                     }

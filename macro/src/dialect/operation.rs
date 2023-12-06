@@ -7,8 +7,12 @@ mod sequence_info;
 mod variadic_kind;
 
 use self::{
-    builder::OperationBuilder, element_kind::ElementKind, field_kind::FieldKind,
-    operation_field::OperationField, sequence_info::SequenceInfo, variadic_kind::VariadicKind,
+    builder::{generate_operation_builder, OperationBuilder},
+    element_kind::ElementKind,
+    field_kind::FieldKind,
+    operation_field::OperationField,
+    sequence_info::SequenceInfo,
+    variadic_kind::VariadicKind,
 };
 use super::utility::sanitize_documentation;
 use crate::dialect::{
@@ -19,15 +23,70 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use tblgen::{error::WithLocation, record::Record};
 
-#[derive(Clone, Debug)]
+pub fn generate_operation(operation: &Operation) -> Result<TokenStream, Error> {
+    let summary = operation.summary()?;
+    let description = operation.description()?;
+    let class_name = format_ident!("{}", operation.class_name()?);
+    let name = &operation.full_name()?;
+    let accessors = operation
+        .fields()
+        .map(|field| field.accessors())
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let builder = OperationBuilder::new(operation)?;
+    let builder_tokens = generate_operation_builder(&builder)?;
+    let builder_fn = builder.create_op_builder_fn()?;
+    let default_constructor = builder.create_default_constructor()?;
+
+    Ok(quote! {
+        #[doc = #summary]
+        #[doc = "\n\n"]
+        #[doc = #description]
+        pub struct #class_name<'c> {
+            operation: ::melior::ir::operation::Operation<'c>,
+        }
+
+        impl<'c> #class_name<'c> {
+            pub fn name() -> &'static str {
+                #name
+            }
+
+            pub fn operation(&self) -> &::melior::ir::operation::Operation<'c> {
+                &self.operation
+            }
+
+            #builder_fn
+
+            #(#accessors)*
+        }
+
+        #builder_tokens
+
+        #default_constructor
+
+        impl<'c> TryFrom<::melior::ir::operation::Operation<'c>> for #class_name<'c> {
+            type Error = ::melior::Error;
+
+            fn try_from(
+                operation: ::melior::ir::operation::Operation<'c>,
+            ) -> Result<Self, Self::Error> {
+                // TODO Check an operation name.
+                Ok(Self { operation })
+            }
+        }
+
+        impl<'c> From<#class_name<'c>> for ::melior::ir::operation::Operation<'c> {
+            fn from(operation: #class_name<'c>) -> ::melior::ir::operation::Operation<'c> {
+                operation.operation
+            }
+        }
+    })
+}
+
+#[derive(Debug)]
 pub struct Operation<'a> {
-    dialect_name: &'a str,
-    short_name: &'a str,
-    full_name: String,
-    class_name: &'a str,
-    summary: String,
+    definition: Record<'a>,
     can_infer_type: bool,
-    description: String,
     regions: Vec<OperationField<'a>>,
     successors: Vec<OperationField<'a>>,
     results: Vec<OperationField<'a>>,
@@ -38,7 +97,6 @@ pub struct Operation<'a> {
 
 impl<'a> Operation<'a> {
     pub fn new(definition: Record<'a>) -> Result<Self, Error> {
-        let dialect = definition.def_value("opDialect")?;
         let traits = Self::collect_traits(definition)?;
         let has_trait = |name| traits.iter().any(|r#trait| r#trait.has_name(name));
 
@@ -50,30 +108,7 @@ impl<'a> Operation<'a> {
             has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
         )?;
 
-        let name = definition.name()?;
-        let class_name = if name.starts_with('_') {
-            name
-        } else if let Some(name) = name.split('_').nth(1) {
-            // Trim dialect prefix from name.
-            name
-        } else {
-            name
-        };
-        let short_name = definition.str_value("opName")?;
-
         Ok(Self {
-            dialect_name: dialect.name()?,
-            short_name,
-            full_name: {
-                let dialect_name = dialect.string_value("name")?;
-
-                if dialect_name.is_empty() {
-                    short_name.into()
-                } else {
-                    format!("{dialect_name}.{short_name}")
-                }
-            },
-            class_name,
             successors: Self::collect_successors(definition)?,
             operands: Self::collect_operands(
                 &arguments,
@@ -89,26 +124,65 @@ impl<'a> Operation<'a> {
                     && unfixed_result_count == 0
                     || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
             }),
-            summary: {
-                let summary = definition.str_value("summary")?;
-
-                [
-                    format!("[`{short_name}`]({class_name}) operation."),
-                    if summary.is_empty() {
-                        Default::default()
-                    } else {
-                        summary[0..1].to_uppercase() + &summary[1..] + "."
-                    },
-                ]
-                .join(" ")
-            },
-            description: sanitize_documentation(definition.str_value("description")?)?,
             regions,
+            definition,
         })
     }
 
-    pub fn dialect_name(&self) -> &str {
-        self.dialect_name
+    fn dialect(&self) -> Result<Record, Error> {
+        Ok(self.definition.def_value("opDialect")?)
+    }
+
+    pub fn dialect_name(&self) -> Result<&str, Error> {
+        Ok(self.dialect()?.name()?)
+    }
+
+    pub fn class_name(&self) -> Result<&str, Error> {
+        let name = self.definition.name()?;
+
+        Ok(if name.starts_with('_') {
+            name
+        } else if let Some(name) = name.split('_').nth(1) {
+            // Trim dialect prefix from name.
+            name
+        } else {
+            name
+        })
+    }
+
+    pub fn short_name(&self) -> Result<&str, Error> {
+        Ok(self.definition.str_value("opName")?)
+    }
+
+    pub fn full_name(&self) -> Result<String, Error> {
+        let dialect_name = self.dialect()?.string_value("name")?;
+        let short_name = self.short_name()?;
+
+        Ok(if dialect_name.is_empty() {
+            short_name.into()
+        } else {
+            format!("{dialect_name}.{short_name}")
+        })
+    }
+
+    pub fn summary(&self) -> Result<String, Error> {
+        let short_name = self.short_name()?;
+        let class_name = self.class_name()?;
+        let summary = self.definition.str_value("summary")?;
+
+        Ok([
+            format!("[`{short_name}`]({class_name}) operation."),
+            if summary.is_empty() {
+                Default::default()
+            } else {
+                summary[0..1].to_uppercase() + &summary[1..] + "."
+            },
+        ]
+        .join(" "))
+    }
+
+    pub fn description(&self) -> Result<String, Error> {
+        sanitize_documentation(self.definition.str_value("description")?)
     }
 
     pub fn fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
@@ -333,63 +407,5 @@ impl<'a> Operation<'a> {
                 }
             })
             .collect()
-    }
-
-    pub fn to_tokens(&self) -> Result<TokenStream, Error> {
-        let class_name = format_ident!("{}", &self.class_name);
-        let name = &self.full_name;
-        let accessors = self
-            .fields()
-            .map(|field| field.accessors())
-            .collect::<Result<Vec<_>, _>>()?;
-        let builder = OperationBuilder::new(self)?;
-        let builder_tokens = builder.to_tokens()?;
-        let builder_fn = builder.create_op_builder_fn();
-        let default_constructor = builder.create_default_constructor()?;
-        let summary = &self.summary;
-        let description = &self.description;
-
-        Ok(quote! {
-            #[doc = #summary]
-            #[doc = "\n\n"]
-            #[doc = #description]
-            pub struct #class_name<'c> {
-                operation: ::melior::ir::operation::Operation<'c>,
-            }
-
-            impl<'c> #class_name<'c> {
-                pub fn name() -> &'static str {
-                    #name
-                }
-
-                pub fn operation(&self) -> &::melior::ir::operation::Operation<'c> {
-                    &self.operation
-                }
-
-                #builder_fn
-
-                #(#accessors)*
-            }
-
-            #builder_tokens
-
-            #default_constructor
-
-            impl<'c> TryFrom<::melior::ir::operation::Operation<'c>> for #class_name<'c> {
-                type Error = ::melior::Error;
-
-                fn try_from(
-                    operation: ::melior::ir::operation::Operation<'c>,
-                ) -> Result<Self, Self::Error> {
-                    Ok(Self { operation })
-                }
-            }
-
-            impl<'c> From<#class_name<'c>> for ::melior::ir::operation::Operation<'c> {
-                fn from(operation: #class_name<'c>) -> ::melior::ir::operation::Operation<'c> {
-                    operation.operation
-                }
-            }
-        })
     }
 }
