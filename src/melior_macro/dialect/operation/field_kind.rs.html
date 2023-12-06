@@ -160,6 +160,7 @@
 <a href="#160" id="160">160</a>
 <a href="#161" id="161">161</a>
 <a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{element_kind::ElementKind, SequenceInfo, VariadicKind};
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error,
@@ -288,9 +289,10 @@
                         <span class="macro">parse_quote!</span>(::melior::ir::operation::OperationResult&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;)
                     }
                 };
+
                 <span class="kw">if </span>!constraint.is_variadic() {
                     <span class="self">Self</span>::create_result_type(base_type)
-                } <span class="kw">else if let </span>VariadicKind::AttributeSized = variadic_kind {
+                } <span class="kw">else if </span>variadic_kind == <span class="kw-2">&amp;</span>VariadicKind::AttributeSized {
                     <span class="self">Self</span>::create_result_type(<span class="self">Self</span>::create_iterator_type(base_type))
                 } <span class="kw">else </span>{
                     <span class="self">Self</span>::create_iterator_type(base_type)
