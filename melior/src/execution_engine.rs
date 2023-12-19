@@ -1,7 +1,8 @@
 use crate::{ir::Module, logical_result::LogicalResult, string_ref::StringRef, Error};
 use mlir_sys::{
     mlirExecutionEngineCreate, mlirExecutionEngineDestroy, mlirExecutionEngineDumpToObjectFile,
-    mlirExecutionEngineInvokePacked, mlirExecutionEngineRegisterSymbol, MlirExecutionEngine,
+    mlirExecutionEngineInvokePacked, mlirExecutionEngineLookup, mlirExecutionEngineRegisterSymbol,
+    MlirExecutionEngine,
 };
 
 /// An execution engine.
@@ -32,6 +33,11 @@ impl ExecutionEngine {
                 )
             },
         }
+    }
+
+    /// Searches a symbol in a module and returns a pointer to it.
+    pub fn lookup(&self, name: &str) -> *mut () {
+        unsafe { mlirExecutionEngineLookup(self.raw, StringRef::new(name).to_raw()) as *mut () }
     }
 
     /// Invokes a function in a module. The `arguments` argument includes
