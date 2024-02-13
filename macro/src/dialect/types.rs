@@ -1,6 +1,7 @@
 use super::error::{Error, OdsError};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
+use syn::Type;
 use tblgen::{
     error::{TableGenError, WithLocation},
     record::Record,
@@ -95,6 +96,7 @@ impl<'a> TypeConstraint<'a> {
         self.0.subclass_of("Variadic")
     }
 
+    // TODO Support variadic-of-variadic.
     #[allow(unused)]
     pub fn is_variadic_of_variadic(&self) -> bool {
         self.0.subclass_of("VariadicOfVariadic")
@@ -105,64 +107,82 @@ impl<'a> TypeConstraint<'a> {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct AttributeConstraint<'a>(Record<'a>);
+#[derive(Debug, Clone)]
+pub struct AttributeConstraint<'a> {
+    record: Record<'a>,
+    name: &'a str,
+    storage_type_str: String,
+    storage_type: Type,
+    optional: bool,
+    default: bool,
+}
 
 impl<'a> AttributeConstraint<'a> {
-    pub fn new(record: Record<'a>) -> Self {
-        Self(record)
+    pub fn new(record: Record<'a>) -> Result<Self, Error> {
+        let storage_type_str = record.string_value("storageType")?;
+
+        Ok(Self {
+            name: record.name()?,
+            storage_type: syn::parse_str(
+                ATTRIBUTE_TYPES
+                    .get(storage_type_str.trim())
+                    .copied()
+                    .unwrap_or(melior_attribute!(Attribute)),
+            )?,
+            storage_type_str,
+            optional: record.bit_value("isOptional")?,
+            default: match record.string_value("defaultValue") {
+                Ok(value) => !value.is_empty(),
+                Err(error) => {
+                    // `defaultValue` can be uninitialized.
+                    if !matches!(error.error(), TableGenError::InitConversion { .. }) {
+                        return Err(error.into());
+                    }
+
+                    false
+                }
+            },
+            record,
+        })
     }
 
     #[allow(unused)]
     pub fn is_derived(&self) -> bool {
-        self.0.subclass_of("DerivedAttr")
+        self.record.subclass_of("DerivedAttr")
     }
 
     #[allow(unused)]
     pub fn is_type(&self) -> bool {
-        self.0.subclass_of("TypeAttrBase")
+        self.record.subclass_of("TypeAttrBase")
     }
 
     #[allow(unused)]
     pub fn is_symbol_ref(&self) -> bool {
-        self.0.name() == Ok("SymbolRefAttr")
-            || self.0.name() == Ok("FlatSymbolRefAttr")
-            || self.0.subclass_of("SymbolRefAttr")
-            || self.0.subclass_of("FlatSymbolRefAttr")
+        self.name == "SymbolRefAttr"
+            || self.name == "FlatSymbolRefAttr"
+            || self.record.subclass_of("SymbolRefAttr")
+            || self.record.subclass_of("FlatSymbolRefAttr")
     }
 
     #[allow(unused)]
     pub fn is_enum(&self) -> bool {
-        self.0.subclass_of("EnumAttrInfo")
+        self.record.subclass_of("EnumAttrInfo")
     }
 
-    pub fn is_optional(&self) -> Result<bool, Error> {
-        Ok(self.0.bit_value("isOptional")?)
+    pub fn is_optional(&self) -> bool {
+        self.optional
     }
 
-    pub fn storage_type(&self) -> Result<&'static str, Error> {
-        Ok(ATTRIBUTE_TYPES
-            .get(self.0.string_value("storageType")?.as_str().trim())
-            .copied()
-            .unwrap_or(melior_attribute!(Attribute)))
+    pub fn storage_type(&self) -> &Type {
+        &self.storage_type
     }
 
-    pub fn is_unit(&self) -> Result<bool, Error> {
-        Ok(self.0.string_value("storageType")? == mlir_attribute!(UnitAttr))
+    pub fn is_unit(&self) -> bool {
+        self.storage_type_str == mlir_attribute!(UnitAttr)
     }
 
-    pub fn has_default_value(&self) -> Result<bool, Error> {
-        Ok(match self.0.string_value("defaultValue") {
-            Ok(value) => !value.is_empty(),
-            Err(error) => {
-                // `defaultValue` can be uninitialized.
-                if !matches!(error.error(), TableGenError::InitConversion { .. }) {
-                    return Err(error.into());
-                }
-
-                false
-            }
-        })
+    pub fn has_default_value(&self) -> bool {
+        self.default
     }
 }
 
@@ -194,11 +214,11 @@ impl Trait {
                 TraitKind::Predicate
             } else if definition.subclass_of("InterfaceTrait") {
                 TraitKind::Interface {
-                    name: Self::name(definition)?,
+                    name: Self::build_name(definition)?,
                 }
             } else if definition.subclass_of("NativeTrait") {
                 TraitKind::Native {
-                    name: Self::name(definition)?,
+                    name: Self::build_name(definition)?,
                     structural: definition.subclass_of("StructuralOpTrait"),
                 }
             } else if definition.subclass_of("GenInternalTrait") {
@@ -211,16 +231,16 @@ impl Trait {
         })
     }
 
-    pub fn has_name(&self, expected_name: &str) -> bool {
+    pub fn name(&self) -> Option<&str> {
         match &self.kind {
             TraitKind::Native { name, .. }
             | TraitKind::Internal { name }
-            | TraitKind::Interface { name } => name == expected_name,
-            TraitKind::Predicate => false,
+            | TraitKind::Interface { name } => Some(name),
+            TraitKind::Predicate => None,
         }
     }
 
-    fn name(definition: Record) -> Result<String, Error> {
+    fn build_name(definition: Record) -> Result<String, Error> {
         let r#trait = definition.string_value("trait")?;
         let namespace = definition.string_value("cppNamespace")?;
 

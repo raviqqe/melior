@@ -33,7 +33,7 @@ pub fn generate_operation(operation: &Operation) -> Result<TokenStream, Error> {
         .map(|field| field.accessors())
         .collect::<Result<Vec<_>, _>>()?;
 
-    let builder = OperationBuilder::new(operation)?;
+    let builder = OperationBuilder::new(operation);
     let builder_tokens = generate_operation_builder(&builder)?;
     let builder_fn = builder.create_op_builder_fn()?;
     let default_constructor = builder.create_default_constructor()?;
@@ -98,7 +98,7 @@ pub struct Operation<'a> {
 impl<'a> Operation<'a> {
     pub fn new(definition: Record<'a>) -> Result<Self, Error> {
         let traits = Self::collect_traits(definition)?;
-        let has_trait = |name| traits.iter().any(|r#trait| r#trait.has_name(name));
+        let has_trait = |name| traits.iter().any(|r#trait| r#trait.name() == Some(name));
 
         let arguments = Self::dag_constraints(definition, "arguments")?;
         let regions = Self::collect_regions(definition)?;
@@ -119,10 +119,11 @@ impl<'a> Operation<'a> {
             attributes: Self::collect_attributes(&arguments)?,
             derived_attributes: Self::collect_derived_attributes(definition)?,
             can_infer_type: traits.iter().any(|r#trait| {
-                (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
-                    || r#trait.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
+                (r#trait.name() == Some("::mlir::OpTrait::FirstAttrDerivedResultType")
+                    || r#trait.name() == Some("::mlir::OpTrait::SameOperandsAndResultType"))
                     && unfixed_result_count == 0
-                    || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
+                    || r#trait.name() == Some("::mlir::InferTypeOpInterface::Trait")
+                        && regions.is_empty()
             }),
             regions,
             definition,
@@ -377,7 +378,7 @@ impl<'a> Operation<'a> {
                         .with_location(*definition)
                         .into())
                 } else {
-                    OperationField::new_attribute(name, AttributeConstraint::new(*definition))
+                    OperationField::new_attribute(name, AttributeConstraint::new(*definition)?)
                 }
             })
             .collect()
@@ -398,7 +399,7 @@ impl<'a> Operation<'a> {
                 if definition.subclass_of("DerivedAttr") {
                     OperationField::new_attribute(
                         definition.name()?,
-                        AttributeConstraint::new(definition),
+                        AttributeConstraint::new(definition)?,
                     )
                 } else {
                     Err(OdsError::ExpectedSuperClass("DerivedAttr")
