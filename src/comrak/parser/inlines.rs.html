@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.20.0/src/parser/inlines.rs`."><title>inlines.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.21.0/src/parser/inlines.rs`."><title>inlines.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1545,7 +1546,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::ctype::{ispunct, isspace};
 <span class="kw">use </span><span class="kw">crate</span>::entity;
 <span class="kw">use </span><span class="kw">crate</span>::nodes::{Ast, AstNode, NodeCode, NodeFootnoteReference, NodeLink, NodeValue, Sourcepos};
-<span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
 </span><span class="kw">use </span><span class="kw">crate</span>::parser::shortcodes::NodeShortCode;
 <span class="kw">use </span><span class="kw">crate</span>::parser::{unwrap_into_2, unwrap_into_copy, AutolinkType, Callback, Options, Reference};
 <span class="kw">use </span><span class="kw">crate</span>::scanners;
@@ -1562,19 +1563,19 @@
 <span class="kw">const </span>MAXBACKTICKS: usize = <span class="number">80</span>;
 <span class="kw">const </span>MAX_LINK_LABEL_LENGTH: usize = <span class="number">1000</span>;
 
-<span class="kw">pub struct </span>Subject&lt;<span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;r</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;c</span>: <span class="lifetime">&#39;subj</span>, <span class="lifetime">&#39;subj</span>&gt; {
-    <span class="kw">pub </span>arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
-    <span class="kw">pub </span>input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;i </span>[u8],
+<span class="kw">pub struct </span>Subject&lt;<span class="lifetime">'a</span>: <span class="lifetime">'d</span>, <span class="lifetime">'r</span>, <span class="lifetime">'o</span>, <span class="lifetime">'d</span>, <span class="lifetime">'i</span>, <span class="lifetime">'c</span>: <span class="lifetime">'subj</span>, <span class="lifetime">'subj</span>&gt; {
+    <span class="kw">pub </span>arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options,
+    <span class="kw">pub </span>input: <span class="kw-2">&amp;</span><span class="lifetime">'i </span>[u8],
     line: usize,
     <span class="kw">pub </span>pos: usize,
     block_offset: usize,
     column_offset: isize,
     flags: Flags,
-    <span class="kw">pub </span>refmap: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="kw-2">mut </span>RefMap,
-    delimiter_arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Arena&lt;Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;&gt;,
-    last_delimiter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;&gt;,
-    brackets: Vec&lt;Bracket&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    <span class="kw">pub </span>refmap: <span class="kw-2">&amp;</span><span class="lifetime">'r </span><span class="kw-2">mut </span>RefMap,
+    delimiter_arena: <span class="kw-2">&amp;</span><span class="lifetime">'d </span>Arena&lt;Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;&gt;,
+    last_delimiter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'d </span>Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;&gt;,
+    brackets: Vec&lt;Bracket&lt;<span class="lifetime">'a</span>&gt;&gt;,
     within_brackets: bool,
     <span class="kw">pub </span>backticks: [usize; MAXBACKTICKS + <span class="number">1</span>],
     <span class="kw">pub </span>scanned_for_backticks: bool,
@@ -1582,10 +1583,10 @@
     special_chars: [bool; <span class="number">256</span>],
     skip_chars: [bool; <span class="number">256</span>],
     smart_chars: [bool; <span class="number">256</span>],
-    <span class="comment">// Need to borrow the callback from the parser only for the lifetime of the Subject, &#39;subj, and
+    <span class="comment">// Need to borrow the callback from the parser only for the lifetime of the Subject, 'subj, and
     // then give it back when the Subject goes out of scope. Needs to be a mutable reference so we
     // can call the FnMut and let it mutate its captured variables.
-    </span>callback: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;subj </span><span class="kw-2">mut </span>Callback&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
+    </span>callback: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'subj </span><span class="kw-2">mut </span>Callback&lt;<span class="lifetime">'c</span>&gt;&gt;,
 }
 
 <span class="attr">#[derive(Default)]
@@ -1627,34 +1628,34 @@
     }
 }
 
-<span class="kw">pub struct </span>Delimiter&lt;<span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;d</span>&gt; {
-    inl: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+<span class="kw">pub struct </span>Delimiter&lt;<span class="lifetime">'a</span>: <span class="lifetime">'d</span>, <span class="lifetime">'d</span>&gt; {
+    inl: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     position: usize,
     length: usize,
     delim_char: u8,
     can_open: bool,
     can_close: bool,
-    prev: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;&gt;&gt;,
-    next: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;&gt;&gt;,
+    prev: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'d </span>Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;&gt;&gt;,
+    next: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'d </span>Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;&gt;&gt;,
 }
 
-<span class="kw">struct </span>Bracket&lt;<span class="lifetime">&#39;a</span>&gt; {
-    inl_text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+<span class="kw">struct </span>Bracket&lt;<span class="lifetime">'a</span>&gt; {
+    inl_text: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     position: usize,
     image: bool,
     bracket_after: bool,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;r</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;subj</span>&gt; Subject&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;r</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;d</span>, <span class="lifetime">&#39;i</span>, <span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;subj</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'r</span>, <span class="lifetime">'o</span>, <span class="lifetime">'d</span>, <span class="lifetime">'i</span>, <span class="lifetime">'c</span>, <span class="lifetime">'subj</span>&gt; Subject&lt;<span class="lifetime">'a</span>, <span class="lifetime">'r</span>, <span class="lifetime">'o</span>, <span class="lifetime">'d</span>, <span class="lifetime">'i</span>, <span class="lifetime">'c</span>, <span class="lifetime">'subj</span>&gt; {
     <span class="kw">pub fn </span>new(
-        arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-        options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
-        input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;i </span>[u8],
+        arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
+        options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options,
+        input: <span class="kw-2">&amp;</span><span class="lifetime">'i </span>[u8],
         line: usize,
         block_offset: usize,
-        refmap: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="kw-2">mut </span>RefMap,
-        delimiter_arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Arena&lt;Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;&gt;,
-        callback: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;subj </span><span class="kw-2">mut </span>Callback&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
+        refmap: <span class="kw-2">&amp;</span><span class="lifetime">'r </span><span class="kw-2">mut </span>RefMap,
+        delimiter_arena: <span class="kw-2">&amp;</span><span class="lifetime">'d </span>Arena&lt;Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;&gt;,
+        callback: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'subj </span><span class="kw-2">mut </span>Callback&lt;<span class="lifetime">'c</span>&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>s = Subject {
             arena,
@@ -1679,22 +1680,22 @@
             callback,
         };
         <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span><span class="kw-2">&amp;</span>[
-            <span class="string">b&#39;\n&#39;</span>, <span class="string">b&#39;\r&#39;</span>, <span class="string">b&#39;_&#39;</span>, <span class="string">b&#39;*&#39;</span>, <span class="string">b&#39;&quot;&#39;</span>, <span class="string">b&#39;`&#39;</span>, <span class="string">b&#39;\\&#39;</span>, <span class="string">b&#39;&amp;&#39;</span>, <span class="string">b&#39;&lt;&#39;</span>, <span class="string">b&#39;[&#39;</span>, <span class="string">b&#39;]&#39;</span>, <span class="string">b&#39;!&#39;</span>,
+            <span class="string">b'\n'</span>, <span class="string">b'\r'</span>, <span class="string">b'_'</span>, <span class="string">b'*'</span>, <span class="string">b'"'</span>, <span class="string">b'`'</span>, <span class="string">b'\\'</span>, <span class="string">b'&amp;'</span>, <span class="string">b'&lt;'</span>, <span class="string">b'['</span>, <span class="string">b']'</span>, <span class="string">b'!'</span>,
         ] {
             s.special_chars[c <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
         <span class="kw">if </span>options.extension.strikethrough {
-            s.special_chars[<span class="string">b&#39;~&#39; </span><span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-            s.skip_chars[<span class="string">b&#39;~&#39; </span><span class="kw">as </span>usize] = <span class="bool-val">true</span>;
+            s.special_chars[<span class="string">b'~' </span><span class="kw">as </span>usize] = <span class="bool-val">true</span>;
+            s.skip_chars[<span class="string">b'~' </span><span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
         <span class="kw">if </span>options.extension.superscript {
-            s.special_chars[<span class="string">b&#39;^&#39; </span><span class="kw">as </span>usize] = <span class="bool-val">true</span>;
+            s.special_chars[<span class="string">b'^' </span><span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
-        <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+        <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
         </span><span class="kw">if </span>options.extension.shortcodes {
-            s.special_chars[<span class="string">b&#39;:&#39; </span><span class="kw">as </span>usize] = <span class="bool-val">true</span>;
+            s.special_chars[<span class="string">b':' </span><span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
-        <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span><span class="kw-2">&amp;</span>[<span class="string">b&#39;&quot;&#39;</span>, <span class="string">b&#39;\&#39;&#39;</span>, <span class="string">b&#39;.&#39;</span>, <span class="string">b&#39;-&#39;</span>] {
+        <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span><span class="kw-2">&amp;</span>[<span class="string">b'"'</span>, <span class="string">b'\''</span>, <span class="string">b'.'</span>, <span class="string">b'-'</span>] {
             s.smart_chars[c <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
         s
@@ -1704,41 +1705,41 @@
         <span class="self">self</span>.brackets.pop().is_some()
     }
 
-    <span class="kw">pub fn </span>parse_inline(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; bool {
+    <span class="kw">pub fn </span>parse_inline(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) -&gt; bool {
         <span class="kw">let </span>c = <span class="kw">match </span><span class="self">self</span>.peek_char() {
             <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="bool-val">false</span>,
             <span class="prelude-val">Some</span>(ch) =&gt; <span class="kw-2">*</span>ch <span class="kw">as </span>char,
         };
-        <span class="kw">let </span>new_inl: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt; = <span class="kw">match </span>c {
-            <span class="string">&#39;\0&#39; </span>=&gt; <span class="kw">return </span><span class="bool-val">false</span>,
-            <span class="string">&#39;\r&#39; </span>| <span class="string">&#39;\n&#39; </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_newline()),
-            <span class="string">&#39;`&#39; </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_backticks()),
-            <span class="string">&#39;\\&#39; </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_backslash()),
-            <span class="string">&#39;&amp;&#39; </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_entity()),
-            <span class="string">&#39;&lt;&#39; </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_pointy_brace()),
-            <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
-            </span><span class="string">&#39;:&#39; </span><span class="kw">if </span><span class="self">self</span>.options.extension.shortcodes =&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_colons()),
-            <span class="string">&#39;*&#39; </span>| <span class="string">&#39;_&#39; </span>| <span class="string">&#39;\&#39;&#39; </span>| <span class="string">&#39;&quot;&#39; </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_delim(c <span class="kw">as </span>u8)),
-            <span class="string">&#39;-&#39; </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_hyphen()),
-            <span class="string">&#39;.&#39; </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_period()),
-            <span class="string">&#39;[&#39; </span>=&gt; {
+        <span class="kw">let </span>new_inl: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;&gt; = <span class="kw">match </span>c {
+            <span class="string">'\0' </span>=&gt; <span class="kw">return </span><span class="bool-val">false</span>,
+            <span class="string">'\r' </span>| <span class="string">'\n' </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_newline()),
+            <span class="string">'`' </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_backticks()),
+            <span class="string">'\\' </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_backslash()),
+            <span class="string">'&amp;' </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_entity()),
+            <span class="string">'&lt;' </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_pointy_brace()),
+            <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
+            </span><span class="string">':' </span><span class="kw">if </span><span class="self">self</span>.options.extension.shortcodes =&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_colons()),
+            <span class="string">'*' </span>| <span class="string">'_' </span>| <span class="string">'\'' </span>| <span class="string">'"' </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_delim(c <span class="kw">as </span>u8)),
+            <span class="string">'-' </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_hyphen()),
+            <span class="string">'.' </span>=&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_period()),
+            <span class="string">'[' </span>=&gt; {
                 <span class="self">self</span>.pos += <span class="number">1</span>;
                 <span class="kw">let </span>inl =
-                    <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">&quot;[&quot;</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>);
+                    <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">"["</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>);
                 <span class="self">self</span>.push_bracket(<span class="bool-val">false</span>, inl);
                 <span class="self">self</span>.within_brackets = <span class="bool-val">true</span>;
                 <span class="prelude-val">Some</span>(inl)
             }
-            <span class="string">&#39;]&#39; </span>=&gt; {
+            <span class="string">']' </span>=&gt; {
                 <span class="self">self</span>.within_brackets = <span class="bool-val">false</span>;
                 <span class="self">self</span>.handle_close_bracket()
             }
-            <span class="string">&#39;!&#39; </span>=&gt; {
+            <span class="string">'!' </span>=&gt; {
                 <span class="self">self</span>.pos += <span class="number">1</span>;
-                <span class="kw">if </span><span class="self">self</span>.peek_char() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b&#39;[&#39;</span>)) &amp;&amp; <span class="self">self</span>.peek_char_n(<span class="number">1</span>) != <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b&#39;^&#39;</span>)) {
+                <span class="kw">if </span><span class="self">self</span>.peek_char() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b'['</span>)) &amp;&amp; <span class="self">self</span>.peek_char_n(<span class="number">1</span>) != <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b'^'</span>)) {
                     <span class="self">self</span>.pos += <span class="number">1</span>;
                     <span class="kw">let </span>inl = <span class="self">self</span>.make_inline(
-                        NodeValue::Text(<span class="string">&quot;![&quot;</span>.to_string()),
+                        NodeValue::Text(<span class="string">"!["</span>.to_string()),
                         <span class="self">self</span>.pos - <span class="number">2</span>,
                         <span class="self">self</span>.pos - <span class="number">1</span>,
                     );
@@ -1746,15 +1747,15 @@
                     <span class="prelude-val">Some</span>(inl)
                 } <span class="kw">else </span>{
                     <span class="prelude-val">Some</span>(<span class="self">self</span>.make_inline(
-                        NodeValue::Text(<span class="string">&quot;!&quot;</span>.to_string()),
+                        NodeValue::Text(<span class="string">"!"</span>.to_string()),
                         <span class="self">self</span>.pos - <span class="number">1</span>,
                         <span class="self">self</span>.pos - <span class="number">1</span>,
                     ))
                 }
             }
-            <span class="string">&#39;~&#39; </span><span class="kw">if </span><span class="self">self</span>.options.extension.strikethrough =&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_delim(<span class="string">b&#39;~&#39;</span>)),
-            <span class="string">&#39;^&#39; </span><span class="kw">if </span><span class="self">self</span>.options.extension.superscript &amp;&amp; !<span class="self">self</span>.within_brackets =&gt; {
-                <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_delim(<span class="string">b&#39;^&#39;</span>))
+            <span class="string">'~' </span><span class="kw">if </span><span class="self">self</span>.options.extension.strikethrough =&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_delim(<span class="string">b'~'</span>)),
+            <span class="string">'^' </span><span class="kw">if </span><span class="self">self</span>.options.extension.superscript &amp;&amp; !<span class="self">self</span>.within_brackets =&gt; {
+                <span class="prelude-val">Some</span>(<span class="self">self</span>.handle_delim(<span class="string">b'^'</span>))
             }
             <span class="kw">_ </span>=&gt; {
                 <span class="kw">let </span>endpos = <span class="self">self</span>.find_special_char();
@@ -1769,7 +1770,7 @@
                     strings::rtrim(<span class="kw-2">&amp;mut </span>contents);
                 }
 
-                <span class="comment">// if we&#39;ve just produced a LineBreak, then we should consume any leading
+                <span class="comment">// if we've just produced a LineBreak, then we should consume any leading
                 // space on this line
                 </span><span class="kw">if </span>node.last_child().map_or(<span class="bool-val">false</span>, |n| {
                     <span class="macro">matches!</span>(n.data.borrow().value, NodeValue::LineBreak)
@@ -1792,7 +1793,7 @@
         <span class="bool-val">true
     </span>}
 
-    <span class="kw">fn </span>del_ref_eq(lhs: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;&gt;, rhs: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;&gt;) -&gt; bool {
+    <span class="kw">fn </span>del_ref_eq(lhs: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'d </span>Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;&gt;, rhs: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'d </span>Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;&gt;) -&gt; bool {
         <span class="kw">match </span>(lhs, rhs) {
             (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="bool-val">true</span>,
             (<span class="prelude-val">Some</span>(l), <span class="prelude-val">Some</span>(r)) =&gt; ptr::eq(l, r),
@@ -1801,7 +1802,7 @@
     }
 
     <span class="comment">// After parsing a block (and sometimes during), this function traverses the
-    // stack of `Delimiters`, tokens (&quot;*&quot;, &quot;_&quot;, etc.) that may delimit regions
+    // stack of `Delimiters`, tokens ("*", "_", etc.) that may delimit regions
     // of text for special rendering: emphasis, strong, superscript,
     // spoilertext; looking for pairs of opening and closing delimiters,
     // with the goal of placing the intervening nodes into new emphasis,
@@ -1813,11 +1814,11 @@
     //
     // The `Delimiter` contains references AST `Text` nodes, which are also
     // linked into the AST as siblings in the order they are parsed. This
-    // function doesn&#39;t know a-priori which ones are markdown syntax and which
+    // function doesn't know a-priori which ones are markdown syntax and which
     // are just text: candidate delimiters that match have their nodes removed
     // from the AST, as they are markdown, and their intervening siblings
     // lowered into a new AST parent node via the `insert_emph` function;
-    // candidate delimiters that don&#39;t match are left in the tree.
+    // candidate delimiters that don't match are left in the tree.
     //
     // The basic algorithm is to start at the bottom of the stack, walk upwards
     // looking for closing delimiters, and from each closing delimiter walk back
@@ -1830,7 +1831,7 @@
     // (The emphasis region is wavy-underlined)
     //
     // All of the `_` and `*` tokens are scanned as candidates, but only the
-    // region &quot;a *b c&quot; is lowered into an `Emph` node; the other candidate
+    // region "a *b c" is lowered into an `Emph` node; the other candidate
     // delimiters are all actually text.
     //
     // And in
@@ -1838,20 +1839,20 @@
     //   _a _b c_
     //       ~~~
     //
-    // &quot;b c&quot; is the emphasis region, not &quot;a _b c&quot;.
+    // "b c" is the emphasis region, not "a _b c".
     //
     // Note that Delimiters are matched by comparing their `delim_char`, which
     // is simply a value used to compare opening and closing delimiters - the
     // actual text value of the scanned token can theoretically be different.
     //
-    // There&#39;s some additional trickiness in the logic because &quot;_&quot;, &quot;__&quot;, and
-    // &quot;___&quot; (and etc. etc.) all share the same delim_char, but represent
-    // different emphasis. Note also that &quot;_&quot;- and &quot;*&quot;-delimited regions have
+    // There's some additional trickiness in the logic because "_", "__", and
+    // "___" (and etc. etc.) all share the same delim_char, but represent
+    // different emphasis. Note also that "_"- and "*"-delimited regions have
     // complex rules for which can be opening and/or closing delimiters,
     // determined in `scan_delims`.
     </span><span class="kw">pub fn </span>process_emphasis(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stack_bottom: usize) {
         <span class="comment">// This array is an important optimization that prevents searching down
-        // the stack for openers we&#39;ve previously searched for and know don&#39;t
+        // the stack for openers we've previously searched for and know don't
         // exist, preventing exponential blowup on pathological cases.
         </span><span class="kw">let </span><span class="kw-2">mut </span>openers_bottom: [usize; <span class="number">11</span>] = [stack_bottom; <span class="number">11</span>];
 
@@ -1877,24 +1878,24 @@
                 <span class="kw">let </span><span class="kw-2">mut </span>mod_three_rule_invoked = <span class="bool-val">false</span>;
 
                 <span class="kw">let </span>ix = <span class="kw">match </span>c.delim_char {
-                    <span class="string">b&#39;~&#39; </span>=&gt; <span class="number">0</span>,
-                    <span class="string">b&#39;^&#39; </span>=&gt; <span class="number">1</span>,
-                    <span class="string">b&#39;&quot;&#39; </span>=&gt; <span class="number">2</span>,
-                    <span class="string">b&#39;\&#39;&#39; </span>=&gt; <span class="number">3</span>,
-                    <span class="string">b&#39;_&#39; </span>=&gt; <span class="number">4</span>,
-                    <span class="string">b&#39;*&#39; </span>=&gt; <span class="number">5 </span>+ (<span class="kw">if </span>c.can_open { <span class="number">3 </span>} <span class="kw">else </span>{ <span class="number">0 </span>}) + (c.length % <span class="number">3</span>),
+                    <span class="string">b'~' </span>=&gt; <span class="number">0</span>,
+                    <span class="string">b'^' </span>=&gt; <span class="number">1</span>,
+                    <span class="string">b'"' </span>=&gt; <span class="number">2</span>,
+                    <span class="string">b'\'' </span>=&gt; <span class="number">3</span>,
+                    <span class="string">b'_' </span>=&gt; <span class="number">4</span>,
+                    <span class="string">b'*' </span>=&gt; <span class="number">5 </span>+ (<span class="kw">if </span>c.can_open { <span class="number">3 </span>} <span class="kw">else </span>{ <span class="number">0 </span>}) + (c.length % <span class="number">3</span>),
                     <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
                 };
 
-                <span class="comment">// Here&#39;s where we find the opener by searching down the stack,
+                <span class="comment">// Here's where we find the opener by searching down the stack,
                 // looking for matching delims with the `can_open` flag.
                 // On any invocation, on the first time through the outer
-                // `closer` loop, this inner `opener` search doesn&#39;t succeed:
+                // `closer` loop, this inner `opener` search doesn't succeed:
                 // when processing a full block, `opener` starts out `None`;
                 // when processing emphasis otherwise, opener will be equal to
                 // `stack_bottom`.
                 //
-                // This search short-circuits for openers we&#39;ve previously
+                // This search short-circuits for openers we've previously
                 // failed to find, avoiding repeatedly rescanning the bottom of
                 // the stack, using the openers_bottom array.
                 </span><span class="kw">while </span>opener.map_or(<span class="bool-val">false</span>, |o| o.position &gt;= openers_bottom[ix]) {
@@ -1924,23 +1925,23 @@
 
                 <span class="kw">let </span>old_c = c;
 
-                <span class="comment">// There&#39;s a case here for every possible delimiter. If we found
+                <span class="comment">// There's a case here for every possible delimiter. If we found
                 // a matching opening delimiter for our closing delimiter, they
                 // both get passed.
-                </span><span class="kw">if </span>c.delim_char == <span class="string">b&#39;*&#39;
-                    </span>|| c.delim_char == <span class="string">b&#39;_&#39;
-                    </span>|| (<span class="self">self</span>.options.extension.strikethrough &amp;&amp; c.delim_char == <span class="string">b&#39;~&#39;</span>)
-                    || (<span class="self">self</span>.options.extension.superscript &amp;&amp; c.delim_char == <span class="string">b&#39;^&#39;</span>)
+                </span><span class="kw">if </span>c.delim_char == <span class="string">b'*'
+                    </span>|| c.delim_char == <span class="string">b'_'
+                    </span>|| (<span class="self">self</span>.options.extension.strikethrough &amp;&amp; c.delim_char == <span class="string">b'~'</span>)
+                    || (<span class="self">self</span>.options.extension.superscript &amp;&amp; c.delim_char == <span class="string">b'^'</span>)
                 {
                     <span class="kw">if </span>opener_found {
-                        <span class="comment">// Finally, here&#39;s the happy case where the delimiters
+                        <span class="comment">// Finally, here's the happy case where the delimiters
                         // match and they are inserted. We get a new closer
                         // delimiter and go around the loop again.
                         //
-                        // Note that for &quot;***&quot; and &quot;___&quot; delimiters of length
+                        // Note that for "***" and "___" delimiters of length
                         // greater than 2, insert_emph will create a `Strong`
-                        // node (i.e. &quot;**&quot;), then _truncate_ the delimiters in
-                        // place, turning them into e.g. &quot;*&quot; delimiters, and
+                        // node (i.e. "**"), then _truncate_ the delimiters in
+                        // place, turning them into e.g. "*" delimiters, and
                         // hand us back the same mutated closer to be matched
                         // again.
                         //
@@ -1953,9 +1954,9 @@
                         // (below), try again.
                         </span>closer = c.next.get();
                     }
-                } <span class="kw">else if </span>c.delim_char == <span class="string">b&#39;\&#39;&#39; </span>|| c.delim_char == <span class="string">b&#39;&quot;&#39; </span>{
+                } <span class="kw">else if </span>c.delim_char == <span class="string">b'\'' </span>|| c.delim_char == <span class="string">b'"' </span>{
                     <span class="kw-2">*</span>c.inl.data.borrow_mut().value.text_mut().unwrap() =
-                        <span class="kw">if </span>c.delim_char == <span class="string">b&#39;\&#39;&#39; </span>{ <span class="string">&quot;’&quot; </span>} <span class="kw">else </span>{ <span class="string">&quot;”&quot; </span>}.to_string();
+                        <span class="kw">if </span>c.delim_char == <span class="string">b'\'' </span>{ <span class="string">"’" </span>} <span class="kw">else </span>{ <span class="string">"”" </span>}.to_string();
                     closer = c.next.get();
 
                     <span class="kw">if </span>opener_found {
@@ -1966,10 +1967,10 @@
                             .borrow_mut()
                             .value
                             .text_mut()
-                            .unwrap() = <span class="kw">if </span>old_c.delim_char == <span class="string">b&#39;\&#39;&#39; </span>{
-                            <span class="string">&quot;‘&quot;
+                            .unwrap() = <span class="kw">if </span>old_c.delim_char == <span class="string">b'\'' </span>{
+                            <span class="string">"‘"
                         </span>} <span class="kw">else </span>{
-                            <span class="string">&quot;“&quot;
+                            <span class="string">"“"
                         </span>}
                         .to_string();
                         <span class="self">self</span>.remove_delimiter(opener.unwrap());
@@ -1986,10 +1987,10 @@
                         openers_bottom[ix] = old_c.position;
                     }
 
-                    <span class="comment">// Now that we&#39;ve failed the `opener` search starting from
+                    <span class="comment">// Now that we've failed the `opener` search starting from
                     // `old_closer`, future opener searches will be searching it
-                    // for openers - if `old_closer` can&#39;t be used as an opener
-                    // then we know it&#39;s just text - remove it from the
+                    // for openers - if `old_closer` can't be used as an opener
+                    // then we know it's just text - remove it from the
                     // delimiter stack, leaving it in the AST as text
                     </span><span class="kw">if </span>!old_c.can_open {
                         <span class="self">self</span>.remove_delimiter(old_c);
@@ -2007,7 +2008,7 @@
         </span><span class="self">self</span>.remove_delimiters(stack_bottom);
     }
 
-    <span class="kw">fn </span>remove_delimiter(<span class="kw-2">&amp;mut </span><span class="self">self</span>, delimiter: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;) {
+    <span class="kw">fn </span>remove_delimiter(<span class="kw-2">&amp;mut </span><span class="self">self</span>, delimiter: <span class="kw-2">&amp;</span><span class="lifetime">'d </span>Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;) {
         <span class="kw">if </span>delimiter.next.get().is_none() {
             <span class="macro">assert!</span>(ptr::eq(delimiter, <span class="self">self</span>.last_delimiter.unwrap()));
             <span class="self">self</span>.last_delimiter = delimiter.prev.get();
@@ -2052,7 +2053,7 @@
     <span class="kw">pub fn </span>find_special_char(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="kw">for </span>n <span class="kw">in </span><span class="self">self</span>.pos..<span class="self">self</span>.input.len() {
             <span class="kw">if </span><span class="self">self</span>.special_chars[<span class="self">self</span>.input[n] <span class="kw">as </span>usize] {
-                <span class="kw">if </span><span class="self">self</span>.input[n] == <span class="string">b&#39;^&#39; </span>&amp;&amp; <span class="self">self</span>.within_brackets {
+                <span class="kw">if </span><span class="self">self</span>.input[n] == <span class="string">b'^' </span>&amp;&amp; <span class="self">self</span>.within_brackets {
                     <span class="comment">// NO OP
                 </span>} <span class="kw">else </span>{
                     <span class="kw">return </span>n;
@@ -2066,7 +2067,7 @@
         <span class="self">self</span>.input.len()
     }
 
-    <span class="kw">fn </span>adjust_node_newlines(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, matchlen: usize, extra: usize) {
+    <span class="kw">fn </span>adjust_node_newlines(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, matchlen: usize, extra: usize) {
         <span class="kw">if </span>!<span class="self">self</span>.options.render.sourcepos {
             <span class="kw">return</span>;
         }
@@ -2083,15 +2084,15 @@
         }
     }
 
-    <span class="kw">pub fn </span>handle_newline(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>handle_newline(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">let </span>nlpos = <span class="self">self</span>.pos;
-        <span class="kw">if </span><span class="self">self</span>.input[<span class="self">self</span>.pos] == <span class="string">b&#39;\r&#39; </span>{
+        <span class="kw">if </span><span class="self">self</span>.input[<span class="self">self</span>.pos] == <span class="string">b'\r' </span>{
             <span class="self">self</span>.pos += <span class="number">1</span>;
         }
-        <span class="kw">if </span><span class="self">self</span>.input[<span class="self">self</span>.pos] == <span class="string">b&#39;\n&#39; </span>{
+        <span class="kw">if </span><span class="self">self</span>.input[<span class="self">self</span>.pos] == <span class="string">b'\n' </span>{
             <span class="self">self</span>.pos += <span class="number">1</span>;
         }
-        <span class="kw">let </span>inl = <span class="kw">if </span>nlpos &gt; <span class="number">1 </span>&amp;&amp; <span class="self">self</span>.input[nlpos - <span class="number">1</span>] == <span class="string">b&#39; &#39; </span>&amp;&amp; <span class="self">self</span>.input[nlpos - <span class="number">2</span>] == <span class="string">b&#39; &#39; </span>{
+        <span class="kw">let </span>inl = <span class="kw">if </span>nlpos &gt; <span class="number">1 </span>&amp;&amp; <span class="self">self</span>.input[nlpos - <span class="number">1</span>] == <span class="string">b' ' </span>&amp;&amp; <span class="self">self</span>.input[nlpos - <span class="number">2</span>] == <span class="string">b' ' </span>{
             <span class="self">self</span>.make_inline(NodeValue::LineBreak, nlpos, <span class="self">self</span>.pos - <span class="number">1</span>)
         } <span class="kw">else </span>{
             <span class="self">self</span>.make_inline(NodeValue::SoftBreak, nlpos, <span class="self">self</span>.pos - <span class="number">1</span>)
@@ -2120,14 +2121,14 @@
         }
 
         <span class="kw">loop </span>{
-            <span class="kw">while </span><span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c != <span class="string">b&#39;`&#39;</span>) {
+            <span class="kw">while </span><span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c != <span class="string">b'`'</span>) {
                 <span class="self">self</span>.pos += <span class="number">1</span>;
             }
             <span class="kw">if </span><span class="self">self</span>.pos &gt;= <span class="self">self</span>.input.len() {
                 <span class="self">self</span>.scanned_for_backticks = <span class="bool-val">true</span>;
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             }
-            <span class="kw">let </span>numticks = <span class="self">self</span>.take_while(<span class="string">b&#39;`&#39;</span>);
+            <span class="kw">let </span>numticks = <span class="self">self</span>.take_while(<span class="string">b'`'</span>);
             <span class="kw">if </span>numticks &lt;= MAXBACKTICKS {
                 <span class="self">self</span>.backticks[numticks] = <span class="self">self</span>.pos - numticks;
             }
@@ -2137,15 +2138,15 @@
         }
     }
 
-    <span class="kw">pub fn </span>handle_backticks(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="kw">let </span>openticks = <span class="self">self</span>.take_while(<span class="string">b&#39;`&#39;</span>);
+    <span class="kw">pub fn </span>handle_backticks(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
+        <span class="kw">let </span>openticks = <span class="self">self</span>.take_while(<span class="string">b'`'</span>);
         <span class="kw">let </span>startpos = <span class="self">self</span>.pos;
         <span class="kw">let </span>endpos = <span class="self">self</span>.scan_to_closing_backtick(openticks);
 
         <span class="kw">match </span>endpos {
             <span class="prelude-val">None </span>=&gt; {
                 <span class="self">self</span>.pos = startpos;
-                <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">&quot;`&quot;</span>.repeat(openticks)), <span class="self">self</span>.pos, <span class="self">self</span>.pos)
+                <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">"`"</span>.repeat(openticks)), <span class="self">self</span>.pos, <span class="self">self</span>.pos)
             }
             <span class="prelude-val">Some</span>(endpos) =&gt; {
                 <span class="kw">let </span>buf = <span class="kw-2">&amp;</span><span class="self">self</span>.input[startpos..endpos - openticks];
@@ -2164,23 +2165,23 @@
 
     <span class="kw">pub fn </span>skip_spaces(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; bool {
         <span class="kw">let </span><span class="kw-2">mut </span>skipped = <span class="bool-val">false</span>;
-        <span class="kw">while </span><span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c == <span class="string">b&#39; &#39; </span>|| c == <span class="string">b&#39;\t&#39;</span>) {
+        <span class="kw">while </span><span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c == <span class="string">b' ' </span>|| c == <span class="string">b'\t'</span>) {
             <span class="self">self</span>.pos += <span class="number">1</span>;
             skipped = <span class="bool-val">true</span>;
         }
         skipped
     }
 
-    <span class="kw">pub fn </span>handle_delim(<span class="kw-2">&amp;mut </span><span class="self">self</span>, c: u8) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>handle_delim(<span class="kw-2">&amp;mut </span><span class="self">self</span>, c: u8) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">let </span>(numdelims, can_open, can_close) = <span class="self">self</span>.scan_delims(c);
 
-        <span class="kw">let </span>contents = <span class="kw">if </span>c == <span class="string">b&#39;\&#39;&#39; </span>&amp;&amp; <span class="self">self</span>.options.parse.smart {
-            <span class="string">&quot;’&quot;</span>.to_string()
-        } <span class="kw">else if </span>c == <span class="string">b&#39;&quot;&#39; </span>&amp;&amp; <span class="self">self</span>.options.parse.smart {
+        <span class="kw">let </span>contents = <span class="kw">if </span>c == <span class="string">b'\'' </span>&amp;&amp; <span class="self">self</span>.options.parse.smart {
+            <span class="string">"’"</span>.to_string()
+        } <span class="kw">else if </span>c == <span class="string">b'"' </span>&amp;&amp; <span class="self">self</span>.options.parse.smart {
             <span class="kw">if </span>can_close {
-                <span class="string">&quot;”&quot;</span>.to_string()
+                <span class="string">"”"</span>.to_string()
             } <span class="kw">else </span>{
-                <span class="string">&quot;“&quot;</span>.to_string()
+                <span class="string">"“"</span>.to_string()
             }
         } <span class="kw">else </span>{
             str::from_utf8(<span class="kw-2">&amp;</span><span class="self">self</span>.input[<span class="self">self</span>.pos - numdelims..<span class="self">self</span>.pos])
@@ -2193,22 +2194,22 @@
             <span class="self">self</span>.pos - <span class="number">1</span>,
         );
 
-        <span class="kw">if </span>(can_open || can_close) &amp;&amp; (!(c == <span class="string">b&#39;\&#39;&#39; </span>|| c == <span class="string">b&#39;&quot;&#39;</span>) || <span class="self">self</span>.options.parse.smart) {
+        <span class="kw">if </span>(can_open || can_close) &amp;&amp; (!(c == <span class="string">b'\'' </span>|| c == <span class="string">b'"'</span>) || <span class="self">self</span>.options.parse.smart) {
             <span class="self">self</span>.push_delimiter(c, can_open, can_close, inl);
         }
 
         inl
     }
 
-    <span class="kw">pub fn </span>handle_hyphen(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>handle_hyphen(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">let </span>start = <span class="self">self</span>.pos;
         <span class="self">self</span>.pos += <span class="number">1</span>;
 
-        <span class="kw">if </span>!<span class="self">self</span>.options.parse.smart || <span class="self">self</span>.peek_char().map_or(<span class="bool-val">true</span>, |<span class="kw-2">&amp;</span>c| c != <span class="string">b&#39;-&#39;</span>) {
-            <span class="kw">return </span><span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">&quot;-&quot;</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>);
+        <span class="kw">if </span>!<span class="self">self</span>.options.parse.smart || <span class="self">self</span>.peek_char().map_or(<span class="bool-val">true</span>, |<span class="kw-2">&amp;</span>c| c != <span class="string">b'-'</span>) {
+            <span class="kw">return </span><span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">"-"</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>);
         }
 
-        <span class="kw">while </span><span class="self">self</span>.options.parse.smart &amp;&amp; <span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c == <span class="string">b&#39;-&#39;</span>) {
+        <span class="kw">while </span><span class="self">self</span>.options.parse.smart &amp;&amp; <span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c == <span class="string">b'-'</span>) {
             <span class="self">self</span>.pos += <span class="number">1</span>;
         }
 
@@ -2228,33 +2229,33 @@
         <span class="kw">let </span>ems = <span class="kw">if </span>ems &gt; <span class="number">0 </span>{ ems <span class="kw">as </span>usize } <span class="kw">else </span>{ <span class="number">0 </span>};
 
         <span class="kw">let </span><span class="kw-2">mut </span>buf = String::with_capacity(<span class="number">3 </span>* (ems + ens));
-        buf.push_str(<span class="kw-2">&amp;</span><span class="string">&quot;—&quot;</span>.repeat(ems));
-        buf.push_str(<span class="kw-2">&amp;</span><span class="string">&quot;–&quot;</span>.repeat(ens));
+        buf.push_str(<span class="kw-2">&amp;</span><span class="string">"—"</span>.repeat(ems));
+        buf.push_str(<span class="kw-2">&amp;</span><span class="string">"–"</span>.repeat(ens));
         <span class="self">self</span>.make_inline(NodeValue::Text(buf), start, <span class="self">self</span>.pos - <span class="number">1</span>)
     }
 
-    <span class="kw">pub fn </span>handle_period(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>handle_period(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="self">self</span>.pos += <span class="number">1</span>;
-        <span class="kw">if </span><span class="self">self</span>.options.parse.smart &amp;&amp; <span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c == <span class="string">b&#39;.&#39;</span>) {
+        <span class="kw">if </span><span class="self">self</span>.options.parse.smart &amp;&amp; <span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c == <span class="string">b'.'</span>) {
             <span class="self">self</span>.pos += <span class="number">1</span>;
-            <span class="kw">if </span><span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c == <span class="string">b&#39;.&#39;</span>) {
+            <span class="kw">if </span><span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| c == <span class="string">b'.'</span>) {
                 <span class="self">self</span>.pos += <span class="number">1</span>;
-                <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">&quot;…&quot;</span>.to_string()), <span class="self">self</span>.pos - <span class="number">3</span>, <span class="self">self</span>.pos - <span class="number">1</span>)
+                <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">"…"</span>.to_string()), <span class="self">self</span>.pos - <span class="number">3</span>, <span class="self">self</span>.pos - <span class="number">1</span>)
             } <span class="kw">else </span>{
                 <span class="self">self</span>.make_inline(
-                    NodeValue::Text(<span class="string">&quot;..&quot;</span>.to_string()),
+                    NodeValue::Text(<span class="string">".."</span>.to_string()),
                     <span class="self">self</span>.pos - <span class="number">2</span>,
                     <span class="self">self</span>.pos - <span class="number">1</span>,
                 )
             }
         } <span class="kw">else </span>{
-            <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">&quot;.&quot;</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>)
+            <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">"."</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>)
         }
     }
 
     <span class="kw">pub fn </span>scan_delims(<span class="kw-2">&amp;mut </span><span class="self">self</span>, c: u8) -&gt; (usize, bool, bool) {
         <span class="kw">let </span>before_char = <span class="kw">if </span><span class="self">self</span>.pos == <span class="number">0 </span>{
-            <span class="string">&#39;\n&#39;
+            <span class="string">'\n'
         </span>} <span class="kw">else </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>before_char_pos = <span class="self">self</span>.pos - <span class="number">1</span>;
             <span class="kw">while </span>before_char_pos &gt; <span class="number">0
@@ -2269,17 +2270,17 @@
             {
                 <span class="prelude-val">Some</span>(x) =&gt; {
                     <span class="kw">if </span>(x <span class="kw">as </span>usize) &lt; <span class="number">256 </span>&amp;&amp; <span class="self">self</span>.skip_chars[x <span class="kw">as </span>usize] {
-                        <span class="string">&#39;\n&#39;
+                        <span class="string">'\n'
                     </span>} <span class="kw">else </span>{
                         x
                     }
                 }
-                <span class="prelude-val">None </span>=&gt; <span class="string">&#39;\n&#39;</span>,
+                <span class="prelude-val">None </span>=&gt; <span class="string">'\n'</span>,
             }
         };
 
         <span class="kw">let </span><span class="kw-2">mut </span>numdelims = <span class="number">0</span>;
-        <span class="kw">if </span>c == <span class="string">b&#39;\&#39;&#39; </span>|| c == <span class="string">b&#39;&quot;&#39; </span>{
+        <span class="kw">if </span>c == <span class="string">b'\'' </span>|| c == <span class="string">b'"' </span>{
             numdelims += <span class="number">1</span>;
             <span class="self">self</span>.pos += <span class="number">1</span>;
         } <span class="kw">else </span>{
@@ -2290,7 +2291,7 @@
         }
 
         <span class="kw">let </span>after_char = <span class="kw">if </span><span class="self">self</span>.eof() {
-            <span class="string">&#39;\n&#39;
+            <span class="string">'\n'
         </span>} <span class="kw">else </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>after_char_pos = <span class="self">self</span>.pos;
             <span class="kw">while </span>after_char_pos &lt; <span class="self">self</span>.input.len() - <span class="number">1
@@ -2304,12 +2305,12 @@
             {
                 <span class="prelude-val">Some</span>(x) =&gt; {
                     <span class="kw">if </span>(x <span class="kw">as </span>usize) &lt; <span class="number">256 </span>&amp;&amp; <span class="self">self</span>.skip_chars[x <span class="kw">as </span>usize] {
-                        <span class="string">&#39;\n&#39;
+                        <span class="string">'\n'
                     </span>} <span class="kw">else </span>{
                         x
                     }
                 }
-                <span class="prelude-val">None </span>=&gt; <span class="string">&#39;\n&#39;</span>,
+                <span class="prelude-val">None </span>=&gt; <span class="string">'\n'</span>,
             }
         };
 
@@ -2324,19 +2325,19 @@
                 &amp;&amp; !after_char.is_whitespace()
                 &amp;&amp; !after_char.is_punctuation());
 
-        <span class="kw">if </span>c == <span class="string">b&#39;_&#39; </span>{
+        <span class="kw">if </span>c == <span class="string">b'_' </span>{
             (
                 numdelims,
                 left_flanking &amp;&amp; (!right_flanking || before_char.is_punctuation()),
                 right_flanking &amp;&amp; (!left_flanking || after_char.is_punctuation()),
             )
-        } <span class="kw">else if </span>c == <span class="string">b&#39;\&#39;&#39; </span>|| c == <span class="string">b&#39;&quot;&#39; </span>{
+        } <span class="kw">else if </span>c == <span class="string">b'\'' </span>|| c == <span class="string">b'"' </span>{
             (
                 numdelims,
                 left_flanking
-                    &amp;&amp; (!right_flanking || before_char == <span class="string">&#39;(&#39; </span>|| before_char == <span class="string">&#39;[&#39;</span>)
-                    &amp;&amp; before_char != <span class="string">&#39;]&#39;
-                    </span>&amp;&amp; before_char != <span class="string">&#39;)&#39;</span>,
+                    &amp;&amp; (!right_flanking || before_char == <span class="string">'(' </span>|| before_char == <span class="string">'['</span>)
+                    &amp;&amp; before_char != <span class="string">']'
+                    </span>&amp;&amp; before_char != <span class="string">')'</span>,
                 right_flanking,
             )
         } <span class="kw">else </span>{
@@ -2344,7 +2345,7 @@
         }
     }
 
-    <span class="kw">pub fn </span>push_delimiter(<span class="kw-2">&amp;mut </span><span class="self">self</span>, c: u8, can_open: bool, can_close: bool, inl: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+    <span class="kw">pub fn </span>push_delimiter(<span class="kw-2">&amp;mut </span><span class="self">self</span>, c: u8, can_open: bool, can_close: bool, inl: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) {
         <span class="kw">let </span>d = <span class="self">self</span>.delimiter_arena.alloc(Delimiter {
             prev: Cell::new(<span class="self">self</span>.last_delimiter),
             next: Cell::new(<span class="prelude-val">None</span>),
@@ -2364,13 +2365,13 @@
     <span class="comment">// Create a new emphasis node, move all the nodes between `opener`
     // and `closer` into it, and insert it into the AST.
     //
-    // As a side-effect, handle long &quot;***&quot; and &quot;___&quot; nodes by truncating them in
+    // As a side-effect, handle long "***" and "___" nodes by truncating them in
     // place to be re-matched by `process_emphasis`.
     </span><span class="kw">pub fn </span>insert_emph(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        opener: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;,
-        closer: <span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;d </span>Delimiter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;d</span>&gt;&gt; {
+        opener: <span class="kw-2">&amp;</span><span class="lifetime">'d </span>Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;,
+        closer: <span class="kw-2">&amp;</span><span class="lifetime">'d </span>Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;,
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'d </span>Delimiter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'d</span>&gt;&gt; {
         <span class="kw">let </span>opener_char = opener.inl.data.borrow().value.text().unwrap().as_bytes()[<span class="number">0</span>];
         <span class="kw">let </span><span class="kw-2">mut </span>opener_num_chars = opener.inl.data.borrow().value.text().unwrap().len();
         <span class="kw">let </span><span class="kw-2">mut </span>closer_num_chars = closer.inl.data.borrow().value.text().unwrap().len();
@@ -2384,7 +2385,7 @@
         closer_num_chars -= use_delims;
 
         <span class="kw">if </span><span class="self">self</span>.options.extension.strikethrough
-            &amp;&amp; opener_char == <span class="string">b&#39;~&#39;
+            &amp;&amp; opener_char == <span class="string">b'~'
             </span>&amp;&amp; (opener_num_chars != closer_num_chars || opener_num_chars &gt; <span class="number">0</span>)
         {
             <span class="kw">return </span><span class="prelude-val">None</span>;
@@ -2408,7 +2409,7 @@
             .truncate(closer_num_chars);
 
         <span class="comment">// Remove all the candidate delimiters from between the opener and the
-        // closer. None of them are matched pairs. They&#39;ve been scanned already.
+        // closer. None of them are matched pairs. They've been scanned already.
         </span><span class="kw">let </span><span class="kw-2">mut </span>delim = closer.prev.get();
         <span class="kw">while </span>delim.is_some() &amp;&amp; !<span class="self">Self</span>::del_ref_eq(delim, <span class="prelude-val">Some</span>(opener)) {
             <span class="self">self</span>.remove_delimiter(delim.unwrap());
@@ -2416,9 +2417,9 @@
         }
 
         <span class="kw">let </span>emph = <span class="self">self</span>.make_inline(
-            <span class="kw">if </span><span class="self">self</span>.options.extension.strikethrough &amp;&amp; opener_char == <span class="string">b&#39;~&#39; </span>{
+            <span class="kw">if </span><span class="self">self</span>.options.extension.strikethrough &amp;&amp; opener_char == <span class="string">b'~' </span>{
                 NodeValue::Strikethrough
-            } <span class="kw">else if </span><span class="self">self</span>.options.extension.superscript &amp;&amp; opener_char == <span class="string">b&#39;^&#39; </span>{
+            } <span class="kw">else if </span><span class="self">self</span>.options.extension.superscript &amp;&amp; opener_char == <span class="string">b'^' </span>{
                 NodeValue::Superscript
             } <span class="kw">else if </span>use_delims == <span class="number">1 </span>{
                 NodeValue::Emph
@@ -2469,7 +2470,7 @@
         }
     }
 
-    <span class="kw">pub fn </span>handle_backslash(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>handle_backslash(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">let </span>startpos = <span class="self">self</span>.pos;
         <span class="self">self</span>.pos += <span class="number">1</span>;
         <span class="kw">if </span><span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| ispunct(c)) {
@@ -2483,7 +2484,7 @@
             <span class="self">self</span>.make_inline(NodeValue::LineBreak, startpos, <span class="self">self</span>.pos - <span class="number">1</span>)
         } <span class="kw">else </span>{
             <span class="self">self</span>.make_inline(
-                NodeValue::Text(<span class="string">&quot;\\&quot;</span>.to_string()),
+                NodeValue::Text(<span class="string">"\\"</span>.to_string()),
                 <span class="self">self</span>.pos - <span class="number">1</span>,
                 <span class="self">self</span>.pos - <span class="number">1</span>,
             )
@@ -2492,20 +2493,20 @@
 
     <span class="kw">pub fn </span>skip_line_end(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; bool {
         <span class="kw">let </span>old_pos = <span class="self">self</span>.pos;
-        <span class="kw">if </span><span class="self">self</span>.peek_char() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b&#39;\r&#39;</span>)) {
+        <span class="kw">if </span><span class="self">self</span>.peek_char() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b'\r'</span>)) {
             <span class="self">self</span>.pos += <span class="number">1</span>;
         }
-        <span class="kw">if </span><span class="self">self</span>.peek_char() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b&#39;\n&#39;</span>)) {
+        <span class="kw">if </span><span class="self">self</span>.peek_char() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b'\n'</span>)) {
             <span class="self">self</span>.pos += <span class="number">1</span>;
         }
         <span class="self">self</span>.pos &gt; old_pos || <span class="self">self</span>.eof()
     }
 
-    <span class="kw">pub fn </span>handle_entity(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>handle_entity(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="self">self</span>.pos += <span class="number">1</span>;
 
         <span class="kw">match </span>entity::unescape(<span class="kw-2">&amp;</span><span class="self">self</span>.input[<span class="self">self</span>.pos..]) {
-            <span class="prelude-val">None </span>=&gt; <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">&quot;&amp;&quot;</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>),
+            <span class="prelude-val">None </span>=&gt; <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">"&amp;"</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>),
             <span class="prelude-val">Some</span>((entity, len)) =&gt; {
                 <span class="self">self</span>.pos += len;
                 <span class="self">self</span>.make_inline(
@@ -2517,8 +2518,8 @@
         }
     }
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
-    </span><span class="kw">pub fn </span>handle_colons(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
+    </span><span class="kw">pub fn </span>handle_colons(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="self">self</span>.pos += <span class="number">1</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(matchlen) = scanners::shortcode(<span class="kw-2">&amp;</span><span class="self">self</span>.input[<span class="self">self</span>.pos..]) {
@@ -2536,10 +2537,10 @@
             }
         }
 
-        <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">&quot;:&quot;</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>)
+        <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">":"</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>)
     }
 
-    <span class="kw">pub fn </span>handle_pointy_brace(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>handle_pointy_brace(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="self">self</span>.pos += <span class="number">1</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(matchlen) = scanners::autolink_uri(<span class="kw-2">&amp;</span><span class="self">self</span>.input[<span class="self">self</span>.pos..]) {
@@ -2569,13 +2570,13 @@
 
         <span class="kw">if </span><span class="self">self</span>.pos + <span class="number">2 </span>&lt;= <span class="self">self</span>.input.len() {
             <span class="kw">let </span>c = <span class="self">self</span>.input[<span class="self">self</span>.pos];
-            <span class="kw">if </span>c == <span class="string">b&#39;!&#39; </span>&amp;&amp; !<span class="self">self</span>.flags.skip_html_comment {
+            <span class="kw">if </span>c == <span class="string">b'!' </span>&amp;&amp; !<span class="self">self</span>.flags.skip_html_comment {
                 <span class="kw">let </span>c = <span class="self">self</span>.input[<span class="self">self</span>.pos + <span class="number">1</span>];
-                <span class="kw">if </span>c == <span class="string">b&#39;-&#39; </span>&amp;&amp; <span class="self">self</span>.peek_char_n(<span class="number">2</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">b&#39;-&#39;</span>) {
-                    <span class="kw">if </span><span class="self">self</span>.peek_char_n(<span class="number">3</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">b&#39;&gt;&#39;</span>) {
+                <span class="kw">if </span>c == <span class="string">b'-' </span>&amp;&amp; <span class="self">self</span>.peek_char_n(<span class="number">2</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">b'-'</span>) {
+                    <span class="kw">if </span><span class="self">self</span>.peek_char_n(<span class="number">3</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">b'&gt;'</span>) {
                         matchlen = <span class="prelude-val">Some</span>(<span class="number">4</span>);
-                    } <span class="kw">else if </span><span class="self">self</span>.peek_char_n(<span class="number">3</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">b&#39;-&#39;</span>)
-                        &amp;&amp; <span class="self">self</span>.peek_char_n(<span class="number">4</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">b&#39;&gt;&#39;</span>)
+                    } <span class="kw">else if </span><span class="self">self</span>.peek_char_n(<span class="number">3</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">b'-'</span>)
+                        &amp;&amp; <span class="self">self</span>.peek_char_n(<span class="number">4</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">b'&gt;'</span>)
                     {
                         matchlen = <span class="prelude-val">Some</span>(<span class="number">5</span>);
                     } <span class="kw">else if let </span><span class="prelude-val">Some</span>(m) = scanners::html_comment(<span class="kw-2">&amp;</span><span class="self">self</span>.input[<span class="self">self</span>.pos + <span class="number">1</span>..]) {
@@ -2583,14 +2584,14 @@
                     } <span class="kw">else </span>{
                         <span class="self">self</span>.flags.skip_html_comment = <span class="bool-val">true</span>;
                     }
-                } <span class="kw">else if </span>c == <span class="string">b&#39;[&#39; </span>{
+                } <span class="kw">else if </span>c == <span class="string">b'[' </span>{
                     <span class="kw">if </span>!<span class="self">self</span>.flags.skip_html_cdata &amp;&amp; <span class="self">self</span>.pos + <span class="number">3 </span>&lt;= <span class="self">self</span>.input.len() {
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = scanners::html_cdata(<span class="kw-2">&amp;</span><span class="self">self</span>.input[<span class="self">self</span>.pos + <span class="number">2</span>..]) {
-                            <span class="comment">// The regex doesn&#39;t require the final &quot;]]&gt;&quot;. But if we&#39;re not at
+                            <span class="comment">// The regex doesn't require the final "]]&gt;". But if we're not at
                             // the end of input, it must come after the match. Otherwise,
                             // disable subsequent scans to avoid quadratic behavior.
 
-                            // Adding 5 to matchlen for prefix &quot;![&quot;, suffix &quot;]]&gt;&quot;
+                            // Adding 5 to matchlen for prefix "![", suffix "]]&gt;"
                             </span><span class="kw">if </span><span class="self">self</span>.pos + m + <span class="number">5 </span>&gt; <span class="self">self</span>.input.len() {
                                 <span class="self">self</span>.flags.skip_html_cdata = <span class="bool-val">true</span>;
                             } <span class="kw">else </span>{
@@ -2600,7 +2601,7 @@
                     }
                 } <span class="kw">else if </span>!<span class="self">self</span>.flags.skip_html_declaration {
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = scanners::html_declaration(<span class="kw-2">&amp;</span><span class="self">self</span>.input[<span class="self">self</span>.pos + <span class="number">1</span>..]) {
-                        <span class="comment">// Adding 2 to matchlen for prefix &quot;!&quot;, suffix &quot;&gt;&quot;
+                        <span class="comment">// Adding 2 to matchlen for prefix "!", suffix "&gt;"
                         </span><span class="kw">if </span><span class="self">self</span>.pos + m + <span class="number">2 </span>&gt; <span class="self">self</span>.input.len() {
                             <span class="self">self</span>.flags.skip_html_declaration = <span class="bool-val">true</span>;
                         } <span class="kw">else </span>{
@@ -2608,12 +2609,12 @@
                         }
                     }
                 }
-            } <span class="kw">else if </span>c == <span class="string">b&#39;?&#39; </span>{
+            } <span class="kw">else if </span>c == <span class="string">b'?' </span>{
                 <span class="kw">if </span>!<span class="self">self</span>.flags.skip_html_pi {
                     <span class="comment">// Note that we allow an empty match.
                     </span><span class="kw">let </span>m = scanners::html_processing_instruction(<span class="kw-2">&amp;</span><span class="self">self</span>.input[<span class="self">self</span>.pos + <span class="number">1</span>..])
                         .unwrap_or(<span class="number">0</span>);
-                    <span class="comment">// Adding 3 to matchlen fro prefix &quot;?&quot;, suffix &quot;?&gt;&quot;
+                    <span class="comment">// Adding 3 to matchlen fro prefix "?", suffix "?&gt;"
                     </span><span class="kw">if </span><span class="self">self</span>.pos + m + <span class="number">3 </span>&gt; <span class="self">self</span>.input.len() {
                         <span class="self">self</span>.flags.skip_html_pi = <span class="bool-val">true</span>;
                     } <span class="kw">else </span>{
@@ -2637,10 +2638,10 @@
             <span class="kw">return </span>inl;
         }
 
-        <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">&quot;&lt;&quot;</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>)
+        <span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">"&lt;"</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>)
     }
 
-    <span class="kw">pub fn </span>push_bracket(<span class="kw-2">&amp;mut </span><span class="self">self</span>, image: bool, inl_text: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+    <span class="kw">pub fn </span>push_bracket(<span class="kw-2">&amp;mut </span><span class="self">self</span>, image: bool, inl_text: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) {
         <span class="kw">let </span>len = <span class="self">self</span>.brackets.len();
         <span class="kw">if </span>len &gt; <span class="number">0 </span>{
             <span class="self">self</span>.brackets[len - <span class="number">1</span>].bracket_after = <span class="bool-val">true</span>;
@@ -2656,14 +2657,14 @@
         }
     }
 
-    <span class="kw">pub fn </span>handle_close_bracket(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+    <span class="kw">pub fn </span>handle_close_bracket(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="self">self</span>.pos += <span class="number">1</span>;
         <span class="kw">let </span>initial_pos = <span class="self">self</span>.pos;
 
         <span class="kw">let </span>brackets_len = <span class="self">self</span>.brackets.len();
         <span class="kw">if </span>brackets_len == <span class="number">0 </span>{
             <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">self</span>.make_inline(
-                NodeValue::Text(<span class="string">&quot;]&quot;</span>.to_string()),
+                NodeValue::Text(<span class="string">"]"</span>.to_string()),
                 <span class="self">self</span>.pos - <span class="number">1</span>,
                 <span class="self">self</span>.pos - <span class="number">1</span>,
             ));
@@ -2674,7 +2675,7 @@
         <span class="kw">if </span>!is_image &amp;&amp; <span class="self">self</span>.no_link_openers {
             <span class="self">self</span>.brackets.pop();
             <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">self</span>.make_inline(
-                NodeValue::Text(<span class="string">&quot;]&quot;</span>.to_string()),
+                NodeValue::Text(<span class="string">"]"</span>.to_string()),
                 <span class="self">self</span>.pos - <span class="number">1</span>,
                 <span class="self">self</span>.pos - <span class="number">1</span>,
             ));
@@ -2687,7 +2688,7 @@
         </span><span class="kw">let </span><span class="kw-2">mut </span>sps = <span class="number">0</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>url: <span class="kw-2">&amp;</span>[u8] = <span class="kw-2">&amp;</span>[];
         <span class="kw">let </span><span class="kw-2">mut </span>n: usize = <span class="number">0</span>;
-        <span class="kw">if </span><span class="self">self</span>.peek_char() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b&#39;(&#39;</span>)) &amp;&amp; {
+        <span class="kw">if </span><span class="self">self</span>.peek_char() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b'('</span>)) &amp;&amp; {
             sps = scanners::spacechars(<span class="kw-2">&amp;</span><span class="self">self</span>.input[<span class="self">self</span>.pos + <span class="number">1</span>..]).unwrap_or(<span class="number">0</span>);
             <span class="kw">let </span>offset = <span class="self">self</span>.pos + <span class="number">1 </span>+ sps;
             offset &lt; <span class="self">self</span>.input.len()
@@ -2707,7 +2708,7 @@
             };
             <span class="kw">let </span>endall = endtitle + scanners::spacechars(<span class="kw-2">&amp;</span><span class="self">self</span>.input[endtitle..]).unwrap_or(<span class="number">0</span>);
 
-            <span class="kw">if </span>endall &lt; <span class="self">self</span>.input.len() &amp;&amp; <span class="self">self</span>.input[endall] == <span class="string">b&#39;)&#39; </span>{
+            <span class="kw">if </span>endall &lt; <span class="self">self</span>.input.len() &amp;&amp; <span class="self">self</span>.input[endall] == <span class="string">b')' </span>{
                 <span class="self">self</span>.pos = endall + <span class="number">1</span>;
                 <span class="kw">let </span>url = strings::clean_url(url);
                 <span class="kw">let </span>title = strings::clean_title(<span class="kw-2">&amp;</span><span class="self">self</span>.input[starttitle..endtitle]);
@@ -2726,7 +2727,7 @@
 
         </span><span class="kw">let </span>(<span class="kw-2">mut </span>lab, <span class="kw-2">mut </span>found_label) = <span class="kw">match </span><span class="self">self</span>.link_label() {
             <span class="prelude-val">Some</span>(lab) =&gt; (lab.to_string(), <span class="bool-val">true</span>),
-            <span class="prelude-val">None </span>=&gt; (<span class="string">&quot;&quot;</span>.to_string(), <span class="bool-val">false</span>),
+            <span class="prelude-val">None </span>=&gt; (<span class="string">""</span>.to_string(), <span class="bool-val">false</span>),
         };
 
         <span class="kw">if </span>!found_label {
@@ -2774,7 +2775,7 @@
                             .text()
                             .unwrap()
                             .as_bytes()
-                            .starts_with(<span class="kw-2">&amp;</span>[<span class="string">b&#39;^&#39;</span>])
+                            .starts_with(<span class="kw-2">&amp;</span>[<span class="string">b'^'</span>])
                     } <span class="kw">else </span>{
                         <span class="bool-val">false
                     </span>}
@@ -2792,7 +2793,7 @@
 
             <span class="comment">// The footnote name could have been parsed into multiple text/htmlinline nodes.
             // For example `[^_foo]` gives `^`, `_`, and `foo`. So pull them together.
-            // Since we&#39;re handling the closing bracket, the only siblings at this point are
+            // Since we're handling the closing bracket, the only siblings at this point are
             // related to the footnote name.
             </span><span class="kw">for </span>sibling <span class="kw">in </span>sibling_iterator {
                 <span class="kw">match </span>sibling.data.borrow().value {
@@ -2833,7 +2834,7 @@
                     };
                 }
 
-                <span class="comment">// We don&#39;t need to process emphasis for footnote names, so cleanup
+                <span class="comment">// We don't need to process emphasis for footnote names, so cleanup
                 // any outstanding delimiters
                 </span><span class="self">self</span>.remove_delimiters(<span class="self">self</span>.brackets[brackets_len - <span class="number">1</span>].position);
 
@@ -2844,7 +2845,7 @@
 
         <span class="self">self</span>.brackets.pop();
         <span class="self">self</span>.pos = initial_pos;
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">&quot;]&quot;</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>))
+        <span class="prelude-val">Some</span>(<span class="self">self</span>.make_inline(NodeValue::Text(<span class="string">"]"</span>.to_string()), <span class="self">self</span>.pos - <span class="number">1</span>, <span class="self">self</span>.pos - <span class="number">1</span>))
     }
 
     <span class="kw">pub fn </span>close_bracket_match(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is_image: bool, url: String, title: String) {
@@ -2890,7 +2891,7 @@
     <span class="kw">pub fn </span>link_label(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
         <span class="kw">let </span>startpos = <span class="self">self</span>.pos;
 
-        <span class="kw">if </span><span class="self">self</span>.peek_char() != <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b&#39;[&#39;</span>)) {
+        <span class="kw">if </span><span class="self">self</span>.peek_char() != <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b'['</span>)) {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
@@ -2898,8 +2899,8 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>length = <span class="number">0</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">0</span>;
-        <span class="kw">while </span>unwrap_into_copy(<span class="self">self</span>.peek_char(), <span class="kw-2">&amp;mut </span>c) &amp;&amp; c != <span class="string">b&#39;[&#39; </span>&amp;&amp; c != <span class="string">b&#39;]&#39; </span>{
-            <span class="kw">if </span>c == <span class="string">b&#39;\\&#39; </span>{
+        <span class="kw">while </span>unwrap_into_copy(<span class="self">self</span>.peek_char(), <span class="kw-2">&amp;mut </span>c) &amp;&amp; c != <span class="string">b'[' </span>&amp;&amp; c != <span class="string">b']' </span>{
+            <span class="kw">if </span>c == <span class="string">b'\\' </span>{
                 <span class="self">self</span>.pos += <span class="number">1</span>;
                 length += <span class="number">1</span>;
                 <span class="kw">if </span><span class="self">self</span>.peek_char().map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| ispunct(c)) {
@@ -2916,7 +2917,7 @@
             }
         }
 
-        <span class="kw">if </span>c == <span class="string">b&#39;]&#39; </span>{
+        <span class="kw">if </span>c == <span class="string">b']' </span>{
             <span class="kw">let </span>raw_label = strings::trim_slice(<span class="kw-2">&amp;</span><span class="self">self</span>.input[startpos + <span class="number">1</span>..<span class="self">self</span>.pos]);
             <span class="self">self</span>.pos += <span class="number">1</span>;
             <span class="prelude-val">Some</span>(str::from_utf8(raw_label).unwrap())
@@ -2938,7 +2939,7 @@
         value: NodeValue,
         start_column: usize,
         end_column: usize,
-    ) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    ) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">let </span>start_column =
             start_column <span class="kw">as </span>isize + <span class="number">1 </span>+ <span class="self">self</span>.column_offset + <span class="self">self</span>.block_offset <span class="kw">as </span>isize;
         <span class="kw">let </span>end_column = end_column <span class="kw">as </span>isize + <span class="number">1 </span>+ <span class="self">self</span>.column_offset + <span class="self">self</span>.block_offset <span class="kw">as </span>isize;
@@ -2967,7 +2968,7 @@
         kind: AutolinkType,
         start_column: usize,
         end_column: usize,
-    ) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    ) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">let </span>inl = <span class="self">self</span>.make_inline(
             NodeValue::Link(NodeLink {
                 url: String::from_utf8(strings::clean_autolink(url, kind)).unwrap(),
@@ -2989,16 +2990,16 @@
     <span class="kw">let </span>len = input.len();
     <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
 
-    <span class="kw">if </span>i &lt; len &amp;&amp; input[i] == <span class="string">b&#39;&lt;&#39; </span>{
+    <span class="kw">if </span>i &lt; len &amp;&amp; input[i] == <span class="string">b'&lt;' </span>{
         i += <span class="number">1</span>;
         <span class="kw">while </span>i &lt; len {
             <span class="kw">let </span>b = input[i];
-            <span class="kw">if </span>b == <span class="string">b&#39;&gt;&#39; </span>{
+            <span class="kw">if </span>b == <span class="string">b'&gt;' </span>{
                 i += <span class="number">1</span>;
                 <span class="kw">break</span>;
-            } <span class="kw">else if </span>b == <span class="string">b&#39;\\&#39; </span>{
+            } <span class="kw">else if </span>b == <span class="string">b'\\' </span>{
                 i += <span class="number">2</span>;
-            } <span class="kw">else if </span>b == <span class="string">b&#39;\n&#39; </span>|| b == <span class="string">b&#39;&lt;&#39; </span>{
+            } <span class="kw">else if </span>b == <span class="string">b'\n' </span>|| b == <span class="string">b'&lt;' </span>{
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             } <span class="kw">else </span>{
                 i += <span class="number">1</span>;
@@ -3021,15 +3022,15 @@
     <span class="kw">let </span><span class="kw-2">mut </span>nb_p = <span class="number">0</span>;
 
     <span class="kw">while </span>i &lt; len {
-        <span class="kw">if </span>input[i] == <span class="string">b&#39;\\&#39; </span>&amp;&amp; i + <span class="number">1 </span>&lt; len &amp;&amp; ispunct(input[i + <span class="number">1</span>]) {
+        <span class="kw">if </span>input[i] == <span class="string">b'\\' </span>&amp;&amp; i + <span class="number">1 </span>&lt; len &amp;&amp; ispunct(input[i + <span class="number">1</span>]) {
             i += <span class="number">2</span>;
-        } <span class="kw">else if </span>input[i] == <span class="string">b&#39;(&#39; </span>{
+        } <span class="kw">else if </span>input[i] == <span class="string">b'(' </span>{
             nb_p += <span class="number">1</span>;
             i += <span class="number">1</span>;
             <span class="kw">if </span>nb_p &gt; <span class="number">32 </span>{
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             }
-        } <span class="kw">else if </span>input[i] == <span class="string">b&#39;)&#39; </span>{
+        } <span class="kw">else if </span>input[i] == <span class="string">b')' </span>{
             <span class="kw">if </span>nb_p == <span class="number">0 </span>{
                 <span class="kw">break</span>;
             }
@@ -3052,11 +3053,11 @@
     }
 }
 
-<span class="kw">pub fn </span>make_inline&lt;<span class="lifetime">&#39;a</span>&gt;(
-    arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+<span class="kw">pub fn </span>make_inline&lt;<span class="lifetime">'a</span>&gt;(
+    arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
     value: NodeValue,
     sourcepos: Sourcepos,
-) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">let </span>ast = Ast {
         value,
         content: String::new(),
@@ -3074,7 +3075,7 @@
     <span class="kw">let </span><span class="kw-2">mut </span>since_nl = <span class="number">0</span>;
 
     <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span>input {
-        <span class="kw">if </span>c == <span class="string">b&#39;\n&#39; </span>{
+        <span class="kw">if </span>c == <span class="string">b'\n' </span>{
             nls += <span class="number">1</span>;
             since_nl = <span class="number">0</span>;
         } <span class="kw">else </span>{

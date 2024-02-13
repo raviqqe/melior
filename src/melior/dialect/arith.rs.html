@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/dialect/arith.rs`."><title>arith.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/dialect/arith.rs`."><title>arith.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -674,16 +675,16 @@
 <span class="comment">// spell-checker: disable
 
 </span><span class="doccomment">/// Creates an `arith.constant` operation.
-</span><span class="kw">pub fn </span>constant&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    value: Attribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;arith.constant&quot;</span>, location)
-        .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;value&quot;</span>), value)])
+</span><span class="kw">pub fn </span>constant&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    value: Attribute&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"arith.constant"</span>, location)
+        .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">"value"</span>), value)])
         .enable_result_type_inference()
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// `arith.cmpf` predicate
@@ -707,14 +708,14 @@
 }
 
 <span class="doccomment">/// Creates an `arith.cmpf` operation.
-</span><span class="kw">pub fn </span>cmpf&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
+</span><span class="kw">pub fn </span>cmpf&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
     predicate: CmpfPredicate,
-    lhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    cmp(context, <span class="string">&quot;arith.cmpf&quot;</span>, predicate <span class="kw">as </span>i64, lhs, rhs, location)
+    lhs: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    rhs: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    cmp(context, <span class="string">"arith.cmpf"</span>, predicate <span class="kw">as </span>i64, lhs, rhs, location)
 }
 
 <span class="doccomment">/// `arith.cmpi` predicate
@@ -732,47 +733,47 @@
 }
 
 <span class="doccomment">/// Creates an `arith.cmpi` operation.
-</span><span class="kw">pub fn </span>cmpi&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
+</span><span class="kw">pub fn </span>cmpi&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
     predicate: CmpiPredicate,
-    lhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    cmp(context, <span class="string">&quot;arith.cmpi&quot;</span>, predicate <span class="kw">as </span>i64, lhs, rhs, location)
+    lhs: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    rhs: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    cmp(context, <span class="string">"arith.cmpi"</span>, predicate <span class="kw">as </span>i64, lhs, rhs, location)
 }
 
-<span class="kw">fn </span>cmp&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
+<span class="kw">fn </span>cmp&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
     name: <span class="kw-2">&amp;</span>str,
     predicate: i64,
-    lhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+    lhs: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    rhs: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
     OperationBuilder::new(name, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
-            Identifier::new(context, <span class="string">&quot;predicate&quot;</span>),
+            Identifier::new(context, <span class="string">"predicate"</span>),
             IntegerAttribute::new(predicate, IntegerType::new(context, <span class="number">64</span>).into()).into(),
         )])
         .add_operands(<span class="kw-2">&amp;</span>[lhs, rhs])
         .enable_result_type_inference()
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates an `arith.select` operation.
-</span><span class="kw">pub fn </span>select&lt;<span class="lifetime">&#39;c</span>&gt;(
-    condition: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    true_value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    false_value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;arith.select&quot;</span>, location)
+</span><span class="kw">pub fn </span>select&lt;<span class="lifetime">'c</span>&gt;(
+    condition: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    true_value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    false_value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"arith.select"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[condition, true_value, false_value])
         .add_results(<span class="kw-2">&amp;</span>[true_value.r#type()])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="macro">melior_macro::binary_operations!</span>(
@@ -850,11 +851,11 @@
         context
     }
 
-    <span class="kw">fn </span>compile_operation&lt;<span class="lifetime">&#39;c</span>&gt;(
-        context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-        operation: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt;,
-        block_argument_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
-        function_type: FunctionType&lt;<span class="lifetime">&#39;c</span>&gt;,
+    <span class="kw">fn </span>compile_operation&lt;<span class="lifetime">'c</span>&gt;(
+        context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+        operation: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">'c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt;,
+        block_argument_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">'c</span>&gt;],
+        function_type: FunctionType&lt;<span class="lifetime">'c</span>&gt;,
     ) {
         <span class="kw">let </span>location = Location::unknown(context);
         <span class="kw">let </span>module = Module::new(location);
@@ -880,7 +881,7 @@
 
         <span class="kw">let </span>function = func::func(
             context,
-            StringAttribute::new(context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(context, <span class="string">"foo"</span>),
             TypeAttribute::new(function_type.into()),
             region,
             <span class="kw-2">&amp;</span>[],
@@ -903,7 +904,7 @@
             |<span class="kw">_</span>| {
                 constant(
                     <span class="kw-2">&amp;</span>context,
-                    Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;42 : i64&quot;</span>).unwrap(),
+                    Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"42 : i64"</span>).unwrap(),
                     Location::unknown(<span class="kw-2">&amp;</span>context),
                 )
             },
@@ -1254,7 +1255,7 @@
 
             func::func(
                 <span class="kw-2">&amp;</span>context,
-                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
                 TypeAttribute::new(
                     FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type, integer_type], <span class="kw-2">&amp;</span>[integer_type])
                         .into(),
@@ -1303,7 +1304,7 @@
 
             func::func(
                 <span class="kw-2">&amp;</span>context,
-                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
                 TypeAttribute::new(
                     FunctionType::new(
                         <span class="kw-2">&amp;</span>context,

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/ir/attribute.rs`."><title>attribute.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/ir/attribute.rs`."><title>attribute.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -356,14 +357,14 @@
 <span class="doccomment">/// An attribute.
 </span><span class="comment">// Attributes are always values but their internal storage is owned by contexts.
 </span><span class="attr">#[derive(Clone, Copy)]
-</span><span class="kw">pub struct </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+</span><span class="kw">pub struct </span>Attribute&lt;<span class="lifetime">'c</span>&gt; {
     raw: MlirAttribute,
-    _context: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context&gt;,
+    _context: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; Attribute&lt;<span class="lifetime">'c</span>&gt; {
     <span class="doccomment">/// Parses an attribute.
-    </span><span class="kw">pub fn </span>parse(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, source: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">pub fn </span>parse(context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context, source: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">unsafe </span>{
             <span class="self">Self</span>::from_option_raw(mlirAttributeParseGet(
                 context.to_raw(),
@@ -373,7 +374,7 @@
     }
 
     <span class="doccomment">/// Creates a unit attribute.
-    </span><span class="kw">pub fn </span>unit(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>unit(context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ <span class="self">Self</span>::from_raw(mlirUnitAttrGet(context.to_raw())) }
     }
 
@@ -407,21 +408,21 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; AttributeLike&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; AttributeLike&lt;<span class="lifetime">'c</span>&gt; <span class="kw">for </span>Attribute&lt;<span class="lifetime">'c</span>&gt; {
     <span class="kw">fn </span>to_raw(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MlirAttribute {
         <span class="self">self</span>.raw
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; PartialEq <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; PartialEq <span class="kw">for </span>Attribute&lt;<span class="lifetime">'c</span>&gt; {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         <span class="kw">unsafe </span>{ mlirAttributeEqual(<span class="self">self</span>.raw, other.raw) }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Eq <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {}
+<span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; Eq <span class="kw">for </span>Attribute&lt;<span class="lifetime">'c</span>&gt; {}
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Display <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; Display <span class="kw">for </span>Attribute&lt;<span class="lifetime">'c</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">let </span><span class="kw-2">mut </span>data = (formatter, <span class="prelude-val">Ok</span>(()));
 
@@ -437,7 +438,7 @@
     </span>}
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; Debug <span class="kw">for </span>Attribute&lt;<span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; Debug <span class="kw">for </span>Attribute&lt;<span class="lifetime">'c</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         Display::fmt(<span class="self">self</span>, formatter)
     }
@@ -467,7 +468,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>parse() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="kw">for </span>attribute <span class="kw">in </span>[<span class="string">&quot;unit&quot;</span>, <span class="string">&quot;i32&quot;</span>, <span class="string">r#&quot;&quot;foo&quot;&quot;#</span>] {
+        <span class="kw">for </span>attribute <span class="kw">in </span>[<span class="string">"unit"</span>, <span class="string">"i32"</span>, <span class="string">r#""foo""#</span>] {
             <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, attribute).is_some());
         }
     }
@@ -478,13 +479,13 @@
         // `&lt;mlir_parser_buffer&gt;:1:1: error: expected attribute value
         // z
         // ^`
-        </span><span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">&quot;z&quot;</span>).is_none());
+        </span><span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>Context::new(), <span class="string">"z"</span>).is_none());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>context() {
         <span class="kw">let </span>context = create_test_context();
-        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap().context();
+        Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"unit"</span>).unwrap().context();
     }
 
     <span class="attr">#[test]
@@ -492,7 +493,7 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap().r#type(),
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"unit"</span>).unwrap().r#type(),
             Type::none(<span class="kw-2">&amp;</span>context)
         );
     }
@@ -504,7 +505,7 @@
         <span class="kw">let </span>context = Context::new();
 
         <span class="macro">assert_eq!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;42 : index&quot;</span>).unwrap().type_id(),
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"42 : index"</span>).unwrap().type_id(),
             Type::index(<span class="kw-2">&amp;</span>context).id()
         );
     }
@@ -512,19 +513,19 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_array() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;[]&quot;</span>).unwrap().is_array());
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"[]"</span>).unwrap().is_array());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_bool() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;false&quot;</span>).unwrap().is_bool());
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"false"</span>).unwrap().is_bool());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_dense_elements() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;dense&lt;10&gt; : tensor&lt;2xi8&gt;&quot;</span>)
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"dense&lt;10&gt; : tensor&lt;2xi8&gt;"</span>)
             .unwrap()
             .is_dense_elements());
     }
@@ -532,7 +533,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_dense_int_elements() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;dense&lt;42&gt; : tensor&lt;42xi8&gt;&quot;</span>)
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"dense&lt;42&gt; : tensor&lt;42xi8&gt;"</span>)
             .unwrap()
             .is_dense_int_elements());
     }
@@ -540,7 +541,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_dense_fp_elements() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;dense&lt;42.0&gt; : tensor&lt;42xf32&gt;&quot;</span>)
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"dense&lt;42.0&gt; : tensor&lt;42xf32&gt;"</span>)
             .unwrap()
             .is_dense_fp_elements());
     }
@@ -550,7 +551,7 @@
         <span class="kw">let </span>context = create_test_context();
         <span class="macro">assert!</span>(Attribute::parse(
             <span class="kw-2">&amp;</span>context,
-            <span class="string">&quot;sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;&quot;
+            <span class="string">"sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;"
         </span>)
         .unwrap()
         .is_elements());
@@ -559,14 +560,14 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_integer() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;42&quot;</span>).unwrap().is_integer());
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"42"</span>).unwrap().is_integer());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_integer_set() {
         <span class="kw">let </span>context = create_test_context();
         <span class="macro">assert!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;affine_set&lt;(d0) : (d0 - 2 &gt;= 0)&gt;&quot;</span>)
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"affine_set&lt;(d0) : (d0 - 2 &gt;= 0)&gt;"</span>)
                 .unwrap()
                 .is_integer_set()
         );
@@ -577,7 +578,7 @@
     #[test]
     </span><span class="kw">fn </span>is_opaque() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;#foo&lt;\&quot;bar\&quot;&gt;&quot;</span>)
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"#foo&lt;\"bar\"&gt;"</span>)
             .unwrap()
             .is_opaque());
     }
@@ -587,7 +588,7 @@
         <span class="kw">let </span>context = create_test_context();
         <span class="macro">assert!</span>(Attribute::parse(
             <span class="kw-2">&amp;</span>context,
-            <span class="string">&quot;sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;&quot;
+            <span class="string">"sparse&lt;[[0, 0], [1, 2]], [1, 5]&gt; : tensor&lt;3x4xi32&gt;"
         </span>)
         .unwrap()
         .is_sparse_elements());
@@ -596,31 +597,31 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_string() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;\&quot;foo\&quot;&quot;</span>).unwrap().is_string());
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"\"foo\""</span>).unwrap().is_string());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_type() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap().is_type());
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"index"</span>).unwrap().is_type());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_unit() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap().is_unit());
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"unit"</span>).unwrap().is_unit());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>is_symbol() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;@foo&quot;</span>).unwrap().is_symbol_ref());
+        <span class="macro">assert!</span>(Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"@foo"</span>).unwrap().is_symbol_ref());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>equal() {
         <span class="kw">let </span>context = create_test_context();
-        <span class="kw">let </span>attribute = Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap();
+        <span class="kw">let </span>attribute = Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"unit"</span>).unwrap();
 
         <span class="macro">assert_eq!</span>(attribute, attribute);
     }
@@ -630,8 +631,8 @@
         <span class="kw">let </span>context = create_test_context();
 
         <span class="macro">assert_ne!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap(),
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;42&quot;</span>).unwrap()
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"unit"</span>).unwrap(),
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"42"</span>).unwrap()
         );
     }
 
@@ -639,8 +640,8 @@
     </span><span class="kw">fn </span>display() {
         <span class="kw">let </span>context = create_test_context();
         <span class="macro">assert_eq!</span>(
-            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;unit&quot;</span>).unwrap().to_string(),
-            <span class="string">&quot;unit&quot;
+            Attribute::parse(<span class="kw-2">&amp;</span>context, <span class="string">"unit"</span>).unwrap().to_string(),
+            <span class="string">"unit"
         </span>);
     }
 }

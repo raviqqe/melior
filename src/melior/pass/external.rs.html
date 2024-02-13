@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/pass/external.rs`."><title>external.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/pass/external.rs`."><title>external.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -354,12 +355,12 @@
 <span class="kw">use </span>std::{marker::PhantomData, mem::transmute, ptr::drop_in_place};
 
 <span class="attr">#[derive(Clone, Copy, Debug)]
-</span><span class="kw">pub struct </span>ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">pub struct </span>ExternalPass&lt;<span class="lifetime">'a</span>&gt; {
     raw: MlirExternalPass,
-    _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>MlirExternalPass&gt;,
+    _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>MlirExternalPass&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ExternalPass&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ExternalPass&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Signals that the pass has failed.
     </span><span class="kw">pub fn </span>signal_failure(<span class="self">self</span>) {
         <span class="kw">unsafe </span>{ mlirExternalPassSignalFailure(<span class="self">self</span>.raw) }
@@ -383,46 +384,46 @@
     }
 }
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_construct&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) {
+<span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn </span>callback_construct&lt;<span class="lifetime">'a</span>, T: RunExternalPass&lt;<span class="lifetime">'a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) {
     pass.as_mut()
-        .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
+        .expect(<span class="string">"pass should be valid when called"</span>)
         .construct();
 }
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_destruct&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) {
+<span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn </span>callback_destruct&lt;<span class="lifetime">'a</span>, T: RunExternalPass&lt;<span class="lifetime">'a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) {
     pass.as_mut()
-        .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
+        .expect(<span class="string">"pass should be valid when called"</span>)
         .destruct();
     drop_in_place(pass);
 }
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_initialize&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(
+<span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn </span>callback_initialize&lt;<span class="lifetime">'a</span>, T: RunExternalPass&lt;<span class="lifetime">'a</span>&gt;&gt;(
     ctx: MlirContext,
     pass: <span class="kw-2">*mut </span>T,
 ) -&gt; MlirLogicalResult {
     pass.as_mut()
-        .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
+        .expect(<span class="string">"pass should be valid when called"</span>)
         .initialize(ContextRef::from_raw(ctx));
     MlirLogicalResult { value: <span class="number">1 </span>}
 }
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_run&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(
+<span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn </span>callback_run&lt;<span class="lifetime">'a</span>, T: RunExternalPass&lt;<span class="lifetime">'a</span>&gt;&gt;(
     op: MlirOperation,
     mlir_pass: MlirExternalPass,
     pass: <span class="kw-2">*mut </span>T,
 ) {
     pass.as_mut()
-        .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
+        .expect(<span class="string">"pass should be valid when called"</span>)
         .run(
             OperationRef::from_raw(op),
             ExternalPass::from_raw(mlir_pass),
         )
 }
 
-<span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>callback_clone&lt;<span class="lifetime">&#39;a</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) -&gt; <span class="kw-2">*mut </span>T {
+<span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn </span>callback_clone&lt;<span class="lifetime">'a</span>, T: RunExternalPass&lt;<span class="lifetime">'a</span>&gt;&gt;(pass: <span class="kw-2">*mut </span>T) -&gt; <span class="kw-2">*mut </span>T {
     Box::&lt;T&gt;::into_raw(Box::new(
         pass.as_mut()
-            .expect(<span class="string">&quot;pass should be valid when called&quot;</span>)
+            .expect(<span class="string">"pass should be valid when called"</span>)
             .clone(),
     ))
 }
@@ -446,31 +447,31 @@
 /// #[derive(Clone, Debug)]
 /// struct ExamplePass;
 ///
-/// impl&lt;&#39;c&gt; RunExternalPass&lt;&#39;c&gt; for ExamplePass {
+/// impl&lt;'c&gt; RunExternalPass&lt;'c&gt; for ExamplePass {
 ///     fn construct(&amp;mut self) {
-///         println!(&quot;Constructed pass!&quot;);
+///         println!("Constructed pass!");
 ///     }
 ///
-///     fn initialize(&amp;mut self, context: ContextRef&lt;&#39;c&gt;) {
-///         println!(&quot;Initialize called!&quot;);
+///     fn initialize(&amp;mut self, context: ContextRef&lt;'c&gt;) {
+///         println!("Initialize called!");
 ///     }
 ///
-///     fn run(&amp;mut self, operation: OperationRef&lt;&#39;c, &#39;_&gt;, _pass: ExternalPass&lt;&#39;_&gt;) {
+///     fn run(&amp;mut self, operation: OperationRef&lt;'c, '_&gt;, _pass: ExternalPass&lt;'_&gt;) {
 ///         operation.dump();
 ///     }
 /// }
 /// ```
-</span><span class="kw">pub trait </span>RunExternalPass&lt;<span class="lifetime">&#39;c</span>&gt;: Sized + Clone {
+</span><span class="kw">pub trait </span>RunExternalPass&lt;<span class="lifetime">'c</span>&gt;: Sized + Clone {
     <span class="kw">fn </span>construct(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {}
     <span class="kw">fn </span>destruct(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {}
-    <span class="kw">fn </span>initialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: ContextRef&lt;<span class="lifetime">&#39;c</span>&gt;);
-    <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, pass: ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;);
+    <span class="kw">fn </span>initialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: ContextRef&lt;<span class="lifetime">'c</span>&gt;);
+    <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;, pass: ExternalPass&lt;<span class="lifetime">'_</span>&gt;);
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>, F: FnMut(OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;) + Clone&gt; RunExternalPass&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>F {
-    <span class="kw">fn </span>initialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _context: ContextRef&lt;<span class="lifetime">&#39;c</span>&gt;) {}
+<span class="kw">impl</span>&lt;<span class="lifetime">'c</span>, F: FnMut(OperationRef&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;, ExternalPass&lt;<span class="lifetime">'_</span>&gt;) + Clone&gt; RunExternalPass&lt;<span class="lifetime">'c</span>&gt; <span class="kw">for </span>F {
+    <span class="kw">fn </span>initialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _context: ContextRef&lt;<span class="lifetime">'c</span>&gt;) {}
 
-    <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, pass: ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;) {
+    <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;, pass: ExternalPass&lt;<span class="lifetime">'_</span>&gt;) {
         <span class="self">self</span>(operation, pass)
     }
 }
@@ -498,15 +499,15 @@
 ///         operation.dump();
 ///     },
 ///     TypeId::create(&amp;EXAMPLE_PASS),
-///     &quot;name&quot;,
-///     &quot;argument&quot;,
-///     &quot;description&quot;,
-///     &quot;&quot;,
+///     "name",
+///     "argument",
+///     "description",
+///     "",
 ///     &amp;[],
 /// );
 /// ```
 </span><span class="attr">#[allow(clippy::too_many_arguments)]
-</span><span class="kw">pub fn </span>create_external&lt;<span class="lifetime">&#39;c</span>, T: RunExternalPass&lt;<span class="lifetime">&#39;c</span>&gt;&gt;(
+</span><span class="kw">pub fn </span>create_external&lt;<span class="lifetime">'c</span>, T: RunExternalPass&lt;<span class="lifetime">'c</span>&gt;&gt;(
     pass: T,
     pass_id: TypeId,
     name: <span class="kw-2">&amp;</span>str,
@@ -560,7 +561,7 @@
 
         module.body().append_operation(func::func(
             context,
-            StringAttribute::new(context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
@@ -581,12 +582,12 @@
         <span class="kw">static </span>TEST_PASS: PassId = PassId;
 
         <span class="attr">#[derive(Clone, Debug)]
-        </span><span class="kw">struct </span>TestPass&lt;<span class="lifetime">&#39;c</span>&gt; {
-            context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
+        </span><span class="kw">struct </span>TestPass&lt;<span class="lifetime">'c</span>&gt; {
+            context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
             value: i32,
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; RunExternalPass&lt;<span class="lifetime">&#39;c</span>&gt; <span class="kw">for </span>TestPass&lt;<span class="lifetime">&#39;c</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; RunExternalPass&lt;<span class="lifetime">'c</span>&gt; <span class="kw">for </span>TestPass&lt;<span class="lifetime">'c</span>&gt; {
             <span class="kw">fn </span>construct(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
                 <span class="macro">assert_eq!</span>(<span class="self">self</span>.value, <span class="number">10</span>);
             }
@@ -595,38 +596,38 @@
                 <span class="macro">assert_eq!</span>(<span class="self">self</span>.value, <span class="number">30</span>);
             }
 
-            <span class="kw">fn </span>initialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _context: ContextRef&lt;<span class="lifetime">&#39;c</span>&gt;) {
+            <span class="kw">fn </span>initialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _context: ContextRef&lt;<span class="lifetime">'c</span>&gt;) {
                 <span class="macro">assert_eq!</span>(<span class="self">self</span>.value, <span class="number">10</span>);
                 <span class="self">self</span>.value = <span class="number">20</span>;
             }
 
-            <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;, _pass: ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;) {
+            <span class="kw">fn </span>run(<span class="kw-2">&amp;mut </span><span class="self">self</span>, operation: OperationRef&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;, _pass: ExternalPass&lt;<span class="lifetime">'_</span>&gt;) {
                 <span class="macro">assert_eq!</span>(<span class="self">self</span>.value, <span class="number">20</span>);
                 <span class="self">self</span>.value = <span class="number">30</span>;
                 <span class="macro">assert!</span>(operation.verify());
                 <span class="macro">assert!</span>(
                     operation
                         .region(<span class="number">0</span>)
-                        .expect(<span class="string">&quot;module has a body&quot;</span>)
+                        .expect(<span class="string">"module has a body"</span>)
                         .first_block()
-                        .expect(<span class="string">&quot;module has a body&quot;</span>)
+                        .expect(<span class="string">"module has a body"</span>)
                         .first_operation()
-                        .expect(<span class="string">&quot;body has a function&quot;</span>)
+                        .expect(<span class="string">"body has a function"</span>)
                         .name()
-                        == Identifier::new(<span class="self">self</span>.context, <span class="string">&quot;func.func&quot;</span>)
+                        == Identifier::new(<span class="self">self</span>.context, <span class="string">"func.func"</span>)
                 );
             }
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TestPass&lt;<span class="lifetime">&#39;c</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; TestPass&lt;<span class="lifetime">'c</span>&gt; {
             <span class="kw">fn </span>into_pass(<span class="self">self</span>) -&gt; Pass {
                 create_external(
                     <span class="self">self</span>,
                     TypeId::create(<span class="kw-2">&amp;</span>TEST_PASS),
-                    <span class="string">&quot;test pass&quot;</span>,
-                    <span class="string">&quot;test argument&quot;</span>,
-                    <span class="string">&quot;a test pass&quot;</span>,
-                    <span class="string">&quot;&quot;</span>,
+                    <span class="string">"test pass"</span>,
+                    <span class="string">"test argument"</span>,
+                    <span class="string">"a test pass"</span>,
+                    <span class="string">""</span>,
                     <span class="kw-2">&amp;</span>[DialectHandle::func()],
                 )
             }
@@ -655,26 +656,26 @@
         <span class="kw">let </span>pass_manager = PassManager::new(<span class="kw-2">&amp;</span>context);
 
         pass_manager.add_pass(create_external(
-            |operation: OperationRef, pass: ExternalPass&lt;<span class="lifetime">&#39;_</span>&gt;| {
+            |operation: OperationRef, pass: ExternalPass&lt;<span class="lifetime">'_</span>&gt;| {
                 <span class="macro">assert!</span>(operation.verify());
                 <span class="macro">assert!</span>(
                     operation
                         .region(<span class="number">0</span>)
-                        .expect(<span class="string">&quot;module has a body&quot;</span>)
+                        .expect(<span class="string">"module has a body"</span>)
                         .first_block()
-                        .expect(<span class="string">&quot;module has a body&quot;</span>)
+                        .expect(<span class="string">"module has a body"</span>)
                         .first_operation()
-                        .expect(<span class="string">&quot;body has a function&quot;</span>)
+                        .expect(<span class="string">"body has a function"</span>)
                         .name()
-                        == Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;func.func&quot;</span>)
+                        == Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">"func.func"</span>)
                 );
                 pass.signal_failure();
             },
             TypeId::create(<span class="kw-2">&amp;</span>TEST_FN_PASS),
-            <span class="string">&quot;test closure&quot;</span>,
-            <span class="string">&quot;test argument&quot;</span>,
-            <span class="string">&quot;test&quot;</span>,
-            <span class="string">&quot;&quot;</span>,
+            <span class="string">"test closure"</span>,
+            <span class="string">"test argument"</span>,
+            <span class="string">"test"</span>,
+            <span class="string">""</span>,
             <span class="kw-2">&amp;</span>[DialectHandle::func()],
         ));
         <span class="macro">assert!</span>(pass_manager.run(<span class="kw-2">&amp;mut </span>module).is_err());

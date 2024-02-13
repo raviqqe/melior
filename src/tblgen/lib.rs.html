@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tblgen-0.3.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tblgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tblgen-0.3.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tblgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -268,15 +269,15 @@
 //! # fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 //! let keeper: RecordKeeper = TableGenParser::new()
 //!     .add_source(
-//!         r#&quot;
+//!         r#"
 //!         class A;
 //!         def D: A;
-//!         &quot;#,
+//!         "#,
 //!     )?
 //!     .parse()?;
-//! assert_eq!(keeper.classes().next().unwrap().0, Ok(&quot;A&quot;));
-//! assert_eq!(keeper.defs().next().unwrap().0, Ok(&quot;D&quot;));
-//! assert_eq!(keeper.all_derived_definitions(&quot;A&quot;).next().unwrap().name(), Ok(&quot;D&quot;));
+//! assert_eq!(keeper.classes().next().unwrap().0, Ok("A"));
+//! assert_eq!(keeper.defs().next().unwrap().0, Ok("D"));
+//! assert_eq!(keeper.all_derived_definitions("A").next().unwrap().name(), Ok("D"));
 //! # Ok(())
 //! # }
 //! ```
@@ -289,12 +290,12 @@
 //!
 //! # fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 //! let keeper: RecordKeeper = TableGenParser::new()
-//!     .add_source(r#&quot;include &quot;mlir/IR/OpBase.td&quot;&quot;#)?
-//!     .add_include_path(&amp;format!(&quot;{}/include&quot;, std::env::var(&quot;TABLEGEN_170_PREFIX&quot;)?))
+//!     .add_source(r#"include "mlir/IR/OpBase.td""#)?
+//!     .add_include_path(&amp;format!("{}/include", std::env::var("TABLEGEN_170_PREFIX")?))
 //!     .parse()?;
-//! let i32_def = keeper.def(&quot;I32&quot;).expect(&quot;has I32 def&quot;);
-//! assert!(i32_def.subclass_of(&quot;I&quot;));
-//! assert_eq!(i32_def.int_value(&quot;bitwidth&quot;), Ok(32));
+//! let i32_def = keeper.def("I32").expect("has I32 def");
+//! assert!(i32_def.subclass_of("I"));
+//! assert_eq!(i32_def.int_value("bitwidth"), Ok(32));
 //! # Ok(())
 //! # }
 //! ```
@@ -320,7 +321,7 @@
 #[allow(non_camel_case_types)]
 #[allow(non_snake_case)]
 </span><span class="kw">pub mod </span>raw {
-    <span class="macro">include!</span>(<span class="macro">concat!</span>(<span class="macro">env!</span>(<span class="string">&quot;OUT_DIR&quot;</span>), <span class="string">&quot;/bindings.rs&quot;</span>));
+    <span class="macro">include!</span>(<span class="macro">concat!</span>(<span class="macro">env!</span>(<span class="string">"OUT_DIR"</span>), <span class="string">"/bindings.rs"</span>));
 }
 
 <span class="kw">use </span>std::ffi::CStr;
@@ -349,19 +350,19 @@
 <span class="doccomment">/// Builder struct that parses TableGen source files and builds a
 /// [`RecordKeeper`].
 </span><span class="attr">#[derive(Debug, PartialEq, Eq)]
-</span><span class="kw">pub struct </span>TableGenParser&lt;<span class="lifetime">&#39;s</span>&gt; {
+</span><span class="kw">pub struct </span>TableGenParser&lt;<span class="lifetime">'s</span>&gt; {
     raw: TableGenParserRef,
     source_strings: Vec&lt;CString&gt;,
-    _source_ref: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;s </span>str&gt;,
+    _source_ref: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">'s </span>str&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>&gt; Default <span class="kw">for </span>TableGenParser&lt;<span class="lifetime">&#39;s</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'s</span>&gt; Default <span class="kw">for </span>TableGenParser&lt;<span class="lifetime">'s</span>&gt; {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>&gt; TableGenParser&lt;<span class="lifetime">&#39;s</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'s</span>&gt; TableGenParser&lt;<span class="lifetime">'s</span>&gt; {
     <span class="doccomment">/// Initalizes a new TableGen parser.
     </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -390,7 +391,7 @@
     ///
     /// The string must be null-terminated and is not copied, hence it is
     /// required to live until the source code is parsed.
-    </span><span class="kw">pub fn </span>add_source_raw(<span class="self">self</span>, source: <span class="kw-2">&amp;</span><span class="lifetime">&#39;s </span>CStr) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+    </span><span class="kw">pub fn </span>add_source_raw(<span class="self">self</span>, source: <span class="kw-2">&amp;</span><span class="lifetime">'s </span>CStr) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
         <span class="kw">if unsafe </span>{ tableGenAddSource(<span class="self">self</span>.raw, source.as_ptr()) &gt; <span class="number">0 </span>} {
             <span class="prelude-val">Ok</span>(<span class="self">self</span>)
         } <span class="kw">else </span>{
@@ -407,7 +408,7 @@
         <span class="kw">if unsafe </span>{
             tableGenAddSource(
                 <span class="self">self</span>.raw,
-                <span class="self">self</span>.source_strings.last().expect(<span class="string">&quot;not empty&quot;</span>).as_ptr(),
+                <span class="self">self</span>.source_strings.last().expect(<span class="string">"not empty"</span>).as_ptr(),
             ) &gt; <span class="number">0
         </span>} {
             <span class="prelude-val">Ok</span>(<span class="self">self</span>)
@@ -425,7 +426,7 @@
     /// Due to limitations of TableGen, parsing TableGen is not thread-safe.
     /// In order to provide thread-safety, this method ensures that any
     /// concurrent parse operations are executed sequentially.
-    </span><span class="kw">pub fn </span>parse(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;RecordKeeper&lt;<span class="lifetime">&#39;s</span>&gt;, Error&gt; {
+    </span><span class="kw">pub fn </span>parse(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;RecordKeeper&lt;<span class="lifetime">'s</span>&gt;, Error&gt; {
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>guard = TABLEGEN_PARSE_LOCK.lock().unwrap();
             <span class="kw">let </span>keeper = tableGenParse(<span class="self">self</span>.raw);
@@ -440,7 +441,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>&gt; Drop <span class="kw">for </span>TableGenParser&lt;<span class="lifetime">&#39;s</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'s</span>&gt; Drop <span class="kw">for </span>TableGenParser&lt;<span class="lifetime">'s</span>&gt; {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">unsafe </span>{
             tableGenFree(<span class="self">self</span>.raw);
@@ -453,5 +454,5 @@
 /// See [`TableGenParser::source_info`](TableGenParser::source_info) and
 /// [`RecordKeeper::source_info`](RecordKeeper::source_info).
 </span><span class="attr">#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-</span><span class="kw">pub struct </span>SourceInfo&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>TableGenParser&lt;<span class="lifetime">&#39;a</span>&gt;);
+</span><span class="kw">pub struct </span>SourceInfo&lt;<span class="lifetime">'a</span>&gt;(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw-2">&amp;</span><span class="lifetime">'a </span>TableGenParser&lt;<span class="lifetime">'a</span>&gt;);
 </code></pre></div></section></main></body></html>

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.20.0/src/nodes.rs`."><title>nodes.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.21.0/src/nodes.rs`."><title>nodes.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -677,14 +678,37 @@
 <a href="#677" id="677">677</a>
 <a href="#678" id="678">678</a>
 <a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The CommonMark AST.
 
 </span><span class="kw">use </span><span class="kw">crate</span>::arena_tree::Node;
 <span class="kw">use </span>std::cell::RefCell;
 <span class="kw">use </span>std::convert::TryFrom;
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
 </span><span class="kw">use </span><span class="kw">crate</span>::parser::shortcodes::NodeShortCode;
+
+<span class="kw">use </span><span class="kw">crate</span>::parser::multiline_block_quote::NodeMultilineBlockQuote;
 
 <span class="doccomment">/// The core AST node enum.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
@@ -765,7 +789,7 @@
     /// children.
     </span>ThematicBreak,
 
-    <span class="doccomment">/// **Block**. A footnote definition.  The `String` is the footnote&#39;s name.
+    <span class="doccomment">/// **Block**. A footnote definition.  The `String` is the footnote's name.
     /// Contains other **blocks**.
     </span>FootnoteDefinition(NodeFootnoteDefinition),
 
@@ -827,9 +851,22 @@
     <span class="doccomment">/// **Inline**.  A footnote reference.
     </span>FootnoteReference(NodeFootnoteReference),
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
-    </span><span class="doccomment">/// **Inline**. An Emoji character generated from a shortcode. Enable with feature &quot;shortcodes&quot;.
+    <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
+    </span><span class="doccomment">/// **Inline**. An Emoji character generated from a shortcode. Enable with feature "shortcodes".
     </span>ShortCode(NodeShortCode),
+
+    <span class="doccomment">/// **Block**. A [multiline block quote](https://github.github.com/gfm/#block-quotes).  Spans multiple
+    /// lines and contains other **blocks**.
+    ///
+    /// ``` md
+    /// &gt;&gt;&gt;
+    /// A paragraph.
+    ///
+    /// - item one
+    /// - item two
+    /// &gt;&gt;&gt;
+    /// ```
+    </span>MultilineBlockQuote(NodeMultilineBlockQuote),
 }
 
 <span class="doccomment">/// Alignment of a single table cell.
@@ -849,12 +886,12 @@
 }
 
 <span class="kw">impl </span>TableAlignment {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>xml_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt; {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>xml_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str&gt; {
         <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
             TableAlignment::None =&gt; <span class="prelude-val">None</span>,
-            TableAlignment::Left =&gt; <span class="prelude-val">Some</span>(<span class="string">&quot;left&quot;</span>),
-            TableAlignment::Center =&gt; <span class="prelude-val">Some</span>(<span class="string">&quot;center&quot;</span>),
-            TableAlignment::Right =&gt; <span class="prelude-val">Some</span>(<span class="string">&quot;right&quot;</span>),
+            TableAlignment::Left =&gt; <span class="prelude-val">Some</span>(<span class="string">"left"</span>),
+            TableAlignment::Center =&gt; <span class="prelude-val">Some</span>(<span class="string">"center"</span>),
+            TableAlignment::Right =&gt; <span class="prelude-val">Some</span>(<span class="string">"right"</span>),
         }
     }
 }
@@ -888,7 +925,7 @@
     </span><span class="kw">pub </span>literal: String,
 }
 
-<span class="doccomment">/// The details of a link&#39;s destination, or an image&#39;s source.
+<span class="doccomment">/// The details of a link's destination, or an image's source.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>NodeLink {
     <span class="doccomment">/// The URL for the link destination or image source.
@@ -970,10 +1007,10 @@
 }
 
 <span class="kw">impl </span>ListDelimType {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>xml_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>xml_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
         <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
-            ListDelimType::Period =&gt; <span class="string">&quot;period&quot;</span>,
-            ListDelimType::Paren =&gt; <span class="string">&quot;paren&quot;</span>,
+            ListDelimType::Period =&gt; <span class="string">"period"</span>,
+            ListDelimType::Paren =&gt; <span class="string">"paren"</span>,
         }
     }
 }
@@ -1016,7 +1053,7 @@
 <span class="doccomment">/// The metadata of an included HTML block.
 </span><span class="attr">#[derive(Debug, Default, Clone, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>NodeHtmlBlock {
-    <span class="doccomment">/// The HTML block&#39;s type
+    <span class="doccomment">/// The HTML block's type
     </span><span class="kw">pub </span>block_type: u8,
 
     <span class="doccomment">/// The literal contents of the HTML block.  Per NodeCodeBlock, the content is included here
@@ -1070,6 +1107,7 @@
                 | NodeValue::TableRow(..)
                 | NodeValue::TableCell
                 | NodeValue::TaskItem(..)
+                | NodeValue::MultilineBlockQuote(<span class="kw">_</span>)
         )
     }
 
@@ -1108,48 +1146,49 @@
         )
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>xml_node_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>xml_node_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
         <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
-            NodeValue::Document =&gt; <span class="string">&quot;document&quot;</span>,
-            NodeValue::BlockQuote =&gt; <span class="string">&quot;block_quote&quot;</span>,
-            NodeValue::FootnoteDefinition(<span class="kw">_</span>) =&gt; <span class="string">&quot;footnote_definition&quot;</span>,
-            NodeValue::List(..) =&gt; <span class="string">&quot;list&quot;</span>,
-            NodeValue::DescriptionList =&gt; <span class="string">&quot;description_list&quot;</span>,
-            NodeValue::DescriptionItem(<span class="kw">_</span>) =&gt; <span class="string">&quot;description_item&quot;</span>,
-            NodeValue::DescriptionTerm =&gt; <span class="string">&quot;description_term&quot;</span>,
-            NodeValue::DescriptionDetails =&gt; <span class="string">&quot;description_details&quot;</span>,
-            NodeValue::Item(..) =&gt; <span class="string">&quot;item&quot;</span>,
-            NodeValue::CodeBlock(..) =&gt; <span class="string">&quot;code_block&quot;</span>,
-            NodeValue::HtmlBlock(..) =&gt; <span class="string">&quot;html_block&quot;</span>,
-            NodeValue::Paragraph =&gt; <span class="string">&quot;paragraph&quot;</span>,
-            NodeValue::Heading(..) =&gt; <span class="string">&quot;heading&quot;</span>,
-            NodeValue::ThematicBreak =&gt; <span class="string">&quot;thematic_break&quot;</span>,
-            NodeValue::Table(..) =&gt; <span class="string">&quot;table&quot;</span>,
-            NodeValue::TableRow(..) =&gt; <span class="string">&quot;table_row&quot;</span>,
-            NodeValue::TableCell =&gt; <span class="string">&quot;table_cell&quot;</span>,
-            NodeValue::Text(..) =&gt; <span class="string">&quot;text&quot;</span>,
-            NodeValue::SoftBreak =&gt; <span class="string">&quot;softbreak&quot;</span>,
-            NodeValue::LineBreak =&gt; <span class="string">&quot;linebreak&quot;</span>,
-            NodeValue::Image(..) =&gt; <span class="string">&quot;image&quot;</span>,
-            NodeValue::Link(..) =&gt; <span class="string">&quot;link&quot;</span>,
-            NodeValue::Emph =&gt; <span class="string">&quot;emph&quot;</span>,
-            NodeValue::Strong =&gt; <span class="string">&quot;strong&quot;</span>,
-            NodeValue::Code(..) =&gt; <span class="string">&quot;code&quot;</span>,
-            NodeValue::HtmlInline(..) =&gt; <span class="string">&quot;html_inline&quot;</span>,
-            NodeValue::Strikethrough =&gt; <span class="string">&quot;strikethrough&quot;</span>,
-            NodeValue::FrontMatter(<span class="kw">_</span>) =&gt; <span class="string">&quot;frontmatter&quot;</span>,
-            NodeValue::TaskItem { .. } =&gt; <span class="string">&quot;taskitem&quot;</span>,
-            NodeValue::Superscript =&gt; <span class="string">&quot;superscript&quot;</span>,
-            NodeValue::FootnoteReference(..) =&gt; <span class="string">&quot;footnote_reference&quot;</span>,
-            <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
-            </span>NodeValue::ShortCode(<span class="kw">_</span>) =&gt; <span class="string">&quot;shortcode&quot;</span>,
+            NodeValue::Document =&gt; <span class="string">"document"</span>,
+            NodeValue::BlockQuote =&gt; <span class="string">"block_quote"</span>,
+            NodeValue::FootnoteDefinition(<span class="kw">_</span>) =&gt; <span class="string">"footnote_definition"</span>,
+            NodeValue::List(..) =&gt; <span class="string">"list"</span>,
+            NodeValue::DescriptionList =&gt; <span class="string">"description_list"</span>,
+            NodeValue::DescriptionItem(<span class="kw">_</span>) =&gt; <span class="string">"description_item"</span>,
+            NodeValue::DescriptionTerm =&gt; <span class="string">"description_term"</span>,
+            NodeValue::DescriptionDetails =&gt; <span class="string">"description_details"</span>,
+            NodeValue::Item(..) =&gt; <span class="string">"item"</span>,
+            NodeValue::CodeBlock(..) =&gt; <span class="string">"code_block"</span>,
+            NodeValue::HtmlBlock(..) =&gt; <span class="string">"html_block"</span>,
+            NodeValue::Paragraph =&gt; <span class="string">"paragraph"</span>,
+            NodeValue::Heading(..) =&gt; <span class="string">"heading"</span>,
+            NodeValue::ThematicBreak =&gt; <span class="string">"thematic_break"</span>,
+            NodeValue::Table(..) =&gt; <span class="string">"table"</span>,
+            NodeValue::TableRow(..) =&gt; <span class="string">"table_row"</span>,
+            NodeValue::TableCell =&gt; <span class="string">"table_cell"</span>,
+            NodeValue::Text(..) =&gt; <span class="string">"text"</span>,
+            NodeValue::SoftBreak =&gt; <span class="string">"softbreak"</span>,
+            NodeValue::LineBreak =&gt; <span class="string">"linebreak"</span>,
+            NodeValue::Image(..) =&gt; <span class="string">"image"</span>,
+            NodeValue::Link(..) =&gt; <span class="string">"link"</span>,
+            NodeValue::Emph =&gt; <span class="string">"emph"</span>,
+            NodeValue::Strong =&gt; <span class="string">"strong"</span>,
+            NodeValue::Code(..) =&gt; <span class="string">"code"</span>,
+            NodeValue::HtmlInline(..) =&gt; <span class="string">"html_inline"</span>,
+            NodeValue::Strikethrough =&gt; <span class="string">"strikethrough"</span>,
+            NodeValue::FrontMatter(<span class="kw">_</span>) =&gt; <span class="string">"frontmatter"</span>,
+            NodeValue::TaskItem { .. } =&gt; <span class="string">"taskitem"</span>,
+            NodeValue::Superscript =&gt; <span class="string">"superscript"</span>,
+            NodeValue::FootnoteReference(..) =&gt; <span class="string">"footnote_reference"</span>,
+            <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
+            </span>NodeValue::ShortCode(<span class="kw">_</span>) =&gt; <span class="string">"shortcode"</span>,
+            NodeValue::MultilineBlockQuote(<span class="kw">_</span>) =&gt; <span class="string">"multiline_block_quote"</span>,
         }
     }
 }
 
 <span class="doccomment">/// A single node in the CommonMark AST.
 ///
-/// The struct contains metadata about the node&#39;s position in the original document, and the core
+/// The struct contains metadata about the node's position in the original document, and the core
 /// enum, `NodeValue`.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>Ast {
@@ -1176,10 +1215,10 @@
 }
 
 <span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>Sourcepos {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
-            <span class="string">&quot;{}:{}-{}:{}&quot;</span>,
+            <span class="string">"{}:{}-{}:{}"</span>,
             <span class="self">self</span>.start.line, <span class="self">self</span>.start.column, <span class="self">self</span>.end.line, <span class="self">self</span>.end.column,
         )
     }
@@ -1245,16 +1284,16 @@
 
 <span class="doccomment">/// The type of a node within the document.
 ///
-/// It is bound by the lifetime `&#39;a`, which corresponds to the `Arena` nodes are allocated in.
+/// It is bound by the lifetime `'a`, which corresponds to the `Arena` nodes are allocated in.
 /// Child `Ast`s are wrapped in `RefCell` for interior mutability.
-</span><span class="kw">pub type </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; = Node&lt;<span class="lifetime">&#39;a</span>, RefCell&lt;Ast&gt;&gt;;
+</span><span class="kw">pub type </span>AstNode&lt;<span class="lifetime">'a</span>&gt; = Node&lt;<span class="lifetime">'a</span>, RefCell&lt;Ast&gt;&gt;;
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>last_child_is_open&lt;<span class="lifetime">&#39;a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; bool {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>last_child_is_open&lt;<span class="lifetime">'a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) -&gt; bool {
     node.last_child().map_or(<span class="bool-val">false</span>, |n| n.data.borrow().open)
 }
 
 <span class="doccomment">/// Returns true if the given node can contain a node with the given value.
-</span><span class="kw">pub fn </span>can_contain_type&lt;<span class="lifetime">&#39;a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, child: <span class="kw-2">&amp;</span>NodeValue) -&gt; bool {
+</span><span class="kw">pub fn </span>can_contain_type&lt;<span class="lifetime">'a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, child: <span class="kw-2">&amp;</span>NodeValue) -&gt; bool {
     <span class="kw">match </span><span class="kw-2">*</span>child {
         NodeValue::Document =&gt; {
             <span class="kw">return </span><span class="bool-val">false</span>;
@@ -1285,7 +1324,7 @@
             NodeValue::DescriptionTerm | NodeValue::DescriptionDetails
         ),
 
-        <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+        <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
         </span>NodeValue::ShortCode(..) =&gt; !child.block(),
 
         NodeValue::Paragraph
@@ -1299,7 +1338,7 @@
 
         NodeValue::TableRow(..) =&gt; <span class="macro">matches!</span>(<span class="kw-2">*</span>child, NodeValue::TableCell),
 
-        <span class="attr">#[cfg(not(feature = <span class="string">&quot;shortcodes&quot;</span>))]
+        <span class="attr">#[cfg(not(feature = <span class="string">"shortcodes"</span>))]
         </span>NodeValue::TableCell =&gt; <span class="macro">matches!</span>(
             <span class="kw-2">*</span>child,
             NodeValue::Text(..)
@@ -1312,7 +1351,7 @@
                 | NodeValue::HtmlInline(..)
         ),
 
-        <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+        <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
         </span>NodeValue::TableCell =&gt; <span class="macro">matches!</span>(
             <span class="kw-2">*</span>child,
             NodeValue::Text(..)
@@ -1326,11 +1365,15 @@
                 | NodeValue::HtmlInline(..)
         ),
 
+        NodeValue::MultilineBlockQuote(<span class="kw">_</span>) =&gt; {
+            child.block() &amp;&amp; !<span class="macro">matches!</span>(<span class="kw-2">*</span>child, NodeValue::Item(..) | NodeValue::TaskItem(..))
+        }
+
         <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
     }
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>ends_with_blank_line&lt;<span class="lifetime">&#39;a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; bool {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>ends_with_blank_line&lt;<span class="lifetime">'a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) -&gt; bool {
     <span class="kw">let </span><span class="kw-2">mut </span>it = <span class="prelude-val">Some</span>(node);
     <span class="kw">while let </span><span class="prelude-val">Some</span>(cur) = it {
         <span class="kw">if </span>cur.data.borrow().last_line_blank {
@@ -1346,7 +1389,7 @@
     <span class="bool-val">false
 </span>}
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>containing_block&lt;<span class="lifetime">&#39;a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>containing_block&lt;<span class="lifetime">'a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>ch = <span class="prelude-val">Some</span>(node);
     <span class="kw">while let </span><span class="prelude-val">Some</span>(n) = ch {
         <span class="kw">if </span>n.data.borrow().value.block() {

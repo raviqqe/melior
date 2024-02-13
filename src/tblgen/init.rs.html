@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tblgen-0.3.0/src/init.rs`."><title>init.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tblgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tblgen-0.3.0/src/init.rs`."><title>init.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tblgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -634,74 +635,74 @@
 
 <span class="doccomment">/// Enum that holds a reference to a `TypedInit`.
 </span><span class="attr">#[derive(Clone, Copy, PartialEq, Eq)]
-</span><span class="kw">pub enum </span>TypedInit&lt;<span class="lifetime">&#39;a</span>&gt; {
-    Bit(BitInit&lt;<span class="lifetime">&#39;a</span>&gt;),
-    Bits(BitsInit&lt;<span class="lifetime">&#39;a</span>&gt;),
-    Code(StringInit&lt;<span class="lifetime">&#39;a</span>&gt;),
-    Int(IntInit&lt;<span class="lifetime">&#39;a</span>&gt;),
-    String(StringInit&lt;<span class="lifetime">&#39;a</span>&gt;),
-    List(ListInit&lt;<span class="lifetime">&#39;a</span>&gt;),
-    Dag(DagInit&lt;<span class="lifetime">&#39;a</span>&gt;),
-    Def(DefInit&lt;<span class="lifetime">&#39;a</span>&gt;),
+</span><span class="kw">pub enum </span>TypedInit&lt;<span class="lifetime">'a</span>&gt; {
+    Bit(BitInit&lt;<span class="lifetime">'a</span>&gt;),
+    Bits(BitsInit&lt;<span class="lifetime">'a</span>&gt;),
+    Code(StringInit&lt;<span class="lifetime">'a</span>&gt;),
+    Int(IntInit&lt;<span class="lifetime">'a</span>&gt;),
+    String(StringInit&lt;<span class="lifetime">'a</span>&gt;),
+    List(ListInit&lt;<span class="lifetime">'a</span>&gt;),
+    Dag(DagInit&lt;<span class="lifetime">'a</span>&gt;),
+    Def(DefInit&lt;<span class="lifetime">'a</span>&gt;),
     Invalid,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TypedInit&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>variant_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; TypedInit&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">fn </span>variant_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
         <span class="kw">match </span><span class="self">self </span>{
-            TypedInit::Bit(<span class="kw">_</span>) =&gt; <span class="string">&quot;Bit&quot;</span>,
-            TypedInit::Bits(<span class="kw">_</span>) =&gt; <span class="string">&quot;Bits&quot;</span>,
-            TypedInit::Code(<span class="kw">_</span>) =&gt; <span class="string">&quot;Code&quot;</span>,
-            TypedInit::Int(<span class="kw">_</span>) =&gt; <span class="string">&quot;Int&quot;</span>,
-            TypedInit::String(<span class="kw">_</span>) =&gt; <span class="string">&quot;String&quot;</span>,
-            TypedInit::List(<span class="kw">_</span>) =&gt; <span class="string">&quot;List&quot;</span>,
-            TypedInit::Dag(<span class="kw">_</span>) =&gt; <span class="string">&quot;Dag&quot;</span>,
-            TypedInit::Def(<span class="kw">_</span>) =&gt; <span class="string">&quot;Def&quot;</span>,
-            TypedInit::Invalid =&gt; <span class="string">&quot;Invalid&quot;</span>,
+            TypedInit::Bit(<span class="kw">_</span>) =&gt; <span class="string">"Bit"</span>,
+            TypedInit::Bits(<span class="kw">_</span>) =&gt; <span class="string">"Bits"</span>,
+            TypedInit::Code(<span class="kw">_</span>) =&gt; <span class="string">"Code"</span>,
+            TypedInit::Int(<span class="kw">_</span>) =&gt; <span class="string">"Int"</span>,
+            TypedInit::String(<span class="kw">_</span>) =&gt; <span class="string">"String"</span>,
+            TypedInit::List(<span class="kw">_</span>) =&gt; <span class="string">"List"</span>,
+            TypedInit::Dag(<span class="kw">_</span>) =&gt; <span class="string">"Dag"</span>,
+            TypedInit::Def(<span class="kw">_</span>) =&gt; <span class="string">"Def"</span>,
+            TypedInit::Invalid =&gt; <span class="string">"Invalid"</span>,
         }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span>TypedInit&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Display <span class="kw">for </span>TypedInit&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Bit(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Bits(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Code(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Int(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::String(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::List(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Dag(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Def(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Invalid =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Invalid&quot;</span>),
+            <span class="self">Self</span>::Bit(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Bits(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Code(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Int(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::String(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::List(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Dag(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Def(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Invalid =&gt; <span class="macro">write!</span>(f, <span class="string">"Invalid"</span>),
         }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Debug <span class="kw">for </span>TypedInit&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Debug <span class="kw">for </span>TypedInit&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;TypedInit(&quot;</span>)<span class="question-mark">?</span>;
+        <span class="macro">write!</span>(f, <span class="string">"TypedInit("</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>name = <span class="self">self</span>.variant_name();
-        <span class="macro">write!</span>(f, <span class="string">&quot;{name}(&quot;</span>)<span class="question-mark">?</span>;
+        <span class="macro">write!</span>(f, <span class="string">"{name}("</span>)<span class="question-mark">?</span>;
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Bit(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Bits(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Code(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Int(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::String(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::List(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Dag(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Def(init) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{:#?}&quot;</span>, <span class="kw-2">&amp;</span>init),
-            <span class="self">Self</span>::Invalid =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;&quot;</span>),
+            <span class="self">Self</span>::Bit(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Bits(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Code(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Int(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::String(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::List(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Dag(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Def(init) =&gt; <span class="macro">write!</span>(f, <span class="string">"{:#?}"</span>, <span class="kw-2">&amp;</span>init),
+            <span class="self">Self</span>::Invalid =&gt; <span class="macro">write!</span>(f, <span class="string">""</span>),
         }<span class="question-mark">?</span>;
-        <span class="macro">write!</span>(f, <span class="string">&quot;))&quot;</span>)
+        <span class="macro">write!</span>(f, <span class="string">"))"</span>)
     }
 }
 
 <span class="macro">macro_rules! </span>as_inner {
     (<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$variant</span>:ident, <span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>) =&gt; {
         <span class="macro">paste! </span>{
-            <span class="kw">pub fn </span>[&lt;as_ <span class="macro-nonterminal">$name</span>&gt;](<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="macro-nonterminal">$</span><span class="kw">type</span>&lt;<span class="lifetime">&#39;a</span>&gt;, <span class="macro-nonterminal">Error</span>&gt; {
+            <span class="kw">pub fn </span>[&lt;as_ <span class="macro-nonterminal">$name</span>&gt;](<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="macro-nonterminal">$</span><span class="kw">type</span>&lt;<span class="lifetime">'a</span>&gt;, <span class="macro-nonterminal">Error</span>&gt; {
                 <span class="kw">match </span><span class="self">self </span>{
                     <span class="self">Self</span>::<span class="macro-nonterminal">$variant</span>(v) =&gt; <span class="prelude-val">Ok</span>(v),
                     <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(TableGenError::InitConversion {
@@ -716,10 +717,10 @@
 
 <span class="macro">macro_rules! </span>try_into {
     (<span class="macro-nonterminal">$variant</span>:ident, <span class="macro-nonterminal">$init</span>:ty, <span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>) =&gt; {
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TryFrom&lt;TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
+        <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; TryFrom&lt;TypedInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">type </span>{
             <span class="kw">type </span><span class="macro-nonterminal">Error </span>= Error;
 
-            <span class="kw">fn </span>try_from(value: TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+            <span class="kw">fn </span>try_from(value: TypedInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
                 <span class="kw">match </span>value {
                     TypedInit::<span class="macro-nonterminal">$variant</span>(v) =&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::try_from(v).map_err(TableGenError::from)<span class="question-mark">?</span>),
                     <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(TableGenError::InitConversion {
@@ -733,18 +734,18 @@
     };
 }
 
-<span class="macro">try_into!</span>(Bit, BitInit&lt;<span class="lifetime">&#39;a</span>&gt;, bool);
-<span class="macro">try_into!</span>(Bits, BitsInit&lt;<span class="lifetime">&#39;a</span>&gt;, Vec&lt;BitInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt;);
-<span class="macro">try_into!</span>(Bits, BitsInit&lt;<span class="lifetime">&#39;a</span>&gt;, Vec&lt;bool&gt;);
-<span class="macro">try_into!</span>(Int, IntInit&lt;<span class="lifetime">&#39;a</span>&gt;, i64);
-<span class="macro">try_into!</span>(Def, DefInit&lt;<span class="lifetime">&#39;a</span>&gt;, Record&lt;<span class="lifetime">&#39;a</span>&gt;);
-<span class="macro">try_into!</span>(List, ListInit&lt;<span class="lifetime">&#39;a</span>&gt;, ListInit&lt;<span class="lifetime">&#39;a</span>&gt;);
-<span class="macro">try_into!</span>(Dag, DagInit&lt;<span class="lifetime">&#39;a</span>&gt;, DagInit&lt;<span class="lifetime">&#39;a</span>&gt;);
+<span class="macro">try_into!</span>(Bit, BitInit&lt;<span class="lifetime">'a</span>&gt;, bool);
+<span class="macro">try_into!</span>(Bits, BitsInit&lt;<span class="lifetime">'a</span>&gt;, Vec&lt;BitInit&lt;<span class="lifetime">'a</span>&gt;&gt;);
+<span class="macro">try_into!</span>(Bits, BitsInit&lt;<span class="lifetime">'a</span>&gt;, Vec&lt;bool&gt;);
+<span class="macro">try_into!</span>(Int, IntInit&lt;<span class="lifetime">'a</span>&gt;, i64);
+<span class="macro">try_into!</span>(Def, DefInit&lt;<span class="lifetime">'a</span>&gt;, Record&lt;<span class="lifetime">'a</span>&gt;);
+<span class="macro">try_into!</span>(List, ListInit&lt;<span class="lifetime">'a</span>&gt;, ListInit&lt;<span class="lifetime">'a</span>&gt;);
+<span class="macro">try_into!</span>(Dag, DagInit&lt;<span class="lifetime">'a</span>&gt;, DagInit&lt;<span class="lifetime">'a</span>&gt;);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TryFrom&lt;TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>String {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; TryFrom&lt;TypedInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span>String {
     <span class="kw">type </span>Error = Error;
 
-    <span class="kw">fn </span>try_from(value: TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+    <span class="kw">fn </span>try_from(value: TypedInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="kw">match </span>value {
             TypedInit::String(v) | TypedInit::Code(v) =&gt; {
                 <span class="prelude-val">Ok</span>(<span class="self">Self</span>::try_from(v).map_err(TableGenError::from)<span class="question-mark">?</span>)
@@ -758,10 +759,10 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TryFrom&lt;TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; TryFrom&lt;TypedInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'a </span>str {
     <span class="kw">type </span>Error = Error;
 
-    <span class="kw">fn </span>try_from(value: TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+    <span class="kw">fn </span>try_from(value: TypedInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="kw">match </span>value {
             TypedInit::String(v) | TypedInit::Code(v) =&gt; {
                 <span class="prelude-val">Ok</span>(<span class="self">Self</span>::try_from(v.to_str().map_err(TableGenError::from)<span class="question-mark">?</span>)
@@ -769,14 +770,14 @@
             }
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(TableGenError::InitConversion {
                 from: value.variant_name(),
-                to: std::any::type_name::&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;(),
+                to: std::any::type_name::&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt;(),
             }
             .into()),
         }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TypedInit&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; TypedInit&lt;<span class="lifetime">'a</span>&gt; {
     <span class="macro">as_inner!</span>(bit, Bit, BitInit);
     <span class="macro">as_inner!</span>(bits, Bits, BitsInit);
     <span class="macro">as_inner!</span>(code, Code, StringInit);
@@ -812,12 +813,12 @@
 <span class="macro">macro_rules! </span>init {
     (<span class="macro-nonterminal">$name</span>:ident) =&gt; {
         <span class="attr">#[derive(Clone, Copy, PartialEq, Eq)]
-        </span><span class="kw">pub struct </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
+        </span><span class="kw">pub struct </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">'a</span>&gt; {
             raw: TableGenTypedInitRef,
-            _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>TableGenTypedInitRef&gt;,
+            _reference: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>TableGenTypedInitRef&gt;,
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; <span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">'a</span>&gt; {
             <span class="doccomment">/// Creates a new init from a raw object.
             ///
             /// # Safety
@@ -831,7 +832,7 @@
             }
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Display <span class="kw">for </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Display <span class="kw">for </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">'a</span>&gt; {
             <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
                 <span class="kw">let </span><span class="kw-2">mut </span>data = (formatter, <span class="prelude-val">Ok</span>(()));
 
@@ -847,11 +848,11 @@
             </span>}
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Debug <span class="kw">for </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Debug <span class="kw">for </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">'a</span>&gt; {
             <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
-                <span class="macro">write!</span>(formatter, <span class="string">&quot;{}(&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$name</span>))<span class="question-mark">?</span>;
+                <span class="macro">write!</span>(formatter, <span class="string">"{}("</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$name</span>))<span class="question-mark">?</span>;
                 Display::fmt(<span class="self">self</span>, formatter)<span class="question-mark">?</span>;
-                <span class="macro">write!</span>(formatter, <span class="string">&quot;)&quot;</span>)
+                <span class="macro">write!</span>(formatter, <span class="string">")"</span>)
             }
         }
     };
@@ -859,8 +860,8 @@
 
 <span class="macro">init!</span>(BitInit);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;BitInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>bool {
-    <span class="kw">fn </span>from(value: BitInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; From&lt;BitInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span>bool {
+    <span class="kw">fn </span>from(value: BitInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>bit = -<span class="number">1</span>;
         <span class="kw">unsafe </span>{ tableGenBitInitGetValue(value.raw, <span class="kw-2">&amp;mut </span>bit) };
         <span class="macro">assert!</span>(bit == <span class="number">0 </span>|| bit == <span class="number">1</span>);
@@ -870,25 +871,25 @@
 
 <span class="macro">init!</span>(BitsInit);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;BitsInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>Vec&lt;BitInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-    <span class="kw">fn </span>from(value: BitsInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; From&lt;BitsInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span>Vec&lt;BitInit&lt;<span class="lifetime">'a</span>&gt;&gt; {
+    <span class="kw">fn </span>from(value: BitsInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="self">Self </span>{
         (<span class="number">0</span>..value.num_bits())
-            .map(|i| value.bit(i).expect(<span class="string">&quot;index within range&quot;</span>))
+            .map(|i| value.bit(i).expect(<span class="string">"index within range"</span>))
             .collect()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;BitsInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>Vec&lt;bool&gt; {
-    <span class="kw">fn </span>from(value: BitsInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; From&lt;BitsInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span>Vec&lt;bool&gt; {
+    <span class="kw">fn </span>from(value: BitsInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="self">Self </span>{
         (<span class="number">0</span>..value.num_bits())
-            .map(|i| value.bit(i).expect(<span class="string">&quot;index within range&quot;</span>).into())
+            .map(|i| value.bit(i).expect(<span class="string">"index within range"</span>).into())
             .collect()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitsInit&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; BitsInit&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Returns the bit at the given index.
-    </span><span class="kw">pub fn </span>bit(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;BitInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+    </span><span class="kw">pub fn </span>bit(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;BitInit&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="kw">let </span>bit = <span class="kw">unsafe </span>{ tableGenBitsInitGetBitInit(<span class="self">self</span>.raw, index) };
         <span class="kw">if </span>!bit.is_null() {
             <span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ BitInit::from_raw(bit) })
@@ -907,8 +908,8 @@
 
 <span class="macro">init!</span>(IntInit);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;IntInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>i64 {
-    <span class="kw">fn </span>from(value: IntInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; From&lt;IntInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span>i64 {
+    <span class="kw">fn </span>from(value: IntInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>int: i64 = <span class="number">0</span>;
         <span class="kw">let </span>res = <span class="kw">unsafe </span>{ tableGenIntInitGetValue(value.raw, <span class="kw-2">&amp;mut </span>int) };
         <span class="macro">assert!</span>(res &gt; <span class="number">0</span>);
@@ -918,53 +919,53 @@
 
 <span class="macro">init!</span>(StringInit);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TryFrom&lt;StringInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>String {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; TryFrom&lt;StringInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span>String {
     <span class="kw">type </span>Error = FromUtf8Error;
 
-    <span class="kw">fn </span>try_from(value: StringInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+    <span class="kw">fn </span>try_from(value: StringInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         String::from_utf8(value.as_bytes().to_vec())
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TryFrom&lt;StringInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; TryFrom&lt;StringInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'a </span>str {
     <span class="kw">type </span>Error = Utf8Error;
 
-    <span class="kw">fn </span>try_from(value: StringInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Utf8Error&gt; {
+    <span class="kw">fn </span>try_from(value: StringInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Utf8Error&gt; {
         value.to_str()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; StringInit&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; StringInit&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Converts the string init to a [`&amp;str`].
     ///
     /// # Errors
     ///
     /// Returns a [`Utf8Error`] if the string init does not contain valid UTF-8.
-    </span><span class="kw">pub fn </span>to_str(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, Utf8Error&gt; {
+    </span><span class="kw">pub fn </span>to_str(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, Utf8Error&gt; {
         <span class="kw">unsafe </span>{ StringRef::from_raw(tableGenStringInitGetValue(<span class="self">self</span>.raw)) }.try_into()
     }
 
     <span class="doccomment">/// Gets the string init as a slice of bytes.
-    </span><span class="kw">pub fn </span>as_bytes(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8] {
+    </span><span class="kw">pub fn </span>as_bytes(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[u8] {
         <span class="kw">unsafe </span>{ StringRef::from_raw(tableGenStringInitGetValue(<span class="self">self</span>.raw)) }.into()
     }
 }
 
 <span class="macro">init!</span>(DefInit);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;DefInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>Record&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(value: DefInit&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; From&lt;DefInit&lt;<span class="lifetime">'a</span>&gt;&gt; <span class="kw">for </span>Record&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">fn </span>from(value: DefInit&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">unsafe </span>{ Record::from_raw(tableGenDefInitGetValue(value.raw)) }
     }
 }
 
 <span class="macro">init!</span>(DagInit);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; DagInit&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; DagInit&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Returns an iterator over the arguments of the dag.
     ///
     /// The iterator yields tuples `(&amp;str, TypedInit)`.
-    </span><span class="kw">pub fn </span>args(<span class="self">self</span>) -&gt; DagIter&lt;<span class="lifetime">&#39;a</span>&gt; {
+    </span><span class="kw">pub fn </span>args(<span class="self">self</span>) -&gt; DagIter&lt;<span class="lifetime">'a</span>&gt; {
         DagIter {
             dag: <span class="self">self</span>,
             index: <span class="number">0</span>,
@@ -972,7 +973,7 @@
     }
 
     <span class="doccomment">/// Returns the operator of the dag as a [`Record`].
-    </span><span class="kw">pub fn </span>operator(<span class="self">self</span>) -&gt; Record&lt;<span class="lifetime">&#39;a</span>&gt; {
+    </span><span class="kw">pub fn </span>operator(<span class="self">self</span>) -&gt; Record&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">unsafe </span>{ Record::from_raw(tableGenDagRecordOperator(<span class="self">self</span>.raw)) }
     }
 
@@ -982,13 +983,13 @@
     }
 
     <span class="doccomment">/// Returns the name of the argument at the given index.
-    </span><span class="kw">pub fn </span>name(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt; {
+    </span><span class="kw">pub fn </span>name(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str&gt; {
         <span class="kw">unsafe </span>{ StringRef::from_option_raw(tableGenDagRecordArgName(<span class="self">self</span>.raw, index)) }
             .and_then(|s| s.try_into().ok())
     }
 
     <span class="doccomment">/// Returns the argument at the given index.
-    </span><span class="kw">pub fn </span>get(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+    </span><span class="kw">pub fn </span>get(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;TypedInit&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="kw">let </span>value = <span class="kw">unsafe </span>{ tableGenDagRecordGet(<span class="self">self</span>.raw, index) };
         <span class="kw">if </span>!value.is_null() {
             <span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ TypedInit::from_raw(value) })
@@ -999,13 +1000,13 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>DagIter&lt;<span class="lifetime">&#39;a</span>&gt; {
-    dag: DagInit&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub struct </span>DagIter&lt;<span class="lifetime">'a</span>&gt; {
+    dag: DagInit&lt;<span class="lifetime">'a</span>&gt;,
     index: usize,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Iterator <span class="kw">for </span>DagIter&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">type </span>Item = (<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;);
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Iterator <span class="kw">for </span>DagIter&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">type </span>Item = (<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, TypedInit&lt;<span class="lifetime">'a</span>&gt;);
 
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
         <span class="kw">let </span>next = <span class="self">self</span>.dag.get(<span class="self">self</span>.index);
@@ -1021,11 +1022,11 @@
 
 <span class="macro">init!</span>(ListInit);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ListInit&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ListInit&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Returns an iterator over the elements of the list.
     ///
     /// The iterator yields values of type [`TypedInit`].
-    </span><span class="kw">pub fn </span>iter(<span class="self">self</span>) -&gt; ListIter&lt;<span class="lifetime">&#39;a</span>&gt; {
+    </span><span class="kw">pub fn </span>iter(<span class="self">self</span>) -&gt; ListIter&lt;<span class="lifetime">'a</span>&gt; {
         ListIter {
             list: <span class="self">self</span>,
             index: <span class="number">0</span>,
@@ -1043,7 +1044,7 @@
     }
 
     <span class="doccomment">/// Returns the element at the given index in the list.
-    </span><span class="kw">pub fn </span>get(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+    </span><span class="kw">pub fn </span>get(<span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;TypedInit&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="kw">let </span>value = <span class="kw">unsafe </span>{ tableGenListRecordGet(<span class="self">self</span>.raw, index) };
         <span class="kw">if </span>!value.is_null() {
             <span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ TypedInit::from_raw(value) })
@@ -1054,15 +1055,15 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>ListIter&lt;<span class="lifetime">&#39;a</span>&gt; {
-    list: ListInit&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub struct </span>ListIter&lt;<span class="lifetime">'a</span>&gt; {
+    list: ListInit&lt;<span class="lifetime">'a</span>&gt;,
     index: usize,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Iterator <span class="kw">for </span>ListIter&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">type </span>Item = TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;;
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Iterator <span class="kw">for </span>ListIter&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">type </span>Item = TypedInit&lt;<span class="lifetime">'a</span>&gt;;
 
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TypedInit&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TypedInit&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="kw">let </span>next = <span class="kw">unsafe </span>{ tableGenListRecordGet(<span class="self">self</span>.list.raw, <span class="self">self</span>.index) };
         <span class="self">self</span>.index += <span class="number">1</span>;
         <span class="kw">if </span>!next.is_null() {
@@ -1084,78 +1085,78 @@
             </span><span class="kw">fn </span><span class="macro-nonterminal">$name</span>() {
                 <span class="kw">let </span>rk = TableGenParser::new()
                     .add_source(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-                        <span class="string">&quot;
+                        <span class="string">"
                     def A {{
                         {}
                     }}
-                    &quot;</span>,
+                    "</span>,
                         <span class="macro-nonterminal">$td_field
                     </span>))
                     .unwrap()
                     .parse()
-                    .expect(<span class="string">&quot;valid tablegen&quot;</span>);
+                    .expect(<span class="string">"valid tablegen"</span>);
                 <span class="kw">let </span>a = rk
-                    .def(<span class="string">&quot;A&quot;</span>)
-                    .expect(<span class="string">&quot;def A exists&quot;</span>)
-                    .value(<span class="string">&quot;a&quot;</span>)
-                    .expect(<span class="string">&quot;field a exists&quot;</span>);
+                    .def(<span class="string">"A"</span>)
+                    .expect(<span class="string">"def A exists"</span>)
+                    .value(<span class="string">"a"</span>)
+                    .expect(<span class="string">"field a exists"</span>);
                 <span class="macro">assert_eq!</span>(a.init.try_into(), <span class="prelude-val">Ok</span>(<span class="macro-nonterminal">$expected</span>));
             }
         };
     }
 
-    <span class="macro">test_init!</span>(bit, <span class="string">&quot;bit a = 0;&quot;</span>, <span class="bool-val">false</span>);
+    <span class="macro">test_init!</span>(bit, <span class="string">"bit a = 0;"</span>, <span class="bool-val">false</span>);
     <span class="macro">test_init!</span>(
         bits,
-        <span class="string">&quot;bits&lt;4&gt; a = { 0, 0, 1, 0 };&quot;</span>,
+        <span class="string">"bits&lt;4&gt; a = { 0, 0, 1, 0 };"</span>,
         <span class="macro">vec!</span>[<span class="bool-val">false</span>, <span class="bool-val">true</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>]
     );
-    <span class="macro">test_init!</span>(int, <span class="string">&quot;int a = 42;&quot;</span>, <span class="number">42</span>);
-    <span class="macro">test_init!</span>(string, <span class="string">&quot;string a = \&quot;hi\&quot;;&quot;</span>, <span class="string">&quot;hi&quot;</span>);
+    <span class="macro">test_init!</span>(int, <span class="string">"int a = 42;"</span>, <span class="number">42</span>);
+    <span class="macro">test_init!</span>(string, <span class="string">"string a = \"hi\";"</span>, <span class="string">"hi"</span>);
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>dag() {
         <span class="kw">let </span>rk = TableGenParser::new()
             .add_source(
-                <span class="string">&quot;
+                <span class="string">"
                 def ins;
                 def X {
                     int i = 4;
                 }
                 def Y {
-                    string s = \&quot;test\&quot;;
+                    string s = \"test\";
                 }
                 def A {
                     dag args = (ins X:$src1, Y:$src2);
                 }
-                &quot;</span>,
+                "</span>,
             )
             .unwrap()
             .parse()
-            .expect(<span class="string">&quot;valid tablegen&quot;</span>);
+            .expect(<span class="string">"valid tablegen"</span>);
         <span class="kw">let </span>a: DagInit = rk
-            .def(<span class="string">&quot;A&quot;</span>)
-            .expect(<span class="string">&quot;def A exists&quot;</span>)
-            .value(<span class="string">&quot;args&quot;</span>)
-            .expect(<span class="string">&quot;field args exists&quot;</span>)
+            .def(<span class="string">"A"</span>)
+            .expect(<span class="string">"def A exists"</span>)
+            .value(<span class="string">"args"</span>)
+            .expect(<span class="string">"field args exists"</span>)
             .try_into()
-            .expect(<span class="string">&quot;is dag init&quot;</span>);
+            .expect(<span class="string">"is dag init"</span>);
         <span class="macro">assert_eq!</span>(a.num_args(), <span class="number">2</span>);
-        <span class="macro">assert_eq!</span>(a.operator().name(), <span class="prelude-val">Ok</span>(<span class="string">&quot;ins&quot;</span>));
+        <span class="macro">assert_eq!</span>(a.operator().name(), <span class="prelude-val">Ok</span>(<span class="string">"ins"</span>));
         <span class="kw">let </span><span class="kw-2">mut </span>args = a.args();
         <span class="macro">assert_eq!</span>(
             args.clone().next().map(|(name, init)| (
                 name,
-                Record::try_from(init).expect(<span class="string">&quot;is record&quot;</span>).int_value(<span class="string">&quot;i&quot;</span>)
+                Record::try_from(init).expect(<span class="string">"is record"</span>).int_value(<span class="string">"i"</span>)
             )),
-            <span class="prelude-val">Some</span>((<span class="string">&quot;src1&quot;</span>, <span class="prelude-val">Ok</span>(<span class="number">4</span>)))
+            <span class="prelude-val">Some</span>((<span class="string">"src1"</span>, <span class="prelude-val">Ok</span>(<span class="number">4</span>)))
         );
         <span class="macro">assert_eq!</span>(
             args.nth(<span class="number">1</span>).map(|(name, init)| (
                 name,
-                Record::try_from(init).expect(<span class="string">&quot;is record&quot;</span>).string_value(<span class="string">&quot;s&quot;</span>)
+                Record::try_from(init).expect(<span class="string">"is record"</span>).string_value(<span class="string">"s"</span>)
             )),
-            <span class="prelude-val">Some</span>((<span class="string">&quot;src2&quot;</span>, <span class="prelude-val">Ok</span>(<span class="string">&quot;test&quot;</span>.into())))
+            <span class="prelude-val">Some</span>((<span class="string">"src2"</span>, <span class="prelude-val">Ok</span>(<span class="string">"test"</span>.into())))
         );
     }
 
@@ -1163,22 +1164,22 @@
     </span><span class="kw">fn </span>list() {
         <span class="kw">let </span>rk = TableGenParser::new()
             .add_source(
-                <span class="string">&quot;
+                <span class="string">"
                 def A {
                     list&lt;int&gt; l = [0, 1, 2, 3];
                 }
-                &quot;</span>,
+                "</span>,
             )
             .unwrap()
             .parse()
-            .expect(<span class="string">&quot;valid tablegen&quot;</span>);
+            .expect(<span class="string">"valid tablegen"</span>);
         <span class="kw">let </span>l: ListInit = rk
-            .def(<span class="string">&quot;A&quot;</span>)
-            .expect(<span class="string">&quot;def A exists&quot;</span>)
-            .value(<span class="string">&quot;l&quot;</span>)
-            .expect(<span class="string">&quot;field args exists&quot;</span>)
+            .def(<span class="string">"A"</span>)
+            .expect(<span class="string">"def A exists"</span>)
+            .value(<span class="string">"l"</span>)
+            .expect(<span class="string">"field args exists"</span>)
             .try_into()
-            .expect(<span class="string">&quot;is list init&quot;</span>);
+            .expect(<span class="string">"is list init"</span>);
         <span class="macro">assert_eq!</span>(l.len(), <span class="number">4</span>);
         <span class="kw">let </span>iter = l.iter();
         <span class="macro">assert_eq!</span>(iter.clone().count(), <span class="number">4</span>);

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/dialect/llvm.rs`."><title>llvm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/dialect/llvm.rs`."><title>llvm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1218,64 +1219,64 @@
 <span class="comment">// spell-checker: disable
 
 </span><span class="doccomment">/// Creates a `llvm.extractvalue` operation.
-</span><span class="kw">pub fn </span>extract_value&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    container: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    position: DenseI64ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.extractvalue&quot;</span>, location)
-        .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;position&quot;</span>), position.into())])
+</span><span class="kw">pub fn </span>extract_value&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    container: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    position: DenseI64ArrayAttribute&lt;<span class="lifetime">'c</span>&gt;,
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.extractvalue"</span>, location)
+        .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">"position"</span>), position.into())])
         .add_operands(<span class="kw-2">&amp;</span>[container])
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.getelementptr` operation.
-</span><span class="kw">pub fn </span>get_element_ptr&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    ptr: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    indices: DenseI32ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    element_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.getelementptr&quot;</span>, location)
+</span><span class="kw">pub fn </span>get_element_ptr&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    ptr: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    indices: DenseI32ArrayAttribute&lt;<span class="lifetime">'c</span>&gt;,
+    element_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.getelementptr"</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[
             (
-                Identifier::new(context, <span class="string">&quot;rawConstantIndices&quot;</span>),
+                Identifier::new(context, <span class="string">"rawConstantIndices"</span>),
                 indices.into(),
             ),
             (
-                Identifier::new(context, <span class="string">&quot;elem_type&quot;</span>),
+                Identifier::new(context, <span class="string">"elem_type"</span>),
                 TypeAttribute::new(element_type).into(),
             ),
         ])
         .add_operands(<span class="kw-2">&amp;</span>[ptr])
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.getelementptr` operation with dynamic indices.
-</span><span class="kw">pub fn </span>get_element_ptr_dynamic&lt;<span class="lifetime">&#39;c</span>, <span class="kw">const </span>N: usize&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    ptr: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    indices: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;; N],
-    element_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.getelementptr&quot;</span>, location)
+</span><span class="kw">pub fn </span>get_element_ptr_dynamic&lt;<span class="lifetime">'c</span>, <span class="kw">const </span>N: usize&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    ptr: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    indices: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;; N],
+    element_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.getelementptr"</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[
             (
-                Identifier::new(context, <span class="string">&quot;rawConstantIndices&quot;</span>),
+                Identifier::new(context, <span class="string">"rawConstantIndices"</span>),
                 DenseI32ArrayAttribute::new(context, <span class="kw-2">&amp;</span>[i32::MIN; N]).into(),
             ),
             (
-                Identifier::new(context, <span class="string">&quot;elem_type&quot;</span>),
+                Identifier::new(context, <span class="string">"elem_type"</span>),
                 TypeAttribute::new(element_type).into(),
             ),
         ])
@@ -1283,253 +1284,253 @@
         .add_operands(indices)
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.insertvalue` operation.
-</span><span class="kw">pub fn </span>insert_value&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    container: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    position: DenseI64ArrayAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.insertvalue&quot;</span>, location)
-        .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;position&quot;</span>), position.into())])
+</span><span class="kw">pub fn </span>insert_value&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    container: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    position: DenseI64ArrayAttribute&lt;<span class="lifetime">'c</span>&gt;,
+    value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.insertvalue"</span>, location)
+        .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">"position"</span>), position.into())])
         .add_operands(<span class="kw-2">&amp;</span>[container, value])
         .enable_result_type_inference()
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.mlir.undef` operation.
-</span><span class="kw">pub fn </span>undef&lt;<span class="lifetime">&#39;c</span>&gt;(result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.mlir.undef&quot;</span>, location)
+</span><span class="kw">pub fn </span>undef&lt;<span class="lifetime">'c</span>&gt;(result_type: Type&lt;<span class="lifetime">'c</span>&gt;, location: Location&lt;<span class="lifetime">'c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.mlir.undef"</span>, location)
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.mlir.poison` operation.
-</span><span class="kw">pub fn </span>poison&lt;<span class="lifetime">&#39;c</span>&gt;(result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.mlir.poison&quot;</span>, location)
+</span><span class="kw">pub fn </span>poison&lt;<span class="lifetime">'c</span>&gt;(result_type: Type&lt;<span class="lifetime">'c</span>&gt;, location: Location&lt;<span class="lifetime">'c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.mlir.poison"</span>, location)
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.mlir.null` operation. A null pointer.
-</span><span class="kw">pub fn </span>nullptr&lt;<span class="lifetime">&#39;c</span>&gt;(ptr_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.mlir.null&quot;</span>, location)
+</span><span class="kw">pub fn </span>nullptr&lt;<span class="lifetime">'c</span>&gt;(ptr_type: Type&lt;<span class="lifetime">'c</span>&gt;, location: Location&lt;<span class="lifetime">'c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.mlir.null"</span>, location)
         .add_results(<span class="kw-2">&amp;</span>[ptr_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.unreachable` operation.
 </span><span class="kw">pub fn </span>unreachable(location: Location) -&gt; Operation {
-    OperationBuilder::new(<span class="string">&quot;llvm.unreachable&quot;</span>, location)
+    OperationBuilder::new(<span class="string">"llvm.unreachable"</span>, location)
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.bitcast` operation.
-</span><span class="kw">pub fn </span>bitcast&lt;<span class="lifetime">&#39;c</span>&gt;(
-    argument: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    result: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.bitcast&quot;</span>, location)
+</span><span class="kw">pub fn </span>bitcast&lt;<span class="lifetime">'c</span>&gt;(
+    argument: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    result: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.bitcast"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[argument])
         .add_results(<span class="kw-2">&amp;</span>[result])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.alloca` operation.
-</span><span class="kw">pub fn </span>alloca&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    array_size: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    ptr_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-    extra_options: AllocaOptions&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.alloca&quot;</span>, location)
+</span><span class="kw">pub fn </span>alloca&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    array_size: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    ptr_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+    extra_options: AllocaOptions&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.alloca"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[array_size])
         .add_attributes(<span class="kw-2">&amp;</span>extra_options.into_attributes(context))
         .add_results(<span class="kw-2">&amp;</span>[ptr_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.store` operation.
-</span><span class="kw">pub fn </span>store&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    addr: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-    extra_options: LoadStoreOptions&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.store&quot;</span>, location)
+</span><span class="kw">pub fn </span>store&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    addr: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+    extra_options: LoadStoreOptions&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.store"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[value, addr])
         .add_attributes(<span class="kw-2">&amp;</span>extra_options.into_attributes(context))
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.load` operation.
-</span><span class="kw">pub fn </span>load&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    addr: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    r#type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-    extra_options: LoadStoreOptions&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.load&quot;</span>, location)
+</span><span class="kw">pub fn </span>load&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    addr: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    r#type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+    extra_options: LoadStoreOptions&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.load"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[addr])
         .add_attributes(<span class="kw-2">&amp;</span>extra_options.into_attributes(context))
         .add_results(<span class="kw-2">&amp;</span>[r#type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Create a `llvm.func` operation.
-</span><span class="kw">pub fn </span>func&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    name: StringAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    r#type: TypeAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    region: Region&lt;<span class="lifetime">&#39;c</span>&gt;,
-    attributes: <span class="kw-2">&amp;</span>[(Identifier&lt;<span class="lifetime">&#39;c</span>&gt;, Attribute&lt;<span class="lifetime">&#39;c</span>&gt;)],
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.func&quot;</span>, location)
+</span><span class="kw">pub fn </span>func&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    name: StringAttribute&lt;<span class="lifetime">'c</span>&gt;,
+    r#type: TypeAttribute&lt;<span class="lifetime">'c</span>&gt;,
+    region: Region&lt;<span class="lifetime">'c</span>&gt;,
+    attributes: <span class="kw-2">&amp;</span>[(Identifier&lt;<span class="lifetime">'c</span>&gt;, Attribute&lt;<span class="lifetime">'c</span>&gt;)],
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.func"</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[
-            (Identifier::new(context, <span class="string">&quot;sym_name&quot;</span>), name.into()),
-            (Identifier::new(context, <span class="string">&quot;function_type&quot;</span>), r#type.into()),
+            (Identifier::new(context, <span class="string">"sym_name"</span>), name.into()),
+            (Identifier::new(context, <span class="string">"function_type"</span>), r#type.into()),
         ])
         .add_attributes(attributes)
         .add_regions(<span class="macro">vec!</span>[region])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="comment">// Creates a `llvm.return` operation.
-</span><span class="kw">pub fn </span>r#return&lt;<span class="lifetime">&#39;c</span>&gt;(value: <span class="prelude-ty">Option</span>&lt;Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;&gt;, location: Location&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>builder = OperationBuilder::new(<span class="string">&quot;llvm.return&quot;</span>, location);
+</span><span class="kw">pub fn </span>r#return&lt;<span class="lifetime">'c</span>&gt;(value: <span class="prelude-ty">Option</span>&lt;Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;&gt;, location: Location&lt;<span class="lifetime">'c</span>&gt;) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>builder = OperationBuilder::new(<span class="string">"llvm.return"</span>, location);
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = value {
         builder = builder.add_operands(<span class="kw-2">&amp;</span>[value]);
     }
 
-    builder.build().expect(<span class="string">&quot;valid operation&quot;</span>)
+    builder.build().expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.call_intrinsic` operation.
-</span><span class="kw">pub fn </span>call_intrinsic&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    intrin: StringAttribute&lt;<span class="lifetime">&#39;c</span>&gt;,
-    args: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
-    results: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.call_intrinsic&quot;</span>, location)
+</span><span class="kw">pub fn </span>call_intrinsic&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    intrin: StringAttribute&lt;<span class="lifetime">'c</span>&gt;,
+    args: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;],
+    results: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">'c</span>&gt;],
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.call_intrinsic"</span>, location)
         .add_operands(args)
-        .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">&quot;intrin&quot;</span>), intrin.into())])
+        .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">"intrin"</span>), intrin.into())])
         .add_results(results)
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.intr.ctlz` operation.
-</span><span class="kw">pub fn </span>intr_ctlz&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+</span><span class="kw">pub fn </span>intr_ctlz&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
     is_zero_poison: bool,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.intr.ctlz&quot;</span>, location)
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.intr.ctlz"</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
-            Identifier::new(context, <span class="string">&quot;is_zero_poison&quot;</span>),
+            Identifier::new(context, <span class="string">"is_zero_poison"</span>),
             IntegerAttribute::new(is_zero_poison.into(), IntegerType::new(context, <span class="number">1</span>).into())
                 .into(),
         )])
         .add_operands(<span class="kw-2">&amp;</span>[value])
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.intr.ctlz` operation.
-</span><span class="kw">pub fn </span>intr_cttz&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+</span><span class="kw">pub fn </span>intr_cttz&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
     is_zero_poison: bool,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.intr.cttz&quot;</span>, location)
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.intr.cttz"</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
-            Identifier::new(context, <span class="string">&quot;is_zero_poison&quot;</span>),
+            Identifier::new(context, <span class="string">"is_zero_poison"</span>),
             IntegerAttribute::new(is_zero_poison.into(), IntegerType::new(context, <span class="number">1</span>).into())
                 .into(),
         )])
         .add_operands(<span class="kw-2">&amp;</span>[value])
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.intr.ctlz` operation.
-</span><span class="kw">pub fn </span>intr_ctpop&lt;<span class="lifetime">&#39;c</span>&gt;(
-    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.intr.ctpop&quot;</span>, location)
+</span><span class="kw">pub fn </span>intr_ctpop&lt;<span class="lifetime">'c</span>&gt;(
+    value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.intr.ctpop"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[value])
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.intr.bswap` operation.
-</span><span class="kw">pub fn </span>intr_bswap&lt;<span class="lifetime">&#39;c</span>&gt;(
-    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.intr.bswap&quot;</span>, location)
+</span><span class="kw">pub fn </span>intr_bswap&lt;<span class="lifetime">'c</span>&gt;(
+    value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.intr.bswap"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[value])
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.intr.bitreverse` operation.
-</span><span class="kw">pub fn </span>intr_bitreverse&lt;<span class="lifetime">&#39;c</span>&gt;(
-    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.intr.bitreverse&quot;</span>, location)
+</span><span class="kw">pub fn </span>intr_bitreverse&lt;<span class="lifetime">'c</span>&gt;(
+    value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.intr.bitreverse"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[value])
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.intr.abs` operation.
-</span><span class="kw">pub fn </span>intr_abs&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+</span><span class="kw">pub fn </span>intr_abs&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
     is_int_min_poison: bool,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.intr.abs&quot;</span>, location)
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.intr.abs"</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
-            Identifier::new(context, <span class="string">&quot;is_int_min_poison&quot;</span>),
+            Identifier::new(context, <span class="string">"is_int_min_poison"</span>),
             IntegerAttribute::new(
                 is_int_min_poison.into(),
                 IntegerType::new(context, <span class="number">1</span>).into(),
@@ -1539,20 +1540,20 @@
         .add_operands(<span class="kw-2">&amp;</span>[value])
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `llvm.zext` operation.
-</span><span class="kw">pub fn </span>zext&lt;<span class="lifetime">&#39;c</span>&gt;(
-    value: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    result_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;llvm.zext&quot;</span>, location)
+</span><span class="kw">pub fn </span>zext&lt;<span class="lifetime">'c</span>&gt;(
+    value: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    result_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"llvm.zext"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[value])
         .add_results(<span class="kw-2">&amp;</span>[result_type])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="attr">#[cfg(test)]
@@ -1575,15 +1576,15 @@
         test::create_test_context,
     };
 
-    <span class="kw">fn </span>convert_module&lt;<span class="lifetime">&#39;c</span>&gt;(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, module: <span class="kw-2">&amp;mut </span>Module&lt;<span class="lifetime">&#39;c</span>&gt;) {
+    <span class="kw">fn </span>convert_module&lt;<span class="lifetime">'c</span>&gt;(context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context, module: <span class="kw-2">&amp;mut </span>Module&lt;<span class="lifetime">'c</span>&gt;) {
         <span class="kw">let </span>pass_manager = PassManager::new(context);
 
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
         pass_manager
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="string">"func.func"</span>)
             .add_pass(pass::conversion::create_arith_to_llvm());
         pass_manager
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="string">"func.func"</span>)
             .add_pass(pass::conversion::create_index_to_llvm());
         pass_manager.add_pass(pass::conversion::create_scf_to_control_flow());
         pass_manager.add_pass(pass::conversion::create_control_flow_to_llvm());
@@ -1604,7 +1605,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[struct_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(struct_type, location)]);
@@ -1644,7 +1645,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[ptr_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(ptr_type, location)]);
@@ -1685,7 +1686,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[ptr_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(ptr_type, location)]);
@@ -1736,7 +1737,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[struct_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(struct_type, location)]);
@@ -1785,7 +1786,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[struct_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(struct_type, location)]);
@@ -1819,7 +1820,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[struct_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(struct_type, location)]);
@@ -1853,7 +1854,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(integer_type, location)]);
@@ -1893,7 +1894,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[ptr_type, integer_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(ptr_type, location), (integer_type, location)]);
@@ -1933,7 +1934,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[ptr_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(ptr_type, location)]);
@@ -1973,7 +1974,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[ptr_type, integer_type], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(ptr_type, location), (integer_type, location)]);
@@ -2015,11 +2016,11 @@
 
         module.body().append_operation(func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;printf&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"printf"</span>),
             TypeAttribute::new(function(integer_type, <span class="kw-2">&amp;</span>[opaque_pointer(<span class="kw-2">&amp;</span>context)], <span class="bool-val">true</span>)),
             Region::new(),
             <span class="kw-2">&amp;</span>[(
-                Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;linkage&quot;</span>),
+                Identifier::new(<span class="kw-2">&amp;</span>context, <span class="string">"linkage"</span>),
                 linkage(<span class="kw-2">&amp;</span>context, Linkage::External),
             )],
             location,
@@ -2042,7 +2043,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo_none&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo_none"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
@@ -2059,7 +2060,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[struct_type], <span class="kw-2">&amp;</span>[struct_type]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[(struct_type, location)]);
@@ -2090,7 +2091,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(
                 FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[integer_type]).into(),
             ),
@@ -2135,7 +2136,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(
                 FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[integer_type]).into(),
             ),
@@ -2180,7 +2181,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(
                 FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[integer_type]).into(),
             ),
@@ -2223,7 +2224,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(
                 FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[integer_type]).into(),
             ),
@@ -2266,7 +2267,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(
                 FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[integer_type]).into(),
             ),
@@ -2309,7 +2310,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(
                 FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[integer_type]).into(),
             ),
@@ -2355,7 +2356,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(
                 FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], <span class="kw-2">&amp;</span>[integer_double_type]).into(),
             ),

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/derive_builder_core-0.12.0/src/setter.rs`."><title>setter.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="derive_builder_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/derive_builder_core-0.12.0/src/setter.rs`."><title>setter.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="derive_builder_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -643,39 +644,39 @@
 /// # }
 /// ```
 </span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Setter&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">pub struct </span>Setter&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Path to the root of the derive_builder crate.
-    </span><span class="kw">pub </span>crate_root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>syn::Path,
+    </span><span class="kw">pub </span>crate_root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>syn::Path,
     <span class="doccomment">/// Enables code generation for this setter fn.
     </span><span class="kw">pub </span>setter_enabled: bool,
     <span class="doccomment">/// Enables code generation for the `try_` variant of this setter fn.
     </span><span class="kw">pub </span>try_setter: bool,
     <span class="doccomment">/// Visibility of the setter, e.g. `syn::Visibility::Public`.
-    </span><span class="kw">pub </span>visibility: Cow&lt;<span class="lifetime">&#39;a</span>, syn::Visibility&gt;,
+    </span><span class="kw">pub </span>visibility: Cow&lt;<span class="lifetime">'a</span>, syn::Visibility&gt;,
     <span class="doccomment">/// How the setter method takes and returns `self` (e.g. mutably).
     </span><span class="kw">pub </span>pattern: BuilderPattern,
     <span class="doccomment">/// Attributes which will be attached to this setter fn.
-    </span><span class="kw">pub </span>attrs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[syn::Attribute],
+    </span><span class="kw">pub </span>attrs: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[syn::Attribute],
     <span class="doccomment">/// Name of this setter fn.
     </span><span class="kw">pub </span>ident: syn::Ident,
     <span class="doccomment">/// Name of the target field.
-    </span><span class="kw">pub </span>field_ident: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>syn::Ident,
+    </span><span class="kw">pub </span>field_ident: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>syn::Ident,
     <span class="doccomment">/// Type of the builder field.
     ///
     /// The corresonding builder field will be `Option&lt;field_type&gt;`.
-    </span><span class="kw">pub </span>field_type: BuilderFieldType&lt;<span class="lifetime">&#39;a</span>&gt;,
+    </span><span class="kw">pub </span>field_type: BuilderFieldType&lt;<span class="lifetime">'a</span>&gt;,
     <span class="doccomment">/// Make the setter generic over `Into&lt;T&gt;`, where `T` is the field type.
     </span><span class="kw">pub </span>generic_into: bool,
     <span class="doccomment">/// Make the setter remove the Option wrapper from the setter, remove the need to call Some(...).
     /// when combined with into, the into is used on the content Type of the Option.
     </span><span class="kw">pub </span>strip_option: bool,
     <span class="doccomment">/// Emit deprecation notes to the user.
-    </span><span class="kw">pub </span>deprecation_notes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>DeprecationNotes,
+    </span><span class="kw">pub </span>deprecation_notes: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>DeprecationNotes,
     <span class="doccomment">/// Emit extend method.
-    </span><span class="kw">pub </span>each: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Each&gt;,
+    </span><span class="kw">pub </span>each: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Each&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ToTokens <span class="kw">for </span>Setter&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; ToTokens <span class="kw">for </span>Setter&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">fn </span>to_tokens(<span class="kw-2">&amp;</span><span class="self">self</span>, tokens: <span class="kw-2">&amp;mut </span>TokenStream) {
         <span class="kw">if </span><span class="self">self</span>.setter_enabled {
             <span class="kw">let </span>crate_root = <span class="self">self</span>.crate_root;
@@ -760,7 +761,7 @@
             <span class="kw">if </span><span class="self">self</span>.try_setter {
                 <span class="kw">let </span>try_ty_params =
                     <span class="macro">quote!</span>(&lt;VALUE: #crate_root::export::core::convert::TryInto&lt;#ty&gt;&gt;);
-                <span class="kw">let </span>try_ident = syn::Ident::new(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;try_{}&quot;</span>, ident), Span::call_site());
+                <span class="kw">let </span>try_ident = syn::Ident::new(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"try_{}"</span>, ident), Span::call_site());
 
                 <span class="kw">let </span><span class="kw-2">mut </span>converted = <span class="macro">quote! </span>{converted};
                 <span class="kw">if </span>builder_field_is_option {
@@ -858,10 +859,10 @@
     </span><span class="kw">fn </span>extract_option_segment(path: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Option</span>&lt;Pair&lt;<span class="kw-2">&amp;</span>PathSegment, <span class="kw-2">&amp;</span>Colon2&gt;&gt; {
         <span class="kw">let </span>idents_of_path = path.segments.iter().fold(String::new(), |<span class="kw-2">mut </span>acc, v| {
             acc.push_str(<span class="kw-2">&amp;</span>v.ident.to_string());
-            acc.push(<span class="string">&#39;|&#39;</span>);
+            acc.push(<span class="string">'|'</span>);
             acc
         });
-        <span class="macro">vec!</span>[<span class="string">&quot;Option|&quot;</span>, <span class="string">&quot;std|option|Option|&quot;</span>, <span class="string">&quot;core|option|Option|&quot;</span>]
+        <span class="macro">vec!</span>[<span class="string">"Option|"</span>, <span class="string">"std|option|Option|"</span>, <span class="string">"core|option|Option|"</span>]
             .into_iter()
             .find(|s| idents_of_path == <span class="kw-2">*</span>s)
             .and_then(|<span class="kw">_</span>| path.segments.last().map(Pair::End))
@@ -871,7 +872,7 @@
         .and_then(extract_option_segment)
         .and_then(|pair_path_segment| {
             <span class="kw">let </span>type_params = <span class="kw-2">&amp;</span>pair_path_segment.into_value().arguments;
-            <span class="comment">// It should have only on angle-bracketed param (&quot;&lt;String&gt;&quot;):
+            <span class="comment">// It should have only on angle-bracketed param ("&lt;String&gt;"):
             </span><span class="kw">match </span><span class="kw-2">*</span>type_params {
                 PathArguments::AngleBracketed(<span class="kw-2">ref </span>params) =&gt; params.args.first(),
                 <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
@@ -890,7 +891,7 @@
 </span><span class="macro">macro_rules! </span>default_setter {
     () =&gt; {
         Setter {
-            <span class="comment">// Deliberately don&#39;t use the default value here - make sure
+            <span class="comment">// Deliberately don't use the default value here - make sure
             // that all test cases are passing crate_root through properly.
             </span>crate_root: <span class="kw-2">&amp;</span><span class="macro">parse_quote!</span>(::db),
             setter_enabled: <span class="bool-val">true</span>,
@@ -898,8 +899,8 @@
             visibility: ::std::borrow::Cow::Owned(<span class="macro">parse_quote!</span>(<span class="kw">pub</span>)),
             pattern: BuilderPattern::Mutable,
             attrs: <span class="kw-2">&amp;</span><span class="macro">vec!</span>[],
-            ident: syn::Ident::new(<span class="string">&quot;foo&quot;</span>, ::proc_macro2::Span::call_site()),
-            field_ident: <span class="kw-2">&amp;</span>syn::Ident::new(<span class="string">&quot;foo&quot;</span>, ::proc_macro2::Span::call_site()),
+            ident: syn::Ident::new(<span class="string">"foo"</span>, ::proc_macro2::Span::call_site()),
+            field_ident: <span class="kw-2">&amp;</span>syn::Ident::new(<span class="string">"foo"</span>, ::proc_macro2::Span::call_site()),
             field_type: BuilderFieldType::Optional(Box::leak(Box::new(<span class="macro">parse_quote!</span>(Foo)))),
             generic_into: <span class="bool-val">false</span>,
             strip_option: <span class="bool-val">false</span>,
@@ -1071,11 +1072,11 @@
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>full() {
         <span class="comment">//named!(outer_attrs -&gt; Vec&lt;syn::Attribute&gt;, many0!(syn::Attribute::parse_outer));
-        //let attrs = outer_attrs.parse_str(&quot;#[some_attr]&quot;).unwrap();
+        //let attrs = outer_attrs.parse_str("#[some_attr]").unwrap();
         </span><span class="kw">let </span>attrs: Vec&lt;syn::Attribute&gt; = <span class="macro">vec!</span>[<span class="macro">parse_quote!</span>(<span class="attr">#[some_attr]</span>)];
 
         <span class="kw">let </span><span class="kw-2">mut </span>deprecated = DeprecationNotes::default();
-        deprecated.push(<span class="string">&quot;Some example.&quot;</span>.to_string());
+        deprecated.push(<span class="string">"Some example."</span>.to_string());
 
         <span class="kw">let </span><span class="kw-2">mut </span>setter = <span class="macro">default_setter!</span>();
         setter.attrs = attrs.as_slice();

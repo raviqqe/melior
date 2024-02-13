@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `macro/src/dialect/operation.rs`."><title>operation.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior_macro" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `macro/src/dialect/operation.rs`."><title>operation.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior_macro" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -409,6 +410,7 @@
 <a href="#409" id="409">409</a>
 <a href="#410" id="410">410</a>
 <a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>element_kind;
@@ -437,32 +439,32 @@
 <span class="kw">pub fn </span>generate_operation(operation: <span class="kw-2">&amp;</span>Operation) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
     <span class="kw">let </span>summary = operation.summary()<span class="question-mark">?</span>;
     <span class="kw">let </span>description = operation.description()<span class="question-mark">?</span>;
-    <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, operation.class_name()<span class="question-mark">?</span>);
+    <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, operation.class_name()<span class="question-mark">?</span>);
     <span class="kw">let </span>name = <span class="kw-2">&amp;</span>operation.full_name()<span class="question-mark">?</span>;
     <span class="kw">let </span>accessors = operation
         .fields()
         .map(|field| field.accessors())
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>builder = OperationBuilder::new(operation)<span class="question-mark">?</span>;
+    <span class="kw">let </span>builder = OperationBuilder::new(operation);
     <span class="kw">let </span>builder_tokens = generate_operation_builder(<span class="kw-2">&amp;</span>builder)<span class="question-mark">?</span>;
     <span class="kw">let </span>builder_fn = builder.create_op_builder_fn()<span class="question-mark">?</span>;
     <span class="kw">let </span>default_constructor = builder.create_default_constructor()<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
         <span class="attr">#[doc = #summary]
-        #[doc = <span class="string">&quot;\n\n&quot;</span>]
+        #[doc = <span class="string">"\n\n"</span>]
         #[doc = #description]
-        </span><span class="kw">pub struct </span>#class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
-            operation: ::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt;,
+        </span><span class="kw">pub struct </span>#class_name&lt;<span class="lifetime">'c</span>&gt; {
+            operation: ::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt;,
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; #class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
-            <span class="kw">pub fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; #class_name&lt;<span class="lifetime">'c</span>&gt; {
+            <span class="kw">pub fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
                 #name
             }
 
-            <span class="kw">pub fn </span>operation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+            <span class="kw">pub fn </span>operation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt; {
                 <span class="kw-2">&amp;</span><span class="self">self</span>.operation
             }
 
@@ -475,19 +477,19 @@
 
         #default_constructor
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; TryFrom&lt;::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>#class_name&lt;<span class="lifetime">&#39;c</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; TryFrom&lt;::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt;&gt; <span class="kw">for </span>#class_name&lt;<span class="lifetime">'c</span>&gt; {
             <span class="kw">type </span>Error = ::melior::Error;
 
             <span class="kw">fn </span>try_from(
-                operation: ::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt;,
+                operation: ::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt;,
             ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
                 <span class="comment">// TODO Check an operation name.
                 </span><span class="prelude-val">Ok</span>(<span class="self">Self </span>{ operation })
             }
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; From&lt;#class_name&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-            <span class="kw">fn </span>from(operation: #class_name&lt;<span class="lifetime">&#39;c</span>&gt;) -&gt; ::melior::ir::operation::Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; From&lt;#class_name&lt;<span class="lifetime">'c</span>&gt;&gt; <span class="kw">for </span>::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt; {
+            <span class="kw">fn </span>from(operation: #class_name&lt;<span class="lifetime">'c</span>&gt;) -&gt; ::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt; {
                 operation.operation
             }
         }
@@ -495,45 +497,46 @@
 }
 
 <span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>Operation&lt;<span class="lifetime">&#39;a</span>&gt; {
-    definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub struct </span>Operation&lt;<span class="lifetime">'a</span>&gt; {
+    definition: Record&lt;<span class="lifetime">'a</span>&gt;,
     can_infer_type: bool,
-    regions: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    successors: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    results: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    operands: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    attributes: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    derived_attributes: Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    regions: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    successors: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    results: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    operands: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    attributes: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    derived_attributes: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Operation&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>new(definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Operation&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">pub fn </span>new(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
         <span class="kw">let </span>traits = <span class="self">Self</span>::collect_traits(definition)<span class="question-mark">?</span>;
-        <span class="kw">let </span>has_trait = |name| traits.iter().any(|r#trait| r#trait.has_name(name));
+        <span class="kw">let </span>has_trait = |name| traits.iter().any(|r#trait| r#trait.name() == <span class="prelude-val">Some</span>(name));
 
-        <span class="kw">let </span>arguments = <span class="self">Self</span>::dag_constraints(definition, <span class="string">&quot;arguments&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>arguments = <span class="self">Self</span>::dag_constraints(definition, <span class="string">"arguments"</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>regions = <span class="self">Self</span>::collect_regions(definition)<span class="question-mark">?</span>;
         <span class="kw">let </span>(results, unfixed_result_count) = <span class="self">Self</span>::collect_results(
             definition,
-            has_trait(<span class="string">&quot;::mlir::OpTrait::SameVariadicResultSize&quot;</span>),
-            has_trait(<span class="string">&quot;::mlir::OpTrait::AttrSizedResultSegments&quot;</span>),
+            has_trait(<span class="string">"::mlir::OpTrait::SameVariadicResultSize"</span>),
+            has_trait(<span class="string">"::mlir::OpTrait::AttrSizedResultSegments"</span>),
         )<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             successors: <span class="self">Self</span>::collect_successors(definition)<span class="question-mark">?</span>,
             operands: <span class="self">Self</span>::collect_operands(
                 <span class="kw-2">&amp;</span>arguments,
-                has_trait(<span class="string">&quot;::mlir::OpTrait::SameVariadicOperandSize&quot;</span>),
-                has_trait(<span class="string">&quot;::mlir::OpTrait::AttrSizedOperandSegments&quot;</span>),
+                has_trait(<span class="string">"::mlir::OpTrait::SameVariadicOperandSize"</span>),
+                has_trait(<span class="string">"::mlir::OpTrait::AttrSizedOperandSegments"</span>),
             )<span class="question-mark">?</span>,
             results,
             attributes: <span class="self">Self</span>::collect_attributes(<span class="kw-2">&amp;</span>arguments)<span class="question-mark">?</span>,
             derived_attributes: <span class="self">Self</span>::collect_derived_attributes(definition)<span class="question-mark">?</span>,
             can_infer_type: traits.iter().any(|r#trait| {
-                (r#trait.has_name(<span class="string">&quot;::mlir::OpTrait::FirstAttrDerivedResultType&quot;</span>)
-                    || r#trait.has_name(<span class="string">&quot;::mlir::OpTrait::SameOperandsAndResultType&quot;</span>))
+                (r#trait.name() == <span class="prelude-val">Some</span>(<span class="string">"::mlir::OpTrait::FirstAttrDerivedResultType"</span>)
+                    || r#trait.name() == <span class="prelude-val">Some</span>(<span class="string">"::mlir::OpTrait::SameOperandsAndResultType"</span>))
                     &amp;&amp; unfixed_result_count == <span class="number">0
-                    </span>|| r#trait.has_name(<span class="string">&quot;::mlir::InferTypeOpInterface::Trait&quot;</span>) &amp;&amp; regions.is_empty()
+                    </span>|| r#trait.name() == <span class="prelude-val">Some</span>(<span class="string">"::mlir::InferTypeOpInterface::Trait"</span>)
+                        &amp;&amp; regions.is_empty()
             }),
             regions,
             definition,
@@ -541,7 +544,7 @@
     }
 
     <span class="kw">fn </span>dialect(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Record, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>.definition.def_value(<span class="string">&quot;opDialect&quot;</span>)<span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.definition.def_value(<span class="string">"opDialect"</span>)<span class="question-mark">?</span>)
     }
 
     <span class="kw">pub fn </span>dialect_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Error&gt; {
@@ -551,9 +554,9 @@
     <span class="kw">pub fn </span>class_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Error&gt; {
         <span class="kw">let </span>name = <span class="self">self</span>.definition.name()<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="kw">if </span>name.starts_with(<span class="string">&#39;_&#39;</span>) {
+        <span class="prelude-val">Ok</span>(<span class="kw">if </span>name.starts_with(<span class="string">'_'</span>) {
             name
-        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(name) = name.split(<span class="string">&#39;_&#39;</span>).nth(<span class="number">1</span>) {
+        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(name) = name.split(<span class="string">'_'</span>).nth(<span class="number">1</span>) {
             <span class="comment">// Trim dialect prefix from name.
             </span>name
         } <span class="kw">else </span>{
@@ -562,41 +565,41 @@
     }
 
     <span class="kw">pub fn </span>short_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>.definition.str_value(<span class="string">&quot;opName&quot;</span>)<span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.definition.str_value(<span class="string">"opName"</span>)<span class="question-mark">?</span>)
     }
 
     <span class="kw">pub fn </span>full_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        <span class="kw">let </span>dialect_name = <span class="self">self</span>.dialect()<span class="question-mark">?</span>.string_value(<span class="string">&quot;name&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>dialect_name = <span class="self">self</span>.dialect()<span class="question-mark">?</span>.string_value(<span class="string">"name"</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>short_name = <span class="self">self</span>.short_name()<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="kw">if </span>dialect_name.is_empty() {
             short_name.into()
         } <span class="kw">else </span>{
-            <span class="macro">format!</span>(<span class="string">&quot;{dialect_name}.{short_name}&quot;</span>)
+            <span class="macro">format!</span>(<span class="string">"{dialect_name}.{short_name}"</span>)
         })
     }
 
     <span class="kw">pub fn </span>summary(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
         <span class="kw">let </span>short_name = <span class="self">self</span>.short_name()<span class="question-mark">?</span>;
         <span class="kw">let </span>class_name = <span class="self">self</span>.class_name()<span class="question-mark">?</span>;
-        <span class="kw">let </span>summary = <span class="self">self</span>.definition.str_value(<span class="string">&quot;summary&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>summary = <span class="self">self</span>.definition.str_value(<span class="string">"summary"</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>([
-            <span class="macro">format!</span>(<span class="string">&quot;[`{short_name}`]({class_name}) operation.&quot;</span>),
+            <span class="macro">format!</span>(<span class="string">"[`{short_name}`]({class_name}) operation."</span>),
             <span class="kw">if </span>summary.is_empty() {
                 Default::default()
             } <span class="kw">else </span>{
-                summary[<span class="number">0</span>..<span class="number">1</span>].to_uppercase() + <span class="kw-2">&amp;</span>summary[<span class="number">1</span>..] + <span class="string">&quot;.&quot;
+                summary[<span class="number">0</span>..<span class="number">1</span>].to_uppercase() + <span class="kw-2">&amp;</span>summary[<span class="number">1</span>..] + <span class="string">"."
             </span>},
         ]
-        .join(<span class="string">&quot; &quot;</span>))
+        .join(<span class="string">" "</span>))
     }
 
     <span class="kw">pub fn </span>description(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        sanitize_documentation(<span class="self">self</span>.definition.str_value(<span class="string">&quot;description&quot;</span>)<span class="question-mark">?</span>)
+        sanitize_documentation(<span class="self">self</span>.definition.str_value(<span class="string">"description"</span>)<span class="question-mark">?</span>)
     }
 
-    <span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt; + Clone {
+    <span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationField&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
         <span class="self">self</span>.results
             .iter()
             .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.operands)
@@ -606,8 +609,8 @@
             .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.derived_attributes)
     }
 
-    <span class="kw">fn </span>collect_successors(definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
-        <span class="kw">let </span>successors_dag = definition.dag_value(<span class="string">&quot;successors&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>collect_successors(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
+        <span class="kw">let </span>successors_dag = definition.dag_value(<span class="string">"successors"</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>len = successors_dag.num_args();
 
         successors_dag
@@ -627,8 +630,8 @@
             .collect()
     }
 
-    <span class="kw">fn </span>collect_regions(definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
-        <span class="kw">let </span>regions_dag = definition.dag_value(<span class="string">&quot;regions&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>collect_regions(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
+        <span class="kw">let </span>regions_dag = definition.dag_value(<span class="string">"regions"</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>len = regions_dag.num_args();
 
         regions_dag
@@ -648,8 +651,8 @@
             .collect()
     }
 
-    <span class="kw">fn </span>collect_traits(definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Trait&gt;, Error&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>trait_lists = <span class="macro">vec!</span>[definition.list_value(<span class="string">&quot;traits&quot;</span>)<span class="question-mark">?</span>];
+    <span class="kw">fn </span>collect_traits(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Trait&gt;, Error&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>trait_lists = <span class="macro">vec!</span>[definition.list_value(<span class="string">"traits"</span>)<span class="question-mark">?</span>];
         <span class="kw">let </span><span class="kw-2">mut </span>traits = <span class="macro">vec!</span>[];
 
         <span class="kw">while let </span><span class="prelude-val">Some</span>(trait_list) = trait_lists.pop() {
@@ -658,11 +661,11 @@
                     .try_into()
                     .map_err(|error: tblgen::Error| error.set_location(definition))<span class="question-mark">?</span>;
 
-                <span class="kw">if </span>definition.subclass_of(<span class="string">&quot;TraitList&quot;</span>) {
-                    trait_lists.push(definition.list_value(<span class="string">&quot;traits&quot;</span>)<span class="question-mark">?</span>);
+                <span class="kw">if </span>definition.subclass_of(<span class="string">"TraitList"</span>) {
+                    trait_lists.push(definition.list_value(<span class="string">"traits"</span>)<span class="question-mark">?</span>);
                 } <span class="kw">else </span>{
-                    <span class="kw">if </span>definition.subclass_of(<span class="string">&quot;Interface&quot;</span>) {
-                        trait_lists.push(definition.list_value(<span class="string">&quot;baseInterfaces&quot;</span>)<span class="question-mark">?</span>);
+                    <span class="kw">if </span>definition.subclass_of(<span class="string">"Interface"</span>) {
+                        trait_lists.push(definition.list_value(<span class="string">"baseInterfaces"</span>)<span class="question-mark">?</span>);
                     }
                     traits.push(Trait::new(definition)<span class="question-mark">?</span>)
                 }
@@ -673,9 +676,9 @@
     }
 
     <span class="kw">fn </span>dag_constraints(
-        definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;,
+        definition: Record&lt;<span class="lifetime">'a</span>&gt;,
         dag_field_name: <span class="kw-2">&amp;</span>str,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, Record&lt;<span class="lifetime">&#39;a</span>&gt;)&gt;, Error&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, Record&lt;<span class="lifetime">'a</span>&gt;)&gt;, Error&gt; {
         definition
             .dag_value(dag_field_name)<span class="question-mark">?
             </span>.args()
@@ -684,8 +687,8 @@
                     .try_into()
                     .map_err(|error: tblgen::Error| error.set_location(definition))<span class="question-mark">?</span>;
 
-                <span class="kw">if </span>definition.subclass_of(<span class="string">&quot;OpVariable&quot;</span>) {
-                    definition = definition.def_value(<span class="string">&quot;constraint&quot;</span>)<span class="question-mark">?</span>;
+                <span class="kw">if </span>definition.subclass_of(<span class="string">"OpVariable"</span>) {
+                    definition = definition.def_value(<span class="string">"constraint"</span>)<span class="question-mark">?</span>;
                 }
 
                 <span class="prelude-val">Ok</span>((name, definition))
@@ -694,12 +697,12 @@
     }
 
     <span class="kw">fn </span>collect_results(
-        def: Record&lt;<span class="lifetime">&#39;a</span>&gt;,
+        def: Record&lt;<span class="lifetime">'a</span>&gt;,
         same_size: bool,
         attribute_sized: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;OperationField&gt;, usize), Error&gt; {
         <span class="self">Self</span>::collect_elements(
-            <span class="kw-2">&amp;</span><span class="self">Self</span>::dag_constraints(def, <span class="string">&quot;results&quot;</span>)<span class="question-mark">?
+            <span class="kw-2">&amp;</span><span class="self">Self</span>::dag_constraints(def, <span class="string">"results"</span>)<span class="question-mark">?
                 </span>.into_iter()
                 .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
@@ -710,14 +713,14 @@
     }
 
     <span class="kw">fn </span>collect_operands(
-        arguments: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, Record&lt;<span class="lifetime">&#39;a</span>&gt;)],
+        arguments: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, Record&lt;<span class="lifetime">'a</span>&gt;)],
         same_size: bool,
         attribute_sized: bool,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, Error&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;, Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">Self</span>::collect_elements(
             <span class="kw-2">&amp;</span>arguments
                 .iter()
-                .filter(|(<span class="kw">_</span>, definition)| definition.subclass_of(<span class="string">&quot;TypeConstraint&quot;</span>))
+                .filter(|(<span class="kw">_</span>, definition)| definition.subclass_of(<span class="string">"TypeConstraint"</span>))
                 .map(|(name, definition)| (<span class="kw-2">*</span>name, TypeConstraint::new(<span class="kw-2">*</span>definition)))
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
             ElementKind::Operand,
@@ -728,11 +731,11 @@
     }
 
     <span class="kw">fn </span>collect_elements(
-        elements: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, TypeConstraint&lt;<span class="lifetime">&#39;a</span>&gt;)],
+        elements: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, TypeConstraint&lt;<span class="lifetime">'a</span>&gt;)],
         element_kind: ElementKind,
         same_size: bool,
         attribute_sized: bool,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, usize), Error&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;, usize), Error&gt; {
         <span class="kw">let </span>unfixed_count = elements
             .iter()
             .filter(|(<span class="kw">_</span>, constraint)| constraint.has_unfixed())
@@ -777,42 +780,42 @@
     }
 
     <span class="kw">fn </span>collect_attributes(
-        arguments: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, Record&lt;<span class="lifetime">&#39;a</span>&gt;)],
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, Error&gt; {
+        arguments: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, Record&lt;<span class="lifetime">'a</span>&gt;)],
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;, Error&gt; {
         arguments
             .iter()
-            .filter(|(<span class="kw">_</span>, definition)| definition.subclass_of(<span class="string">&quot;Attr&quot;</span>))
+            .filter(|(<span class="kw">_</span>, definition)| definition.subclass_of(<span class="string">"Attr"</span>))
             .map(|(name, definition)| {
-                <span class="kw">if </span>definition.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>) {
-                    <span class="prelude-val">Err</span>(OdsError::UnexpectedSuperClass(<span class="string">&quot;DerivedAttr&quot;</span>)
+                <span class="kw">if </span>definition.subclass_of(<span class="string">"DerivedAttr"</span>) {
+                    <span class="prelude-val">Err</span>(OdsError::UnexpectedSuperClass(<span class="string">"DerivedAttr"</span>)
                         .with_location(<span class="kw-2">*</span>definition)
                         .into())
                 } <span class="kw">else </span>{
-                    OperationField::new_attribute(name, AttributeConstraint::new(<span class="kw-2">*</span>definition))
+                    OperationField::new_attribute(name, AttributeConstraint::new(<span class="kw-2">*</span>definition)<span class="question-mark">?</span>)
                 }
             })
             .collect()
     }
 
     <span class="kw">fn </span>collect_derived_attributes(
-        definition: Record&lt;<span class="lifetime">&#39;a</span>&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">&#39;a</span>&gt;&gt;, Error&gt; {
+        definition: Record&lt;<span class="lifetime">'a</span>&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;, Error&gt; {
         definition
             .values()
             .filter_map(|value| {
                 <span class="kw">let </span><span class="prelude-val">Ok</span>(def) = Record::try_from(value) <span class="kw">else </span>{
                     <span class="kw">return </span><span class="prelude-val">None</span>;
                 };
-                def.subclass_of(<span class="string">&quot;Attr&quot;</span>).then_some(def)
+                def.subclass_of(<span class="string">"Attr"</span>).then_some(def)
             })
             .map(|definition| {
-                <span class="kw">if </span>definition.subclass_of(<span class="string">&quot;DerivedAttr&quot;</span>) {
+                <span class="kw">if </span>definition.subclass_of(<span class="string">"DerivedAttr"</span>) {
                     OperationField::new_attribute(
                         definition.name()<span class="question-mark">?</span>,
-                        AttributeConstraint::new(definition),
+                        AttributeConstraint::new(definition)<span class="question-mark">?</span>,
                     )
                 } <span class="kw">else </span>{
-                    <span class="prelude-val">Err</span>(OdsError::ExpectedSuperClass(<span class="string">&quot;DerivedAttr&quot;</span>)
+                    <span class="prelude-val">Err</span>(OdsError::ExpectedSuperClass(<span class="string">"DerivedAttr"</span>)
                         .with_location(definition)
                         .into())
                 }

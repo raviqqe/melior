@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/typed-arena-2.0.2/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="typed_arena" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/typed-arena-2.0.2/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="typed_arena" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -671,8 +672,8 @@
 //! use std::cell::Cell;
 //! use typed_arena::Arena;
 //!
-//! struct CycleParticipant&lt;&#39;a&gt; {
-//!     other: Cell&lt;Option&lt;&amp;&#39;a CycleParticipant&lt;&#39;a&gt;&gt;&gt;,
+//! struct CycleParticipant&lt;'a&gt; {
+//!     other: Cell&lt;Option&lt;&amp;'a CycleParticipant&lt;'a&gt;&gt;&gt;,
 //! }
 //!
 //! let arena = Arena::new();
@@ -690,15 +691,15 @@
 // 3) use an iterator. This may add far too much unsafe code.
 
 </span><span class="attr">#![deny(missing_docs)]
-#![cfg_attr(not(any(feature = <span class="string">&quot;std&quot;</span>, test)), no_std)]
+#![cfg_attr(not(any(feature = <span class="string">"std"</span>, test)), no_std)]
 
-#[cfg(not(feature = <span class="string">&quot;std&quot;</span>))]
+#[cfg(not(feature = <span class="string">"std"</span>))]
 </span><span class="kw">extern crate </span>alloc;
 
-<span class="attr">#[cfg(any(feature = <span class="string">&quot;std&quot;</span>, test))]
+<span class="attr">#[cfg(any(feature = <span class="string">"std"</span>, test))]
 </span><span class="kw">extern crate </span>core;
 
-<span class="attr">#[cfg(not(feature = <span class="string">&quot;std&quot;</span>))]
+<span class="attr">#[cfg(not(feature = <span class="string">"std"</span>))]
 </span><span class="kw">use </span>alloc::vec::Vec;
 
 <span class="kw">use </span>core::cell::RefCell;
@@ -852,8 +853,8 @@
     /// use typed_arena::Arena;
     ///
     /// let arena = Arena::new();
-    /// let abc = arena.alloc_extend(&quot;abcdefg&quot;.chars().take(3));
-    /// assert_eq!(abc, [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]);
+    /// let abc = arena.alloc_extend("abcdefg".chars().take(3));
+    /// assert_eq!(abc, ['a', 'b', 'c']);
     /// ```
     </span><span class="kw">pub fn </span>alloc_extend&lt;I&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, iterable: I) -&gt; <span class="kw-2">&amp;mut </span>[T]
     <span class="kw">where
@@ -867,7 +868,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>next_item_index;
         <span class="macro">debug_assert!</span>(
             chunks.current.capacity() &gt;= chunks.current.len(),
-            <span class="string">&quot;capacity is always greater than or equal to len, so we don&#39;t need to worry about underflow&quot;
+            <span class="string">"capacity is always greater than or equal to len, so we don't need to worry about underflow"
         </span>);
         <span class="kw">if </span>iter_min_len &gt; chunks.current.capacity() - chunks.current.len() {
             chunks.reserve(iter_min_len);
@@ -911,7 +912,7 @@
         }
     }
 
-    <span class="doccomment">/// Allocates space for a given number of values, but doesn&#39;t initialize it.
+    <span class="doccomment">/// Allocates space for a given number of values, but doesn't initialize it.
     ///
     /// ## Safety
     ///
@@ -919,7 +920,7 @@
     /// initialize them (which includes because of panicking during the initialization), the arena
     /// will run destructors on the uninitialized memory. Therefore, you must initialize them.
     ///
-    /// Considering how easy it is to cause undefined behaviour using this, you&#39;re advised to
+    /// Considering how easy it is to cause undefined behaviour using this, you're advised to
     /// prefer the other (safe) methods, like [`alloc_extend`][Arena::alloc_extend].
     ///
     /// ## Example
@@ -951,8 +952,8 @@
     /// To avoid the problem of dropping assumed to be initialized elements on panic, it is also
     /// possible to combine the [`reserve_extend`][Arena::reserve_extend] with
     /// [`uninitialized_array`][Arena::uninitialized_array], initialize the elements and confirm
-    /// them by this method. In such case, when there&#39;s a panic during initialization, the already
-    /// initialized elements would leak but it wouldn&#39;t cause UB.
+    /// them by this method. In such case, when there's a panic during initialization, the already
+    /// initialized elements would leak but it wouldn't cause UB.
     ///
     /// ```rust
     /// use std::mem::{self, MaybeUninit};
@@ -974,14 +975,14 @@
     ///     let uninitialized = arena.uninitialized_array();
     ///     assert!((*uninitialized).len() &gt;= COUNT); // Ensured by the reserve_extend
     ///     for elem in &amp;mut (*uninitialized)[..COUNT] {
-    ///         ptr::write(elem.as_mut_ptr(), &quot;Hello&quot;.to_owned());
+    ///         ptr::write(elem.as_mut_ptr(), "Hello".to_owned());
     ///     }
     ///     let addr = (*uninitialized).as_ptr() as usize;
     ///
-    ///     // The alloc_uninitialized returns the same memory, but &quot;confirms&quot; its allocation.
+    ///     // The alloc_uninitialized returns the same memory, but "confirms" its allocation.
     ///     slice = transmute_uninit(arena.alloc_uninitialized(COUNT));
     ///     assert_eq!(addr, slice.as_ptr() as usize);
-    ///     assert_eq!(slice, &amp;[&quot;Hello&quot;.to_owned(), &quot;Hello&quot;.to_owned()]);
+    ///     assert_eq!(slice, &amp;["Hello".to_owned(), "Hello".to_owned()]);
     /// }
     /// ```
     </span><span class="kw">pub unsafe fn </span>alloc_uninitialized(<span class="kw-2">&amp;</span><span class="self">self</span>, num: usize) -&gt; <span class="kw-2">&amp;mut </span>[MaybeUninit&lt;T&gt;] {
@@ -989,7 +990,7 @@
 
         <span class="macro">debug_assert!</span>(
             chunks.current.capacity() &gt;= chunks.current.len(),
-            <span class="string">&quot;capacity is always greater than or equal to len, so we don&#39;t need to worry about underflow&quot;
+            <span class="string">"capacity is always greater than or equal to len, so we don't need to worry about underflow"
         </span>);
         <span class="kw">if </span>num &gt; chunks.current.capacity() - chunks.current.len() {
             chunks.reserve(num);
@@ -1005,7 +1006,7 @@
         slice::from_raw_parts_mut(start_uninit, num)
     }
 
-    <span class="doccomment">/// Makes sure there&#39;s enough continuous space for at least `num` elements.
+    <span class="doccomment">/// Makes sure there's enough continuous space for at least `num` elements.
     ///
     /// This may save some work if called before [`alloc_extend`][Arena::alloc_extend]. It also
     /// allows somewhat safer use pattern of [`alloc_uninitialized`][Arena::alloc_uninitialized].
@@ -1016,7 +1017,7 @@
 
         <span class="macro">debug_assert!</span>(
             chunks.current.capacity() &gt;= chunks.current.len(),
-            <span class="string">&quot;capacity is always greater than or equal to len, so we don&#39;t need to worry about underflow&quot;
+            <span class="string">"capacity is always greater than or equal to len, so we don't need to worry about underflow"
         </span>);
         <span class="kw">if </span>num &gt; chunks.current.capacity() - chunks.current.len() {
             chunks.reserve(num);
@@ -1025,8 +1026,8 @@
 
     <span class="doccomment">/// Returns unused space.
     ///
-    /// *This unused space is still not considered &quot;allocated&quot;.* Therefore, it
-    /// won&#39;t be dropped unless there are further calls to `alloc`,
+    /// *This unused space is still not considered "allocated".* Therefore, it
+    /// won't be dropped unless there are further calls to `alloc`,
     /// [`alloc_uninitialized`][Arena::alloc_uninitialized], or
     /// [`alloc_extend`][Arena::alloc_extend] which is why the method is safe.
     ///
@@ -1057,13 +1058,13 @@
     ///
     /// let arena = Arena::new();
     ///
-    /// arena.alloc(&quot;a&quot;);
-    /// arena.alloc(&quot;b&quot;);
-    /// arena.alloc(&quot;c&quot;);
+    /// arena.alloc("a");
+    /// arena.alloc("b");
+    /// arena.alloc("c");
     ///
     /// let easy_as_123 = arena.into_vec();
     ///
-    /// assert_eq!(easy_as_123, vec![&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]);
+    /// assert_eq!(easy_as_123, vec!["a", "b", "c"]);
     /// ```
     </span><span class="kw">pub fn </span>into_vec(<span class="self">self</span>) -&gt; Vec&lt;T&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>chunks = <span class="self">self</span>.chunks.into_inner();
@@ -1109,7 +1110,7 @@
     ///
     /// ## Immutable Iteration
     ///
-    /// Note that there is no corresponding `iter` method. Access to the arena&#39;s contents
+    /// Note that there is no corresponding `iter` method. Access to the arena's contents
     /// requries mutable access to the arena itself.
     ///
     /// ```compile_fail
@@ -1120,7 +1121,7 @@
     ///
     /// // borrow error!
     /// for i in arena.iter_mut() {
-    ///     println!(&quot;i: {}&quot;, i);
+    ///     println!("i: {}", i);
     /// }
     ///
     /// // borrow error!
@@ -1162,13 +1163,13 @@
     /// use typed_arena::Arena;
     ///
     /// let arena: Arena&lt;u8&gt; = Arena::new();
-    /// let hello = arena.alloc_str(&quot;Hello world&quot;);
-    /// assert_eq!(&quot;Hello world&quot;, hello);
+    /// let hello = arena.alloc_str("Hello world");
+    /// assert_eq!("Hello world", hello);
     /// ```
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>alloc_str(<span class="kw-2">&amp;</span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw-2">&amp;mut </span>str {
         <span class="kw">let </span>buffer = <span class="self">self</span>.alloc_extend(s.bytes());
-        <span class="comment">// Can&#39;t fail the utf8 validation, it already came in as utf8
+        <span class="comment">// Can't fail the utf8 validation, it already came in as utf8
         </span><span class="kw">unsafe </span>{ str::from_utf8_unchecked_mut(buffer) }
     }
 }
@@ -1187,37 +1188,37 @@
             </span>.current
             .capacity()
             .checked_mul(<span class="number">2</span>)
-            .expect(<span class="string">&quot;capacity overflow&quot;</span>);
+            .expect(<span class="string">"capacity overflow"</span>);
         <span class="kw">let </span>required_cap = additional
             .checked_next_power_of_two()
-            .expect(<span class="string">&quot;capacity overflow&quot;</span>);
+            .expect(<span class="string">"capacity overflow"</span>);
         <span class="kw">let </span>new_capacity = cmp::max(double_cap, required_cap);
         <span class="kw">let </span>chunk = mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.current, Vec::with_capacity(new_capacity));
         <span class="self">self</span>.rest.push(chunk);
     }
 }
 
-<span class="kw">enum </span>IterMutState&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+<span class="kw">enum </span>IterMutState&lt;<span class="lifetime">'a</span>, T&gt; {
     ChunkListRest {
         index: usize,
-        inner_iter: slice::IterMut&lt;<span class="lifetime">&#39;a</span>, T&gt;,
+        inner_iter: slice::IterMut&lt;<span class="lifetime">'a</span>, T&gt;,
     },
     ChunkListCurrent {
-        iter: slice::IterMut&lt;<span class="lifetime">&#39;a</span>, T&gt;,
+        iter: slice::IterMut&lt;<span class="lifetime">'a</span>, T&gt;,
     },
 }
 
 <span class="doccomment">/// Mutable arena iterator.
 ///
 /// This struct is created by the [`iter_mut`](struct.Arena.html#method.iter_mut) method on [Arenas](struct.Arena.html).
-</span><span class="kw">pub struct </span>IterMut&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a</span>&gt; {
-    chunks: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>ChunkList&lt;T&gt;,
-    state: IterMutState&lt;<span class="lifetime">&#39;a</span>, T&gt;,
+</span><span class="kw">pub struct </span>IterMut&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>&gt; {
+    chunks: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>ChunkList&lt;T&gt;,
+    state: IterMutState&lt;<span class="lifetime">'a</span>, T&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; Iterator <span class="kw">for </span>IterMut&lt;<span class="lifetime">&#39;a</span>, T&gt; {
-    <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T;
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; Iterator <span class="kw">for </span>IterMut&lt;<span class="lifetime">'a</span>, T&gt; {
+    <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>T;
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>T&gt; {
         <span class="kw">loop </span>{
             <span class="self">self</span>.state = <span class="kw">match </span><span class="self">self</span>.state {
                 IterMutState::ChunkListRest {

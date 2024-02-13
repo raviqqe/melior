@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.20.0/src/xml.rs`."><title>xml.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.21.0/src/xml.rs`."><title>xml.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -271,6 +272,7 @@
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::nodes::{AstNode, ListType, NodeCode, NodeTable, NodeValue};
 <span class="kw">use </span><span class="kw">crate</span>::parser::{Options, Plugins};
 <span class="kw">use </span>once_cell::sync::Lazy;
@@ -282,8 +284,8 @@
 <span class="kw">const </span>MAX_INDENT: u32 = <span class="number">40</span>;
 
 <span class="doccomment">/// Formats an AST as HTML, modified by the given options.
-</span><span class="kw">pub fn </span>format_document&lt;<span class="lifetime">&#39;a</span>&gt;(
-    root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub fn </span>format_document&lt;<span class="lifetime">'a</span>&gt;(
+    root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     options: <span class="kw-2">&amp;</span>Options,
     output: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write,
 ) -&gt; io::Result&lt;()&gt; {
@@ -291,27 +293,27 @@
 }
 
 <span class="doccomment">/// Formats an AST as HTML, modified by the given options. Accepts custom plugins.
-</span><span class="kw">pub fn </span>format_document_with_plugins&lt;<span class="lifetime">&#39;a</span>&gt;(
-    root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub fn </span>format_document_with_plugins&lt;<span class="lifetime">'a</span>&gt;(
+    root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     options: <span class="kw-2">&amp;</span>Options,
     output: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write,
     plugins: <span class="kw-2">&amp;</span>Plugins,
 ) -&gt; io::Result&lt;()&gt; {
-    output.write_all(<span class="string">b&quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;\n&quot;</span>)<span class="question-mark">?</span>;
-    output.write_all(<span class="string">b&quot;&lt;!DOCTYPE document SYSTEM \&quot;CommonMark.dtd\&quot;&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+    output.write_all(<span class="string">b"&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;\n"</span>)<span class="question-mark">?</span>;
+    output.write_all(<span class="string">b"&lt;!DOCTYPE document SYSTEM \"CommonMark.dtd\"&gt;\n"</span>)<span class="question-mark">?</span>;
 
     XmlFormatter::new(options, output, plugins).format(root, <span class="bool-val">false</span>)
 }
 
-<span class="kw">struct </span>XmlFormatter&lt;<span class="lifetime">&#39;o</span>&gt; {
-    output: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span><span class="kw-2">mut </span><span class="kw">dyn </span>Write,
-    options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
-    _plugins: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Plugins&lt;<span class="lifetime">&#39;o</span>&gt;,
+<span class="kw">struct </span>XmlFormatter&lt;<span class="lifetime">'o</span>&gt; {
+    output: <span class="kw-2">&amp;</span><span class="lifetime">'o </span><span class="kw-2">mut </span><span class="kw">dyn </span>Write,
+    options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options,
+    _plugins: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Plugins&lt;<span class="lifetime">'o</span>&gt;,
     indent: u32,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;o</span>&gt; XmlFormatter&lt;<span class="lifetime">&#39;o</span>&gt; {
-    <span class="kw">fn </span>new(options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options, output: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span><span class="kw-2">mut </span><span class="kw">dyn </span>Write, plugins: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Plugins) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'o</span>&gt; XmlFormatter&lt;<span class="lifetime">'o</span>&gt; {
+    <span class="kw">fn </span>new(options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options, output: <span class="kw-2">&amp;</span><span class="lifetime">'o </span><span class="kw-2">mut </span><span class="kw">dyn </span>Write, plugins: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Plugins) -&gt; <span class="self">Self </span>{
         XmlFormatter {
             options,
             output,
@@ -323,7 +325,7 @@
     <span class="kw">fn </span>escape(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buffer: <span class="kw-2">&amp;</span>[u8]) -&gt; io::Result&lt;()&gt; {
         <span class="kw">static </span>XML_SAFE: Lazy&lt;[bool; <span class="number">256</span>]&gt; = Lazy::new(|| {
             <span class="kw">let </span><span class="kw-2">mut </span>a = [<span class="bool-val">true</span>; <span class="number">256</span>];
-            <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span><span class="string">b&quot;&amp;&lt;&gt;\&quot;&quot;</span>.iter() {
+            <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span><span class="string">b"&amp;&lt;&gt;\""</span>.iter() {
                 a[c <span class="kw">as </span>usize] = <span class="bool-val">false</span>;
             }
             a
@@ -333,10 +335,10 @@
         <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>byte) <span class="kw">in </span>buffer.iter().enumerate() {
             <span class="kw">if </span>!XML_SAFE[byte <span class="kw">as </span>usize] {
                 <span class="kw">let </span>esc: <span class="kw-2">&amp;</span>[u8] = <span class="kw">match </span>byte {
-                    <span class="string">b&#39;&quot;&#39; </span>=&gt; <span class="string">b&quot;&amp;quot;&quot;</span>,
-                    <span class="string">b&#39;&amp;&#39; </span>=&gt; <span class="string">b&quot;&amp;amp;&quot;</span>,
-                    <span class="string">b&#39;&lt;&#39; </span>=&gt; <span class="string">b&quot;&amp;lt;&quot;</span>,
-                    <span class="string">b&#39;&gt;&#39; </span>=&gt; <span class="string">b&quot;&amp;gt;&quot;</span>,
+                    <span class="string">b'"' </span>=&gt; <span class="string">b"&amp;quot;"</span>,
+                    <span class="string">b'&amp;' </span>=&gt; <span class="string">b"&amp;amp;"</span>,
+                    <span class="string">b'&lt;' </span>=&gt; <span class="string">b"&amp;lt;"</span>,
+                    <span class="string">b'&gt;' </span>=&gt; <span class="string">b"&amp;gt;"</span>,
                     <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
                 };
                 <span class="self">self</span>.output.write_all(<span class="kw-2">&amp;</span>buffer[offset..i])<span class="question-mark">?</span>;
@@ -348,7 +350,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>format&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, plain: bool) -&gt; io::Result&lt;()&gt; {
+    <span class="kw">fn </span>format&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, plain: bool) -&gt; io::Result&lt;()&gt; {
         <span class="comment">// Traverse the AST iteratively using a work stack, with pre- and
         // post-child-traversal phases. During pre-order traversal render the
         // opening tags, then push the node back onto the stack for the
@@ -372,7 +374,7 @@
                                 <span class="self">self</span>.escape(literal.as_bytes())<span class="question-mark">?</span>;
                             }
                             NodeValue::LineBreak | NodeValue::SoftBreak =&gt; {
-                                <span class="self">self</span>.output.write_all(<span class="string">b&quot; &quot;</span>)<span class="question-mark">?</span>;
+                                <span class="self">self</span>.output.write_all(<span class="string">b" "</span>)<span class="question-mark">?</span>;
                             }
                             <span class="kw">_ </span>=&gt; (),
                         }
@@ -398,21 +400,21 @@
 
     <span class="kw">fn </span>indent(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; io::Result&lt;()&gt; {
         <span class="kw">for _ in </span><span class="number">0</span>..(cmp::min(<span class="self">self</span>.indent, MAX_INDENT)) {
-            <span class="self">self</span>.output.write_all(<span class="string">b&quot; &quot;</span>)<span class="question-mark">?</span>;
+            <span class="self">self</span>.output.write_all(<span class="string">b" "</span>)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>format_node&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, entering: bool) -&gt; io::Result&lt;bool&gt; {
+    <span class="kw">fn </span>format_node&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, entering: bool) -&gt; io::Result&lt;bool&gt; {
         <span class="kw">if </span>entering {
             <span class="self">self</span>.indent()<span class="question-mark">?</span>;
 
             <span class="kw">let </span>ast = node.data.borrow();
 
-            <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot;&lt;{}&quot;</span>, ast.value.xml_node_name())<span class="question-mark">?</span>;
+            <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">"&lt;{}"</span>, ast.value.xml_node_name())<span class="question-mark">?</span>;
 
             <span class="kw">if </span><span class="self">self</span>.options.render.sourcepos &amp;&amp; ast.sourcepos.start.line != <span class="number">0 </span>{
-                <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot; sourcepos=\&quot;{}\&quot;&quot;</span>, ast.sourcepos)<span class="question-mark">?</span>;
+                <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">" sourcepos=\"{}\""</span>, ast.sourcepos)<span class="question-mark">?</span>;
             }
 
             <span class="kw">let </span><span class="kw-2">mut </span>was_literal = <span class="bool-val">false</span>;
@@ -420,48 +422,49 @@
             <span class="kw">match </span>ast.value {
                 NodeValue::Document =&gt; <span class="self">self
                     </span>.output
-                    .write_all(<span class="string">b&quot; xmlns=\&quot;http://commonmark.org/xml/1.0\&quot;&quot;</span>)<span class="question-mark">?</span>,
+                    .write_all(<span class="string">b" xmlns=\"http://commonmark.org/xml/1.0\""</span>)<span class="question-mark">?</span>,
                 NodeValue::Text(<span class="kw-2">ref </span>literal)
                 | NodeValue::Code(NodeCode { <span class="kw-2">ref </span>literal, .. })
                 | NodeValue::HtmlBlock(NodeHtmlBlock { <span class="kw-2">ref </span>literal, .. })
                 | NodeValue::HtmlInline(<span class="kw-2">ref </span>literal) =&gt; {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; xml:space=\&quot;preserve\&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" xml:space=\"preserve\"&gt;"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape(literal.as_bytes())<span class="question-mark">?</span>;
-                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot;&lt;/{}&quot;</span>, ast.value.xml_node_name())<span class="question-mark">?</span>;
+                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">"&lt;/{}"</span>, ast.value.xml_node_name())<span class="question-mark">?</span>;
                     was_literal = <span class="bool-val">true</span>;
                 }
                 NodeValue::List(<span class="kw-2">ref </span>nl) =&gt; {
                     <span class="kw">if </span>nl.list_type == ListType::Bullet {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot; type=\&quot;bullet\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b" type=\"bullet\""</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else </span>{
                         <span class="macro">write!</span>(
                             <span class="self">self</span>.output,
-                            <span class="string">&quot; type=\&quot;ordered\&quot; start=\&quot;{}\&quot; delim=\&quot;{}\&quot;&quot;</span>,
+                            <span class="string">" type=\"ordered\" start=\"{}\" delim=\"{}\""</span>,
                             nl.start,
                             nl.delimiter.xml_name()
                         )<span class="question-mark">?</span>;
                     }
-                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot; tight=\&quot;{}\&quot;&quot;</span>, nl.tight)<span class="question-mark">?</span>;
+                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">" tight=\"{}\""</span>, nl.tight)<span class="question-mark">?</span>;
                 }
                 NodeValue::FrontMatter(<span class="kw">_</span>) =&gt; (),
                 NodeValue::BlockQuote =&gt; {}
+                NodeValue::MultilineBlockQuote(..) =&gt; {}
                 NodeValue::Item(..) =&gt; {}
                 NodeValue::DescriptionList =&gt; {}
                 NodeValue::DescriptionItem(..) =&gt; (),
                 NodeValue::DescriptionTerm =&gt; {}
                 NodeValue::DescriptionDetails =&gt; {}
                 NodeValue::Heading(<span class="kw-2">ref </span>nch) =&gt; {
-                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot; level=\&quot;{}\&quot;&quot;</span>, nch.level)<span class="question-mark">?</span>;
+                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">" level=\"{}\""</span>, nch.level)<span class="question-mark">?</span>;
                 }
                 NodeValue::CodeBlock(<span class="kw-2">ref </span>ncb) =&gt; {
                     <span class="kw">if </span>!ncb.info.is_empty() {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot; info=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b" info=\""</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.output.write_all(ncb.info.as_bytes())<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"\""</span>)<span class="question-mark">?</span>;
                     }
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; xml:space=\&quot;preserve\&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" xml:space=\"preserve\"&gt;"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape(ncb.literal.as_bytes())<span class="question-mark">?</span>;
-                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot;&lt;/{}&quot;</span>, ast.value.xml_node_name())<span class="question-mark">?</span>;
+                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">"&lt;/{}"</span>, ast.value.xml_node_name())<span class="question-mark">?</span>;
                     was_literal = <span class="bool-val">true</span>;
                 }
                 NodeValue::ThematicBreak =&gt; {}
@@ -473,11 +476,11 @@
                 NodeValue::Strikethrough =&gt; {}
                 NodeValue::Superscript =&gt; {}
                 NodeValue::Link(<span class="kw-2">ref </span>nl) | NodeValue::Image(<span class="kw-2">ref </span>nl) =&gt; {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; destination=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" destination=\""</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape(nl.url.as_bytes())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot; title=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\" title=\""</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape(nl.title.as_bytes())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\""</span>)<span class="question-mark">?</span>;
                 }
                 NodeValue::Table(..) =&gt; {
                     <span class="comment">// noop
@@ -498,46 +501,46 @@
                     {
                         <span class="kw">let </span>ix = node.preceding_siblings().count() - <span class="number">1</span>;
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(xml_align) = alignments[ix].xml_name() {
-                            <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot; align=\&quot;{}\&quot;&quot;</span>, xml_align)<span class="question-mark">?</span>;
+                            <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">" align=\"{}\""</span>, xml_align)<span class="question-mark">?</span>;
                         }
                     }
                 }
                 NodeValue::FootnoteDefinition(<span class="kw-2">ref </span>fd) =&gt; {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; label=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" label=\""</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape(fd.name.as_bytes())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\""</span>)<span class="question-mark">?</span>;
                 }
                 NodeValue::FootnoteReference(<span class="kw-2">ref </span>nfr) =&gt; {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; label=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" label=\""</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape(nfr.name.as_bytes())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\""</span>)<span class="question-mark">?</span>;
                 }
                 NodeValue::TaskItem(<span class="prelude-val">Some</span>(<span class="kw">_</span>)) =&gt; {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; completed=\&quot;true\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" completed=\"true\""</span>)<span class="question-mark">?</span>;
                 }
                 NodeValue::TaskItem(<span class="prelude-val">None</span>) =&gt; {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; completed=\&quot;false\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" completed=\"false\""</span>)<span class="question-mark">?</span>;
                 }
-                <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+                <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
                 </span>NodeValue::ShortCode(<span class="kw-2">ref </span>nsc) =&gt; {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; id=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" id=\""</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape(nsc.shortcode().as_bytes())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\""</span>)<span class="question-mark">?</span>;
                 }
             }
 
             <span class="kw">if </span>node.first_child().is_some() {
                 <span class="self">self</span>.indent += <span class="number">2</span>;
             } <span class="kw">else if </span>!was_literal {
-                <span class="self">self</span>.output.write_all(<span class="string">b&quot; /&quot;</span>)<span class="question-mark">?</span>;
+                <span class="self">self</span>.output.write_all(<span class="string">b" /"</span>)<span class="question-mark">?</span>;
             }
-            <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+            <span class="self">self</span>.output.write_all(<span class="string">b"&gt;\n"</span>)<span class="question-mark">?</span>;
         } <span class="kw">else if </span>node.first_child().is_some() {
             <span class="self">self</span>.indent -= <span class="number">2</span>;
             <span class="self">self</span>.indent()<span class="question-mark">?</span>;
             <span class="macro">writeln!</span>(
                 <span class="self">self</span>.output,
-                <span class="string">&quot;&lt;/{}&gt;&quot;</span>,
+                <span class="string">"&lt;/{}&gt;"</span>,
                 node.data.borrow().value.xml_node_name()
             )<span class="question-mark">?</span>;
         }

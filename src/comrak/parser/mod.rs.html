@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.20.0/src/parser/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.21.0/src/parser/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2268,11 +2269,117 @@
 <a href="#2268" id="2268">2268</a>
 <a href="#2269" id="2269">2269</a>
 <a href="#2270" id="2270">2270</a>
+<a href="#2271" id="2271">2271</a>
+<a href="#2272" id="2272">2272</a>
+<a href="#2273" id="2273">2273</a>
+<a href="#2274" id="2274">2274</a>
+<a href="#2275" id="2275">2275</a>
+<a href="#2276" id="2276">2276</a>
+<a href="#2277" id="2277">2277</a>
+<a href="#2278" id="2278">2278</a>
+<a href="#2279" id="2279">2279</a>
+<a href="#2280" id="2280">2280</a>
+<a href="#2281" id="2281">2281</a>
+<a href="#2282" id="2282">2282</a>
+<a href="#2283" id="2283">2283</a>
+<a href="#2284" id="2284">2284</a>
+<a href="#2285" id="2285">2285</a>
+<a href="#2286" id="2286">2286</a>
+<a href="#2287" id="2287">2287</a>
+<a href="#2288" id="2288">2288</a>
+<a href="#2289" id="2289">2289</a>
+<a href="#2290" id="2290">2290</a>
+<a href="#2291" id="2291">2291</a>
+<a href="#2292" id="2292">2292</a>
+<a href="#2293" id="2293">2293</a>
+<a href="#2294" id="2294">2294</a>
+<a href="#2295" id="2295">2295</a>
+<a href="#2296" id="2296">2296</a>
+<a href="#2297" id="2297">2297</a>
+<a href="#2298" id="2298">2298</a>
+<a href="#2299" id="2299">2299</a>
+<a href="#2300" id="2300">2300</a>
+<a href="#2301" id="2301">2301</a>
+<a href="#2302" id="2302">2302</a>
+<a href="#2303" id="2303">2303</a>
+<a href="#2304" id="2304">2304</a>
+<a href="#2305" id="2305">2305</a>
+<a href="#2306" id="2306">2306</a>
+<a href="#2307" id="2307">2307</a>
+<a href="#2308" id="2308">2308</a>
+<a href="#2309" id="2309">2309</a>
+<a href="#2310" id="2310">2310</a>
+<a href="#2311" id="2311">2311</a>
+<a href="#2312" id="2312">2312</a>
+<a href="#2313" id="2313">2313</a>
+<a href="#2314" id="2314">2314</a>
+<a href="#2315" id="2315">2315</a>
+<a href="#2316" id="2316">2316</a>
+<a href="#2317" id="2317">2317</a>
+<a href="#2318" id="2318">2318</a>
+<a href="#2319" id="2319">2319</a>
+<a href="#2320" id="2320">2320</a>
+<a href="#2321" id="2321">2321</a>
+<a href="#2322" id="2322">2322</a>
+<a href="#2323" id="2323">2323</a>
+<a href="#2324" id="2324">2324</a>
+<a href="#2325" id="2325">2325</a>
+<a href="#2326" id="2326">2326</a>
+<a href="#2327" id="2327">2327</a>
+<a href="#2328" id="2328">2328</a>
+<a href="#2329" id="2329">2329</a>
+<a href="#2330" id="2330">2330</a>
+<a href="#2331" id="2331">2331</a>
+<a href="#2332" id="2332">2332</a>
+<a href="#2333" id="2333">2333</a>
+<a href="#2334" id="2334">2334</a>
+<a href="#2335" id="2335">2335</a>
+<a href="#2336" id="2336">2336</a>
+<a href="#2337" id="2337">2337</a>
+<a href="#2338" id="2338">2338</a>
+<a href="#2339" id="2339">2339</a>
+<a href="#2340" id="2340">2340</a>
+<a href="#2341" id="2341">2341</a>
+<a href="#2342" id="2342">2342</a>
+<a href="#2343" id="2343">2343</a>
+<a href="#2344" id="2344">2344</a>
+<a href="#2345" id="2345">2345</a>
+<a href="#2346" id="2346">2346</a>
+<a href="#2347" id="2347">2347</a>
+<a href="#2348" id="2348">2348</a>
+<a href="#2349" id="2349">2349</a>
+<a href="#2350" id="2350">2350</a>
+<a href="#2351" id="2351">2351</a>
+<a href="#2352" id="2352">2352</a>
+<a href="#2353" id="2353">2353</a>
+<a href="#2354" id="2354">2354</a>
+<a href="#2355" id="2355">2355</a>
+<a href="#2356" id="2356">2356</a>
+<a href="#2357" id="2357">2357</a>
+<a href="#2358" id="2358">2358</a>
+<a href="#2359" id="2359">2359</a>
+<a href="#2360" id="2360">2360</a>
+<a href="#2361" id="2361">2361</a>
+<a href="#2362" id="2362">2362</a>
+<a href="#2363" id="2363">2363</a>
+<a href="#2364" id="2364">2364</a>
+<a href="#2365" id="2365">2365</a>
+<a href="#2366" id="2366">2366</a>
+<a href="#2367" id="2367">2367</a>
+<a href="#2368" id="2368">2368</a>
+<a href="#2369" id="2369">2369</a>
+<a href="#2370" id="2370">2370</a>
+<a href="#2371" id="2371">2371</a>
+<a href="#2372" id="2372">2372</a>
+<a href="#2373" id="2373">2373</a>
+<a href="#2374" id="2374">2374</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>autolink;
 <span class="kw">mod </span>inlines;
-<span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
 </span><span class="kw">pub mod </span>shortcodes;
 <span class="kw">mod </span>table;
+
+<span class="kw">pub mod </span>multiline_block_quote;
 
 <span class="kw">use </span><span class="kw">crate</span>::adapters::SyntaxHighlighterAdapter;
 <span class="kw">use </span><span class="kw">crate</span>::arena_tree::Node;
@@ -2295,6 +2402,7 @@
 <span class="kw">use </span>typed_arena::Arena;
 
 <span class="kw">use </span><span class="kw">crate</span>::adapters::HeadingAdapter;
+<span class="kw">use </span><span class="kw">crate</span>::parser::multiline_block_quote::NodeMultilineBlockQuote;
 
 <span class="kw">use </span><span class="self">self</span>::inlines::RefMap;
 
@@ -2319,11 +2427,11 @@
 <span class="doccomment">/// Parse a Markdown document to an AST.
 ///
 /// See the documentation of the crate root for an example.
-</span><span class="kw">pub fn </span>parse_document&lt;<span class="lifetime">&#39;a</span>&gt;(
-    arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+</span><span class="kw">pub fn </span>parse_document&lt;<span class="lifetime">'a</span>&gt;(
+    arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
     buffer: <span class="kw-2">&amp;</span>str,
     options: <span class="kw-2">&amp;</span>Options,
-) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
     parse_document_with_broken_link_callback(arena, buffer, options, <span class="prelude-val">None</span>)
 }
 
@@ -2347,12 +2455,12 @@
 ///
 /// let root = parse_document_with_broken_link_callback(
 ///     &amp;arena,
-///     &quot;# Cool input!\nWow look at this cool [link][foo]. A [broken link] renders as text.&quot;,
+///     "# Cool input!\nWow look at this cool [link][foo]. A [broken link] renders as text.",
 ///     &amp;Options::default(),
 ///     Some(&amp;mut |link_ref: &amp;str| match link_ref {
-///         &quot;foo&quot; =&gt; Some((
-///             &quot;https://www.rust-lang.org/&quot;.to_string(),
-///             &quot;The Rust Language&quot;.to_string(),
+///         "foo" =&gt; Some((
+///             "https://www.rust-lang.org/".to_string(),
+///             "The Rust Language".to_string(),
 ///         )),
 ///         _ =&gt; None,
 ///     }),
@@ -2360,20 +2468,20 @@
 ///
 /// let mut output = Vec::new();
 /// format_html(root, &amp;Options::default(), &amp;mut output)?;
-/// let output_str = std::str::from_utf8(&amp;output).expect(&quot;invalid UTF-8&quot;);
-/// assert_eq!(output_str, &quot;&lt;h1&gt;Cool input!&lt;/h1&gt;\n&lt;p&gt;Wow look at this cool \
-///                 &lt;a href=\&quot;https://www.rust-lang.org/\&quot; title=\&quot;The Rust Language\&quot;&gt;link&lt;/a&gt;. \
-///                 A [broken link] renders as text.&lt;/p&gt;\n&quot;);
+/// let output_str = std::str::from_utf8(&amp;output).expect("invalid UTF-8");
+/// assert_eq!(output_str, "&lt;h1&gt;Cool input!&lt;/h1&gt;\n&lt;p&gt;Wow look at this cool \
+///                 &lt;a href=\"https://www.rust-lang.org/\" title=\"The Rust Language\"&gt;link&lt;/a&gt;. \
+///                 A [broken link] renders as text.&lt;/p&gt;\n");
 /// # Ok(())
 /// # }
 /// ```
-</span><span class="kw">pub fn </span>parse_document_with_broken_link_callback&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;c</span>&gt;(
-    arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+</span><span class="kw">pub fn </span>parse_document_with_broken_link_callback&lt;<span class="lifetime">'a</span>, <span class="lifetime">'c</span>&gt;(
+    arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
     buffer: <span class="kw-2">&amp;</span>str,
     options: <span class="kw-2">&amp;</span>Options,
-    callback: <span class="prelude-ty">Option</span>&lt;Callback&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
-) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">let </span>root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; = arena.alloc(Node::new(RefCell::new(Ast {
+    callback: <span class="prelude-ty">Option</span>&lt;Callback&lt;<span class="lifetime">'c</span>&gt;&gt;,
+) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">let </span>root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; = arena.alloc(Node::new(RefCell::new(Ast {
         value: NodeValue::Document,
         content: String::new(),
         sourcepos: (<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>).into(),
@@ -2388,13 +2496,13 @@
     parser.finish(linebuf)
 }
 
-<span class="kw">type </span>Callback&lt;<span class="lifetime">&#39;c</span>&gt; = <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span><span class="kw-2">mut </span><span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;(String, String)&gt;;
+<span class="kw">type </span>Callback&lt;<span class="lifetime">'c</span>&gt; = <span class="kw-2">&amp;</span><span class="lifetime">'c </span><span class="kw-2">mut </span><span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;(String, String)&gt;;
 
-<span class="kw">pub struct </span>Parser&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; {
-    arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+<span class="kw">pub struct </span>Parser&lt;<span class="lifetime">'a</span>, <span class="lifetime">'o</span>, <span class="lifetime">'c</span>&gt; {
+    arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
     refmap: RefMap,
-    root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
-    current: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+    root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
+    current: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     line_number: usize,
     offset: usize,
     column: usize,
@@ -2409,12 +2517,12 @@
     last_line_length: usize,
     last_buffer_ended_with_cr: bool,
     total_size: usize,
-    options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
-    callback: <span class="prelude-ty">Option</span>&lt;Callback&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
+    options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options,
+    callback: <span class="prelude-ty">Option</span>&lt;Callback&lt;<span class="lifetime">'c</span>&gt;&gt;,
 }
 
 <span class="attr">#[derive(Default, Debug, Clone)]
-#[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
+#[cfg_attr(feature = <span class="string">"arbitrary"</span>, derive(arbitrary::Arbitrary))]
 </span><span class="doccomment">/// Umbrella options struct.
 </span><span class="kw">pub struct </span>Options {
     <span class="doccomment">/// Enable CommonMark extensions.
@@ -2430,7 +2538,7 @@
 <span class="attr">#[non_exhaustive]
 #[derive(Default, Debug, Clone, Builder)]
 #[builder(default)]
-#[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
+#[cfg_attr(feature = <span class="string">"arbitrary"</span>, derive(arbitrary::Arbitrary))]
 </span><span class="doccomment">/// Options to select extensions.
 </span><span class="kw">pub struct </span>ExtensionOptions {
     <span class="doccomment">/// Enables the
@@ -2441,8 +2549,8 @@
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
     /// options.extension.strikethrough = true;
-    /// assert_eq!(markdown_to_html(&quot;Hello ~world~ there.\n&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;Hello &lt;del&gt;world&lt;/del&gt; there.&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("Hello ~world~ there.\n", &amp;options),
+    ///            "&lt;p&gt;Hello &lt;del&gt;world&lt;/del&gt; there.&lt;/p&gt;\n");
     /// ```
     </span><span class="kw">pub </span>strikethrough: bool,
 
@@ -2455,8 +2563,8 @@
     /// let mut options = Options::default();
     /// options.extension.tagfilter = true;
     /// options.render.unsafe_ = true;
-    /// assert_eq!(markdown_to_html(&quot;Hello &lt;xmp&gt;.\n\n&lt;xmp&gt;&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;Hello &amp;lt;xmp&gt;.&lt;/p&gt;\n&amp;lt;xmp&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("Hello &lt;xmp&gt;.\n\n&lt;xmp&gt;", &amp;options),
+    ///            "&lt;p&gt;Hello &amp;lt;xmp&gt;.&lt;/p&gt;\n&amp;lt;xmp&gt;\n");
     /// ```
     </span><span class="kw">pub </span>tagfilter: bool,
 
@@ -2467,9 +2575,9 @@
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
     /// options.extension.table = true;
-    /// assert_eq!(markdown_to_html(&quot;| a | b |\n|---|---|\n| c | d |\n&quot;, &amp;options),
-    ///            &quot;&lt;table&gt;\n&lt;thead&gt;\n&lt;tr&gt;\n&lt;th&gt;a&lt;/th&gt;\n&lt;th&gt;b&lt;/th&gt;\n&lt;/tr&gt;\n&lt;/thead&gt;\n\
-    ///             &lt;tbody&gt;\n&lt;tr&gt;\n&lt;td&gt;c&lt;/td&gt;\n&lt;td&gt;d&lt;/td&gt;\n&lt;/tr&gt;\n&lt;/tbody&gt;\n&lt;/table&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("| a | b |\n|---|---|\n| c | d |\n", &amp;options),
+    ///            "&lt;table&gt;\n&lt;thead&gt;\n&lt;tr&gt;\n&lt;th&gt;a&lt;/th&gt;\n&lt;th&gt;b&lt;/th&gt;\n&lt;/tr&gt;\n&lt;/thead&gt;\n\
+    ///             &lt;tbody&gt;\n&lt;tr&gt;\n&lt;td&gt;c&lt;/td&gt;\n&lt;td&gt;d&lt;/td&gt;\n&lt;/tr&gt;\n&lt;/tbody&gt;\n&lt;/table&gt;\n");
     /// ```
     </span><span class="kw">pub </span>table: bool,
 
@@ -2480,8 +2588,8 @@
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
     /// options.extension.autolink = true;
-    /// assert_eq!(markdown_to_html(&quot;Hello www.github.com.\n&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;Hello &lt;a href=\&quot;http://www.github.com\&quot;&gt;www.github.com&lt;/a&gt;.&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("Hello www.github.com.\n", &amp;options),
+    ///            "&lt;p&gt;Hello &lt;a href=\"http://www.github.com\"&gt;www.github.com&lt;/a&gt;.&lt;/p&gt;\n");
     /// ```
     </span><span class="kw">pub </span>autolink: bool,
 
@@ -2497,9 +2605,9 @@
     /// let mut options = Options::default();
     /// options.extension.tasklist = true;
     /// options.render.unsafe_ = true;
-    /// assert_eq!(markdown_to_html(&quot;* [x] Done\n* [ ] Not done\n&quot;, &amp;options),
-    ///            &quot;&lt;ul&gt;\n&lt;li&gt;&lt;input type=\&quot;checkbox\&quot; checked=\&quot;\&quot; disabled=\&quot;\&quot; /&gt; Done&lt;/li&gt;\n\
-    ///            &lt;li&gt;&lt;input type=\&quot;checkbox\&quot; disabled=\&quot;\&quot; /&gt; Not done&lt;/li&gt;\n&lt;/ul&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("* [x] Done\n* [ ] Not done\n", &amp;options),
+    ///            "&lt;ul&gt;\n&lt;li&gt;&lt;input type=\"checkbox\" checked=\"\" disabled=\"\" /&gt; Done&lt;/li&gt;\n\
+    ///            &lt;li&gt;&lt;input type=\"checkbox\" disabled=\"\" /&gt; Not done&lt;/li&gt;\n&lt;/ul&gt;\n");
     /// ```
     </span><span class="kw">pub </span>tasklist: bool,
 
@@ -2509,8 +2617,8 @@
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
     /// options.extension.superscript = true;
-    /// assert_eq!(markdown_to_html(&quot;e = mc^2^.\n&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;e = mc&lt;sup&gt;2&lt;/sup&gt;.&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("e = mc^2^.\n", &amp;options),
+    ///            "&lt;p&gt;e = mc&lt;sup&gt;2&lt;/sup&gt;.&lt;/p&gt;\n");
     /// ```
     </span><span class="kw">pub </span>superscript: bool,
 
@@ -2519,9 +2627,9 @@
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// options.extension.header_ids = Some(&quot;user-content-&quot;.to_string());
-    /// assert_eq!(markdown_to_html(&quot;# README\n&quot;, &amp;options),
-    ///            &quot;&lt;h1&gt;&lt;a href=\&quot;#readme\&quot; aria-hidden=\&quot;true\&quot; class=\&quot;anchor\&quot; id=\&quot;user-content-readme\&quot;&gt;&lt;/a&gt;README&lt;/h1&gt;\n&quot;);
+    /// options.extension.header_ids = Some("user-content-".to_string());
+    /// assert_eq!(markdown_to_html("# README\n", &amp;options),
+    ///            "&lt;h1&gt;&lt;a href=\"#readme\" aria-hidden=\"true\" class=\"anchor\" id=\"user-content-readme\"&gt;&lt;/a&gt;README&lt;/h1&gt;\n");
     /// ```
     </span><span class="kw">pub </span>header_ids: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
@@ -2534,8 +2642,8 @@
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
     /// options.extension.footnotes = true;
-    /// assert_eq!(markdown_to_html(&quot;Hi[^x].\n\n[^x]: A greeting.\n&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;Hi&lt;sup class=\&quot;footnote-ref\&quot;&gt;&lt;a href=\&quot;#fn-x\&quot; id=\&quot;fnref-x\&quot; data-footnote-ref&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;\n&lt;section class=\&quot;footnotes\&quot; data-footnotes&gt;\n&lt;ol&gt;\n&lt;li id=\&quot;fn-x\&quot;&gt;\n&lt;p&gt;A greeting. &lt;a href=\&quot;#fnref-x\&quot; class=\&quot;footnote-backref\&quot; data-footnote-backref data-footnote-backref-idx=\&quot;1\&quot; aria-label=\&quot;Back to reference 1\&quot;&gt;↩&lt;/a&gt;&lt;/p&gt;\n&lt;/li&gt;\n&lt;/ol&gt;\n&lt;/section&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("Hi[^x].\n\n[^x]: A greeting.\n", &amp;options),
+    ///            "&lt;p&gt;Hi&lt;sup class=\"footnote-ref\"&gt;&lt;a href=\"#fn-x\" id=\"fnref-x\" data-footnote-ref&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;\n&lt;section class=\"footnotes\" data-footnotes&gt;\n&lt;ol&gt;\n&lt;li id=\"fn-x\"&gt;\n&lt;p&gt;A greeting. &lt;a href=\"#fnref-x\" class=\"footnote-backref\" data-footnote-backref data-footnote-backref-idx=\"1\" aria-label=\"Back to reference 1\"&gt;↩&lt;/a&gt;&lt;/p&gt;\n&lt;/li&gt;\n&lt;/ol&gt;\n&lt;/section&gt;\n");
     /// ```
     </span><span class="kw">pub </span>footnotes: bool,
 
@@ -2562,8 +2670,8 @@
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
     /// options.extension.description_lists = true;
-    /// assert_eq!(markdown_to_html(&quot;Term\n\n: Definition&quot;, &amp;options),
-    ///            &quot;&lt;dl&gt;&lt;dt&gt;Term&lt;/dt&gt;\n&lt;dd&gt;\n&lt;p&gt;Definition&lt;/p&gt;\n&lt;/dd&gt;\n&lt;/dl&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("Term\n\n: Definition", &amp;options),
+    ///            "&lt;dl&gt;&lt;dt&gt;Term&lt;/dt&gt;\n&lt;dd&gt;\n&lt;p&gt;Definition&lt;/p&gt;\n&lt;/dd&gt;\n&lt;/dl&gt;\n");
     /// ```
     </span><span class="kw">pub </span>description_lists: bool,
 
@@ -2587,19 +2695,19 @@
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// options.extension.front_matter_delimiter = Some(&quot;---&quot;.to_owned());
+    /// options.extension.front_matter_delimiter = Some("---".to_owned());
     /// assert_eq!(
-    ///     markdown_to_html(&quot;---\nlayout: post\n---\nText\n&quot;, &amp;options),
-    ///     markdown_to_html(&quot;Text\n&quot;, &amp;Options::default()));
+    ///     markdown_to_html("---\nlayout: post\n---\nText\n", &amp;options),
+    ///     markdown_to_html("Text\n", &amp;Options::default()));
     /// ```
     ///
     /// ```
     /// # use comrak::{format_commonmark, Arena, Options};
     /// use comrak::parse_document;
     /// let mut options = Options::default();
-    /// options.extension.front_matter_delimiter = Some(&quot;---&quot;.to_owned());
+    /// options.extension.front_matter_delimiter = Some("---".to_owned());
     /// let arena = Arena::new();
-    /// let input =&quot;---\nlayout: post\n---\nText\n&quot;;
+    /// let input ="---\nlayout: post\n---\nText\n";
     /// let root = parse_document(&amp;arena, input, &amp;options);
     /// let mut buf = Vec::new();
     /// format_commonmark(&amp;root, &amp;options, &amp;mut buf);
@@ -2607,19 +2715,44 @@
     /// ```
     </span><span class="kw">pub </span>front_matter_delimiter: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
-    #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)))]
-    </span><span class="doccomment">/// Phrases wrapped inside of &#39;:&#39; blocks will be replaced with emojis.
+    <span class="doccomment">/// Enables the multiline block quote extension.
+    ///
+    /// Place `&gt;&gt;&gt;` before and after text to make it into
+    /// a block quote.
+    ///
+    /// ``` md
+    /// Paragraph one
+    ///
+    /// &gt;&gt;&gt;
+    /// Paragraph two
+    ///
+    /// - one
+    /// - two
+    /// &gt;&gt;&gt;
+    /// ```
     ///
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// assert_eq!(markdown_to_html(&quot;Happy Friday! :smile:&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;Happy Friday! :smile:&lt;/p&gt;\n&quot;);
+    /// options.extension.multiline_block_quotes = true;
+    /// assert_eq!(markdown_to_html("&gt;&gt;&gt;\nparagraph\n&gt;&gt;&gt;", &amp;options),
+    ///            "&lt;blockquote&gt;\n&lt;p&gt;paragraph&lt;/p&gt;\n&lt;/blockquote&gt;\n");
+    /// ```
+    </span><span class="kw">pub </span>multiline_block_quotes: bool,
+
+    <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
+    #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"shortcodes"</span>)))]
+    </span><span class="doccomment">/// Phrases wrapped inside of ':' blocks will be replaced with emojis.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
+    /// assert_eq!(markdown_to_html("Happy Friday! :smile:", &amp;options),
+    ///            "&lt;p&gt;Happy Friday! :smile:&lt;/p&gt;\n");
     ///
     /// options.extension.shortcodes = true;
-    /// assert_eq!(markdown_to_html(&quot;Happy Friday! :smile:&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;Happy Friday! 😄&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("Happy Friday! :smile:", &amp;options),
+    ///            "&lt;p&gt;Happy Friday! 😄&lt;/p&gt;\n");
     /// ```
     </span><span class="kw">pub </span>shortcodes: bool,
 }
@@ -2627,20 +2760,20 @@
 <span class="attr">#[non_exhaustive]
 #[derive(Default, Debug, Clone, Builder)]
 #[builder(default)]
-#[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
+#[cfg_attr(feature = <span class="string">"arbitrary"</span>, derive(arbitrary::Arbitrary))]
 </span><span class="doccomment">/// Options for parser functions.
 </span><span class="kw">pub struct </span>ParseOptions {
-    <span class="doccomment">/// Punctuation (quotes, full-stops and hyphens) are converted into &#39;smart&#39; punctuation.
+    <span class="doccomment">/// Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.
     ///
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// assert_eq!(markdown_to_html(&quot;&#39;Hello,&#39; \&quot;world\&quot; ...&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;&#39;Hello,&#39; &amp;quot;world&amp;quot; ...&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("'Hello,' \"world\" ...", &amp;options),
+    ///            "&lt;p&gt;'Hello,' &amp;quot;world&amp;quot; ...&lt;/p&gt;\n");
     ///
     /// options.parse.smart = true;
-    /// assert_eq!(markdown_to_html(&quot;&#39;Hello,&#39; \&quot;world\&quot; ...&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;‘Hello,’ “world” …&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("'Hello,' \"world\" ...", &amp;options),
+    ///            "&lt;p&gt;‘Hello,’ “world” …&lt;/p&gt;\n");
     /// ```
     </span><span class="kw">pub </span>smart: bool,
 
@@ -2649,12 +2782,12 @@
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// assert_eq!(markdown_to_html(&quot;```\nfn hello();\n```\n&quot;, &amp;options),
-    ///            &quot;&lt;pre&gt;&lt;code&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("```\nfn hello();\n```\n", &amp;options),
+    ///            "&lt;pre&gt;&lt;code&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n");
     ///
-    /// options.parse.default_info_string = Some(&quot;rust&quot;.into());
-    /// assert_eq!(markdown_to_html(&quot;```\nfn hello();\n```\n&quot;, &amp;options),
-    ///            &quot;&lt;pre&gt;&lt;code class=\&quot;language-rust\&quot;&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n&quot;);
+    /// options.parse.default_info_string = Some("rust".into());
+    /// assert_eq!(markdown_to_html("```\nfn hello();\n```\n", &amp;options),
+    ///            "&lt;pre&gt;&lt;code class=\"language-rust\"&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n");
     /// ```
     </span><span class="kw">pub </span>default_info_string: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
@@ -2667,12 +2800,12 @@
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
     /// options.extension.autolink = true;
-    /// assert_eq!(markdown_to_html(&quot;[https://foo.com]&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;[https://foo.com]&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("[https://foo.com]", &amp;options),
+    ///            "&lt;p&gt;[https://foo.com]&lt;/p&gt;\n");
     ///
     /// options.parse.relaxed_autolinks = true;
-    /// assert_eq!(markdown_to_html(&quot;[https://foo.com]&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;[&lt;a href=\&quot;https://foo.com\&quot;&gt;https://foo.com&lt;/a&gt;]&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("[https://foo.com]", &amp;options),
+    ///            "&lt;p&gt;[&lt;a href=\"https://foo.com\"&gt;https://foo.com&lt;/a&gt;]&lt;/p&gt;\n");
     /// ```
     </span><span class="kw">pub </span>relaxed_autolinks: bool,
 }
@@ -2680,7 +2813,7 @@
 <span class="attr">#[non_exhaustive]
 #[derive(Default, Debug, Clone, Copy, Builder)]
 #[builder(default)]
-#[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
+#[cfg_attr(feature = <span class="string">"arbitrary"</span>, derive(arbitrary::Arbitrary))]
 </span><span class="doccomment">/// Options for formatter functions.
 </span><span class="kw">pub struct </span>RenderOptions {
     <span class="doccomment">/// [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) in the input
@@ -2689,26 +2822,26 @@
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// assert_eq!(markdown_to_html(&quot;Hello.\nWorld.\n&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;Hello.\nWorld.&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("Hello.\nWorld.\n", &amp;options),
+    ///            "&lt;p&gt;Hello.\nWorld.&lt;/p&gt;\n");
     ///
     /// options.render.hardbreaks = true;
-    /// assert_eq!(markdown_to_html(&quot;Hello.\nWorld.\n&quot;, &amp;options),
-    ///            &quot;&lt;p&gt;Hello.&lt;br /&gt;\nWorld.&lt;/p&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("Hello.\nWorld.\n", &amp;options),
+    ///            "&lt;p&gt;Hello.&lt;br /&gt;\nWorld.&lt;/p&gt;\n");
     /// ```
     </span><span class="kw">pub </span>hardbreaks: bool,
 
-    <span class="doccomment">/// GitHub-style `&lt;pre lang=&quot;xyz&quot;&gt;` is used for fenced code blocks with info tags.
+    <span class="doccomment">/// GitHub-style `&lt;pre lang="xyz"&gt;` is used for fenced code blocks with info tags.
     ///
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// assert_eq!(markdown_to_html(&quot;``` rust\nfn hello();\n```\n&quot;, &amp;options),
-    ///            &quot;&lt;pre&gt;&lt;code class=\&quot;language-rust\&quot;&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("``` rust\nfn hello();\n```\n", &amp;options),
+    ///            "&lt;pre&gt;&lt;code class=\"language-rust\"&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n");
     ///
     /// options.render.github_pre_lang = true;
-    /// assert_eq!(markdown_to_html(&quot;``` rust\nfn hello();\n```\n&quot;, &amp;options),
-    ///            &quot;&lt;pre lang=\&quot;rust\&quot;&gt;&lt;code&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("``` rust\nfn hello();\n```\n", &amp;options),
+    ///            "&lt;pre lang=\"rust\"&gt;&lt;code&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n");
     /// ```
     </span><span class="kw">pub </span>github_pre_lang: bool,
 
@@ -2717,12 +2850,12 @@
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// assert_eq!(markdown_to_html(&quot;``` rust extra info\nfn hello();\n```\n&quot;, &amp;options),
-    ///            &quot;&lt;pre&gt;&lt;code class=\&quot;language-rust\&quot;&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n&quot;);
+    /// assert_eq!(markdown_to_html("``` rust extra info\nfn hello();\n```\n", &amp;options),
+    ///            "&lt;pre&gt;&lt;code class=\"language-rust\"&gt;fn hello();\n&lt;/code&gt;&lt;/pre&gt;\n");
     ///
     /// options.render.full_info_string = true;
-    /// let html = markdown_to_html(&quot;``` rust extra info\nfn hello();\n```\n&quot;, &amp;options);
-    /// let re = regex::Regex::new(r#&quot;data-meta=&quot;extra info&quot;&quot;#).unwrap();
+    /// let html = markdown_to_html("``` rust extra info\nfn hello();\n```\n", &amp;options);
+    /// let re = regex::Regex::new(r#"data-meta="extra info""#).unwrap();
     /// assert!(re.is_match(&amp;html));
     /// ```
     </span><span class="kw">pub </span>full_info_string: bool,
@@ -2734,17 +2867,17 @@
     /// # fn main() {
     /// # let arena = typed_arena::Arena::new();
     /// let mut options = Options::default();
-    /// let node = parse_document(&amp;arena, &quot;hello hello hello hello hello hello&quot;, &amp;options);
+    /// let node = parse_document(&amp;arena, "hello hello hello hello hello hello", &amp;options);
     /// let mut output = vec![];
     /// format_commonmark(node, &amp;options, &amp;mut output).unwrap();
     /// assert_eq!(String::from_utf8(output).unwrap(),
-    ///            &quot;hello hello hello hello hello hello\n&quot;);
+    ///            "hello hello hello hello hello hello\n");
     ///
     /// options.render.width = 20;
     /// let mut output = vec![];
     /// format_commonmark(node, &amp;options, &amp;mut output).unwrap();
     /// assert_eq!(String::from_utf8(output).unwrap(),
-    ///            &quot;hello hello hello\nhello hello hello\n&quot;);
+    ///            "hello hello hello\nhello hello hello\n");
     /// # }
     /// ```
     </span><span class="kw">pub </span>width: usize,
@@ -2754,23 +2887,23 @@
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// let input = &quot;&lt;script&gt;\nalert(&#39;xyz&#39;);\n&lt;/script&gt;\n\n\
+    /// let input = "&lt;script&gt;\nalert('xyz');\n&lt;/script&gt;\n\n\
     ///              Possibly &lt;marquee&gt;annoying&lt;/marquee&gt;.\n\n\
     ///              [Dangerous](javascript:alert(document.cookie)).\n\n\
-    ///              [Safe](http://commonmark.org).\n&quot;;
+    ///              [Safe](http://commonmark.org).\n";
     ///
     /// assert_eq!(markdown_to_html(input, &amp;options),
-    ///            &quot;&lt;!-- raw HTML omitted --&gt;\n\
+    ///            "&lt;!-- raw HTML omitted --&gt;\n\
     ///             &lt;p&gt;Possibly &lt;!-- raw HTML omitted --&gt;annoying&lt;!-- raw HTML omitted --&gt;.&lt;/p&gt;\n\
-    ///             &lt;p&gt;&lt;a href=\&quot;\&quot;&gt;Dangerous&lt;/a&gt;.&lt;/p&gt;\n\
-    ///             &lt;p&gt;&lt;a href=\&quot;http://commonmark.org\&quot;&gt;Safe&lt;/a&gt;.&lt;/p&gt;\n&quot;);
+    ///             &lt;p&gt;&lt;a href=\"\"&gt;Dangerous&lt;/a&gt;.&lt;/p&gt;\n\
+    ///             &lt;p&gt;&lt;a href=\"http://commonmark.org\"&gt;Safe&lt;/a&gt;.&lt;/p&gt;\n");
     ///
     /// options.render.unsafe_ = true;
     /// assert_eq!(markdown_to_html(input, &amp;options),
-    ///            &quot;&lt;script&gt;\nalert(\&#39;xyz\&#39;);\n&lt;/script&gt;\n\
+    ///            "&lt;script&gt;\nalert(\'xyz\');\n&lt;/script&gt;\n\
     ///             &lt;p&gt;Possibly &lt;marquee&gt;annoying&lt;/marquee&gt;.&lt;/p&gt;\n\
-    ///             &lt;p&gt;&lt;a href=\&quot;javascript:alert(document.cookie)\&quot;&gt;Dangerous&lt;/a&gt;.&lt;/p&gt;\n\
-    ///             &lt;p&gt;&lt;a href=\&quot;http://commonmark.org\&quot;&gt;Safe&lt;/a&gt;.&lt;/p&gt;\n&quot;);
+    ///             &lt;p&gt;&lt;a href=\"javascript:alert(document.cookie)\"&gt;Dangerous&lt;/a&gt;.&lt;/p&gt;\n\
+    ///             &lt;p&gt;&lt;a href=\"http://commonmark.org\"&gt;Safe&lt;/a&gt;.&lt;/p&gt;\n");
     /// ```
     </span><span class="kw">pub </span>unsafe_: bool,
 
@@ -2778,14 +2911,14 @@
     /// ```
     /// # use comrak::{markdown_to_html, Options};
     /// let mut options = Options::default();
-    /// let input = &quot;&lt;i&gt;italic text&lt;/i&gt;&quot;;
+    /// let input = "&lt;i&gt;italic text&lt;/i&gt;";
     ///
     /// assert_eq!(markdown_to_html(input, &amp;options),
-    ///            &quot;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;italic text&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;\n&quot;);
+    ///            "&lt;p&gt;&lt;!-- raw HTML omitted --&gt;italic text&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;\n");
     ///
     /// options.render.escape = true;
     /// assert_eq!(markdown_to_html(input, &amp;options),
-    ///            &quot;&lt;p&gt;&amp;lt;i&amp;gt;italic text&amp;lt;/i&amp;gt;&lt;/p&gt;\n&quot;);
+    ///            "&lt;p&gt;&amp;lt;i&amp;gt;italic text&amp;lt;/i&amp;gt;&lt;/p&gt;\n");
     /// ```
     </span><span class="kw">pub </span>escape: bool,
 
@@ -2798,17 +2931,17 @@
     /// ```rust
     /// # use comrak::{markdown_to_commonmark, Options, ListStyleType};
     /// let mut options = Options::default();
-    /// let input = &quot;- one\n- two\n- three&quot;;
+    /// let input = "- one\n- two\n- three";
     /// assert_eq!(markdown_to_commonmark(input, &amp;options),
-    ///            &quot;- one\n- two\n- three\n&quot;); // default is Dash
+    ///            "- one\n- two\n- three\n"); // default is Dash
     ///
     /// options.render.list_style = ListStyleType::Plus;
     /// assert_eq!(markdown_to_commonmark(input, &amp;options),
-    ///            &quot;+ one\n+ two\n+ three\n&quot;);
+    ///            "+ one\n+ two\n+ three\n");
     ///
     /// options.render.list_style = ListStyleType::Star;
     /// assert_eq!(markdown_to_commonmark(input, &amp;options),
-    ///            &quot;* one\n* two\n* three\n&quot;);
+    ///            "* one\n* two\n* three\n");
     /// ```
     </span><span class="kw">pub </span>list_style: ListStyleType,
 
@@ -2820,9 +2953,9 @@
     /// # use comrak::{markdown_to_commonmark_xml, Options};
     /// let mut options = Options::default();
     /// options.render.sourcepos = true;
-    /// let input = &quot;Hello *world*!&quot;;
+    /// let input = "Hello *world*!";
     /// let xml = markdown_to_commonmark_xml(input, &amp;options);
-    /// assert!(xml.contains(&quot;&lt;emph sourcepos=\&quot;1:7-1:13\&quot;&gt;&quot;));
+    /// assert!(xml.contains("&lt;emph sourcepos=\"1:7-1:13\"&gt;"));
     /// ```
     </span><span class="kw">pub </span>sourcepos: bool,
 }
@@ -2831,16 +2964,16 @@
 #[derive(Default, Debug, Clone, Builder)]
 #[builder(default)]
 </span><span class="doccomment">/// Umbrella plugins struct.
-</span><span class="kw">pub struct </span>Plugins&lt;<span class="lifetime">&#39;p</span>&gt; {
+</span><span class="kw">pub struct </span>Plugins&lt;<span class="lifetime">'p</span>&gt; {
     <span class="doccomment">/// Configure render-time plugins.
-    </span><span class="kw">pub </span>render: RenderPlugins&lt;<span class="lifetime">&#39;p</span>&gt;,
+    </span><span class="kw">pub </span>render: RenderPlugins&lt;<span class="lifetime">'p</span>&gt;,
 }
 
 <span class="attr">#[non_exhaustive]
 #[derive(Default, Clone, Builder)]
 #[builder(default)]
 </span><span class="doccomment">/// Plugins for alternative rendering.
-</span><span class="kw">pub struct </span>RenderPlugins&lt;<span class="lifetime">&#39;p</span>&gt; {
+</span><span class="kw">pub struct </span>RenderPlugins&lt;<span class="lifetime">'p</span>&gt; {
     <span class="doccomment">/// Provide a syntax highlighter adapter implementation for syntax
     /// highlighting of codefence blocks.
     /// ```
@@ -2850,23 +2983,23 @@
     /// use std::io::{self, Write};
     /// let options = Options::default();
     /// let mut plugins = Plugins::default();
-    /// let input = &quot;```rust\nfn main&lt;&#39;a&gt;();\n```&quot;;
+    /// let input = "```rust\nfn main&lt;'a&gt;();\n```";
     ///
     /// assert_eq!(markdown_to_html_with_plugins(input, &amp;options, &amp;plugins),
-    ///            &quot;&lt;pre&gt;&lt;code class=\&quot;language-rust\&quot;&gt;fn main&amp;lt;&#39;a&amp;gt;();\n&lt;/code&gt;&lt;/pre&gt;\n&quot;);
+    ///            "&lt;pre&gt;&lt;code class=\"language-rust\"&gt;fn main&amp;lt;'a&amp;gt;();\n&lt;/code&gt;&lt;/pre&gt;\n");
     ///
     /// pub struct MockAdapter {}
     /// impl SyntaxHighlighterAdapter for MockAdapter {
     ///     fn write_highlighted(&amp;self, output: &amp;mut dyn Write, lang: Option&lt;&amp;str&gt;, code: &amp;str) -&gt; io::Result&lt;()&gt; {
-    ///         write!(output, &quot;&lt;span class=\&quot;lang-{}\&quot;&gt;{}&lt;/span&gt;&quot;, lang.unwrap(), code)
+    ///         write!(output, "&lt;span class=\"lang-{}\"&gt;{}&lt;/span&gt;", lang.unwrap(), code)
     ///     }
     ///
     ///     fn write_pre_tag(&amp;self, output: &amp;mut dyn Write, _attributes: HashMap&lt;String, String&gt;) -&gt; io::Result&lt;()&gt; {
-    ///         output.write_all(b&quot;&lt;pre lang=\&quot;rust\&quot;&gt;&quot;)
+    ///         output.write_all(b"&lt;pre lang=\"rust\"&gt;")
     ///     }
     ///
     ///     fn write_code_tag(&amp;self, output: &amp;mut dyn Write, _attributes: HashMap&lt;String, String&gt;) -&gt; io::Result&lt;()&gt; {
-    ///         output.write_all(b&quot;&lt;code class=\&quot;language-rust\&quot;&gt;&quot;)
+    ///         output.write_all(b"&lt;code class=\"language-rust\"&gt;")
     ///     }
     /// }
     ///
@@ -2874,20 +3007,20 @@
     /// plugins.render.codefence_syntax_highlighter = Some(&amp;adapter);
     ///
     /// assert_eq!(markdown_to_html_with_plugins(input, &amp;options, &amp;plugins),
-    ///            &quot;&lt;pre lang=\&quot;rust\&quot;&gt;&lt;code class=\&quot;language-rust\&quot;&gt;&lt;span class=\&quot;lang-rust\&quot;&gt;fn main&lt;&#39;a&gt;();\n&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;\n&quot;);
+    ///            "&lt;pre lang=\"rust\"&gt;&lt;code class=\"language-rust\"&gt;&lt;span class=\"lang-rust\"&gt;fn main&lt;'a&gt;();\n&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;\n");
     /// ```
-    </span><span class="kw">pub </span>codefence_syntax_highlighter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;p </span><span class="kw">dyn </span>SyntaxHighlighterAdapter&gt;,
+    </span><span class="kw">pub </span>codefence_syntax_highlighter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'p </span><span class="kw">dyn </span>SyntaxHighlighterAdapter&gt;,
 
     <span class="doccomment">/// Optional heading adapter
-    </span><span class="kw">pub </span>heading_adapter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;p </span><span class="kw">dyn </span>HeadingAdapter&gt;,
+    </span><span class="kw">pub </span>heading_adapter: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'p </span><span class="kw">dyn </span>HeadingAdapter&gt;,
 }
 
-<span class="kw">impl </span>Debug <span class="kw">for </span>RenderPlugins&lt;<span class="lifetime">&#39;_</span>&gt; {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">&quot;RenderPlugins&quot;</span>)
+<span class="kw">impl </span>Debug <span class="kw">for </span>RenderPlugins&lt;<span class="lifetime">'_</span>&gt; {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">"RenderPlugins"</span>)
             .field(
-                <span class="string">&quot;codefence_syntax_highlighter&quot;</span>,
-                <span class="kw-2">&amp;</span><span class="string">&quot;impl SyntaxHighlighterAdapter&quot;</span>,
+                <span class="string">"codefence_syntax_highlighter"</span>,
+                <span class="kw-2">&amp;</span><span class="string">"impl SyntaxHighlighterAdapter"</span>,
             )
             .finish()
     }
@@ -2899,19 +3032,19 @@
     <span class="kw">pub </span>title: String,
 }
 
-<span class="kw">struct </span>FootnoteDefinition&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">struct </span>FootnoteDefinition&lt;<span class="lifetime">'a</span>&gt; {
     ix: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+    node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     name: String,
     total_references: u32,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; Parser&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>, <span class="lifetime">&#39;c</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'o</span>, <span class="lifetime">'c</span>&gt; Parser&lt;<span class="lifetime">'a</span>, <span class="lifetime">'o</span>, <span class="lifetime">'c</span>&gt; {
     <span class="kw">fn </span>new(
-        arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-        root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
-        options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
-        callback: <span class="prelude-ty">Option</span>&lt;Callback&lt;<span class="lifetime">&#39;c</span>&gt;&gt;,
+        arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
+        root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
+        options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options,
+        callback: <span class="prelude-ty">Option</span>&lt;Callback&lt;<span class="lifetime">'c</span>&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
         Parser {
             arena,
@@ -2962,7 +3095,7 @@
         }
 
         <span class="kw">let </span><span class="kw-2">mut </span>buffer = <span class="number">0</span>;
-        <span class="kw">if </span><span class="self">self</span>.last_buffer_ended_with_cr &amp;&amp; !s.is_empty() &amp;&amp; s[<span class="number">0</span>] == <span class="string">b&#39;\n&#39; </span>{
+        <span class="kw">if </span><span class="self">self</span>.last_buffer_ended_with_cr &amp;&amp; !s.is_empty() &amp;&amp; s[<span class="number">0</span>] == <span class="string">b'\n' </span>{
             buffer += <span class="number">1</span>;
         }
         <span class="self">self</span>.last_buffer_ended_with_cr = <span class="bool-val">false</span>;
@@ -2995,25 +3128,25 @@
                 } <span class="kw">else </span>{
                     <span class="self">self</span>.process_line(<span class="kw-2">&amp;</span>s[buffer..eol]);
                 }
-            } <span class="kw">else if </span>eol &lt; end &amp;&amp; s[eol] == <span class="string">b&#39;\0&#39; </span>{
+            } <span class="kw">else if </span>eol &lt; end &amp;&amp; s[eol] == <span class="string">b'\0' </span>{
                 linebuf.extend_from_slice(<span class="kw-2">&amp;</span>s[buffer..eol]);
-                linebuf.extend_from_slice(<span class="kw-2">&amp;</span><span class="string">&quot;\u{fffd}&quot;</span>.to_string().into_bytes());
+                linebuf.extend_from_slice(<span class="kw-2">&amp;</span><span class="string">"\u{fffd}"</span>.to_string().into_bytes());
             } <span class="kw">else </span>{
                 linebuf.extend_from_slice(<span class="kw-2">&amp;</span>s[buffer..eol]);
             }
 
             buffer = eol;
             <span class="kw">if </span>buffer &lt; end {
-                <span class="kw">if </span>s[buffer] == <span class="string">b&#39;\0&#39; </span>{
+                <span class="kw">if </span>s[buffer] == <span class="string">b'\0' </span>{
                     buffer += <span class="number">1</span>;
                 } <span class="kw">else </span>{
-                    <span class="kw">if </span>s[buffer] == <span class="string">b&#39;\r&#39; </span>{
+                    <span class="kw">if </span>s[buffer] == <span class="string">b'\r' </span>{
                         buffer += <span class="number">1</span>;
                         <span class="kw">if </span>buffer == end {
                             <span class="self">self</span>.last_buffer_ended_with_cr = <span class="bool-val">true</span>;
                         }
                     }
-                    <span class="kw">if </span>buffer &lt; end &amp;&amp; s[buffer] == <span class="string">b&#39;\n&#39; </span>{
+                    <span class="kw">if </span>buffer &lt; end &amp;&amp; s[buffer] == <span class="string">b'\n' </span>{
                         buffer += <span class="number">1</span>;
                     }
                 }
@@ -3029,7 +3162,7 @@
         }
 
         <span class="kw">let </span>c = line[i];
-        <span class="kw">if </span>c != <span class="string">b&#39;*&#39; </span>&amp;&amp; c != <span class="string">b&#39;_&#39; </span>&amp;&amp; c != <span class="string">b&#39;-&#39; </span>{
+        <span class="kw">if </span>c != <span class="string">b'*' </span>&amp;&amp; c != <span class="string">b'_' </span>&amp;&amp; c != <span class="string">b'-' </span>{
             <span class="kw">return </span>(i, <span class="bool-val">false</span>);
         }
 
@@ -3044,12 +3177,12 @@
 
             <span class="kw">if </span>nextc == c {
                 count += <span class="number">1</span>;
-            } <span class="kw">else if </span>nextc != <span class="string">b&#39; &#39; </span>&amp;&amp; nextc != <span class="string">b&#39;\t&#39; </span>{
+            } <span class="kw">else if </span>nextc != <span class="string">b' ' </span>&amp;&amp; nextc != <span class="string">b'\t' </span>{
                 <span class="kw">break</span>;
             }
         }
 
-        <span class="kw">if </span>count &gt;= <span class="number">3 </span>&amp;&amp; (nextc == <span class="string">b&#39;\r&#39; </span>|| nextc == <span class="string">b&#39;\n&#39;</span>) {
+        <span class="kw">if </span>count &gt;= <span class="number">3 </span>&amp;&amp; (nextc == <span class="string">b'\r' </span>|| nextc == <span class="string">b'\n'</span>) {
             ((i - <span class="self">self</span>.first_nonspace) + <span class="number">1</span>, <span class="bool-val">true</span>)
         } <span class="kw">else </span>{
             (i, <span class="bool-val">false</span>)
@@ -3105,7 +3238,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>new_line: Vec&lt;u8&gt;;
         <span class="kw">let </span>line = <span class="kw">if </span>line.is_empty() || !strings::is_line_end_char(<span class="kw-2">*</span>line.last().unwrap()) {
             new_line = line.into();
-            new_line.push(<span class="string">b&#39;\n&#39;</span>);
+            new_line.push(<span class="string">b'\n'</span>);
             <span class="kw-2">&amp;</span>new_line
         } <span class="kw">else </span>{
             line
@@ -3113,10 +3246,10 @@
 
         <span class="self">self</span>.curline_len = line.len();
         <span class="self">self</span>.curline_end_col = line.len();
-        <span class="kw">if </span><span class="self">self</span>.curline_end_col &gt; <span class="number">0 </span>&amp;&amp; line[<span class="self">self</span>.curline_end_col - <span class="number">1</span>] == <span class="string">b&#39;\n&#39; </span>{
+        <span class="kw">if </span><span class="self">self</span>.curline_end_col &gt; <span class="number">0 </span>&amp;&amp; line[<span class="self">self</span>.curline_end_col - <span class="number">1</span>] == <span class="string">b'\n' </span>{
             <span class="self">self</span>.curline_end_col -= <span class="number">1</span>;
         }
-        <span class="kw">if </span><span class="self">self</span>.curline_end_col &gt; <span class="number">0 </span>&amp;&amp; line[<span class="self">self</span>.curline_end_col - <span class="number">1</span>] == <span class="string">b&#39;\r&#39; </span>{
+        <span class="kw">if </span><span class="self">self</span>.curline_end_col &gt; <span class="number">0 </span>&amp;&amp; line[<span class="self">self</span>.curline_end_col - <span class="number">1</span>] == <span class="string">b'\r' </span>{
             <span class="self">self</span>.curline_end_col -= <span class="number">1</span>;
         }
 
@@ -3131,7 +3264,7 @@
 
         <span class="kw">if </span><span class="self">self</span>.line_number == <span class="number">0
             </span>&amp;&amp; line.len() &gt;= <span class="number">3
-            </span>&amp;&amp; <span class="kw">unsafe </span>{ str::from_utf8_unchecked(line) }.starts_with(<span class="string">&#39;\u{feff}&#39;</span>)
+            </span>&amp;&amp; <span class="kw">unsafe </span>{ str::from_utf8_unchecked(line) }.starts_with(<span class="string">'\u{feff}'</span>)
         {
             <span class="self">self</span>.offset += <span class="number">3</span>;
         }
@@ -3159,7 +3292,7 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         line: <span class="kw-2">&amp;</span>[u8],
         all_matched: <span class="kw-2">&amp;mut </span>bool,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="kw">let </span>(new_all_matched, <span class="kw-2">mut </span>container, should_continue) =
             <span class="self">self</span>.check_open_blocks_inner(<span class="self">self</span>.root, line);
 
@@ -3177,9 +3310,9 @@
 
     <span class="kw">fn </span>check_open_blocks_inner(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        <span class="kw-2">mut </span>container: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        <span class="kw-2">mut </span>container: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         line: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; (bool, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, bool) {
+    ) -&gt; (bool, <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, bool) {
         <span class="kw">let </span><span class="kw-2">mut </span>should_continue = <span class="bool-val">true</span>;
 
         <span class="kw">while </span>nodes::last_child_is_open(container) {
@@ -3233,6 +3366,16 @@
                         <span class="kw">return </span>(<span class="bool-val">false</span>, container, should_continue);
                     }
                 }
+                NodeValue::MultilineBlockQuote(..) =&gt; {
+                    <span class="kw">if </span>!<span class="self">self</span>.parse_multiline_block_quote_prefix(
+                        line,
+                        container,
+                        ast,
+                        <span class="kw-2">&amp;mut </span>should_continue,
+                    ) {
+                        <span class="kw">return </span>(<span class="bool-val">false</span>, container, should_continue);
+                    }
+                }
                 <span class="kw">_ </span>=&gt; {}
             }
         }
@@ -3240,7 +3383,7 @@
         (<span class="bool-val">true</span>, container, should_continue)
     }
 
-    <span class="kw">fn </span>open_new_blocks(<span class="kw-2">&amp;mut </span><span class="self">self</span>, container: <span class="kw-2">&amp;mut &amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, line: <span class="kw-2">&amp;</span>[u8], all_matched: bool) {
+    <span class="kw">fn </span>open_new_blocks(<span class="kw-2">&amp;mut </span><span class="self">self</span>, container: <span class="kw-2">&amp;mut &amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, line: <span class="kw-2">&amp;</span>[u8], all_matched: bool) {
         <span class="kw">let </span><span class="kw-2">mut </span>matched: usize = <span class="number">0</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>nl: NodeList = NodeList::default();
         <span class="kw">let </span><span class="kw-2">mut </span>sc: scanners::SetextChar = scanners::SetextChar::Equals;
@@ -3255,7 +3398,26 @@
             <span class="self">self</span>.find_first_nonspace(line);
             <span class="kw">let </span>indented = <span class="self">self</span>.indent &gt;= CODE_INDENT;
 
-            <span class="kw">if </span>!indented &amp;&amp; line[<span class="self">self</span>.first_nonspace] == <span class="string">b&#39;&gt;&#39; </span>{
+            <span class="kw">if </span>!indented
+                &amp;&amp; <span class="self">self</span>.options.extension.multiline_block_quotes
+                &amp;&amp; unwrap_into(
+                    scanners::open_multiline_block_quote_fence(<span class="kw-2">&amp;</span>line[<span class="self">self</span>.first_nonspace..]),
+                    <span class="kw-2">&amp;mut </span>matched,
+                )
+            {
+                <span class="kw">let </span>first_nonspace = <span class="self">self</span>.first_nonspace;
+                <span class="kw">let </span>offset = <span class="self">self</span>.offset;
+                <span class="kw">let </span>nmbc = NodeMultilineBlockQuote {
+                    fence_length: matched,
+                    fence_offset: first_nonspace - offset,
+                };
+                <span class="kw-2">*</span>container = <span class="self">self</span>.add_child(
+                    container,
+                    NodeValue::MultilineBlockQuote(nmbc),
+                    <span class="self">self</span>.first_nonspace + <span class="number">1</span>,
+                );
+                <span class="self">self</span>.advance_offset(line, first_nonspace + matched - offset, <span class="bool-val">false</span>);
+            } <span class="kw">else if </span>!indented &amp;&amp; line[<span class="self">self</span>.first_nonspace] == <span class="string">b'&gt;' </span>{
                 <span class="kw">let </span>blockquote_startpos = <span class="self">self</span>.first_nonspace;
 
                 <span class="kw">let </span>offset = <span class="self">self</span>.first_nonspace + <span class="number">1 </span>- <span class="self">self</span>.offset;
@@ -3282,11 +3444,11 @@
 
                 <span class="kw">let </span><span class="kw-2">mut </span>hashpos = line[<span class="self">self</span>.first_nonspace..]
                     .iter()
-                    .position(|<span class="kw-2">&amp;</span>c| c == <span class="string">b&#39;#&#39;</span>)
+                    .position(|<span class="kw-2">&amp;</span>c| c == <span class="string">b'#'</span>)
                     .unwrap()
                     + <span class="self">self</span>.first_nonspace;
                 <span class="kw">let </span><span class="kw-2">mut </span>level = <span class="number">0</span>;
-                <span class="kw">while </span>line[hashpos] == <span class="string">b&#39;#&#39; </span>{
+                <span class="kw">while </span>line[hashpos] == <span class="string">b'#' </span>{
                     level += <span class="number">1</span>;
                     hashpos += <span class="number">1</span>;
                 }
@@ -3382,7 +3544,7 @@
                 )
             {
                 <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="kw-2">&amp;</span>line[<span class="self">self</span>.first_nonspace + <span class="number">2</span>..<span class="self">self</span>.first_nonspace + matched];
-                c = c.split(|<span class="kw-2">&amp;</span>e| e == <span class="string">b&#39;]&#39;</span>).next().unwrap();
+                c = c.split(|<span class="kw-2">&amp;</span>e| e == <span class="string">b']'</span>).next().unwrap();
                 <span class="kw">let </span>offset = <span class="self">self</span>.first_nonspace + matched - <span class="self">self</span>.offset;
                 <span class="self">self</span>.advance_offset(line, offset, <span class="bool-val">false</span>);
                 <span class="kw-2">*</span>container = <span class="self">self</span>.add_child(
@@ -3396,7 +3558,7 @@
                 container.data.borrow_mut().internal_offset = matched;
             } <span class="kw">else if </span>!indented
                 &amp;&amp; <span class="self">self</span>.options.extension.description_lists
-                &amp;&amp; line[<span class="self">self</span>.first_nonspace] == <span class="string">b&#39;:&#39;
+                &amp;&amp; line[<span class="self">self</span>.first_nonspace] == <span class="string">b':'
                 </span>&amp;&amp; <span class="self">self</span>.parse_desc_list_details(container)
             {
                 <span class="kw">let </span>offset = <span class="self">self</span>.first_nonspace + <span class="number">1 </span>- <span class="self">self</span>.offset;
@@ -3525,7 +3687,7 @@
 
     <span class="kw">fn </span>parse_block_quote_prefix(<span class="kw-2">&amp;mut </span><span class="self">self</span>, line: <span class="kw-2">&amp;</span>[u8]) -&gt; bool {
         <span class="kw">let </span>indent = <span class="self">self</span>.indent;
-        <span class="kw">if </span>indent &lt;= <span class="number">3 </span>&amp;&amp; line[<span class="self">self</span>.first_nonspace] == <span class="string">b&#39;&gt;&#39; </span>{
+        <span class="kw">if </span>indent &lt;= <span class="number">3 </span>&amp;&amp; line[<span class="self">self</span>.first_nonspace] == <span class="string">b'&gt;' </span>{
             <span class="self">self</span>.advance_offset(line, indent + <span class="number">1</span>, <span class="bool-val">true</span>);
 
             <span class="kw">if </span>strings::is_space_or_tab(line[<span class="self">self</span>.offset]) {
@@ -3543,14 +3705,14 @@
             <span class="self">self</span>.advance_offset(line, <span class="number">4</span>, <span class="bool-val">true</span>);
             <span class="bool-val">true
         </span>} <span class="kw">else </span>{
-            line == <span class="string">b&quot;\n&quot; </span>|| line == <span class="string">b&quot;\r\n&quot;
+            line == <span class="string">b"\n" </span>|| line == <span class="string">b"\r\n"
         </span>}
     }
 
     <span class="kw">fn </span>parse_node_item_prefix(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         line: <span class="kw-2">&amp;</span>[u8],
-        container: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        container: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         nl: <span class="kw-2">&amp;</span>NodeList,
     ) -&gt; bool {
         <span class="kw">if </span><span class="self">self</span>.indent &gt;= nl.marker_offset + nl.padding {
@@ -3568,7 +3730,7 @@
     <span class="kw">fn </span>parse_description_item_prefix(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         line: <span class="kw-2">&amp;</span>[u8],
-        container: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        container: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         di: <span class="kw-2">&amp;</span>NodeDescriptionItem,
     ) -&gt; bool {
         <span class="kw">if </span><span class="self">self</span>.indent &gt;= di.marker_offset + di.padding {
@@ -3586,7 +3748,7 @@
     <span class="kw">fn </span>parse_code_block_prefix(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         line: <span class="kw-2">&amp;</span>[u8],
-        container: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        container: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         ast: <span class="kw-2">&amp;mut </span>Ast,
         should_continue: <span class="kw-2">&amp;mut </span>bool,
     ) -&gt; bool {
@@ -3641,7 +3803,7 @@
         }
     }
 
-    <span class="kw">fn </span>parse_desc_list_details(<span class="kw-2">&amp;mut </span><span class="self">self</span>, container: <span class="kw-2">&amp;mut &amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; bool {
+    <span class="kw">fn </span>parse_desc_list_details(<span class="kw-2">&amp;mut </span><span class="self">self</span>, container: <span class="kw-2">&amp;mut &amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) -&gt; bool {
         <span class="kw">let </span>last_child = <span class="kw">match </span>container.last_child() {
             <span class="prelude-val">Some</span>(lc) =&gt; lc,
             <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="bool-val">false</span>,
@@ -3714,12 +3876,57 @@
         </span>}
     }
 
+    <span class="kw">fn </span>parse_multiline_block_quote_prefix(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        line: <span class="kw-2">&amp;</span>[u8],
+        container: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
+        ast: <span class="kw-2">&amp;mut </span>Ast,
+        should_continue: <span class="kw-2">&amp;mut </span>bool,
+    ) -&gt; bool {
+        <span class="kw">let </span>(fence_length, fence_offset) = <span class="kw">match </span>ast.value {
+            NodeValue::MultilineBlockQuote(<span class="kw-2">ref </span>node_value) =&gt; {
+                (node_value.fence_length, node_value.fence_offset)
+            }
+            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+        };
+
+        <span class="kw">let </span>matched = <span class="kw">if </span><span class="self">self</span>.indent &lt;= <span class="number">3 </span>&amp;&amp; line[<span class="self">self</span>.first_nonspace] == <span class="string">b'&gt;' </span>{
+            scanners::close_multiline_block_quote_fence(<span class="kw-2">&amp;</span>line[<span class="self">self</span>.first_nonspace..]).unwrap_or(<span class="number">0</span>)
+        } <span class="kw">else </span>{
+            <span class="number">0
+        </span>};
+
+        <span class="kw">if </span>matched &gt;= fence_length {
+            <span class="kw-2">*</span>should_continue = <span class="bool-val">false</span>;
+            <span class="self">self</span>.advance_offset(line, matched, <span class="bool-val">false</span>);
+
+            <span class="comment">// The last child, like an indented codeblock, could be left open.
+            // Make sure it's finalized.
+            </span><span class="kw">if </span>nodes::last_child_is_open(container) {
+                <span class="kw">let </span>child = container.last_child().unwrap();
+                <span class="kw">let </span>child_ast = <span class="kw-2">&amp;mut *</span>child.data.borrow_mut();
+
+                <span class="self">self</span>.finalize_borrowed(child, child_ast).unwrap();
+            }
+
+            <span class="self">self</span>.current = <span class="self">self</span>.finalize_borrowed(container, ast).unwrap();
+            <span class="kw">return </span><span class="bool-val">false</span>;
+        }
+
+        <span class="kw">let </span><span class="kw-2">mut </span>i = fence_offset;
+        <span class="kw">while </span>i &gt; <span class="number">0 </span>&amp;&amp; strings::is_space_or_tab(line[<span class="self">self</span>.offset]) {
+            <span class="self">self</span>.advance_offset(line, <span class="number">1</span>, <span class="bool-val">true</span>);
+            i -= <span class="number">1</span>;
+        }
+        <span class="bool-val">true
+    </span>}
+
     <span class="kw">fn </span>add_child(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        <span class="kw-2">mut </span>parent: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        <span class="kw-2">mut </span>parent: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         value: NodeValue,
         start_column: usize,
-    ) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    ) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">while </span>!nodes::can_contain_type(parent, <span class="kw-2">&amp;</span>value) {
             parent = <span class="self">self</span>.finalize(parent).unwrap();
         }
@@ -3734,8 +3941,8 @@
 
     <span class="kw">fn </span>add_text_to_container(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        <span class="kw-2">mut </span>container: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
-        last_matched_container: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        <span class="kw-2">mut </span>container: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
+        last_matched_container: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         line: <span class="kw-2">&amp;</span>[u8],
     ) {
         <span class="self">self</span>.find_first_nonspace(line);
@@ -3754,6 +3961,7 @@
                     container.first_child().is_some()
                         || container.data.borrow().sourcepos.start.line != <span class="self">self</span>.line_number
                 }
+                NodeValue::MultilineBlockQuote(..) =&gt; <span class="bool-val">false</span>,
                 <span class="kw">_ </span>=&gt; <span class="bool-val">true</span>,
             };
 
@@ -3822,7 +4030,7 @@
                         // In this case `first_nonspace` indexes into the second
                         // set of hashes, while `chop_trailing_hashtags` truncates
                         // `line` to just `###` (the first three hashes).
-                        // In this case there&#39;s no text to add, and no further
+                        // In this case there's no text to add, and no further
                         // processing to be done.
                         </span><span class="kw">let </span>have_line_text = <span class="self">self</span>.first_nonspace &lt;= line.len();
 
@@ -3847,14 +4055,14 @@
         }
     }
 
-    <span class="kw">fn </span>add_line(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, line: <span class="kw-2">&amp;</span>[u8]) {
+    <span class="kw">fn </span>add_line(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, line: <span class="kw-2">&amp;</span>[u8]) {
         <span class="kw">let </span><span class="kw-2">mut </span>ast = node.data.borrow_mut();
         <span class="macro">assert!</span>(ast.open);
         <span class="kw">if </span><span class="self">self</span>.partially_consumed_tab {
             <span class="self">self</span>.offset += <span class="number">1</span>;
             <span class="kw">let </span>chars_to_tab = TAB_STOP - (<span class="self">self</span>.column % TAB_STOP);
             <span class="kw">for _ in </span><span class="number">0</span>..chars_to_tab {
-                ast.content.push(<span class="string">&#39; &#39;</span>);
+                ast.content.push(<span class="string">' '</span>);
             }
         }
         <span class="kw">if </span><span class="self">self</span>.offset &lt; line.len() {
@@ -3863,7 +4071,7 @@
         }
     }
 
-    <span class="kw">fn </span>finish(<span class="kw-2">&amp;mut </span><span class="self">self</span>, remaining: Vec&lt;u8&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>finish(<span class="kw-2">&amp;mut </span><span class="self">self</span>, remaining: Vec&lt;u8&gt;) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">if </span>!remaining.is_empty() {
             <span class="self">self</span>.process_line(<span class="kw-2">&amp;</span>remaining);
         }
@@ -3892,7 +4100,7 @@
         }
     }
 
-    <span class="kw">fn </span>finalize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+    <span class="kw">fn </span>finalize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="self">self</span>.finalize_borrowed(node, <span class="kw-2">&amp;mut </span>node.data.borrow_mut())
     }
 
@@ -3902,7 +4110,7 @@
             <span class="kw">let </span><span class="kw-2">mut </span>pos = <span class="number">0</span>;
             <span class="kw">let </span><span class="kw-2">mut </span>seek: <span class="kw-2">&amp;</span>[u8] = content.as_bytes();
             <span class="kw">while </span>!seek.is_empty()
-                &amp;&amp; seek[<span class="number">0</span>] == <span class="string">b&#39;[&#39;
+                &amp;&amp; seek[<span class="number">0</span>] == <span class="string">b'['
                 </span>&amp;&amp; unwrap_into(<span class="self">self</span>.parse_reference_inline(seek), <span class="kw-2">&amp;mut </span>pos)
             {
                 seek = <span class="kw-2">&amp;</span>seek[pos..];
@@ -3919,9 +4127,9 @@
 
     <span class="kw">fn </span>finalize_borrowed(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         ast: <span class="kw-2">&amp;mut </span>Ast,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="macro">assert!</span>(ast.open);
         ast.open = <span class="bool-val">false</span>;
 
@@ -3934,6 +4142,7 @@
             NodeValue::Document =&gt; <span class="bool-val">true</span>,
             NodeValue::CodeBlock(<span class="kw-2">ref </span>ncb) =&gt; ncb.fenced,
             NodeValue::Heading(<span class="kw-2">ref </span>nh) =&gt; nh.setext,
+            NodeValue::MultilineBlockQuote(..) =&gt; <span class="bool-val">true</span>,
             <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
         } {
             ast.sourcepos.end = (<span class="self">self</span>.line_number, <span class="self">self</span>.curline_end_col).into();
@@ -3951,7 +4160,7 @@
             NodeValue::CodeBlock(<span class="kw-2">ref mut </span>ncb) =&gt; {
                 <span class="kw">if </span>!ncb.fenced {
                     strings::remove_trailing_blank_lines(content);
-                    content.push(<span class="string">&#39;\n&#39;</span>);
+                    content.push(<span class="string">'\n'</span>);
                 } <span class="kw">else </span>{
                     <span class="kw">let </span><span class="kw-2">mut </span>pos = <span class="number">0</span>;
                     <span class="kw">while </span>pos &lt; content.len() {
@@ -3976,10 +4185,10 @@
                         ncb.info = String::from_utf8(tmp).unwrap();
                     }
 
-                    <span class="kw">if </span>content.as_bytes()[pos] == <span class="string">b&#39;\r&#39; </span>{
+                    <span class="kw">if </span>content.as_bytes()[pos] == <span class="string">b'\r' </span>{
                         pos += <span class="number">1</span>;
                     }
-                    <span class="kw">if </span>content.as_bytes()[pos] == <span class="string">b&#39;\n&#39; </span>{
+                    <span class="kw">if </span>content.as_bytes()[pos] == <span class="string">b'\n' </span>{
                         pos += <span class="number">1</span>;
                     }
 
@@ -4028,7 +4237,7 @@
         <span class="self">self</span>.process_inlines_node(<span class="self">self</span>.root);
     }
 
-    <span class="kw">fn </span>process_inlines_node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+    <span class="kw">fn </span>process_inlines_node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) {
         <span class="kw">for </span>node <span class="kw">in </span>node.descendants() {
             <span class="kw">if </span>node.data.borrow().value.contains_inlines() {
                 <span class="self">self</span>.parse_inlines(node);
@@ -4036,7 +4245,7 @@
         }
     }
 
-    <span class="kw">fn </span>parse_inlines(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+    <span class="kw">fn </span>parse_inlines(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) {
         <span class="kw">let </span>delimiter_arena = Arena::new();
         <span class="kw">let </span>node_data = node.data.borrow();
         <span class="kw">let </span>content = strings::rtrim_slice(node_data.content.as_bytes());
@@ -4091,8 +4300,8 @@
     }
 
     <span class="kw">fn </span>find_footnote_definitions(
-        node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
-        map: <span class="kw-2">&amp;mut </span>HashMap&lt;String, FootnoteDefinition&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+        node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
+        map: <span class="kw-2">&amp;mut </span>HashMap&lt;String, FootnoteDefinition&lt;<span class="lifetime">'a</span>&gt;&gt;,
     ) {
         <span class="kw">match </span>node.data.borrow().value {
             NodeValue::FootnoteDefinition(<span class="kw-2">ref </span>nfd) =&gt; {
@@ -4115,7 +4324,7 @@
     }
 
     <span class="kw">fn </span>find_footnote_references(
-        node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         map: <span class="kw-2">&amp;mut </span>HashMap&lt;String, FootnoteDefinition&gt;,
         ixp: <span class="kw-2">&amp;mut </span>u32,
     ) {
@@ -4149,13 +4358,13 @@
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>label) = replace {
-            label.insert_str(<span class="number">0</span>, <span class="string">&quot;[^&quot;</span>);
-            label.push(<span class="string">&#39;]&#39;</span>);
+            label.insert_str(<span class="number">0</span>, <span class="string">"[^"</span>);
+            label.push(<span class="string">']'</span>);
             ast.value = NodeValue::Text(label);
         }
     }
 
-    <span class="kw">fn </span>cleanup_footnote_definitions(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+    <span class="kw">fn </span>cleanup_footnote_definitions(node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) {
         <span class="kw">match </span>node.data.borrow().value {
             NodeValue::FootnoteDefinition(<span class="kw">_</span>) =&gt; {
                 node.detach();
@@ -4168,7 +4377,7 @@
         }
     }
 
-    <span class="kw">fn </span>postprocess_text_nodes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+    <span class="kw">fn </span>postprocess_text_nodes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) {
         <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[node];
         <span class="kw">let </span><span class="kw-2">mut </span>children = <span class="macro">vec!</span>[];
 
@@ -4231,7 +4440,7 @@
 
     <span class="kw">fn </span>postprocess_text_node(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         text: <span class="kw-2">&amp;mut </span>String,
         sourcepos: <span class="kw-2">&amp;mut </span>Sourcepos,
     ) {
@@ -4251,7 +4460,7 @@
 
     <span class="kw">fn </span>process_tasklist(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+        node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
         text: <span class="kw-2">&amp;mut </span>String,
         sourcepos: <span class="kw-2">&amp;mut </span>Sourcepos,
     ) {
@@ -4262,7 +4471,7 @@
 
         <span class="kw">let </span>symbol = symbol <span class="kw">as </span>char;
 
-        <span class="kw">if </span>!<span class="self">self</span>.options.parse.relaxed_tasklist_matching &amp;&amp; !<span class="macro">matches!</span>(symbol, <span class="string">&#39; &#39; </span>| <span class="string">&#39;x&#39; </span>| <span class="string">&#39;X&#39;</span>) {
+        <span class="kw">if </span>!<span class="self">self</span>.options.parse.relaxed_tasklist_matching &amp;&amp; !<span class="macro">matches!</span>(symbol, <span class="string">' ' </span>| <span class="string">'x' </span>| <span class="string">'X'</span>) {
             <span class="kw">return</span>;
         }
 
@@ -4281,14 +4490,14 @@
 
         text.drain(..end);
 
-        <span class="comment">// These are sound only because the exact text that we&#39;ve matched and
-        // the count thereof (i.e. &quot;end&quot;) will precisely map to characters in
+        <span class="comment">// These are sound only because the exact text that we've matched and
+        // the count thereof (i.e. "end") will precisely map to characters in
         // the source document.
         </span>sourcepos.start.column += end;
         parent.data.borrow_mut().sourcepos.start.column += end;
 
         parent.parent().unwrap().data.borrow_mut().value =
-            NodeValue::TaskItem(<span class="kw">if </span>symbol == <span class="string">&#39; &#39; </span>{ <span class="prelude-val">None </span>} <span class="kw">else </span>{ <span class="prelude-val">Some</span>(symbol) });
+            NodeValue::TaskItem(<span class="kw">if </span>symbol == <span class="string">' ' </span>{ <span class="prelude-val">None </span>} <span class="kw">else </span>{ <span class="prelude-val">Some</span>(symbol) });
     }
 
     <span class="kw">fn </span>parse_reference_inline(<span class="kw-2">&amp;mut </span><span class="self">self</span>, content: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
@@ -4311,7 +4520,7 @@
             <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">None</span>,
         };
 
-        <span class="kw">if </span>subj.peek_char() != <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b&#39;:&#39;</span>)) {
+        <span class="kw">if </span>subj.peek_char() != <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b':'</span>)) {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
@@ -4380,7 +4589,7 @@
     <span class="kw">let </span><span class="kw-2">mut </span>c = line[pos];
     <span class="kw">let </span>startpos = pos;
 
-    <span class="kw">if </span>c == <span class="string">b&#39;*&#39; </span>|| c == <span class="string">b&#39;-&#39; </span>|| c == <span class="string">b&#39;+&#39; </span>{
+    <span class="kw">if </span>c == <span class="string">b'*' </span>|| c == <span class="string">b'-' </span>|| c == <span class="string">b'+' </span>{
         pos += <span class="number">1</span>;
         <span class="kw">if </span>!isspace(line[pos]) {
             <span class="kw">return </span><span class="prelude-val">None</span>;
@@ -4391,7 +4600,7 @@
             <span class="kw">while </span>strings::is_space_or_tab(line[i]) {
                 i += <span class="number">1</span>;
             }
-            <span class="kw">if </span>line[i] == <span class="string">b&#39;\n&#39; </span>{
+            <span class="kw">if </span>line[i] == <span class="string">b'\n' </span>{
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             }
         }
@@ -4413,7 +4622,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>digits = <span class="number">0</span>;
 
         <span class="kw">loop </span>{
-            start = (<span class="number">10 </span>* start) + (line[pos] - <span class="string">b&#39;0&#39;</span>) <span class="kw">as </span>usize;
+            start = (<span class="number">10 </span>* start) + (line[pos] - <span class="string">b'0'</span>) <span class="kw">as </span>usize;
             pos += <span class="number">1</span>;
             digits += <span class="number">1</span>;
 
@@ -4427,7 +4636,7 @@
         }
 
         c = line[pos];
-        <span class="kw">if </span>c != <span class="string">b&#39;.&#39; </span>&amp;&amp; c != <span class="string">b&#39;)&#39; </span>{
+        <span class="kw">if </span>c != <span class="string">b'.' </span>&amp;&amp; c != <span class="string">b')' </span>{
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
@@ -4454,7 +4663,7 @@
                 marker_offset: <span class="number">0</span>,
                 padding: <span class="number">0</span>,
                 start,
-                delimiter: <span class="kw">if </span>c == <span class="string">b&#39;.&#39; </span>{
+                delimiter: <span class="kw">if </span>c == <span class="string">b'.' </span>{
                     ListDelimType::Period
                 } <span class="kw">else </span>{
                     ListDelimType::Paren
@@ -4505,7 +4714,7 @@
         &amp;&amp; list_data.bullet_char == item_data.bullet_char
 }
 
-<span class="kw">fn </span>reopen_ast_nodes&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">mut </span>ast: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+<span class="kw">fn </span>reopen_ast_nodes&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">mut </span>ast: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) {
     <span class="kw">loop </span>{
         ast.data.borrow_mut().open = <span class="bool-val">true</span>;
         ast = <span class="kw">match </span>ast.parent() {
@@ -4522,7 +4731,7 @@
 }
 
 <span class="attr">#[derive(Debug, Clone, Copy)]
-#[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
+#[cfg_attr(feature = <span class="string">"arbitrary"</span>, derive(arbitrary::Arbitrary))]
 </span><span class="doccomment">/// Options for bulleted list redering in markdown. See `link_style` in [RenderOptions] for more details.
 </span><span class="kw">pub enum </span>ListStyleType {
     <span class="doccomment">/// The `-` character

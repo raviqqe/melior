@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/dialect/ods.rs`."><title>ods.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/dialect/ods.rs`."><title>ods.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -239,105 +240,105 @@
 }
 
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;affine&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Affine/IR/AffineOps.td&quot;&quot;#
+    name: <span class="string">"affine"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Affine/IR/AffineOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;amdgpu&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/AMDGPU/IR/AMDGPU.td&quot;&quot;#
+    name: <span class="string">"amdgpu"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/AMDGPU/IR/AMDGPU.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;arith&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Arith/IR/ArithOps.td&quot;&quot;#
+    name: <span class="string">"arith"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Arith/IR/ArithOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;arm_neon&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/ArmNeon/ArmNeon.td&quot;&quot;#
+    name: <span class="string">"arm_neon"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/ArmNeon/ArmNeon.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;arm_sve&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/ArmSVE/ArmSVE.td&quot;&quot;#
+    name: <span class="string">"arm_sve"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/ArmSVE/ArmSVE.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;async&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Async/IR/AsyncOps.td&quot;&quot;#
+    name: <span class="string">"async"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Async/IR/AsyncOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;bufferization&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Bufferization/IR/BufferizationOps.td&quot;&quot;#
+    name: <span class="string">"bufferization"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Bufferization/IR/BufferizationOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;cf&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/ControlFlow/IR/ControlFlowOps.td&quot;&quot;#
+    name: <span class="string">"cf"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/ControlFlow/IR/ControlFlowOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;func&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Func/IR/FuncOps.td&quot;&quot;#
+    name: <span class="string">"func"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Func/IR/FuncOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;index&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Index/IR/IndexOps.td&quot;&quot;#
+    name: <span class="string">"index"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Index/IR/IndexOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;llvm&quot;</span>,
+    name: <span class="string">"llvm"</span>,
     <span class="comment">// spell-checker: disable-next-line
-    </span>table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/LLVMIR/LLVMOps.td&quot;&quot;#
+    </span>table_gen: <span class="string">r#"include "mlir/Dialect/LLVMIR/LLVMOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;memref&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/MemRef/IR/MemRefOps.td&quot;&quot;#
+    name: <span class="string">"memref"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/MemRef/IR/MemRefOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;scf&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/SCF/IR/SCFOps.td&quot;&quot;#
+    name: <span class="string">"scf"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/SCF/IR/SCFOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;pdl&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/PDL/IR/PDLOps.td&quot;&quot;#
+    name: <span class="string">"pdl"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/PDL/IR/PDLOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;pdl_interp&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/PDLInterp/IR/PDLInterpOps.td&quot;&quot;#
+    name: <span class="string">"pdl_interp"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/PDLInterp/IR/PDLInterpOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;math&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Math/IR/MathOps.td&quot;&quot;#
+    name: <span class="string">"math"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Math/IR/MathOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;gpu&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/GPU/IR/GPUOps.td&quot;&quot;#
+    name: <span class="string">"gpu"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/GPU/IR/GPUOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;linalg&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Linalg/IR/LinalgOps.td&quot;&quot;#
+    name: <span class="string">"linalg"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Linalg/IR/LinalgOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;quant&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Quant/QuantOps.td&quot;&quot;#
+    name: <span class="string">"quant"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Quant/QuantOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;shape&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Shape/IR/ShapeOps.td&quot;&quot;#
+    name: <span class="string">"shape"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Shape/IR/ShapeOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;sparse_tensor&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/SparseTensor/IR/SparseTensorOps.td&quot;&quot;#
+    name: <span class="string">"sparse_tensor"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/SparseTensor/IR/SparseTensorOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;tensor&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Tensor/IR/TensorOps.td&quot;&quot;#
+    name: <span class="string">"tensor"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Tensor/IR/TensorOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;tosa&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Tosa/IR/TosaOps.td&quot;&quot;#
+    name: <span class="string">"tosa"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Tosa/IR/TosaOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;transform&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Transform/IR/TransformOps.td&quot;&quot;#
+    name: <span class="string">"transform"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Transform/IR/TransformOps.td""#
 </span>}
 <span class="macro">melior_macro::dialect! </span>{
-    name: <span class="string">&quot;vector&quot;</span>,
-    table_gen: <span class="string">r#&quot;include &quot;mlir/Dialect/Vector/IR/VectorOps.td&quot;&quot;#
+    name: <span class="string">"vector"</span>,
+    table_gen: <span class="string">r#"include "mlir/Dialect/Vector/IR/VectorOps.td""#
 </span>}
 
 <span class="attr">#[cfg(test)]
@@ -355,15 +356,15 @@
         Context,
     };
 
-    <span class="kw">fn </span>convert_module&lt;<span class="lifetime">&#39;c</span>&gt;(context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context, module: <span class="kw-2">&amp;mut </span>Module&lt;<span class="lifetime">&#39;c</span>&gt;) {
+    <span class="kw">fn </span>convert_module&lt;<span class="lifetime">'c</span>&gt;(context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context, module: <span class="kw-2">&amp;mut </span>Module&lt;<span class="lifetime">'c</span>&gt;) {
         <span class="kw">let </span>pass_manager = PassManager::new(context);
 
         pass_manager.add_pass(pass::conversion::create_func_to_llvm());
         pass_manager
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="string">"func.func"</span>)
             .add_pass(pass::conversion::create_arith_to_llvm());
         pass_manager
-            .nested_under(<span class="string">&quot;func.func&quot;</span>)
+            .nested_under(<span class="string">"func.func"</span>)
             .add_pass(pass::conversion::create_index_to_llvm());
         pass_manager.add_pass(pass::conversion::create_scf_to_control_flow());
         pass_manager.add_pass(pass::conversion::create_control_flow_to_llvm());
@@ -373,18 +374,18 @@
         <span class="macro">assert!</span>(module.as_operation().verify());
     }
 
-    <span class="kw">fn </span>test_operation&lt;<span class="lifetime">&#39;c</span>&gt;(
+    <span class="kw">fn </span>test_operation&lt;<span class="lifetime">'c</span>&gt;(
         name: <span class="kw-2">&amp;</span>str,
-        context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-        argument_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">&#39;c</span>&gt;],
-        callback: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;),
+        context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+        argument_types: <span class="kw-2">&amp;</span>[Type&lt;<span class="lifetime">'c</span>&gt;],
+        callback: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">'c</span>&gt;),
     ) {
         <span class="kw">let </span>location = Location::unknown(context);
         <span class="kw">let </span><span class="kw-2">mut </span>module = Module::new(location);
 
         module.body().append_operation(func::func(
             context,
-            StringAttribute::new(context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(context, argument_types, <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(
@@ -417,7 +418,7 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>integer_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
-        test_operation(<span class="string">&quot;alloc&quot;</span>, <span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], |block| {
+        test_operation(<span class="string">"alloc"</span>, <span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], |block| {
             <span class="kw">let </span>alloca_size = block.argument(<span class="number">0</span>).unwrap().into();
             <span class="kw">let </span>i64_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
 
@@ -442,7 +443,7 @@
         <span class="kw">let </span>integer_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
         <span class="kw">let </span>ptr_type = dialect::llvm::r#type::opaque_pointer(<span class="kw-2">&amp;</span>context);
 
-        test_operation(<span class="string">&quot;alloc_builder&quot;</span>, <span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], |block| {
+        test_operation(<span class="string">"alloc_builder"</span>, <span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type], |block| {
             <span class="kw">let </span>alloca_size = block.argument(<span class="number">0</span>).unwrap().into();
             <span class="kw">let </span>i64_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
 

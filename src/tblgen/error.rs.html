@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tblgen-0.3.0/src/error.rs`."><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tblgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tblgen-0.3.0/src/error.rs`."><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tblgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -298,7 +299,7 @@
 //!
 //! To provide information about the source code at this location (e.g. code at
 //! location, file name, line and column), [`SourceInfo`] must be provided to
-//! the error. In this case, the error message will be formatted by LLVM&#39;s
+//! the error. In this case, the error message will be formatted by LLVM's
 //! `SourceMgr` class.
 //!
 //! ```rust
@@ -307,18 +308,18 @@
 //! # fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 //! let keeper: RecordKeeper = TableGenParser::new()
 //!     .add_source(
-//!         r#&quot;
+//!         r#"
 //!         def A {
 //!             int i = 5;
 //!         }
-//!         &quot;#,
+//!         "#,
 //!     )?
 //!     .parse()?;
-//! if let Err(e) = keeper.def(&quot;A&quot;).unwrap().string_value(&quot;i&quot;) {
-//!     println!(&quot;{}&quot;, e);
+//! if let Err(e) = keeper.def("A").unwrap().string_value("i") {
+//!     println!("{}", e);
 //!     // invalid conversion from Int to alloc::string::String
 //!
-//!     println!(&quot;{}&quot;, e.add_source_info(keeper.source_info()));
+//!     println!("{}", e.add_source_info(keeper.source_info()));
 //!     // error: invalid conversion from Int to alloc::string::String
 //!     //   int a = test;
 //!     //       ^
@@ -359,30 +360,30 @@
 </span><span class="attr">#[non_exhaustive]
 #[derive(thiserror::Error, Debug, Clone, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>TableGenError {
-    <span class="attr">#[error(<span class="string">&quot;invalid TableGen source&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid TableGen source"</span>)]
     </span>InvalidSource,
-    <span class="attr">#[error(<span class="string">&quot;invalid TableGen source&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid TableGen source"</span>)]
     </span>InvalidSourceString(<span class="attr">#[from] </span>NulError),
-    <span class="attr">#[error(<span class="string">&quot;invalid UTF-8 string&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid UTF-8 string"</span>)]
     </span>InvalidUtf8Str(<span class="attr">#[from] </span>Utf8Error),
-    <span class="attr">#[error(<span class="string">&quot;invalid UTF-8 string&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid UTF-8 string"</span>)]
     </span>InvalidUtf8String(<span class="attr">#[from] </span>FromUtf8Error),
-    <span class="attr">#[error(<span class="string">&quot;failed to parse TableGen source&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"failed to parse TableGen source"</span>)]
     </span>Parse,
-    <span class="attr">#[error(<span class="string">&quot;expected field {0} in record&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"expected field {0} in record"</span>)]
     </span>MissingValue(String),
-    <span class="attr">#[error(<span class="string">&quot;expected def {0}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"expected def {0}"</span>)]
     </span>MissingDef(String),
-    <span class="attr">#[error(<span class="string">&quot;expected class {0}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"expected class {0}"</span>)]
     </span>MissingClass(String),
-    <span class="attr">#[error(<span class="string">&quot;invalid conversion from {from} to {to}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid conversion from {from} to {to}"</span>)]
     </span>InitConversion {
-        from: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
-        to: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        from: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
+        to: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
     },
-    <span class="attr">#[error(<span class="string">&quot;invalid source location&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"invalid source location"</span>)]
     </span>InvalidSourceLocation,
-    <span class="attr">#[error(<span class="string">&quot;infallible&quot;</span>)]
+    <span class="attr">#[error(<span class="string">"infallible"</span>)]
     </span>Infallible(<span class="attr">#[from] </span>Infallible),
 }
 
@@ -485,7 +486,7 @@
         <span class="self">self</span>.message = <span class="prelude-val">Some</span>(<span class="self">Self</span>::create_message(
             info.<span class="number">0</span>,
             <span class="kw-2">&amp;</span><span class="self">self</span>.location,
-            <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.error),
+            <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{}"</span>, <span class="self">self</span>.error),
         ));
         <span class="self">self
     </span>}
@@ -506,7 +507,7 @@
             data.<span class="number">1 </span>= <span class="prelude-val">Err</span>(TableGenError::InvalidSourceLocation);
         }
         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = data.<span class="number">1 </span>{
-            data.<span class="number">0 </span>= <span class="macro">format!</span>(<span class="string">&quot;{}\nfailed to print source information: {}&quot;</span>, message, e);
+            data.<span class="number">0 </span>= <span class="macro">format!</span>(<span class="string">"{}\nfailed to print source information: {}"</span>, message, e);
         }
         data.<span class="number">0
     </span>}
@@ -515,15 +516,15 @@
 <span class="kw">impl</span>&lt;E: std::error::Error&gt; Display <span class="kw">for </span>SourceError&lt;E&gt; {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(message) = <span class="self">self</span>.message.as_ref() {
-            <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, message)
+            <span class="macro">write!</span>(f, <span class="string">"{}"</span>, message)
         } <span class="kw">else </span>{
-            <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.error)
+            <span class="macro">write!</span>(f, <span class="string">"{}"</span>, <span class="self">self</span>.error)
         }
     }
 }
 
-<span class="kw">impl</span>&lt;E: std::error::Error + <span class="lifetime">&#39;static</span>&gt; std::error::Error <span class="kw">for </span>SourceError&lt;E&gt; {
-    <span class="kw">fn </span>source(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>(<span class="kw">dyn </span>std::error::Error + <span class="lifetime">&#39;static</span>)&gt; {
+<span class="kw">impl</span>&lt;E: std::error::Error + <span class="lifetime">'static</span>&gt; std::error::Error <span class="kw">for </span>SourceError&lt;E&gt; {
+    <span class="kw">fn </span>source(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>(<span class="kw">dyn </span>std::error::Error + <span class="lifetime">'static</span>)&gt; {
         <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.error)
     }
 }

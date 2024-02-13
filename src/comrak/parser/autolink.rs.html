@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.20.0/src/parser/autolink.rs`."><title>autolink.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.21.0/src/parser/autolink.rs`."><title>autolink.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -411,9 +412,9 @@
 <span class="kw">use </span>typed_arena::Arena;
 <span class="kw">use </span>unicode_categories::UnicodeCategories;
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>process_autolinks&lt;<span class="lifetime">&#39;a</span>&gt;(
-    arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
-    node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>process_autolinks&lt;<span class="lifetime">'a</span>&gt;(
+    arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     contents_str: <span class="kw-2">&amp;mut </span>String,
     relaxed_autolinks: bool,
 ) {
@@ -429,10 +430,10 @@
         </span><span class="kw">while </span>i &lt; len {
             <span class="kw">if </span>!relaxed_autolinks {
                 <span class="kw">match </span>contents[i] {
-                    <span class="string">b&#39;[&#39; </span>=&gt; {
+                    <span class="string">b'[' </span>=&gt; {
                         bracket_opening += <span class="number">1</span>;
                     }
-                    <span class="string">b&#39;]&#39; </span>=&gt; {
+                    <span class="string">b']' </span>=&gt; {
                         bracket_opening -= <span class="number">1</span>;
                     }
                     <span class="kw">_ </span>=&gt; (),
@@ -445,19 +446,19 @@
             }
 
             <span class="kw">match </span>contents[i] {
-                <span class="string">b&#39;:&#39; </span>=&gt; {
+                <span class="string">b':' </span>=&gt; {
                     post_org = url_match(arena, contents, i);
                     <span class="kw">if </span>post_org.is_some() {
                         <span class="kw">break</span>;
                     }
                 }
-                <span class="string">b&#39;w&#39; </span>=&gt; {
+                <span class="string">b'w' </span>=&gt; {
                     post_org = www_match(arena, contents, i);
                     <span class="kw">if </span>post_org.is_some() {
                         <span class="kw">break</span>;
                     }
                 }
-                <span class="string">b&#39;@&#39; </span>=&gt; {
+                <span class="string">b'@' </span>=&gt; {
                     post_org = email_match(arena, contents, i);
                     <span class="kw">if </span>post_org.is_some() {
                         <span class="kw">break</span>;
@@ -486,14 +487,14 @@
     }
 }
 
-<span class="kw">fn </span>www_match&lt;<span class="lifetime">&#39;a</span>&gt;(
-    arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+<span class="kw">fn </span>www_match&lt;<span class="lifetime">'a</span>&gt;(
+    arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
     contents: <span class="kw-2">&amp;</span>[u8],
     i: usize,
-) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, usize, usize)&gt; {
+) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, usize, usize)&gt; {
     <span class="kw">static </span>WWW_DELIMS: Lazy&lt;[bool; <span class="number">256</span>]&gt; = Lazy::new(|| {
         <span class="kw">let </span><span class="kw-2">mut </span>sc = [<span class="bool-val">false</span>; <span class="number">256</span>];
-        <span class="kw">for </span>c <span class="kw">in </span><span class="kw-2">&amp;</span>[<span class="string">b&#39;*&#39;</span>, <span class="string">b&#39;_&#39;</span>, <span class="string">b&#39;~&#39;</span>, <span class="string">b&#39;(&#39;</span>, <span class="string">b&#39;[&#39;</span>] {
+        <span class="kw">for </span>c <span class="kw">in </span><span class="kw-2">&amp;</span>[<span class="string">b'*'</span>, <span class="string">b'_'</span>, <span class="string">b'~'</span>, <span class="string">b'('</span>, <span class="string">b'['</span>] {
             sc[<span class="kw-2">*</span>c <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
         sc
@@ -503,7 +504,7 @@
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
 
-    <span class="kw">if </span>!contents[i..].starts_with(<span class="string">b&quot;www.&quot;</span>) {
+    <span class="kw">if </span>!contents[i..].starts_with(<span class="string">b"www."</span>) {
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
 
@@ -518,7 +519,7 @@
 
     link_end = autolink_delim(<span class="kw-2">&amp;</span>contents[i..], link_end);
 
-    <span class="kw">let </span><span class="kw-2">mut </span>url = <span class="string">&quot;http://&quot;</span>.to_string();
+    <span class="kw">let </span><span class="kw-2">mut </span>url = <span class="string">"http://"</span>.to_string();
     url.push_str(str::from_utf8(<span class="kw-2">&amp;</span>contents[i..link_end + i]).unwrap());
 
     <span class="kw">let </span>inl = make_inline(
@@ -548,13 +549,13 @@
     <span class="kw">let </span><span class="kw-2">mut </span>uscore2 = <span class="number">0</span>;
 
     <span class="kw">for </span>(i, c) <span class="kw">in unsafe </span>{ str::from_utf8_unchecked(data) }.char_indices() {
-        <span class="kw">if </span>c == <span class="string">&#39;_&#39; </span>{
+        <span class="kw">if </span>c == <span class="string">'_' </span>{
             uscore2 += <span class="number">1</span>;
-        } <span class="kw">else if </span>c == <span class="string">&#39;.&#39; </span>{
+        } <span class="kw">else if </span>c == <span class="string">'.' </span>{
             uscore1 = uscore2;
             uscore2 = <span class="number">0</span>;
             np += <span class="number">1</span>;
-        } <span class="kw">else if </span>!is_valid_hostchar(c) &amp;&amp; c != <span class="string">&#39;-&#39; </span>{
+        } <span class="kw">else if </span>!is_valid_hostchar(c) &amp;&amp; c != <span class="string">'-' </span>{
             <span class="kw">if </span>uscore1 == <span class="number">0 </span>&amp;&amp; uscore2 == <span class="number">0 </span>&amp;&amp; (allow_short || np &gt; <span class="number">0</span>) {
                 <span class="kw">return </span><span class="prelude-val">Some</span>(i);
             }
@@ -579,7 +580,7 @@
     <span class="kw">static </span>LINK_END_ASSORTMENT: Lazy&lt;[bool; <span class="number">256</span>]&gt; = Lazy::new(|| {
         <span class="kw">let </span><span class="kw-2">mut </span>sc = [<span class="bool-val">false</span>; <span class="number">256</span>];
         <span class="kw">for </span>c <span class="kw">in </span><span class="kw-2">&amp;</span>[
-            <span class="string">b&#39;?&#39;</span>, <span class="string">b&#39;!&#39;</span>, <span class="string">b&#39;.&#39;</span>, <span class="string">b&#39;,&#39;</span>, <span class="string">b&#39;:&#39;</span>, <span class="string">b&#39;*&#39;</span>, <span class="string">b&#39;_&#39;</span>, <span class="string">b&#39;~&#39;</span>, <span class="string">b&#39;\&#39;&#39;</span>, <span class="string">b&#39;&quot;&#39;</span>, <span class="string">b&#39;[&#39;</span>, <span class="string">b&#39;]&#39;</span>,
+            <span class="string">b'?'</span>, <span class="string">b'!'</span>, <span class="string">b'.'</span>, <span class="string">b','</span>, <span class="string">b':'</span>, <span class="string">b'*'</span>, <span class="string">b'_'</span>, <span class="string">b'~'</span>, <span class="string">b'\''</span>, <span class="string">b'"'</span>, <span class="string">b'['</span>, <span class="string">b']'</span>,
         ] {
             sc[<span class="kw-2">*</span>c <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
@@ -587,7 +588,7 @@
     });
 
     <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>data.iter().enumerate().take(link_end) {
-        <span class="kw">if </span>b == <span class="string">b&#39;&lt;&#39; </span>{
+        <span class="kw">if </span>b == <span class="string">b'&lt;' </span>{
             link_end = i;
             <span class="kw">break</span>;
         }
@@ -596,18 +597,18 @@
     <span class="kw">while </span>link_end &gt; <span class="number">0 </span>{
         <span class="kw">let </span>cclose = data[link_end - <span class="number">1</span>];
 
-        <span class="kw">let </span>copen = <span class="kw">if </span>cclose == <span class="string">b&#39;)&#39; </span>{ <span class="prelude-val">Some</span>(<span class="string">b&#39;(&#39;</span>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
+        <span class="kw">let </span>copen = <span class="kw">if </span>cclose == <span class="string">b')' </span>{ <span class="prelude-val">Some</span>(<span class="string">b'('</span>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
 
         <span class="kw">if </span>LINK_END_ASSORTMENT[cclose <span class="kw">as </span>usize] {
             link_end -= <span class="number">1</span>;
-        } <span class="kw">else if </span>cclose == <span class="string">b&#39;;&#39; </span>{
+        } <span class="kw">else if </span>cclose == <span class="string">b';' </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>new_end = link_end - <span class="number">2</span>;
 
             <span class="kw">while </span>new_end &gt; <span class="number">0 </span>&amp;&amp; isalpha(data[new_end]) {
                 new_end -= <span class="number">1</span>;
             }
 
-            <span class="kw">if </span>new_end &lt; link_end - <span class="number">2 </span>&amp;&amp; data[new_end] == <span class="string">b&#39;&amp;&#39; </span>{
+            <span class="kw">if </span>new_end &lt; link_end - <span class="number">2 </span>&amp;&amp; data[new_end] == <span class="string">b'&amp;' </span>{
                 link_end = new_end;
             } <span class="kw">else </span>{
                 link_end -= <span class="number">1</span>;
@@ -636,16 +637,16 @@
     link_end
 }
 
-<span class="kw">fn </span>url_match&lt;<span class="lifetime">&#39;a</span>&gt;(
-    arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+<span class="kw">fn </span>url_match&lt;<span class="lifetime">'a</span>&gt;(
+    arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
     contents: <span class="kw-2">&amp;</span>[u8],
     i: usize,
-) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, usize, usize)&gt; {
-    <span class="kw">const </span>SCHEMES: [<span class="kw-2">&amp;</span>[u8]; <span class="number">3</span>] = [<span class="string">b&quot;http&quot;</span>, <span class="string">b&quot;https&quot;</span>, <span class="string">b&quot;ftp&quot;</span>];
+) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, usize, usize)&gt; {
+    <span class="kw">const </span>SCHEMES: [<span class="kw-2">&amp;</span>[u8]; <span class="number">3</span>] = [<span class="string">b"http"</span>, <span class="string">b"https"</span>, <span class="string">b"ftp"</span>];
 
     <span class="kw">let </span>size = contents.len();
 
-    <span class="kw">if </span>size - i &lt; <span class="number">4 </span>|| contents[i + <span class="number">1</span>] != <span class="string">b&#39;/&#39; </span>|| contents[i + <span class="number">2</span>] != <span class="string">b&#39;/&#39; </span>{
+    <span class="kw">if </span>size - i &lt; <span class="number">4 </span>|| contents[i + <span class="number">1</span>] != <span class="string">b'/' </span>|| contents[i + <span class="number">2</span>] != <span class="string">b'/' </span>{
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
 
@@ -690,14 +691,14 @@
     <span class="prelude-val">Some</span>((inl, rewind, rewind + link_end))
 }
 
-<span class="kw">fn </span>email_match&lt;<span class="lifetime">&#39;a</span>&gt;(
-    arena: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Arena&lt;AstNode&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+<span class="kw">fn </span>email_match&lt;<span class="lifetime">'a</span>&gt;(
+    arena: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Arena&lt;AstNode&lt;<span class="lifetime">'a</span>&gt;&gt;,
     contents: <span class="kw-2">&amp;</span>[u8],
     i: usize,
-) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, usize, usize)&gt; {
+) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, usize, usize)&gt; {
     <span class="kw">static </span>EMAIL_OK_SET: Lazy&lt;[bool; <span class="number">256</span>]&gt; = Lazy::new(|| {
         <span class="kw">let </span><span class="kw-2">mut </span>sc = [<span class="bool-val">false</span>; <span class="number">256</span>];
-        <span class="kw">for </span>c <span class="kw">in </span><span class="kw-2">&amp;</span>[<span class="string">b&#39;.&#39;</span>, <span class="string">b&#39;+&#39;</span>, <span class="string">b&#39;-&#39;</span>, <span class="string">b&#39;_&#39;</span>] {
+        <span class="kw">for </span>c <span class="kw">in </span><span class="kw-2">&amp;</span>[<span class="string">b'.'</span>, <span class="string">b'+'</span>, <span class="string">b'-'</span>, <span class="string">b'_'</span>] {
             sc[<span class="kw-2">*</span>c <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
         sc
@@ -717,14 +718,14 @@
             <span class="kw">continue</span>;
         }
 
-        <span class="kw">if </span>c == <span class="string">b&#39;:&#39; </span>{
-            <span class="kw">if </span>validate_protocol(<span class="string">&quot;mailto&quot;</span>, contents, i - rewind - <span class="number">1</span>) {
+        <span class="kw">if </span>c == <span class="string">b':' </span>{
+            <span class="kw">if </span>validate_protocol(<span class="string">"mailto"</span>, contents, i - rewind - <span class="number">1</span>) {
                 auto_mailto = <span class="bool-val">false</span>;
                 rewind += <span class="number">1</span>;
                 <span class="kw">continue</span>;
             }
 
-            <span class="kw">if </span>validate_protocol(<span class="string">&quot;xmpp&quot;</span>, contents, i - rewind - <span class="number">1</span>) {
+            <span class="kw">if </span>validate_protocol(<span class="string">"xmpp"</span>, contents, i - rewind - <span class="number">1</span>) {
                 is_xmpp = <span class="bool-val">true</span>;
                 auto_mailto = <span class="bool-val">false</span>;
                 rewind += <span class="number">1</span>;
@@ -747,13 +748,13 @@
 
         <span class="kw">if </span>isalnum(c) {
             <span class="comment">// empty
-        </span>} <span class="kw">else if </span>c == <span class="string">b&#39;@&#39; </span>{
+        </span>} <span class="kw">else if </span>c == <span class="string">b'@' </span>{
             <span class="kw">return </span><span class="prelude-val">None</span>;
-        } <span class="kw">else if </span>c == <span class="string">b&#39;.&#39; </span>&amp;&amp; link_end &lt; size - i - <span class="number">1 </span>&amp;&amp; isalnum(contents[i + link_end + <span class="number">1</span>]) {
+        } <span class="kw">else if </span>c == <span class="string">b'.' </span>&amp;&amp; link_end &lt; size - i - <span class="number">1 </span>&amp;&amp; isalnum(contents[i + link_end + <span class="number">1</span>]) {
             np += <span class="number">1</span>;
-        } <span class="kw">else if </span>c == <span class="string">b&#39;/&#39; </span>&amp;&amp; is_xmpp {
+        } <span class="kw">else if </span>c == <span class="string">b'/' </span>&amp;&amp; is_xmpp {
             <span class="comment">// xmpp allows a `/` in the url
-        </span>} <span class="kw">else if </span>c != <span class="string">b&#39;-&#39; </span>&amp;&amp; c != <span class="string">b&#39;_&#39; </span>{
+        </span>} <span class="kw">else if </span>c != <span class="string">b'-' </span>&amp;&amp; c != <span class="string">b'_' </span>{
             <span class="kw">break</span>;
         }
 
@@ -762,7 +763,7 @@
 
     <span class="kw">if </span>link_end &lt; <span class="number">2
         </span>|| np == <span class="number">0
-        </span>|| (!isalpha(contents[i + link_end - <span class="number">1</span>]) &amp;&amp; contents[i + link_end - <span class="number">1</span>] != <span class="string">b&#39;.&#39;</span>)
+        </span>|| (!isalpha(contents[i + link_end - <span class="number">1</span>]) &amp;&amp; contents[i + link_end - <span class="number">1</span>] != <span class="string">b'.'</span>)
     {
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
@@ -773,9 +774,9 @@
     }
 
     <span class="kw">let </span><span class="kw-2">mut </span>url = <span class="kw">if </span>auto_mailto {
-        <span class="string">&quot;mailto:&quot;</span>.to_string()
+        <span class="string">"mailto:"</span>.to_string()
     } <span class="kw">else </span>{
-        <span class="string">&quot;&quot;</span>.to_string()
+        <span class="string">""</span>.to_string()
     };
     <span class="kw">let </span>text = str::from_utf8(<span class="kw-2">&amp;</span>contents[i - rewind..link_end + i]).unwrap();
     url.push_str(text);

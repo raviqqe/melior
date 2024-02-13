@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.20.0/src/cm.rs`."><title>cm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.21.0/src/cm.rs`."><title>cm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -846,13 +847,14 @@
 <a href="#846" id="846">846</a>
 <a href="#847" id="847">847</a>
 <a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::ctype::{isalpha, isdigit, ispunct, isspace};
 <span class="kw">use </span><span class="kw">crate</span>::nodes::TableAlignment;
 <span class="kw">use </span><span class="kw">crate</span>::nodes::{
     AstNode, ListDelimType, ListType, NodeCodeBlock, NodeHeading, NodeHtmlBlock, NodeLink,
     NodeTable, NodeValue,
 };
-<span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
 </span><span class="kw">use </span><span class="kw">crate</span>::parser::shortcodes::NodeShortCode;
 <span class="kw">use </span><span class="kw">crate</span>::parser::Options;
 <span class="kw">use </span><span class="kw">crate</span>::scanners;
@@ -863,8 +865,8 @@
 <span class="kw">use </span>std::io::{<span class="self">self</span>, Write};
 
 <span class="doccomment">/// Formats an AST as CommonMark, modified by the given options.
-</span><span class="kw">pub fn </span>format_document&lt;<span class="lifetime">&#39;a</span>&gt;(
-    root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub fn </span>format_document&lt;<span class="lifetime">'a</span>&gt;(
+    root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     options: <span class="kw-2">&amp;</span>Options,
     output: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write,
 ) -&gt; io::Result&lt;()&gt; {
@@ -872,24 +874,24 @@
 }
 
 <span class="doccomment">/// Formats an AST as CommonMark, modified by the given options. Accepts custom plugins.
-</span><span class="kw">pub fn </span>format_document_with_plugins&lt;<span class="lifetime">&#39;a</span>&gt;(
-    root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub fn </span>format_document_with_plugins&lt;<span class="lifetime">'a</span>&gt;(
+    root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     options: <span class="kw-2">&amp;</span>Options,
     output: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write,
     _plugins: <span class="kw-2">&amp;</span>Plugins,
 ) -&gt; io::Result&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>f = CommonMarkFormatter::new(root, options);
     f.format(root);
-    <span class="kw">if </span>!f.v.is_empty() &amp;&amp; f.v[f.v.len() - <span class="number">1</span>] != <span class="string">b&#39;\n&#39; </span>{
-        f.v.push(<span class="string">b&#39;\n&#39;</span>);
+    <span class="kw">if </span>!f.v.is_empty() &amp;&amp; f.v[f.v.len() - <span class="number">1</span>] != <span class="string">b'\n' </span>{
+        f.v.push(<span class="string">b'\n'</span>);
     }
     output.write_all(<span class="kw-2">&amp;</span>f.v)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">struct </span>CommonMarkFormatter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>&gt; {
-    node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
-    options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
+<span class="kw">struct </span>CommonMarkFormatter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'o</span>&gt; {
+    node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
+    options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options,
     v: Vec&lt;u8&gt;,
     prefix: Vec&lt;u8&gt;,
     column: usize,
@@ -899,7 +901,7 @@
     begin_content: bool,
     no_linebreaks: bool,
     in_tight_list_item: bool,
-    custom_escape: <span class="prelude-ty">Option</span>&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, u8) -&gt; bool&gt;,
+    custom_escape: <span class="prelude-ty">Option</span>&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, u8) -&gt; bool&gt;,
     footnote_ix: u32,
 }
 
@@ -911,7 +913,7 @@
     Title,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>&gt; Write <span class="kw">for </span>CommonMarkFormatter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'o</span>&gt; Write <span class="kw">for </span>CommonMarkFormatter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'o</span>&gt; {
     <span class="kw">fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;</span>[u8]) -&gt; std::io::Result&lt;usize&gt; {
         <span class="self">self</span>.output(buf, <span class="bool-val">false</span>, Escaping::Literal);
         <span class="prelude-val">Ok</span>(buf.len())
@@ -922,8 +924,8 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>&gt; CommonMarkFormatter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;o</span>&gt; {
-    <span class="kw">fn </span>new(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'o</span>&gt; CommonMarkFormatter&lt;<span class="lifetime">'a</span>, <span class="lifetime">'o</span>&gt; {
+    <span class="kw">fn </span>new(node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options) -&gt; <span class="self">Self </span>{
         CommonMarkFormatter {
             node,
             options,
@@ -950,10 +952,10 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="self">self</span>.v.len() <span class="kw">as </span>i32 - <span class="number">1</span>;
         <span class="kw">while </span><span class="self">self</span>.need_cr &gt; <span class="number">0 </span>{
-            <span class="kw">if </span>k &lt; <span class="number">0 </span>|| <span class="self">self</span>.v[k <span class="kw">as </span>usize] == <span class="string">b&#39;\n&#39; </span>{
+            <span class="kw">if </span>k &lt; <span class="number">0 </span>|| <span class="self">self</span>.v[k <span class="kw">as </span>usize] == <span class="string">b'\n' </span>{
                 k -= <span class="number">1</span>;
             } <span class="kw">else </span>{
-                <span class="self">self</span>.v.push(<span class="string">b&#39;\n&#39;</span>);
+                <span class="self">self</span>.v.push(<span class="string">b'\n'</span>);
                 <span class="kw">if </span><span class="self">self</span>.need_cr &gt; <span class="number">1 </span>{
                     <span class="self">self</span>.v.extend(<span class="kw-2">&amp;</span><span class="self">self</span>.prefix);
                 }
@@ -973,18 +975,18 @@
             }
 
             <span class="kw">if </span><span class="self">self</span>.custom_escape.is_some() &amp;&amp; <span class="self">self</span>.custom_escape.unwrap()(<span class="self">self</span>.node, buf[i]) {
-                <span class="self">self</span>.v.push(<span class="string">b&#39;\\&#39;</span>);
+                <span class="self">self</span>.v.push(<span class="string">b'\\'</span>);
             }
 
             <span class="kw">let </span>nextc = buf.get(i + <span class="number">1</span>);
-            <span class="kw">if </span>buf[i] == <span class="string">b&#39; &#39; </span>&amp;&amp; wrap {
+            <span class="kw">if </span>buf[i] == <span class="string">b' ' </span>&amp;&amp; wrap {
                 <span class="kw">if </span>!<span class="self">self</span>.begin_line {
                     <span class="kw">let </span>last_nonspace = <span class="self">self</span>.v.len();
-                    <span class="self">self</span>.v.push(<span class="string">b&#39; &#39;</span>);
+                    <span class="self">self</span>.v.push(<span class="string">b' '</span>);
                     <span class="self">self</span>.column += <span class="number">1</span>;
                     <span class="self">self</span>.begin_line = <span class="bool-val">false</span>;
                     <span class="self">self</span>.begin_content = <span class="bool-val">false</span>;
-                    <span class="kw">while </span>buf.get(i + <span class="number">1</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b&#39; &#39;</span>)) {
+                    <span class="kw">while </span>buf.get(i + <span class="number">1</span>) == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(<span class="string">b' '</span>)) {
                         i += <span class="number">1</span>;
                     }
                     <span class="kw">if </span>!buf.get(i + <span class="number">1</span>).map_or(<span class="bool-val">false</span>, |<span class="kw-2">&amp;</span>c| isdigit(c)) {
@@ -992,8 +994,8 @@
                     }
                 }
             } <span class="kw">else if </span>escaping == Escaping::Literal {
-                <span class="kw">if </span>buf[i] == <span class="string">b&#39;\n&#39; </span>{
-                    <span class="self">self</span>.v.push(<span class="string">b&#39;\n&#39;</span>);
+                <span class="kw">if </span>buf[i] == <span class="string">b'\n' </span>{
+                    <span class="self">self</span>.v.push(<span class="string">b'\n'</span>);
                     <span class="self">self</span>.column = <span class="number">0</span>;
                     <span class="self">self</span>.begin_line = <span class="bool-val">true</span>;
                     <span class="self">self</span>.begin_content = <span class="bool-val">true</span>;
@@ -1017,7 +1019,7 @@
             </span>{
                 <span class="kw">let </span>remainder = <span class="self">self</span>.v[<span class="self">self</span>.last_breakable + <span class="number">1</span>..].to_vec();
                 <span class="self">self</span>.v.truncate(<span class="self">self</span>.last_breakable);
-                <span class="self">self</span>.v.push(<span class="string">b&#39;\n&#39;</span>);
+                <span class="self">self</span>.v.push(<span class="string">b'\n'</span>);
                 <span class="self">self</span>.v.extend(<span class="kw-2">&amp;</span><span class="self">self</span>.prefix);
                 <span class="self">self</span>.v.extend(<span class="kw-2">&amp;</span>remainder);
                 <span class="self">self</span>.column = <span class="self">self</span>.prefix.len() + remainder.len();
@@ -1039,45 +1041,45 @@
             </span>&amp;&amp; escaping != Escaping::Literal
             &amp;&amp; ((escaping == Escaping::Normal
                 &amp;&amp; (c &lt; <span class="number">0x20
-                    </span>|| c == <span class="string">b&#39;*&#39;
-                    </span>|| c == <span class="string">b&#39;_&#39;
-                    </span>|| c == <span class="string">b&#39;[&#39;
-                    </span>|| c == <span class="string">b&#39;]&#39;
-                    </span>|| c == <span class="string">b&#39;#&#39;
-                    </span>|| c == <span class="string">b&#39;&lt;&#39;
-                    </span>|| c == <span class="string">b&#39;&gt;&#39;
-                    </span>|| c == <span class="string">b&#39;\\&#39;
-                    </span>|| c == <span class="string">b&#39;`&#39;
-                    </span>|| c == <span class="string">b&#39;!&#39;
-                    </span>|| (c == <span class="string">b&#39;&amp;&#39; </span>&amp;&amp; isalpha(nextc))
-                    || (c == <span class="string">b&#39;!&#39; </span>&amp;&amp; nextc == <span class="number">0x5b</span>)
+                    </span>|| c == <span class="string">b'*'
+                    </span>|| c == <span class="string">b'_'
+                    </span>|| c == <span class="string">b'['
+                    </span>|| c == <span class="string">b']'
+                    </span>|| c == <span class="string">b'#'
+                    </span>|| c == <span class="string">b'&lt;'
+                    </span>|| c == <span class="string">b'&gt;'
+                    </span>|| c == <span class="string">b'\\'
+                    </span>|| c == <span class="string">b'`'
+                    </span>|| c == <span class="string">b'!'
+                    </span>|| (c == <span class="string">b'&amp;' </span>&amp;&amp; isalpha(nextc))
+                    || (c == <span class="string">b'!' </span>&amp;&amp; nextc == <span class="number">0x5b</span>)
                     || (<span class="self">self</span>.begin_content
-                        &amp;&amp; (c == <span class="string">b&#39;-&#39; </span>|| c == <span class="string">b&#39;+&#39; </span>|| c == <span class="string">b&#39;=&#39;</span>)
+                        &amp;&amp; (c == <span class="string">b'-' </span>|| c == <span class="string">b'+' </span>|| c == <span class="string">b'='</span>)
                         &amp;&amp; !follows_digit)
                     || (<span class="self">self</span>.begin_content
-                        &amp;&amp; (c == <span class="string">b&#39;.&#39; </span>|| c == <span class="string">b&#39;)&#39;</span>)
+                        &amp;&amp; (c == <span class="string">b'.' </span>|| c == <span class="string">b')'</span>)
                         &amp;&amp; follows_digit
                         &amp;&amp; (nextc == <span class="number">0 </span>|| isspace(nextc)))))
                 || (escaping == Escaping::Url
-                    &amp;&amp; (c == <span class="string">b&#39;`&#39;
-                        </span>|| c == <span class="string">b&#39;&lt;&#39;
-                        </span>|| c == <span class="string">b&#39;&gt;&#39;
+                    &amp;&amp; (c == <span class="string">b'`'
+                        </span>|| c == <span class="string">b'&lt;'
+                        </span>|| c == <span class="string">b'&gt;'
                         </span>|| isspace(c)
-                        || c == <span class="string">b&#39;\\&#39;
-                        </span>|| c == <span class="string">b&#39;)&#39;
-                        </span>|| c == <span class="string">b&#39;(&#39;</span>))
+                        || c == <span class="string">b'\\'
+                        </span>|| c == <span class="string">b')'
+                        </span>|| c == <span class="string">b'('</span>))
                 || (escaping == Escaping::Title
-                    &amp;&amp; (c == <span class="string">b&#39;`&#39; </span>|| c == <span class="string">b&#39;&lt;&#39; </span>|| c == <span class="string">b&#39;&gt;&#39; </span>|| c == <span class="string">b&#39;&quot;&#39; </span>|| c == <span class="string">b&#39;\\&#39;</span>)));
+                    &amp;&amp; (c == <span class="string">b'`' </span>|| c == <span class="string">b'&lt;' </span>|| c == <span class="string">b'&gt;' </span>|| c == <span class="string">b'"' </span>|| c == <span class="string">b'\\'</span>)));
 
         <span class="kw">if </span>needs_escaping {
             <span class="kw">if </span>escaping == Escaping::Url &amp;&amp; isspace(c) {
-                <span class="macro">write!</span>(<span class="self">self</span>.v, <span class="string">&quot;%{:2X}&quot;</span>, c).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>.v, <span class="string">"%{:2X}"</span>, c).unwrap();
                 <span class="self">self</span>.column += <span class="number">3</span>;
             } <span class="kw">else if </span>ispunct(c) {
-                <span class="macro">write!</span>(<span class="self">self</span>.v, <span class="string">&quot;\\{}&quot;</span>, c <span class="kw">as </span>char).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>.v, <span class="string">"\\{}"</span>, c <span class="kw">as </span>char).unwrap();
                 <span class="self">self</span>.column += <span class="number">2</span>;
             } <span class="kw">else </span>{
-                <span class="kw">let </span>s = <span class="macro">format!</span>(<span class="string">&quot;&amp;#{};&quot;</span>, c);
+                <span class="kw">let </span>s = <span class="macro">format!</span>(<span class="string">"&amp;#{};"</span>, c);
                 <span class="self">self</span>.write_all(s.as_bytes()).unwrap();
                 <span class="self">self</span>.column += s.len();
             }
@@ -1095,7 +1097,7 @@
         <span class="self">self</span>.need_cr = max(<span class="self">self</span>.need_cr, <span class="number">2</span>);
     }
 
-    <span class="kw">fn </span>format(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+    <span class="kw">fn </span>format(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) {
         <span class="kw">enum </span>Phase {
             Pre,
             Post,
@@ -1119,7 +1121,7 @@
         }
     }
 
-    <span class="kw">fn </span>get_in_tight_list_item(<span class="kw-2">&amp;</span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; bool {
+    <span class="kw">fn </span>get_in_tight_list_item(<span class="kw-2">&amp;</span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) -&gt; bool {
         <span class="kw">let </span>tmp = <span class="kw">match </span>nodes::containing_block(node) {
             <span class="prelude-val">Some</span>(tmp) =&gt; tmp,
             <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="bool-val">false</span>,
@@ -1152,7 +1154,7 @@
         <span class="bool-val">false
     </span>}
 
-    <span class="kw">fn </span>format_node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, entering: bool) -&gt; bool {
+    <span class="kw">fn </span>format_node(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, entering: bool) -&gt; bool {
         <span class="self">self</span>.node = node;
         <span class="kw">let </span>allow_wrap = <span class="self">self</span>.options.render.width &gt; <span class="number">0 </span>&amp;&amp; !<span class="self">self</span>.options.render.hardbreaks;
 
@@ -1214,7 +1216,7 @@
             NodeValue::Superscript =&gt; <span class="self">self</span>.format_superscript(),
             NodeValue::Link(<span class="kw-2">ref </span>nl) =&gt; <span class="kw">return </span><span class="self">self</span>.format_link(node, nl, entering),
             NodeValue::Image(<span class="kw-2">ref </span>nl) =&gt; <span class="self">self</span>.format_image(nl, allow_wrap, entering),
-            <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+            <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
             </span>NodeValue::ShortCode(<span class="kw-2">ref </span>ne) =&gt; <span class="self">self</span>.format_shortcode(ne, entering),
             NodeValue::Table(..) =&gt; <span class="self">self</span>.format_table(entering),
             NodeValue::TableRow(..) =&gt; <span class="self">self</span>.format_table_row(entering),
@@ -1225,6 +1227,7 @@
             NodeValue::FootnoteReference(<span class="kw-2">ref </span>nfr) =&gt; {
                 <span class="self">self</span>.format_footnote_reference(nfr.name.as_bytes(), entering)
             }
+            NodeValue::MultilineBlockQuote(..) =&gt; <span class="self">self</span>.format_block_quote(entering),
         };
         <span class="bool-val">true
     </span>}
@@ -1237,9 +1240,9 @@
 
     <span class="kw">fn </span>format_block_quote(<span class="kw-2">&amp;mut </span><span class="self">self</span>, entering: bool) {
         <span class="kw">if </span>entering {
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;&gt; &quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"&gt; "</span>).unwrap();
             <span class="self">self</span>.begin_content = <span class="bool-val">true</span>;
-            <span class="macro">write!</span>(<span class="self">self</span>.prefix, <span class="string">&quot;&gt; &quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>.prefix, <span class="string">"&gt; "</span>).unwrap();
         } <span class="kw">else </span>{
             <span class="kw">let </span>new_len = <span class="self">self</span>.prefix.len() - <span class="number">2</span>;
             <span class="self">self</span>.prefix.truncate(new_len);
@@ -1247,7 +1250,7 @@
         }
     }
 
-    <span class="kw">fn </span>format_list(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, entering: bool) {
+    <span class="kw">fn </span>format_list(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, entering: bool) {
         <span class="kw">if </span>!entering
             &amp;&amp; <span class="kw">match </span>node.next_sibling() {
                 <span class="prelude-val">Some</span>(next_sibling) =&gt; <span class="macro">matches!</span>(
@@ -1258,12 +1261,12 @@
             }
         {
             <span class="self">self</span>.cr();
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;&lt;!-- end list --&gt;&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"&lt;!-- end list --&gt;"</span>).unwrap();
             <span class="self">self</span>.blankline();
         }
     }
 
-    <span class="kw">fn </span>format_item(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, entering: bool) {
+    <span class="kw">fn </span>format_item(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, entering: bool) {
         <span class="kw">let </span>parent = <span class="kw">match </span>node.parent().unwrap().data.borrow().value {
             NodeValue::List(<span class="kw-2">ref </span>nl) =&gt; <span class="kw-2">*</span>nl,
             <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
@@ -1282,14 +1285,14 @@
             <span class="kw">let </span>list_delim = parent.delimiter;
             <span class="macro">write!</span>(
                 listmarker,
-                <span class="string">&quot;{}{}{}&quot;</span>,
+                <span class="string">"{}{}{}"</span>,
                 list_number,
                 <span class="kw">if </span>list_delim == ListDelimType::Paren {
-                    <span class="string">&quot;)&quot;
+                    <span class="string">")"
                 </span>} <span class="kw">else </span>{
-                    <span class="string">&quot;.&quot;
+                    <span class="string">"."
                 </span>},
-                <span class="kw">if </span>list_number &lt; <span class="number">10 </span>{ <span class="string">&quot;  &quot; </span>} <span class="kw">else </span>{ <span class="string">&quot; &quot; </span>}
+                <span class="kw">if </span>list_number &lt; <span class="number">10 </span>{ <span class="string">"  " </span>} <span class="kw">else </span>{ <span class="string">" " </span>}
             )
             .unwrap();
             listmarker.len()
@@ -1298,13 +1301,13 @@
         <span class="kw">if </span>entering {
             <span class="kw">if </span>parent.list_type == ListType::Bullet {
                 <span class="kw">let </span>bullet = char::from(<span class="self">self</span>.options.render.list_style <span class="kw">as </span>u8);
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;{} &quot;</span>, bullet).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"{} "</span>, bullet).unwrap();
             } <span class="kw">else </span>{
                 <span class="self">self</span>.write_all(<span class="kw-2">&amp;</span>listmarker).unwrap();
             }
             <span class="self">self</span>.begin_content = <span class="bool-val">true</span>;
             <span class="kw">for _ in </span><span class="number">0</span>..marker_width {
-                <span class="macro">write!</span>(<span class="self">self</span>.prefix, <span class="string">&quot; &quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>.prefix, <span class="string">" "</span>).unwrap();
             }
         } <span class="kw">else </span>{
             <span class="kw">let </span>new_len = <span class="self">self</span>.prefix.len() - marker_width;
@@ -1315,16 +1318,16 @@
 
     <span class="kw">fn </span>format_description_details(<span class="kw-2">&amp;mut </span><span class="self">self</span>, entering: bool) {
         <span class="kw">if </span>entering {
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;: &quot;</span>).unwrap()
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">": "</span>).unwrap()
         }
     }
 
     <span class="kw">fn </span>format_heading(<span class="kw-2">&amp;mut </span><span class="self">self</span>, nch: <span class="kw-2">&amp;</span>NodeHeading, entering: bool) {
         <span class="kw">if </span>entering {
             <span class="kw">for _ in </span><span class="number">0</span>..nch.level {
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;#&quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"#"</span>).unwrap();
             }
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot; &quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">" "</span>).unwrap();
             <span class="self">self</span>.begin_content = <span class="bool-val">true</span>;
             <span class="self">self</span>.no_linebreaks = <span class="bool-val">true</span>;
         } <span class="kw">else </span>{
@@ -1333,7 +1336,7 @@
         }
     }
 
-    <span class="kw">fn </span>format_code_block(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, ncb: <span class="kw-2">&amp;</span>NodeCodeBlock, entering: bool) {
+    <span class="kw">fn </span>format_code_block(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, ncb: <span class="kw-2">&amp;</span>NodeCodeBlock, entering: bool) {
         <span class="kw">if </span>entering {
             <span class="kw">let </span>first_in_list_item = node.previous_sibling().is_none()
                 &amp;&amp; <span class="kw">match </span>node.parent() {
@@ -1360,26 +1363,26 @@
                         &amp;&amp; isspace(literal[literal.len() - <span class="number">2</span>])))
                 &amp;&amp; !first_in_list_item
             {
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;    &quot;</span>).unwrap();
-                <span class="macro">write!</span>(<span class="self">self</span>.prefix, <span class="string">&quot;    &quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"    "</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>.prefix, <span class="string">"    "</span>).unwrap();
                 <span class="self">self</span>.write_all(literal).unwrap();
                 <span class="kw">let </span>new_len = <span class="self">self</span>.prefix.len() - <span class="number">4</span>;
                 <span class="self">self</span>.prefix.truncate(new_len);
             } <span class="kw">else </span>{
-                <span class="kw">let </span>fence_char = <span class="kw">if </span>info.contains(<span class="kw-2">&amp;</span><span class="string">b&#39;`&#39;</span>) { <span class="string">b&#39;~&#39; </span>} <span class="kw">else </span>{ <span class="string">b&#39;`&#39; </span>};
+                <span class="kw">let </span>fence_char = <span class="kw">if </span>info.contains(<span class="kw-2">&amp;</span><span class="string">b'`'</span>) { <span class="string">b'~' </span>} <span class="kw">else </span>{ <span class="string">b'`' </span>};
                 <span class="kw">let </span>numticks = max(<span class="number">3</span>, longest_char_sequence(literal, fence_char) + <span class="number">1</span>);
                 <span class="kw">for _ in </span><span class="number">0</span>..numticks {
-                    <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;{}&quot;</span>, fence_char <span class="kw">as </span>char).unwrap();
+                    <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"{}"</span>, fence_char <span class="kw">as </span>char).unwrap();
                 }
                 <span class="kw">if </span>!info.is_empty() {
-                    <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot; &quot;</span>).unwrap();
+                    <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">" "</span>).unwrap();
                     <span class="self">self</span>.write_all(info).unwrap();
                 }
                 <span class="self">self</span>.cr();
                 <span class="self">self</span>.write_all(literal).unwrap();
                 <span class="self">self</span>.cr();
                 <span class="kw">for _ in </span><span class="number">0</span>..numticks {
-                    <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;{}&quot;</span>, fence_char <span class="kw">as </span>char).unwrap();
+                    <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"{}"</span>, fence_char <span class="kw">as </span>char).unwrap();
                 }
             }
             <span class="self">self</span>.blankline();
@@ -1397,7 +1400,7 @@
     <span class="kw">fn </span>format_thematic_break(<span class="kw-2">&amp;mut </span><span class="self">self</span>, entering: bool) {
         <span class="kw">if </span>entering {
             <span class="self">self</span>.blankline();
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;-----&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"-----"</span>).unwrap();
             <span class="self">self</span>.blankline();
         }
     }
@@ -1417,7 +1420,7 @@
     <span class="kw">fn </span>format_line_break(<span class="kw-2">&amp;mut </span><span class="self">self</span>, entering: bool) {
         <span class="kw">if </span>entering {
             <span class="kw">if </span>!<span class="self">self</span>.options.render.hardbreaks {
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;\\&quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"\\"</span>).unwrap();
             }
             <span class="self">self</span>.cr();
         }
@@ -1431,34 +1434,34 @@
             {
                 <span class="self">self</span>.cr();
             } <span class="kw">else </span>{
-                <span class="self">self</span>.output(<span class="kw-2">&amp;</span>[<span class="string">b&#39; &#39;</span>], allow_wrap, Escaping::Literal);
+                <span class="self">self</span>.output(<span class="kw-2">&amp;</span>[<span class="string">b' '</span>], allow_wrap, Escaping::Literal);
             }
         }
     }
 
     <span class="kw">fn </span>format_code(<span class="kw-2">&amp;mut </span><span class="self">self</span>, literal: <span class="kw-2">&amp;</span>[u8], allow_wrap: bool, entering: bool) {
         <span class="kw">if </span>entering {
-            <span class="kw">let </span>numticks = shortest_unused_sequence(literal, <span class="string">b&#39;`&#39;</span>);
+            <span class="kw">let </span>numticks = shortest_unused_sequence(literal, <span class="string">b'`'</span>);
             <span class="kw">for _ in </span><span class="number">0</span>..numticks {
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;`&quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"`"</span>).unwrap();
             }
 
             <span class="kw">let </span>all_space = literal
                 .iter()
-                .all(|<span class="kw-2">&amp;</span>c| c == <span class="string">b&#39; &#39; </span>|| c == <span class="string">b&#39;\r&#39; </span>|| c == <span class="string">b&#39;\n&#39;</span>);
-            <span class="kw">let </span>has_edge_space = literal[<span class="number">0</span>] == <span class="string">b&#39; &#39; </span>|| literal[literal.len() - <span class="number">1</span>] == <span class="string">b&#39; &#39;</span>;
-            <span class="kw">let </span>has_edge_backtick = literal[<span class="number">0</span>] == <span class="string">b&#39;`&#39; </span>|| literal[literal.len() - <span class="number">1</span>] == <span class="string">b&#39;`&#39;</span>;
+                .all(|<span class="kw-2">&amp;</span>c| c == <span class="string">b' ' </span>|| c == <span class="string">b'\r' </span>|| c == <span class="string">b'\n'</span>);
+            <span class="kw">let </span>has_edge_space = literal[<span class="number">0</span>] == <span class="string">b' ' </span>|| literal[literal.len() - <span class="number">1</span>] == <span class="string">b' '</span>;
+            <span class="kw">let </span>has_edge_backtick = literal[<span class="number">0</span>] == <span class="string">b'`' </span>|| literal[literal.len() - <span class="number">1</span>] == <span class="string">b'`'</span>;
 
             <span class="kw">let </span>pad = literal.is_empty() || has_edge_backtick || (!all_space &amp;&amp; has_edge_space);
             <span class="kw">if </span>pad {
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot; &quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">" "</span>).unwrap();
             }
             <span class="self">self</span>.output(literal, allow_wrap, Escaping::Literal);
             <span class="kw">if </span>pad {
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot; &quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">" "</span>).unwrap();
             }
             <span class="kw">for _ in </span><span class="number">0</span>..numticks {
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;`&quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"`"</span>).unwrap();
             }
         }
     }
@@ -1470,56 +1473,56 @@
     }
 
     <span class="kw">fn </span>format_strong(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;**&quot;</span>).unwrap();
+        <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"**"</span>).unwrap();
     }
 
-    <span class="kw">fn </span>format_emph(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) {
+    <span class="kw">fn </span>format_emph(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) {
         <span class="kw">let </span>emph_delim = <span class="kw">if match </span>node.parent() {
             <span class="prelude-val">Some</span>(parent) =&gt; <span class="macro">matches!</span>(parent.data.borrow().value, NodeValue::Emph),
             <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
         } &amp;&amp; node.next_sibling().is_none()
             &amp;&amp; node.previous_sibling().is_none()
         {
-            <span class="string">b&#39;_&#39;
+            <span class="string">b'_'
         </span>} <span class="kw">else </span>{
-            <span class="string">b&#39;*&#39;
+            <span class="string">b'*'
         </span>};
 
         <span class="self">self</span>.write_all(<span class="kw-2">&amp;</span>[emph_delim]).unwrap();
     }
 
-    <span class="kw">fn </span>format_task_item(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="prelude-ty">Option</span>&lt;char&gt;, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, entering: bool) {
+    <span class="kw">fn </span>format_task_item(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="prelude-ty">Option</span>&lt;char&gt;, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, entering: bool) {
         <span class="self">self</span>.format_item(node, entering);
         <span class="kw">if </span>entering {
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;[{}] &quot;</span>, symbol.unwrap_or(<span class="string">&#39; &#39;</span>)).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"[{}] "</span>, symbol.unwrap_or(<span class="string">' '</span>)).unwrap();
         }
     }
 
     <span class="kw">fn </span>format_strikethrough(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;~&quot;</span>).unwrap();
+        <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"~"</span>).unwrap();
     }
 
     <span class="kw">fn </span>format_superscript(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;^&quot;</span>).unwrap();
+        <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"^"</span>).unwrap();
     }
 
-    <span class="kw">fn </span>format_link(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, nl: <span class="kw-2">&amp;</span>NodeLink, entering: bool) -&gt; bool {
+    <span class="kw">fn </span>format_link(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, nl: <span class="kw-2">&amp;</span>NodeLink, entering: bool) -&gt; bool {
         <span class="kw">if </span>is_autolink(node, nl) {
             <span class="kw">if </span>entering {
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;&lt;{}&gt;&quot;</span>, trim_start_match(<span class="kw-2">&amp;</span>nl.url, <span class="string">&quot;mailto:&quot;</span>)).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"&lt;{}&gt;"</span>, trim_start_match(<span class="kw-2">&amp;</span>nl.url, <span class="string">"mailto:"</span>)).unwrap();
                 <span class="kw">return </span><span class="bool-val">false</span>;
             }
         } <span class="kw">else if </span>entering {
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;[&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"["</span>).unwrap();
         } <span class="kw">else </span>{
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;](&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"]("</span>).unwrap();
             <span class="self">self</span>.output(nl.url.as_bytes(), <span class="bool-val">false</span>, Escaping::Url);
             <span class="kw">if </span>!nl.title.is_empty() {
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot; \&quot;&quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">" \""</span>).unwrap();
                 <span class="self">self</span>.output(nl.title.as_bytes(), <span class="bool-val">false</span>, Escaping::Title);
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;\&quot;&quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"\""</span>).unwrap();
             }
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;)&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">")"</span>).unwrap();
         }
 
         <span class="bool-val">true
@@ -1527,25 +1530,25 @@
 
     <span class="kw">fn </span>format_image(<span class="kw-2">&amp;mut </span><span class="self">self</span>, nl: <span class="kw-2">&amp;</span>NodeLink, allow_wrap: bool, entering: bool) {
         <span class="kw">if </span>entering {
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;![&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"!["</span>).unwrap();
         } <span class="kw">else </span>{
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;](&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"]("</span>).unwrap();
             <span class="self">self</span>.output(nl.url.as_bytes(), <span class="bool-val">false</span>, Escaping::Url);
             <span class="kw">if </span>!nl.title.is_empty() {
-                <span class="self">self</span>.output(<span class="kw-2">&amp;</span>[<span class="string">b&#39; &#39;</span>, <span class="string">b&#39;&quot;&#39;</span>], allow_wrap, Escaping::Literal);
+                <span class="self">self</span>.output(<span class="kw-2">&amp;</span>[<span class="string">b' '</span>, <span class="string">b'"'</span>], allow_wrap, Escaping::Literal);
                 <span class="self">self</span>.output(nl.title.as_bytes(), <span class="bool-val">false</span>, Escaping::Title);
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;\&quot;&quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"\""</span>).unwrap();
             }
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;)&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">")"</span>).unwrap();
         }
     }
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+    <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
     </span><span class="kw">fn </span>format_shortcode(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ne: <span class="kw-2">&amp;</span>NodeShortCode, entering: bool) {
         <span class="kw">if </span>entering {
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;:&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">":"</span>).unwrap();
             <span class="self">self</span>.output(ne.shortcode().as_bytes(), <span class="bool-val">false</span>, Escaping::Literal);
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;:&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">":"</span>).unwrap();
         }
     }
 
@@ -1561,15 +1564,15 @@
     <span class="kw">fn </span>format_table_row(<span class="kw-2">&amp;mut </span><span class="self">self</span>, entering: bool) {
         <span class="kw">if </span>entering {
             <span class="self">self</span>.cr();
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;|&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"|"</span>).unwrap();
         }
     }
 
-    <span class="kw">fn </span>format_table_cell(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, entering: bool) {
+    <span class="kw">fn </span>format_table_cell(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, entering: bool) {
         <span class="kw">if </span>entering {
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot; &quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">" "</span>).unwrap();
         } <span class="kw">else </span>{
-            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot; |&quot;</span>).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">" |"</span>).unwrap();
 
             <span class="kw">let </span>row = <span class="kw-2">&amp;</span>node.parent().unwrap().data.borrow().value;
             <span class="kw">let </span>in_header = <span class="kw">match </span><span class="kw-2">*</span>row {
@@ -1585,16 +1588,16 @@
                 };
 
                 <span class="self">self</span>.cr();
-                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">&quot;|&quot;</span>).unwrap();
+                <span class="macro">write!</span>(<span class="self">self</span>, <span class="string">"|"</span>).unwrap();
                 <span class="kw">for </span>a <span class="kw">in </span>alignments {
                     <span class="macro">write!</span>(
                         <span class="self">self</span>,
-                        <span class="string">&quot; {} |&quot;</span>,
+                        <span class="string">" {} |"</span>,
                         <span class="kw">match </span><span class="kw-2">*</span>a {
-                            TableAlignment::Left =&gt; <span class="string">&quot;:--&quot;</span>,
-                            TableAlignment::Center =&gt; <span class="string">&quot;:-:&quot;</span>,
-                            TableAlignment::Right =&gt; <span class="string">&quot;--:&quot;</span>,
-                            TableAlignment::None =&gt; <span class="string">&quot;---&quot;</span>,
+                            TableAlignment::Left =&gt; <span class="string">":--"</span>,
+                            TableAlignment::Center =&gt; <span class="string">":-:"</span>,
+                            TableAlignment::Right =&gt; <span class="string">"--:"</span>,
+                            TableAlignment::None =&gt; <span class="string">"---"</span>,
                         }
                     )
                     .unwrap();
@@ -1606,8 +1609,8 @@
     <span class="kw">fn </span>format_footnote_definition(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str, entering: bool) {
         <span class="kw">if </span>entering {
             <span class="self">self</span>.footnote_ix += <span class="number">1</span>;
-            <span class="macro">writeln!</span>(<span class="self">self</span>, <span class="string">&quot;[^{}]:&quot;</span>, name).unwrap();
-            <span class="macro">write!</span>(<span class="self">self</span>.prefix, <span class="string">&quot;    &quot;</span>).unwrap();
+            <span class="macro">writeln!</span>(<span class="self">self</span>, <span class="string">"[^{}]:"</span>, name).unwrap();
+            <span class="macro">write!</span>(<span class="self">self</span>.prefix, <span class="string">"    "</span>).unwrap();
         } <span class="kw">else </span>{
             <span class="kw">let </span>new_len = <span class="self">self</span>.prefix.len() - <span class="number">4</span>;
             <span class="self">self</span>.prefix.truncate(new_len);
@@ -1616,9 +1619,9 @@
 
     <span class="kw">fn </span>format_footnote_reference(<span class="kw-2">&amp;mut </span><span class="self">self</span>, r: <span class="kw-2">&amp;</span>[u8], entering: bool) {
         <span class="kw">if </span>entering {
-            <span class="self">self</span>.write_all(<span class="string">b&quot;[^&quot;</span>).unwrap();
+            <span class="self">self</span>.write_all(<span class="string">b"[^"</span>).unwrap();
             <span class="self">self</span>.write_all(r).unwrap();
-            <span class="self">self</span>.write_all(<span class="string">b&quot;]&quot;</span>).unwrap();
+            <span class="self">self</span>.write_all(<span class="string">b"]"</span>).unwrap();
         }
     }
 }
@@ -1668,7 +1671,7 @@
     i
 }
 
-<span class="kw">fn </span>is_autolink&lt;<span class="lifetime">&#39;a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, nl: <span class="kw-2">&amp;</span>NodeLink) -&gt; bool {
+<span class="kw">fn </span>is_autolink&lt;<span class="lifetime">'a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, nl: <span class="kw-2">&amp;</span>NodeLink) -&gt; bool {
     <span class="kw">if </span>nl.url.is_empty() || scanners::scheme(nl.url.as_bytes()).is_none() {
         <span class="kw">return </span><span class="bool-val">false</span>;
     }
@@ -1685,13 +1688,13 @@
         },
     };
 
-    trim_start_match(<span class="kw-2">&amp;</span>nl.url, <span class="string">&quot;mailto:&quot;</span>) == link_text
+    trim_start_match(<span class="kw-2">&amp;</span>nl.url, <span class="string">"mailto:"</span>) == link_text
 }
 
-<span class="kw">fn </span>table_escape&lt;<span class="lifetime">&#39;a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, c: u8) -&gt; bool {
+<span class="kw">fn </span>table_escape&lt;<span class="lifetime">'a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, c: u8) -&gt; bool {
     <span class="kw">match </span>node.data.borrow().value {
         NodeValue::Table(..) | NodeValue::TableRow(..) | NodeValue::TableCell =&gt; <span class="bool-val">false</span>,
-        <span class="kw">_ </span>=&gt; c == <span class="string">b&#39;|&#39;</span>,
+        <span class="kw">_ </span>=&gt; c == <span class="string">b'|'</span>,
     }
 }
 </code></pre></div></section></main></body></html>

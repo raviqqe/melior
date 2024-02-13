@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -276,7 +277,7 @@
 <a href="#276" id="276">276</a>
 <a href="#277" id="277">277</a>
 <a href="#278" id="278">278</a>
-</pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../README.md&quot;</span>)]
+</pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">"../README.md"</span>)]
 
 </span><span class="kw">extern crate </span><span class="self">self </span><span class="kw">as </span>melior;
 
@@ -364,7 +365,7 @@
 
             func::func(
                 <span class="kw-2">&amp;</span>context,
-                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;add&quot;</span>),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"add"</span>),
                 TypeAttribute::new(
                     FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type, integer_type], <span class="kw-2">&amp;</span>[integer_type])
                         .into(),
@@ -389,11 +390,11 @@
         <span class="kw">let </span>location = Location::unknown(<span class="kw-2">&amp;</span>context);
         <span class="kw">let </span>module = Module::new(location);
 
-        <span class="kw">let </span>memref_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;memref&lt;?xf32&gt;&quot;</span>).unwrap();
+        <span class="kw">let </span>memref_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">"memref&lt;?xf32&gt;"</span>).unwrap();
 
         <span class="kw">let </span>function = {
             <span class="kw">let </span>function_block = Block::new(<span class="kw-2">&amp;</span>[(memref_type, location), (memref_type, location)]);
-            <span class="kw">let </span>index_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">&quot;index&quot;</span>).unwrap();
+            <span class="kw">let </span>index_type = Type::parse(<span class="kw-2">&amp;</span>context, <span class="string">"index"</span>).unwrap();
 
             <span class="kw">let </span>zero = function_block.append_operation(arith::constant(
                 <span class="kw-2">&amp;</span>context,
@@ -402,7 +403,7 @@
             ));
 
             <span class="kw">let </span>dim = function_block.append_operation(
-                OperationBuilder::new(<span class="string">&quot;memref.dim&quot;</span>, location)
+                OperationBuilder::new(<span class="string">"memref.dim"</span>, location)
                     .add_operands(<span class="kw-2">&amp;</span>[
                         function_block.argument(<span class="number">0</span>).unwrap().into(),
                         zero.result(<span class="number">0</span>).unwrap().into(),
@@ -424,7 +425,7 @@
                 <span class="kw">let </span>f32_type = Type::float32(<span class="kw-2">&amp;</span>context);
 
                 <span class="kw">let </span>lhs = loop_block.append_operation(
-                    OperationBuilder::new(<span class="string">&quot;memref.load&quot;</span>, location)
+                    OperationBuilder::new(<span class="string">"memref.load"</span>, location)
                         .add_operands(<span class="kw-2">&amp;</span>[
                             function_block.argument(<span class="number">0</span>).unwrap().into(),
                             loop_block.argument(<span class="number">0</span>).unwrap().into(),
@@ -435,7 +436,7 @@
                 );
 
                 <span class="kw">let </span>rhs = loop_block.append_operation(
-                    OperationBuilder::new(<span class="string">&quot;memref.load&quot;</span>, location)
+                    OperationBuilder::new(<span class="string">"memref.load"</span>, location)
                         .add_operands(<span class="kw-2">&amp;</span>[
                             function_block.argument(<span class="number">1</span>).unwrap().into(),
                             loop_block.argument(<span class="number">0</span>).unwrap().into(),
@@ -452,7 +453,7 @@
                 ));
 
                 loop_block.append_operation(
-                    OperationBuilder::new(<span class="string">&quot;memref.store&quot;</span>, location)
+                    OperationBuilder::new(<span class="string">"memref.store"</span>, location)
                         .add_operands(<span class="kw-2">&amp;</span>[
                             add.result(<span class="number">0</span>).unwrap().into(),
                             function_block.argument(<span class="number">0</span>).unwrap().into(),
@@ -484,7 +485,7 @@
 
             func::func(
                 <span class="kw-2">&amp;</span>context,
-                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;sum&quot;</span>),
+                StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"sum"</span>),
                 TypeAttribute::new(
                     FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[memref_type, memref_type], <span class="kw-2">&amp;</span>[]).into(),
                 ),
@@ -510,12 +511,12 @@
 
         <span class="kw">let </span>integer_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>).into();
 
-        <span class="kw">fn </span>compile_add&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt;(
-            context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-            block: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Block&lt;<span class="lifetime">&#39;c</span>&gt;,
-            lhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-            rhs: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-        ) -&gt; Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">fn </span>compile_add&lt;<span class="lifetime">'c</span>, <span class="lifetime">'a</span>&gt;(
+            context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+            block: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Block&lt;<span class="lifetime">'c</span>&gt;,
+            lhs: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+            rhs: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+        ) -&gt; Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'a</span>&gt; {
             block
                 .append_operation(arith::addi(lhs, rhs, Location::unknown(context)))
                 .result(<span class="number">0</span>)
@@ -525,7 +526,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;add&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"add"</span>),
             TypeAttribute::new(
                 FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[integer_type, integer_type], <span class="kw-2">&amp;</span>[integer_type]).into(),
             ),

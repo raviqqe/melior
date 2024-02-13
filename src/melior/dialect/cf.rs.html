@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/dialect/cf.rs`."><title>cf.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `melior/src/dialect/cf.rs`."><title>cf.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="melior" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -386,48 +387,48 @@
 };
 
 <span class="doccomment">/// Creates a `cf.assert` operation.
-</span><span class="kw">pub fn </span>assert&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    argument: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
+</span><span class="kw">pub fn </span>assert&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    argument: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
     message: <span class="kw-2">&amp;</span>str,
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;cf.assert&quot;</span>, location)
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"cf.assert"</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
-            Identifier::new(context, <span class="string">&quot;msg&quot;</span>),
+            Identifier::new(context, <span class="string">"msg"</span>),
             StringAttribute::new(context, message).into(),
         )])
         .add_operands(<span class="kw-2">&amp;</span>[argument])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `cf.br` operation.
-</span><span class="kw">pub fn </span>br&lt;<span class="lifetime">&#39;c</span>&gt;(
-    successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;,
-    destination_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;cf.br&quot;</span>, location)
+</span><span class="kw">pub fn </span>br&lt;<span class="lifetime">'c</span>&gt;(
+    successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">'c</span>&gt;,
+    destination_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;],
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"cf.br"</span>, location)
         .add_operands(destination_operands)
         .add_successors(<span class="kw-2">&amp;</span>[successor])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `cf.cond_br` operation.
-</span><span class="kw">pub fn </span>cond_br&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
-    condition: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    true_successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;,
-    false_successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;,
-    true_successor_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
-    false_successor_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;],
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; Operation&lt;<span class="lifetime">&#39;c</span>&gt; {
-    OperationBuilder::new(<span class="string">&quot;cf.cond_br&quot;</span>, location)
+</span><span class="kw">pub fn </span>cond_br&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
+    condition: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    true_successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">'c</span>&gt;,
+    false_successor: <span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">'c</span>&gt;,
+    true_successor_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;],
+    false_successor_operands: <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;],
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
+    OperationBuilder::new(<span class="string">"cf.cond_br"</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[(
-            Identifier::new(context, <span class="string">&quot;operand_segment_sizes&quot;</span>),
+            Identifier::new(context, <span class="string">"operand_segment_sizes"</span>),
             DenseI32ArrayAttribute::new(
                 context,
                 <span class="kw-2">&amp;</span>[
@@ -447,28 +448,28 @@
         )
         .add_successors(<span class="kw-2">&amp;</span>[true_successor, false_successor])
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>)
+        .expect(<span class="string">"valid operation"</span>)
 }
 
 <span class="doccomment">/// Creates a `cf.switch` operation.
-</span><span class="kw">pub fn </span>switch&lt;<span class="lifetime">&#39;c</span>&gt;(
-    context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>Context,
+</span><span class="kw">pub fn </span>switch&lt;<span class="lifetime">'c</span>&gt;(
+    context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>Context,
     case_values: <span class="kw-2">&amp;</span>[i64],
-    flag: Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;,
-    flag_type: Type&lt;<span class="lifetime">&#39;c</span>&gt;,
-    default_destination: (<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;, <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;]),
-    case_destinations: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">&#39;c</span>&gt;, <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">&#39;c</span>, <span class="lifetime">&#39;_</span>&gt;])],
-    location: Location&lt;<span class="lifetime">&#39;c</span>&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Operation&lt;<span class="lifetime">&#39;c</span>&gt;, Error&gt; {
+    flag: Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;,
+    flag_type: Type&lt;<span class="lifetime">'c</span>&gt;,
+    default_destination: (<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">'c</span>&gt;, <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;]),
+    case_destinations: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span>Block&lt;<span class="lifetime">'c</span>&gt;, <span class="kw-2">&amp;</span>[Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;])],
+    location: Location&lt;<span class="lifetime">'c</span>&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Operation&lt;<span class="lifetime">'c</span>&gt;, Error&gt; {
     <span class="kw">let </span>(destinations, operands): (Vec&lt;<span class="kw">_</span>&gt;, Vec&lt;<span class="kw">_</span>&gt;) = [default_destination]
         .into_iter()
         .chain(case_destinations.iter().copied())
         .unzip();
 
-    <span class="prelude-val">Ok</span>(OperationBuilder::new(<span class="string">&quot;cf.switch&quot;</span>, location)
+    <span class="prelude-val">Ok</span>(OperationBuilder::new(<span class="string">"cf.switch"</span>, location)
         .add_attributes(<span class="kw-2">&amp;</span>[
             (
-                Identifier::new(context, <span class="string">&quot;case_values&quot;</span>),
+                Identifier::new(context, <span class="string">"case_values"</span>),
                 DenseElementsAttribute::new(
                     RankedTensorType::new(<span class="kw-2">&amp;</span>[case_values.len() <span class="kw">as </span>u64], flag_type, <span class="prelude-val">None</span>).into(),
                     <span class="kw-2">&amp;</span>case_values
@@ -479,7 +480,7 @@
                 </span>.into(),
             ),
             (
-                Identifier::new(context, <span class="string">&quot;case_operand_segments&quot;</span>),
+                Identifier::new(context, <span class="string">"case_operand_segments"</span>),
                 DenseI32ArrayAttribute::new(
                     context,
                     <span class="kw-2">&amp;</span>case_destinations
@@ -490,7 +491,7 @@
                 .into(),
             ),
             (
-                Identifier::new(context, <span class="string">&quot;operand_segment_sizes&quot;</span>),
+                Identifier::new(context, <span class="string">"operand_segment_sizes"</span>),
                 DenseI32ArrayAttribute::new(
                     context,
                     <span class="kw-2">&amp;</span>[
@@ -513,7 +514,7 @@
         )
         .add_successors(<span class="kw-2">&amp;</span>destinations)
         .build()
-        .expect(<span class="string">&quot;valid operation&quot;</span>))
+        .expect(<span class="string">"valid operation"</span>))
 }
 
 <span class="attr">#[cfg(test)]
@@ -544,7 +545,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
@@ -558,7 +559,7 @@
                     .unwrap()
                     .into();
 
-                block.append_operation(assert(<span class="kw-2">&amp;</span>context, operand, <span class="string">&quot;assert message&quot;</span>, location));
+                block.append_operation(assert(<span class="kw-2">&amp;</span>context, operand, <span class="string">"assert message"</span>, location));
 
                 block.append_operation(func::r#return(<span class="kw-2">&amp;</span>[], location));
 
@@ -585,7 +586,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
@@ -627,7 +628,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);
@@ -694,7 +695,7 @@
 
         module.body().append_operation(func::func(
             <span class="kw-2">&amp;</span>context,
-            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">&quot;foo&quot;</span>),
+            StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>),
             TypeAttribute::new(FunctionType::new(<span class="kw-2">&amp;</span>context, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span>[]).into()),
             {
                 <span class="kw">let </span>block = Block::new(<span class="kw-2">&amp;</span>[]);

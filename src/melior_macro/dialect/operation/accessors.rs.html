@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `macro/src/dialect/operation/accessors.rs`."><title>accessors.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="melior_macro" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `macro/src/dialect/operation/accessors.rs`."><title>accessors.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="melior_macro" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -239,8 +240,6 @@
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{
     <span class="kw">super</span>::{error::Error, utility::sanitize_snake_case_name},
     ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind,
@@ -248,18 +247,18 @@
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::{format_ident, quote};
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; OperationField&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>getter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TokenStream&gt;, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; OperationField&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">fn </span>getter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
             FieldKind::Element {
                 kind,
                 constraint,
                 sequence_info: SequenceInfo { index, len },
                 variadic_kind,
             } =&gt; {
-                <span class="kw">let </span>kind_ident = <span class="macro">format_ident!</span>(<span class="string">&quot;{}&quot;</span>, kind.as_str());
-                <span class="kw">let </span>plural = <span class="macro">format_ident!</span>(<span class="string">&quot;{}s&quot;</span>, kind.as_str());
-                <span class="kw">let </span>count = <span class="macro">format_ident!</span>(<span class="string">&quot;{}_count&quot;</span>, kind.as_str());
+                <span class="kw">let </span>kind_ident = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, kind.as_str());
+                <span class="kw">let </span>plural = <span class="macro">format_ident!</span>(<span class="string">"{}s"</span>, kind.as_str());
+                <span class="kw">let </span>count = <span class="macro">format_ident!</span>(<span class="string">"{}_count"</span>, kind.as_str());
                 <span class="kw">let </span>error_variant = <span class="kw">match </span>kind {
                     ElementKind::Operand =&gt; <span class="macro">quote!</span>(OperandNotFound),
                     ElementKind::Result =&gt; <span class="macro">quote!</span>(ResultNotFound),
@@ -273,19 +272,19 @@
                             // Only present if the amount of groups is at least the number of
                             // elements.
                             </span><span class="macro">quote! </span>{
-                              <span class="kw">if </span><span class="self">self</span>.operation.#count() &lt; #len {
-                                <span class="prelude-val">Err</span>(::melior::Error::#error_variant(#name))
-                              } <span class="kw">else </span>{
-                                <span class="self">self</span>.operation.#kind_ident(#index)
-                              }
+                                <span class="kw">if </span><span class="self">self</span>.operation.#count() &lt; #len {
+                                    <span class="prelude-val">Err</span>(::melior::Error::#error_variant(#name))
+                                } <span class="kw">else </span>{
+                                    <span class="self">self</span>.operation.#kind_ident(#index)
+                                }
                             }
                         } <span class="kw">else if </span>constraint.is_variadic() {
                             <span class="comment">// A unfixed group
                             // Length computed by subtracting the amount of other
                             // singular elements from the number of elements.
                             </span><span class="macro">quote! </span>{
-                              <span class="kw">let </span>group_length = <span class="self">self</span>.operation.#count() - #len + <span class="number">1</span>;
-                              <span class="self">self</span>.operation.#plural().skip(#index).take(group_length)
+                                <span class="kw">let </span>group_length = <span class="self">self</span>.operation.#count() - #len + <span class="number">1</span>;
+                                <span class="self">self</span>.operation.#plural().skip(#index).take(group_length)
                             }
                         } <span class="kw">else if </span><span class="kw-2">*</span>unfixed_seen {
                             <span class="comment">// Single element after unfixed group
@@ -324,13 +323,13 @@
                         <span class="macro">quote! </span>{ #compute_start_length #get_elements }
                     }
                     VariadicKind::AttributeSized =&gt; {
-                        <span class="kw">let </span>attribute_name = <span class="macro">format!</span>(<span class="string">&quot;{}_segment_sizes&quot;</span>, kind.as_str());
+                        <span class="kw">let </span>attribute_name = <span class="macro">format!</span>(<span class="string">"{}_segment_sizes"</span>, kind.as_str());
                         <span class="kw">let </span>compute_start_length = <span class="macro">quote! </span>{
                             <span class="kw">let </span>attribute =
-                                ::melior::ir::attribute::DenseI32ArrayAttribute::&lt;<span class="lifetime">&#39;c</span>&gt;::try_from(
+                                ::melior::ir::attribute::DenseI32ArrayAttribute::&lt;<span class="lifetime">'c</span>&gt;::try_from(
                                     <span class="self">self</span>.operation
-                                        .attribute(#attribute_name)<span class="question-mark">?
-                                </span>)<span class="question-mark">?</span>;
+                                    .attribute(#attribute_name)<span class="question-mark">?
+                                    </span>)<span class="question-mark">?</span>;
                             <span class="kw">let </span>start = (<span class="number">0</span>..#index)
                                 .map(|index| attribute.element(index))
                                 .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?
@@ -393,19 +392,19 @@
             FieldKind::Attribute { constraint } =&gt; {
                 <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
-                <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>{
+                <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit() {
                     <span class="macro">quote! </span>{ <span class="self">self</span>.operation.attribute(#name).is_some() }
                 } <span class="kw">else </span>{
                     <span class="comment">// TODO Handle returning `melior::Attribute`.
                     </span><span class="macro">quote! </span>{ <span class="prelude-val">Ok</span>(<span class="self">self</span>.operation.attribute(#name)<span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>) }
                 })
             }
-        })
+        }
     }
 
-    <span class="kw">fn </span>remover_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TokenStream&gt;, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="kw">if let </span>FieldKind::Attribute { constraint } = <span class="kw-2">&amp;</span><span class="self">self</span>.kind {
-            <span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>|| constraint.is_optional()<span class="question-mark">? </span>{
+    <span class="kw">fn </span>remover(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
+        <span class="kw">if let </span>FieldKind::Attribute { constraint } = <span class="kw-2">&amp;</span><span class="self">self</span>.kind {
+            <span class="kw">if </span>constraint.is_unit() || constraint.is_optional() {
                 <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
                 <span class="prelude-val">Some</span>(<span class="macro">quote! </span>{ <span class="self">self</span>.operation.remove_attribute(#name) })
@@ -414,51 +413,49 @@
             </span>}
         } <span class="kw">else </span>{
             <span class="prelude-val">None
-        </span>})
+        </span>}
     }
 
-    <span class="kw">fn </span>setter_impl(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TokenStream&gt;, Error&gt; {
+    <span class="kw">fn </span>setter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
         <span class="kw">let </span>FieldKind::Attribute { constraint } = <span class="kw-2">&amp;</span><span class="self">self</span>.kind <span class="kw">else </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         };
         <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
 
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit()<span class="question-mark">? </span>{
+        <span class="prelude-val">Some</span>(<span class="kw">if </span>constraint.is_unit() {
             <span class="macro">quote! </span>{
                 <span class="kw">if </span>value {
-                  <span class="self">self</span>.operation.set_attribute(#name, Attribute::unit(<span class="kw-2">&amp;</span><span class="self">self</span>.operation.context()));
+                    <span class="self">self</span>.operation.set_attribute(#name, Attribute::unit(<span class="kw-2">&amp;</span><span class="self">self</span>.operation.context()));
                 } <span class="kw">else </span>{
-                  <span class="self">self</span>.operation.remove_attribute(#name)
+                    <span class="self">self</span>.operation.remove_attribute(#name)
                 }
             }
         } <span class="kw">else </span>{
             <span class="macro">quote! </span>{
                 <span class="self">self</span>.operation.set_attribute(#name, <span class="kw-2">&amp;</span>value.into());
             }
-        }))
+        })
     }
 
     <span class="kw">pub fn </span>accessors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
         <span class="kw">let </span>setter = {
-            <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;set_{}&quot;</span>, <span class="self">self</span>.name))<span class="question-mark">?</span>;
+            <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"set_{}"</span>, <span class="self">self</span>.name))<span class="question-mark">?</span>;
 
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(body) = <span class="self">self</span>.setter_impl()<span class="question-mark">? </span>{
-                <span class="kw">let </span>parameter_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.parameter_type()<span class="question-mark">?</span>;
+            <span class="self">self</span>.setter().map(|body| {
+                <span class="kw">let </span>parameter_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.parameter_type();
 
                 <span class="macro">quote! </span>{
-                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context, value: #parameter_type) {
+                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context, value: #parameter_type) {
                         #body
                     }
                 }
-            } <span class="kw">else </span>{
-                <span class="macro">quote!</span>()
-            }
+            })
         };
         <span class="kw">let </span>remover = {
-            <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;remove_{}&quot;</span>, <span class="self">self</span>.name))<span class="question-mark">?</span>;
-            <span class="self">self</span>.remover_impl()<span class="question-mark">?</span>.map(|body| {
+            <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"remove_{}"</span>, <span class="self">self</span>.name))<span class="question-mark">?</span>;
+            <span class="self">self</span>.remover().map(|body| {
                 <span class="macro">quote! </span>{
-                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {
+                    <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {
                         #body
                     }
                 }
@@ -466,11 +463,11 @@
         };
         <span class="kw">let </span>getter = {
             <span class="kw">let </span>ident = <span class="kw-2">&amp;</span><span class="self">self</span>.sanitized_name;
-            <span class="kw">let </span>return_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.return_type()<span class="question-mark">?</span>;
-            <span class="self">self</span>.getter_impl()<span class="question-mark">?</span>.map(|body| {
+            <span class="kw">let </span>return_type = <span class="kw-2">&amp;</span><span class="self">self</span>.kind.return_type();
+            <span class="self">self</span>.getter().map(|body| {
                 <span class="macro">quote! </span>{
                     <span class="attr">#[allow(clippy::needless_question_mark)]
-                    </span><span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">&#39;c </span>::melior::Context) -&gt; #return_type {
+                    </span><span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context) -&gt; #return_type {
                         #body
                     }
                 }

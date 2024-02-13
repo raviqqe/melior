@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/derive_builder_core-0.12.0/src/macro_options/darling_opts.rs`."><title>darling_opts.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="derive_builder_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/derive_builder_core-0.12.0/src/macro_options/darling_opts.rs`."><title>darling_opts.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="derive_builder_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -974,7 +975,7 @@
     <span class="kw">fn </span>explicit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>syn::Visibility&gt;;
 
     <span class="doccomment">/// Get the explicitly-expressed visibility preference from the attribute.
-    /// This returns `None` if the input didn&#39;t include either keyword.
+    /// This returns `None` if the input didn't include either keyword.
     ///
     /// # Panics
     /// This method panics if the input specifies both `public` and `private`.
@@ -1003,7 +1004,7 @@
     <span class="kw">if let </span><span class="prelude-val">Some</span>(vis) = v.explicit() {
         <span class="kw">if </span>declares_public || declares_private {
             <span class="prelude-val">Err</span>(
-                Error::custom(<span class="string">r#&quot;`vis=&quot;...&quot;` cannot be used with `public` or `private`&quot;#</span>)
+                Error::custom(<span class="string">r#"`vis="..."` cannot be used with `public` or `private`"#</span>)
                     .with_span(vis),
             )
         } <span class="kw">else </span>{
@@ -1011,7 +1012,7 @@
         }
     } <span class="kw">else if </span>declares_public &amp;&amp; declares_private {
         <span class="prelude-val">Err</span>(
-            Error::custom(<span class="string">r#&quot;`public` and `private` cannot be used together&quot;#</span>)
+            Error::custom(<span class="string">r#"`public` and `private` cannot be used together"#</span>)
                 .with_span(v.public()),
         )
     } <span class="kw">else </span>{
@@ -1021,7 +1022,7 @@
 
 <span class="doccomment">/// Options for the `build_fn` property in struct-level builder options.
 /// There is no inheritance for these settings from struct-level to field-level,
-/// so we don&#39;t bother using `Option` for values in this struct.
+/// so we don't bother using `Option` for values in this struct.
 </span><span class="attr">#[derive(Debug, Clone, FromMeta)]
 #[darling(default)]
 </span><span class="kw">pub struct </span>BuildFn {
@@ -1037,13 +1038,13 @@
     /// method.
     ///
     /// # Type Bounds
-    /// This type&#39;s bounds depend on other settings of the builder.
+    /// This type's bounds depend on other settings of the builder.
     ///
     /// * If uninitialized fields cause `build()` to fail, then this type
     ///   must `impl From&lt;UninitializedFieldError&gt;`. Uninitialized fields do not cause errors
     ///   when default values are provided for every field or at the struct level.
     /// * If `validate` is specified, then this type must provide a conversion from the specified
-    ///   function&#39;s error type.
+    ///   function's error type.
     </span>error: <span class="prelude-ty">Option</span>&lt;Path&gt;,
 }
 
@@ -1051,7 +1052,7 @@
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         BuildFn {
             skip: <span class="bool-val">false</span>,
-            name: Ident::new(<span class="string">&quot;build&quot;</span>, Span::call_site()),
+            name: Ident::new(<span class="string">"build"</span>, Span::call_site()),
             validate: <span class="prelude-val">None</span>,
             public: Default::default(),
             private: Default::default(),
@@ -1108,7 +1109,7 @@
     private: Flag,
     vis: <span class="prelude-ty">Option</span>&lt;syn::Visibility&gt;,
     <span class="doccomment">/// Custom builder field type
-    </span><span class="attr">#[darling(rename = <span class="string">&quot;type&quot;</span>)]
+    </span><span class="attr">#[darling(rename = <span class="string">"type"</span>)]
     </span>builder_type: <span class="prelude-ty">Option</span>&lt;syn::Type&gt;,
     <span class="doccomment">/// Custom builder field method, for making target struct field value
     </span>build: <span class="prelude-ty">Option</span>&lt;BlockContents&gt;,
@@ -1144,12 +1145,12 @@
     }
 }
 
-<span class="doccomment">/// Create `Each` from an attribute&#39;s `Meta`.
+<span class="doccomment">/// Create `Each` from an attribute's `Meta`.
 ///
 /// Two formats are supported:
 ///
-/// * `each = &quot;...&quot;`, which provides the name of the `each` setter and otherwise uses default values
-/// * `each(name = &quot;...&quot;)`, which allows setting additional options on the `each` setter
+/// * `each = "..."`, which provides the name of the `each` setter and otherwise uses default values
+/// * `each(name = "...")`, which allows setting additional options on the `each` setter
 </span><span class="kw">fn </span>parse_each(meta: <span class="kw-2">&amp;</span>Meta) -&gt; darling::Result&lt;<span class="prelude-ty">Option</span>&lt;Each&gt;&gt; {
     <span class="kw">if let </span>Meta::NameValue(mnv) = meta {
         <span class="kw">if let </span>syn::Lit::Str(v) = <span class="kw-2">&amp;</span>mnv.lit {
@@ -1176,7 +1177,7 @@
     strip_option: <span class="prelude-ty">Option</span>&lt;bool&gt;,
     skip: <span class="prelude-ty">Option</span>&lt;bool&gt;,
     custom: <span class="prelude-ty">Option</span>&lt;bool&gt;,
-    <span class="attr">#[darling(with = <span class="string">&quot;parse_each&quot;</span>)]
+    <span class="attr">#[darling(with = <span class="string">"parse_each"</span>)]
     </span>each: <span class="prelude-ty">Option</span>&lt;Each&gt;,
 }
 
@@ -1214,9 +1215,9 @@
 }
 
 <span class="doccomment">/// `derive_builder` allows the calling code to use `setter` as a word to enable
-/// setters when they&#39;ve been disabled at the struct level.
+/// setters when they've been disabled at the struct level.
 </span><span class="kw">fn </span>field_setter(meta: <span class="kw-2">&amp;</span>Meta) -&gt; darling::Result&lt;FieldLevelSetter&gt; {
-    <span class="comment">// it doesn&#39;t matter what the path is; the fact that this function
+    <span class="comment">// it doesn't matter what the path is; the fact that this function
     // has been called means that a valueless path is the shorthand case.
     </span><span class="kw">if let </span>Meta::Path(<span class="kw">_</span>) = meta {
         <span class="prelude-val">Ok</span>(FieldLevelSetter {
@@ -1233,7 +1234,7 @@
 #[darling(
     attributes(builder),
     forward_attrs(doc, cfg, allow, builder_field_attr, builder_setter_attr),
-    and_then = <span class="string">&quot;Self::resolve&quot;
+    and_then = <span class="string">"Self::resolve"
 </span>)]
 </span><span class="kw">pub struct </span>Field {
     ident: <span class="prelude-ty">Option</span>&lt;Ident&gt;,
@@ -1245,24 +1246,24 @@
     </span>pattern: <span class="prelude-ty">Option</span>&lt;BuilderPattern&gt;,
     public: Flag,
     private: Flag,
-    <span class="doccomment">/// Declared visibility for the field in the builder, e.g. `#[builder(vis = &quot;...&quot;)]`.
+    <span class="doccomment">/// Declared visibility for the field in the builder, e.g. `#[builder(vis = "...")]`.
     ///
-    /// This cannot be named `vis` or `darling` would put the deriving field&#39;s visibility into the
+    /// This cannot be named `vis` or `darling` would put the deriving field's visibility into the
     /// field instead.
-    </span><span class="attr">#[darling(rename = <span class="string">&quot;vis&quot;</span>)]
+    </span><span class="attr">#[darling(rename = <span class="string">"vis"</span>)]
     </span>visibility: <span class="prelude-ty">Option</span>&lt;syn::Visibility&gt;,
     <span class="comment">// See the documentation for `FieldSetterMeta` to understand how `darling`
     // is interpreting this field.
-    </span><span class="attr">#[darling(default, with = <span class="string">&quot;field_setter&quot;</span>)]
+    </span><span class="attr">#[darling(default, with = <span class="string">"field_setter"</span>)]
     </span>setter: FieldLevelSetter,
     <span class="doccomment">/// The value for this field if the setter is never invoked.
     ///
     /// A field can get its default one of three ways:
     ///
-    /// 1. An explicit `default = &quot;...&quot;` expression
-    /// 2. An explicit `default` word, in which case the field type&#39;s `Default::default()`
+    /// 1. An explicit `default = "..."` expression
+    /// 2. An explicit `default` word, in which case the field type's `Default::default()`
     ///    value is used
-    /// 3. Inherited from the field&#39;s value in the struct&#39;s `default` value.
+    /// 3. Inherited from the field's value in the struct's `default` value.
     ///
     /// This property only captures the first two, the third is computed in `FieldWithDefaults`.
     </span>default: <span class="prelude-ty">Option</span>&lt;DefaultExpression&gt;,
@@ -1285,7 +1286,7 @@
 
     <span class="doccomment">/// Resolve and check (post-parsing) options which come from multiple darling options
     ///
-    ///  * Check that we don&#39;t have a custom field type or builder *and* a default value
+    ///  * Check that we don't have a custom field type or builder *and* a default value
     ///  * Populate `self.field_attrs` and `self.setter_attrs` by draining `self.attrs`
     </span><span class="kw">fn </span>resolve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; darling::Result&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>errors = darling::Error::accumulator();
@@ -1305,19 +1306,19 @@
             </span><span class="kw">if </span><span class="self">self</span>.field.build.is_some() {
                 errors.push(
                     darling::Error::custom(
-                        <span class="string">r#&quot;#[builder(default)] and #[builder(field(build=&quot;...&quot;))] cannot be used together&quot;#</span>,
+                        <span class="string">r#"#[builder(default)] and #[builder(field(build="..."))] cannot be used together"#</span>,
                     )
                     .with_span(field_default),
                 );
             }
 
-            <span class="comment">// `field.type` being set means `default` will not be used, since we don&#39;t know how
-            // to check a custom field type for the absence of a value and therefore we&#39;ll never
+            <span class="comment">// `field.type` being set means `default` will not be used, since we don't know how
+            // to check a custom field type for the absence of a value and therefore we'll never
             // know that we should use the `default` value.
             </span><span class="kw">if </span><span class="self">self</span>.field.builder_type.is_some() {
                 errors.push(
                     darling::Error::custom(
-                        <span class="string">r#&quot;#[builder(default)] and #[builder(field(type=&quot;...&quot;))] cannot be used together&quot;#</span>,
+                        <span class="string">r#"#[builder(default)] and #[builder(field(type="..."))] cannot be used together"#</span>,
                     )
                     .with_span(field_default)
                 )
@@ -1327,8 +1328,8 @@
         errors.handle(distribute_and_unnest_attrs(
             <span class="kw-2">&amp;mut </span><span class="self">self</span>.attrs,
             <span class="kw-2">&amp;mut </span>[
-                (<span class="string">&quot;builder_field_attr&quot;</span>, <span class="kw-2">&amp;mut </span><span class="self">self</span>.field_attrs),
-                (<span class="string">&quot;builder_setter_attr&quot;</span>, <span class="kw-2">&amp;mut </span><span class="self">self</span>.setter_attrs),
+                (<span class="string">"builder_field_attr"</span>, <span class="kw-2">&amp;mut </span><span class="self">self</span>.field_attrs),
+                (<span class="string">"builder_setter_attr"</span>, <span class="kw-2">&amp;mut </span><span class="self">self</span>.setter_attrs),
             ],
         ));
 
@@ -1349,16 +1350,16 @@
 /// first distributing and then iterating through each of the output lists.
 ///
 /// Each item in `outputs` contains the attribute name unique to that output, and the `Vec` where all attributes for that output should be inserted.
-/// Attributes whose path matches any value in `outputs` will be added only to the first matching one, and will be &quot;unnested&quot;.
+/// Attributes whose path matches any value in `outputs` will be added only to the first matching one, and will be "unnested".
 /// Other attributes are not unnested, and simply copied for each decoratee.
 </span><span class="kw">fn </span>distribute_and_unnest_attrs(
     input: <span class="kw-2">&amp;mut </span>Vec&lt;Attribute&gt;,
-    outputs: <span class="kw-2">&amp;mut </span>[(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, <span class="kw-2">&amp;mut </span>Vec&lt;Attribute&gt;)],
+    outputs: <span class="kw-2">&amp;mut </span>[(<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, <span class="kw-2">&amp;mut </span>Vec&lt;Attribute&gt;)],
 ) -&gt; darling::Result&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>errors = <span class="macro">vec!</span>[];
 
     <span class="kw">for </span>(name, list) <span class="kw">in </span><span class="kw-2">&amp;*</span>outputs {
-        <span class="macro">assert!</span>(list.is_empty(), <span class="string">&quot;Output Vec for &#39;{}&#39; was not empty&quot;</span>, name);
+        <span class="macro">assert!</span>(list.is_empty(), <span class="string">"Output Vec for '{}' was not empty"</span>, name);
     }
 
     <span class="kw">for </span>attr <span class="kw">in </span>input.drain(..) {
@@ -1390,11 +1391,11 @@
         syn::AttrStyle::Outer =&gt; (),
         syn::AttrStyle::Inner(bang) =&gt; {
             <span class="kw">return </span><span class="prelude-val">Err</span>(darling::Error::unsupported_format(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-                <span class="string">&quot;{} must be an outer attribute&quot;</span>,
+                <span class="string">"{} must be an outer attribute"</span>,
                 attr.path
                     .get_ident()
                     .map(Ident::to_string)
-                    .unwrap_or_else(|| <span class="string">&quot;Attribute&quot;</span>.to_string())
+                    .unwrap_or_else(|| <span class="string">"Attribute"</span>.to_string())
             ))
             .with_span(bang));
         }
@@ -1410,7 +1411,7 @@
             <span class="kw">let </span>wrap_span = paren_token.span;
 
             <span class="comment">// Wrap up in #[ ] instead.
-            </span><span class="kw">let </span>pound = <span class="macro">Token!</span>[#](wrap_span); <span class="comment">// We can&#39;t write a literal # inside quote
+            </span><span class="kw">let </span>pound = <span class="macro">Token!</span>[#](wrap_span); <span class="comment">// We can't write a literal # inside quote
             </span><span class="kw">let </span>content: TokenStream = content.parse()<span class="question-mark">?</span>;
             <span class="kw">let </span>content = <span class="macro">quote_spanned!</span>(wrap_span=&gt; #pound [ #content ]);
 
@@ -1420,7 +1421,7 @@
             // We think this error can never actually happen, since `#[...]` ought to make just one Attribute
             </span><span class="kw">let </span>attr = <span class="kw">match </span>(attrs.next(), attrs.next()) {
                 (<span class="prelude-val">Some</span>(attr), <span class="prelude-val">None</span>) =&gt; attr,
-                <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(input.error(<span class="string">&quot;expected exactly one attribute&quot;</span>)),
+                <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(input.error(<span class="string">"expected exactly one attribute"</span>)),
             };
             <span class="prelude-val">Ok</span>(<span class="self">Self</span>(attr))
         }
@@ -1449,7 +1450,7 @@
 }
 
 <span class="kw">fn </span>default_create_empty() -&gt; Ident {
-    Ident::new(<span class="string">&quot;create_empty&quot;</span>, Span::call_site())
+    Ident::new(<span class="string">"create_empty"</span>, Span::call_site())
 }
 
 <span class="attr">#[derive(Debug, Clone, FromDeriveInput)]
@@ -1457,7 +1458,7 @@
     attributes(builder),
     forward_attrs(cfg, allow, builder_struct_attr, builder_impl_attr),
     supports(struct_named),
-    and_then = <span class="string">&quot;Self::unnest_attrs&quot;
+    and_then = <span class="string">"Self::unnest_attrs"
 </span>)]
 </span><span class="kw">pub struct </span>Options {
     ident: Ident,
@@ -1475,7 +1476,7 @@
     <span class="attr">#[darling(skip)]
     </span>impl_attrs: Vec&lt;Attribute&gt;,
 
-    <span class="doccomment">/// The visibility of the deriving struct. Do not confuse this with `#[builder(vis = &quot;...&quot;)]`,
+    <span class="doccomment">/// The visibility of the deriving struct. Do not confuse this with `#[builder(vis = "...")]`,
     /// which is received by `Options::visibility`.
     </span>vis: syn::Visibility,
 
@@ -1486,7 +1487,7 @@
 
     <span class="doccomment">/// The path to the root of the derive_builder crate used in generated
     /// code.
-    </span><span class="attr">#[darling(rename = <span class="string">&quot;crate&quot;</span>, default = <span class="string">&quot;default_crate_root&quot;</span>)]
+    </span><span class="attr">#[darling(rename = <span class="string">"crate"</span>, default = <span class="string">"default_crate_root"</span>)]
     </span>crate_root: Path,
 
     <span class="attr">#[darling(default)]
@@ -1503,7 +1504,7 @@
 
     <span class="doccomment">/// The ident of the inherent method which takes no arguments and returns
     /// an instance of the builder with all fields empty.
-    </span><span class="attr">#[darling(default = <span class="string">&quot;default_create_empty&quot;</span>)]
+    </span><span class="attr">#[darling(default = <span class="string">"default_create_empty"</span>)]
     </span>create_empty: Ident,
 
     <span class="doccomment">/// Setter options applied to all field setters in the struct.
@@ -1520,7 +1521,7 @@
     <span class="doccomment">/// Desired visibility of the builder struct.
     ///
     /// Do not confuse this with `Options::vis`, which is the visibility of the deriving struct.
-    </span><span class="attr">#[darling(rename = <span class="string">&quot;vis&quot;</span>)]
+    </span><span class="attr">#[darling(rename = <span class="string">"vis"</span>)]
     </span>visibility: <span class="prelude-ty">Option</span>&lt;syn::Visibility&gt;,
 
     <span class="doccomment">/// The parsed body of the derived struct.
@@ -1561,8 +1562,8 @@
         errors.handle(distribute_and_unnest_attrs(
             <span class="kw-2">&amp;mut </span><span class="self">self</span>.attrs,
             <span class="kw-2">&amp;mut </span>[
-                (<span class="string">&quot;builder_struct_attr&quot;</span>, <span class="kw-2">&amp;mut </span><span class="self">self</span>.struct_attrs),
-                (<span class="string">&quot;builder_impl_attr&quot;</span>, <span class="kw-2">&amp;mut </span><span class="self">self</span>.impl_attrs),
+                (<span class="string">"builder_struct_attr"</span>, <span class="kw-2">&amp;mut </span><span class="self">self</span>.struct_attrs),
+                (<span class="string">"builder_impl_attr"</span>, <span class="kw-2">&amp;mut </span><span class="self">self</span>.impl_attrs),
             ],
         ));
 
@@ -1587,22 +1588,22 @@
             <span class="kw">return </span>custom.clone();
         }
 
-        <span class="macro">format_ident!</span>(<span class="string">&quot;{}Builder&quot;</span>, <span class="self">self</span>.ident)
+        <span class="macro">format_ident!</span>(<span class="string">"{}Builder"</span>, <span class="self">self</span>.ident)
     }
 
     <span class="kw">pub fn </span>builder_error_ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Path {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(existing) = <span class="self">self</span>.build_fn.error.as_ref() {
             existing.clone()
         } <span class="kw">else if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>custom) = <span class="self">self</span>.name {
-            <span class="macro">format_ident!</span>(<span class="string">&quot;{}Error&quot;</span>, custom).into()
+            <span class="macro">format_ident!</span>(<span class="string">"{}Error"</span>, custom).into()
         } <span class="kw">else </span>{
-            <span class="macro">format_ident!</span>(<span class="string">&quot;{}BuilderError&quot;</span>, <span class="self">self</span>.ident).into()
+            <span class="macro">format_ident!</span>(<span class="string">"{}BuilderError"</span>, <span class="self">self</span>.ident).into()
         }
     }
 
     <span class="doccomment">/// The visibility of the builder struct.
     /// If a visibility was declared in attributes, that will be used;
-    /// otherwise the struct&#39;s own visibility will be used.
+    /// otherwise the struct's own visibility will be used.
     </span><span class="kw">pub fn </span>builder_vis(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cow&lt;syn::Visibility&gt; {
         <span class="self">self</span>.as_expressed_vis().unwrap_or(Cow::Borrowed(<span class="kw-2">&amp;</span><span class="self">self</span>.vis))
     }
@@ -1619,7 +1620,7 @@
         <span class="self">self</span>.data
             .as_ref()
             .take_struct()
-            .expect(<span class="string">&quot;Only structs supported&quot;</span>)
+            .expect(<span class="string">"Only structs supported"</span>)
             .fields
     }
 
@@ -1629,7 +1630,7 @@
         <span class="self">self</span>.pattern.requires_clone() || <span class="self">self</span>.fields().any(|f| f.pattern().requires_clone())
     }
 
-    <span class="doccomment">/// Get an iterator over the input struct&#39;s fields which pulls fallback
+    <span class="doccomment">/// Get an iterator over the input struct's fields which pulls fallback
     /// values from struct-level settings.
     </span><span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; FieldIter {
         FieldIter(<span class="self">self</span>, <span class="self">self</span>.raw_fields().into_iter())
@@ -1687,14 +1688,14 @@
 
 <span class="doccomment">/// Accessor for field data which can pull through options from the parent
 /// struct.
-</span><span class="kw">pub struct </span>FieldWithDefaults&lt;<span class="lifetime">&#39;a</span>&gt; {
-    parent: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Options,
-    field: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Field,
+</span><span class="kw">pub struct </span>FieldWithDefaults&lt;<span class="lifetime">'a</span>&gt; {
+    parent: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Options,
+    field: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Field,
 }
 
 <span class="doccomment">/// Accessors for parsed properties, with transparent pull-through from the
-/// parent struct&#39;s configuration.
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; FieldWithDefaults&lt;<span class="lifetime">&#39;a</span>&gt; {
+/// parent struct's configuration.
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; FieldWithDefaults&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Check if this field should emit a setter.
     </span><span class="kw">pub fn </span>setter_enabled(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.field
@@ -1713,7 +1714,7 @@
     }
 
     <span class="doccomment">/// Check if this field should emit a fallible setter.
-    /// This depends on the `TryFrom` trait, which hasn&#39;t yet stabilized.
+    /// This depends on the `TryFrom` trait, which hasn't yet stabilized.
     </span><span class="kw">pub fn </span>try_setter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.field.try_setter.is_present() || <span class="self">self</span>.parent.try_setter.is_present()
     }
@@ -1737,7 +1738,7 @@
         <span class="kw">let </span>ident = <span class="kw-2">&amp;</span><span class="self">self</span>.field.ident;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>prefix) = <span class="self">self</span>.setter_prefix() {
-            <span class="kw">return </span><span class="macro">format_ident!</span>(<span class="string">&quot;{}_{}&quot;</span>, prefix, ident.as_ref().unwrap());
+            <span class="kw">return </span><span class="macro">format_ident!</span>(<span class="string">"{}_{}"</span>, prefix, ident.as_ref().unwrap());
         }
 
         ident.clone().unwrap()
@@ -1777,7 +1778,7 @@
         <span class="self">self</span>.field
             .ident
             .as_ref()
-            .expect(<span class="string">&quot;Tuple structs are not supported&quot;</span>)
+            .expect(<span class="string">"Tuple structs are not supported"</span>)
     }
 
     <span class="kw">pub fn </span>field_vis(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cow&lt;syn::Visibility&gt; {
@@ -1787,7 +1788,7 @@
             .or_else(
                 <span class="comment">// Disabled fields become a PhantomData in the builder.  We make that field
                 // non-public, even if the rest of the builder is public, since this field is just
-                // there to make sure the struct&#39;s generics are properly handled.
+                // there to make sure the struct's generics are properly handled.
                 </span>|| {
                     <span class="kw">if </span><span class="self">self</span>.field_enabled() {
                         <span class="prelude-val">None
@@ -1800,7 +1801,7 @@
             .unwrap_or(Cow::Owned(syn::Visibility::Inherited))
     }
 
-    <span class="kw">pub fn </span>field_type(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; BuilderFieldType&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>field_type(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; BuilderFieldType&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">if </span>!<span class="self">self</span>.field_enabled() {
             BuilderFieldType::Phantom(<span class="kw-2">&amp;</span><span class="self">self</span>.field.ty)
         } <span class="kw">else if let </span><span class="prelude-val">Some</span>(custom_ty) = <span class="self">self</span>.field.field.builder_type.as_ref() {
@@ -1810,7 +1811,7 @@
         }
     }
 
-    <span class="kw">pub fn </span>conversion(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; FieldConversion&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>conversion(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; FieldConversion&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">match </span>(<span class="kw-2">&amp;</span><span class="self">self</span>.field.field.builder_type, <span class="kw-2">&amp;</span><span class="self">self</span>.field.field.build) {
             (<span class="kw">_</span>, <span class="prelude-val">Some</span>(block)) =&gt; FieldConversion::Block(block),
             (<span class="prelude-val">Some</span>(<span class="kw">_</span>), <span class="prelude-val">None</span>) =&gt; FieldConversion::Move,
@@ -1832,9 +1833,9 @@
 }
 
 <span class="doccomment">/// Converters to codegen structs
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; FieldWithDefaults&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; FieldWithDefaults&lt;<span class="lifetime">'a</span>&gt; {
     <span class="doccomment">/// Returns a `Setter` according to the options.
-    </span><span class="kw">pub fn </span>as_setter(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; Setter&lt;<span class="lifetime">&#39;a</span>&gt; {
+    </span><span class="kw">pub fn </span>as_setter(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; Setter&lt;<span class="lifetime">'a</span>&gt; {
         Setter {
             crate_root: <span class="kw-2">&amp;</span><span class="self">self</span>.parent.crate_root,
             setter_enabled: <span class="self">self</span>.setter_enabled(),
@@ -1857,7 +1858,7 @@
     /// # Panics
     ///
     /// if `default_expression` can not be parsed as `Block`.
-    </span><span class="kw">pub fn </span>as_initializer(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; Initializer&lt;<span class="lifetime">&#39;a</span>&gt; {
+    </span><span class="kw">pub fn </span>as_initializer(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; Initializer&lt;<span class="lifetime">'a</span>&gt; {
         Initializer {
             crate_root: <span class="kw-2">&amp;</span><span class="self">self</span>.parent.crate_root,
             field_enabled: <span class="self">self</span>.field_enabled(),
@@ -1875,7 +1876,7 @@
         }
     }
 
-    <span class="kw">pub fn </span>as_builder_field(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; BuilderField&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>as_builder_field(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; BuilderField&lt;<span class="lifetime">'a</span>&gt; {
         BuilderField {
             crate_root: <span class="kw-2">&amp;</span><span class="self">self</span>.parent.crate_root,
             field_ident: <span class="self">self</span>.field_ident(),
@@ -1886,10 +1887,10 @@
     }
 }
 
-<span class="kw">pub struct </span>FieldIter&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Options, IntoIter&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Field&gt;);
+<span class="kw">pub struct </span>FieldIter&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Options, IntoIter&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Field&gt;);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Iterator <span class="kw">for </span>FieldIter&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">type </span>Item = FieldWithDefaults&lt;<span class="lifetime">&#39;a</span>&gt;;
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Iterator <span class="kw">for </span>FieldIter&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">type </span>Item = FieldWithDefaults&lt;<span class="lifetime">'a</span>&gt;;
 
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
         <span class="self">self</span>.<span class="number">1</span>.next().map(|field| FieldWithDefaults {

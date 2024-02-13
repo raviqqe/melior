@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.20.0/src/html.rs`."><title>html.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.21.0/src/html.rs`."><title>html.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1035,6 +1036,17 @@
 <a href="#1035" id="1035">1035</a>
 <a href="#1036" id="1036">1036</a>
 <a href="#1037" id="1037">1037</a>
+<a href="#1038" id="1038">1038</a>
+<a href="#1039" id="1039">1039</a>
+<a href="#1040" id="1040">1040</a>
+<a href="#1041" id="1041">1041</a>
+<a href="#1042" id="1042">1042</a>
+<a href="#1043" id="1043">1043</a>
+<a href="#1044" id="1044">1044</a>
+<a href="#1045" id="1045">1045</a>
+<a href="#1046" id="1046">1046</a>
+<a href="#1047" id="1047">1047</a>
+<a href="#1048" id="1048">1048</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The HTML renderer for the CommonMark AST, as well as helper functions.
 </span><span class="kw">use </span><span class="kw">crate</span>::ctype::isspace;
 <span class="kw">use </span><span class="kw">crate</span>::nodes::{
@@ -1053,8 +1065,8 @@
 <span class="kw">use </span><span class="kw">crate</span>::adapters::HeadingMeta;
 
 <span class="doccomment">/// Formats an AST as HTML, modified by the given options.
-</span><span class="kw">pub fn </span>format_document&lt;<span class="lifetime">&#39;a</span>&gt;(
-    root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub fn </span>format_document&lt;<span class="lifetime">'a</span>&gt;(
+    root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     options: <span class="kw-2">&amp;</span>Options,
     output: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write,
 ) -&gt; io::Result&lt;()&gt; {
@@ -1062,8 +1074,8 @@
 }
 
 <span class="doccomment">/// Formats an AST as HTML, modified by the given options. Accepts custom plugins.
-</span><span class="kw">pub fn </span>format_document_with_plugins&lt;<span class="lifetime">&#39;a</span>&gt;(
-    root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub fn </span>format_document_with_plugins&lt;<span class="lifetime">'a</span>&gt;(
+    root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;,
     options: <span class="kw-2">&amp;</span>Options,
     output: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write,
     plugins: <span class="kw-2">&amp;</span>Plugins,
@@ -1075,17 +1087,17 @@
     <span class="kw">let </span><span class="kw-2">mut </span>f = HtmlFormatter::new(options, <span class="kw-2">&amp;mut </span>writer, plugins);
     f.format(root, <span class="bool-val">false</span>)<span class="question-mark">?</span>;
     <span class="kw">if </span>f.footnote_ix &gt; <span class="number">0 </span>{
-        f.output.write_all(<span class="string">b&quot;&lt;/ol&gt;\n&lt;/section&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+        f.output.write_all(<span class="string">b"&lt;/ol&gt;\n&lt;/section&gt;\n"</span>)<span class="question-mark">?</span>;
     }
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">struct </span>WriteWithLast&lt;<span class="lifetime">&#39;w</span>&gt; {
-    output: <span class="kw-2">&amp;</span><span class="lifetime">&#39;w </span><span class="kw-2">mut </span><span class="kw">dyn </span>Write,
+<span class="kw">struct </span>WriteWithLast&lt;<span class="lifetime">'w</span>&gt; {
+    output: <span class="kw-2">&amp;</span><span class="lifetime">'w </span><span class="kw-2">mut </span><span class="kw">dyn </span>Write,
     last_was_lf: Cell&lt;bool&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;w</span>&gt; Write <span class="kw">for </span>WriteWithLast&lt;<span class="lifetime">&#39;w</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'w</span>&gt; Write <span class="kw">for </span>WriteWithLast&lt;<span class="lifetime">'w</span>&gt; {
     <span class="kw">fn </span>flush(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; io::Result&lt;()&gt; {
         <span class="self">self</span>.output.flush()
     }
@@ -1112,10 +1124,10 @@
 ///
 /// let mut anchorizer = Anchorizer::new();
 ///
-/// // First &quot;stuff&quot; is unsuffixed.
-/// assert_eq!(&quot;stuff&quot;.to_string(), anchorizer.anchorize(&quot;Stuff&quot;.to_string()));
-/// // Second &quot;stuff&quot; has &quot;-1&quot; appended to make it unique.
-/// assert_eq!(&quot;stuff-1&quot;.to_string(), anchorizer.anchorize(&quot;Stuff&quot;.to_string()));
+/// // First "stuff" is unsuffixed.
+/// assert_eq!("stuff".to_string(), anchorizer.anchorize("Stuff".to_string()));
+/// // Second "stuff" has "-1" appended to make it unique.
+/// assert_eq!("stuff-1".to_string(), anchorizer.anchorize("Stuff".to_string()));
 /// ```
 </span><span class="attr">#[derive(Debug, Default)]
 </span><span class="kw">pub struct </span>Anchorizer(HashSet&lt;String&gt;);
@@ -1136,23 +1148,23 @@
     ///
     /// let mut anchorizer = Anchorizer::new();
     ///
-    /// let source = &quot;Ticks aren&#39;t in&quot;;
+    /// let source = "Ticks aren't in";
     ///
-    /// assert_eq!(&quot;ticks-arent-in&quot;.to_string(), anchorizer.anchorize(source.to_string()));
+    /// assert_eq!("ticks-arent-in".to_string(), anchorizer.anchorize(source.to_string()));
     /// ```
     </span><span class="kw">pub fn </span>anchorize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, header: String) -&gt; String {
         <span class="kw">static </span>REJECTED_CHARS: Lazy&lt;Regex&gt; =
-            Lazy::new(|| Regex::new(<span class="string">r&quot;[^\p{L}\p{M}\p{N}\p{Pc} -]&quot;</span>).unwrap());
+            Lazy::new(|| Regex::new(<span class="string">r"[^\p{L}\p{M}\p{N}\p{Pc} -]"</span>).unwrap());
 
         <span class="kw">let </span><span class="kw-2">mut </span>id = header.to_lowercase();
-        id = REJECTED_CHARS.replace_all(<span class="kw-2">&amp;</span>id, <span class="string">&quot;&quot;</span>).replace(<span class="string">&#39; &#39;</span>, <span class="string">&quot;-&quot;</span>);
+        id = REJECTED_CHARS.replace_all(<span class="kw-2">&amp;</span>id, <span class="string">""</span>).replace(<span class="string">' '</span>, <span class="string">"-"</span>);
 
         <span class="kw">let </span><span class="kw-2">mut </span>uniq = <span class="number">0</span>;
         id = <span class="kw">loop </span>{
             <span class="kw">let </span>anchor = <span class="kw">if </span>uniq == <span class="number">0 </span>{
                 Cow::from(<span class="kw-2">&amp;</span>id)
             } <span class="kw">else </span>{
-                Cow::from(<span class="macro">format!</span>(<span class="string">&quot;{}-{}&quot;</span>, id, uniq))
+                Cow::from(<span class="macro">format!</span>(<span class="string">"{}-{}"</span>, id, uniq))
             };
 
             <span class="kw">if </span>!<span class="self">self</span>.<span class="number">0</span>.contains(<span class="kw-2">&amp;*</span>anchor) {
@@ -1166,13 +1178,13 @@
     }
 }
 
-<span class="kw">struct </span>HtmlFormatter&lt;<span class="lifetime">&#39;o</span>&gt; {
-    output: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span><span class="kw-2">mut </span>WriteWithLast&lt;<span class="lifetime">&#39;o</span>&gt;,
-    options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options,
+<span class="kw">struct </span>HtmlFormatter&lt;<span class="lifetime">'o</span>&gt; {
+    output: <span class="kw-2">&amp;</span><span class="lifetime">'o </span><span class="kw-2">mut </span>WriteWithLast&lt;<span class="lifetime">'o</span>&gt;,
+    options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options,
     anchorizer: Anchorizer,
     footnote_ix: u32,
     written_footnote_ix: u32,
-    plugins: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Plugins&lt;<span class="lifetime">&#39;o</span>&gt;,
+    plugins: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Plugins&lt;<span class="lifetime">'o</span>&gt;,
 }
 
 <span class="attr">#[rustfmt::skip]
@@ -1213,23 +1225,23 @@
 
 <span class="kw">fn </span>tagfilter(literal: <span class="kw-2">&amp;</span>[u8]) -&gt; bool {
     <span class="kw">static </span>TAGFILTER_BLACKLIST: [<span class="kw-2">&amp;</span>str; <span class="number">9</span>] = [
-        <span class="string">&quot;title&quot;</span>,
-        <span class="string">&quot;textarea&quot;</span>,
-        <span class="string">&quot;style&quot;</span>,
-        <span class="string">&quot;xmp&quot;</span>,
-        <span class="string">&quot;iframe&quot;</span>,
-        <span class="string">&quot;noembed&quot;</span>,
-        <span class="string">&quot;noframes&quot;</span>,
-        <span class="string">&quot;script&quot;</span>,
-        <span class="string">&quot;plaintext&quot;</span>,
+        <span class="string">"title"</span>,
+        <span class="string">"textarea"</span>,
+        <span class="string">"style"</span>,
+        <span class="string">"xmp"</span>,
+        <span class="string">"iframe"</span>,
+        <span class="string">"noembed"</span>,
+        <span class="string">"noframes"</span>,
+        <span class="string">"script"</span>,
+        <span class="string">"plaintext"</span>,
     ];
 
-    <span class="kw">if </span>literal.len() &lt; <span class="number">3 </span>|| literal[<span class="number">0</span>] != <span class="string">b&#39;&lt;&#39; </span>{
+    <span class="kw">if </span>literal.len() &lt; <span class="number">3 </span>|| literal[<span class="number">0</span>] != <span class="string">b'&lt;' </span>{
         <span class="kw">return </span><span class="bool-val">false</span>;
     }
 
     <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
-    <span class="kw">if </span>literal[i] == <span class="string">b&#39;/&#39; </span>{
+    <span class="kw">if </span>literal[i] == <span class="string">b'/' </span>{
         i += <span class="number">1</span>;
     }
 
@@ -1238,8 +1250,8 @@
         <span class="kw">if </span>lc.starts_with(t) {
             <span class="kw">let </span>j = i + t.len();
             <span class="kw">return </span>isspace(literal[j])
-                || literal[j] == <span class="string">b&#39;&gt;&#39;
-                </span>|| (literal[j] == <span class="string">b&#39;/&#39; </span>&amp;&amp; literal.len() &gt;= j + <span class="number">2 </span>&amp;&amp; literal[j + <span class="number">1</span>] == <span class="string">b&#39;&gt;&#39;</span>);
+                || literal[j] == <span class="string">b'&gt;'
+                </span>|| (literal[j] == <span class="string">b'/' </span>&amp;&amp; literal.len() &gt;= j + <span class="number">2 </span>&amp;&amp; literal[j + <span class="number">1</span>] == <span class="string">b'&gt;'</span>);
         }
     }
 
@@ -1252,7 +1264,7 @@
 
     <span class="kw">while </span>i &lt; size {
         <span class="kw">let </span>org = i;
-        <span class="kw">while </span>i &lt; size &amp;&amp; input[i] != <span class="string">b&#39;&lt;&#39; </span>{
+        <span class="kw">while </span>i &lt; size &amp;&amp; input[i] != <span class="string">b'&lt;' </span>{
             i += <span class="number">1</span>;
         }
 
@@ -1265,9 +1277,9 @@
         }
 
         <span class="kw">if </span>tagfilter(<span class="kw-2">&amp;</span>input[i..]) {
-            o.write_all(<span class="string">b&quot;&amp;lt;&quot;</span>)<span class="question-mark">?</span>;
+            o.write_all(<span class="string">b"&amp;lt;"</span>)<span class="question-mark">?</span>;
         } <span class="kw">else </span>{
-            o.write_all(<span class="string">b&quot;&lt;&quot;</span>)<span class="question-mark">?</span>;
+            o.write_all(<span class="string">b"&lt;"</span>)<span class="question-mark">?</span>;
         }
 
         i += <span class="number">1</span>;
@@ -1285,7 +1297,7 @@
 ///
 /// Namely:
 ///
-/// * U+0022 QUOTATION MARK &quot; is rendered as &amp;quot;
+/// * U+0022 QUOTATION MARK " is rendered as &amp;quot;
 /// * U+0026 AMPERSAND &amp; is rendered as &amp;amp;
 /// * U+003C LESS-THAN SIGN &lt; is rendered as &amp;lt;
 /// * U+003E GREATER-THAN SIGN &gt; is rendered as &amp;gt;
@@ -1298,10 +1310,10 @@
     <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>byte) <span class="kw">in </span>buffer.iter().enumerate() {
         <span class="kw">if </span>NEEDS_ESCAPED[byte <span class="kw">as </span>usize] {
             <span class="kw">let </span>esc: <span class="kw-2">&amp;</span>[u8] = <span class="kw">match </span>byte {
-                <span class="string">b&#39;&quot;&#39; </span>=&gt; <span class="string">b&quot;&amp;quot;&quot;</span>,
-                <span class="string">b&#39;&amp;&#39; </span>=&gt; <span class="string">b&quot;&amp;amp;&quot;</span>,
-                <span class="string">b&#39;&lt;&#39; </span>=&gt; <span class="string">b&quot;&amp;lt;&quot;</span>,
-                <span class="string">b&#39;&gt;&#39; </span>=&gt; <span class="string">b&quot;&amp;gt;&quot;</span>,
+                <span class="string">b'"' </span>=&gt; <span class="string">b"&amp;quot;"</span>,
+                <span class="string">b'&amp;' </span>=&gt; <span class="string">b"&amp;amp;"</span>,
+                <span class="string">b'&lt;' </span>=&gt; <span class="string">b"&amp;lt;"</span>,
+                <span class="string">b'&gt;' </span>=&gt; <span class="string">b"&amp;gt;"</span>,
                 <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
             };
             output.write_all(<span class="kw-2">&amp;</span>buffer[offset..i])<span class="question-mark">?</span>;
@@ -1319,10 +1331,10 @@
 /// Namely:
 ///
 /// * U+0026 AMPERSAND &amp; is rendered as &amp;amp;
-/// * U+0027 APOSTROPHE &#39; is rendered as &amp;#x27;
+/// * U+0027 APOSTROPHE ' is rendered as &amp;#x27;
 /// * Alphanumeric and a range of non-URL safe characters.
 ///
-/// The inclusion of characters like &quot;%&quot; in those which are not escaped is
+/// The inclusion of characters like "%" in those which are not escaped is
 /// explained somewhat here:
 ///
 /// https://github.com/github/cmark-gfm/blob/c32ef78bae851cb83b7ad52d0fbff880acdcd44a/src/houdini_href_e.c#L7-L31
@@ -1333,16 +1345,16 @@
 /// [hi](https://ddg.gg/?q=a%20b)
 /// ```
 ///
-/// We assume they actually want the query string &quot;?q=a%20b&quot;, a search for
-/// the string &quot;a b&quot;, rather than &quot;?q=a%2520b&quot;, a search for the literal
-/// string &quot;a%20b&quot;.
+/// We assume they actually want the query string "?q=a%20b", a search for
+/// the string "a b", rather than "?q=a%2520b", a search for the literal
+/// string "a%20b".
 </span><span class="kw">pub fn </span>escape_href(output: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write, buffer: <span class="kw-2">&amp;</span>[u8]) -&gt; io::Result&lt;()&gt; {
     <span class="kw">static </span>HREF_SAFE: Lazy&lt;[bool; <span class="number">256</span>]&gt; = Lazy::new(|| {
         <span class="kw">let </span><span class="kw-2">mut </span>a = [<span class="bool-val">false</span>; <span class="number">256</span>];
-        <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span><span class="string">b&quot;-_.+!*(),%#@?=;:/,+$~abcdefghijklmnopqrstuvwxyz&quot;</span>.iter() {
+        <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span><span class="string">b"-_.+!*(),%#@?=;:/,+$~abcdefghijklmnopqrstuvwxyz"</span>.iter() {
             a[c <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
-        <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span><span class="string">b&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&quot;</span>.iter() {
+        <span class="kw">for </span><span class="kw-2">&amp;</span>c <span class="kw">in </span><span class="string">b"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"</span>.iter() {
             a[c <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         }
         a
@@ -1366,13 +1378,13 @@
         }
 
         <span class="kw">match </span>buffer[i] <span class="kw">as </span>char {
-            <span class="string">&#39;&amp;&#39; </span>=&gt; {
-                output.write_all(<span class="string">b&quot;&amp;amp;&quot;</span>)<span class="question-mark">?</span>;
+            <span class="string">'&amp;' </span>=&gt; {
+                output.write_all(<span class="string">b"&amp;amp;"</span>)<span class="question-mark">?</span>;
             }
-            <span class="string">&#39;\&#39;&#39; </span>=&gt; {
-                output.write_all(<span class="string">b&quot;&amp;#x27;&quot;</span>)<span class="question-mark">?</span>;
+            <span class="string">'\'' </span>=&gt; {
+                output.write_all(<span class="string">b"&amp;#x27;"</span>)<span class="question-mark">?</span>;
             }
-            <span class="kw">_ </span>=&gt; <span class="macro">write!</span>(output, <span class="string">&quot;%{:02X}&quot;</span>, buffer[i])<span class="question-mark">?</span>,
+            <span class="kw">_ </span>=&gt; <span class="macro">write!</span>(output, <span class="string">"%{:02X}"</span>, buffer[i])<span class="question-mark">?</span>,
         }
 
         i += <span class="number">1</span>;
@@ -1391,18 +1403,18 @@
 <span class="kw">where
     </span>Str: AsRef&lt;str&gt;,
 {
-    <span class="macro">write!</span>(output, <span class="string">&quot;&lt;{}&quot;</span>, tag)<span class="question-mark">?</span>;
+    <span class="macro">write!</span>(output, <span class="string">"&lt;{}"</span>, tag)<span class="question-mark">?</span>;
     <span class="kw">for </span>(attr, val) <span class="kw">in </span>attributes {
-        <span class="macro">write!</span>(output, <span class="string">&quot; {}=\&quot;&quot;</span>, attr.as_ref())<span class="question-mark">?</span>;
+        <span class="macro">write!</span>(output, <span class="string">" {}=\""</span>, attr.as_ref())<span class="question-mark">?</span>;
         escape(output, val.as_ref().as_bytes())<span class="question-mark">?</span>;
-        output.write_all(<span class="string">b&quot;\&quot;&quot;</span>)<span class="question-mark">?</span>;
+        output.write_all(<span class="string">b"\""</span>)<span class="question-mark">?</span>;
     }
-    output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+    output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;o</span>&gt; HtmlFormatter&lt;<span class="lifetime">&#39;o</span>&gt; {
-    <span class="kw">fn </span>new(options: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Options, output: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span><span class="kw-2">mut </span>WriteWithLast&lt;<span class="lifetime">&#39;o</span>&gt;, plugins: <span class="kw-2">&amp;</span><span class="lifetime">&#39;o </span>Plugins) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'o</span>&gt; HtmlFormatter&lt;<span class="lifetime">'o</span>&gt; {
+    <span class="kw">fn </span>new(options: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Options, output: <span class="kw-2">&amp;</span><span class="lifetime">'o </span><span class="kw-2">mut </span>WriteWithLast&lt;<span class="lifetime">'o</span>&gt;, plugins: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Plugins) -&gt; <span class="self">Self </span>{
         HtmlFormatter {
             options,
             output,
@@ -1415,7 +1427,7 @@
 
     <span class="kw">fn </span>cr(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; io::Result&lt;()&gt; {
         <span class="kw">if </span>!<span class="self">self</span>.output.last_was_lf.get() {
-            <span class="self">self</span>.output.write_all(<span class="string">b&quot;\n&quot;</span>)<span class="question-mark">?</span>;
+            <span class="self">self</span>.output.write_all(<span class="string">b"\n"</span>)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -1428,7 +1440,7 @@
         escape_href(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, buffer)
     }
 
-    <span class="kw">fn </span>format&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, plain: bool) -&gt; io::Result&lt;()&gt; {
+    <span class="kw">fn </span>format&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, plain: bool) -&gt; io::Result&lt;()&gt; {
         <span class="comment">// Traverse the AST iteratively using a work stack, with pre- and
         // post-child-traversal phases. During pre-order traversal render the
         // opening tags, then push the node back onto the stack for the
@@ -1452,7 +1464,7 @@
                                 <span class="self">self</span>.escape(literal.as_bytes())<span class="question-mark">?</span>;
                             }
                             NodeValue::LineBreak | NodeValue::SoftBreak =&gt; {
-                                <span class="self">self</span>.output.write_all(<span class="string">b&quot; &quot;</span>)<span class="question-mark">?</span>;
+                                <span class="self">self</span>.output.write_all(<span class="string">b" "</span>)<span class="question-mark">?</span>;
                             }
                             <span class="kw">_ </span>=&gt; (),
                         }
@@ -1476,12 +1488,12 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>collect_text&lt;<span class="lifetime">&#39;a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, output: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) {
+    <span class="kw">fn </span>collect_text&lt;<span class="lifetime">'a</span>&gt;(node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, output: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) {
         <span class="kw">match </span>node.data.borrow().value {
             NodeValue::Text(<span class="kw-2">ref </span>literal) | NodeValue::Code(NodeCode { <span class="kw-2">ref </span>literal, .. }) =&gt; {
                 output.extend_from_slice(literal.as_bytes())
             }
-            NodeValue::LineBreak | NodeValue::SoftBreak =&gt; output.push(<span class="string">b&#39; &#39;</span>),
+            NodeValue::LineBreak | NodeValue::SoftBreak =&gt; output.push(<span class="string">b' '</span>),
             <span class="kw">_ </span>=&gt; {
                 <span class="kw">for </span>n <span class="kw">in </span>node.children() {
                     <span class="self">Self</span>::collect_text(n, output);
@@ -1490,89 +1502,89 @@
         }
     }
 
-    <span class="kw">fn </span>format_node&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;, entering: bool) -&gt; io::Result&lt;bool&gt; {
+    <span class="kw">fn </span>format_node&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;, entering: bool) -&gt; io::Result&lt;bool&gt; {
         <span class="kw">match </span>node.data.borrow().value {
             NodeValue::Document =&gt; (),
             NodeValue::FrontMatter(<span class="kw">_</span>) =&gt; (),
             NodeValue::BlockQuote =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;blockquote&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;blockquote"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;\n"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/blockquote&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/blockquote&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::List(<span class="kw-2">ref </span>nl) =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
                     <span class="kw">if </span>nl.list_type == ListType::Bullet {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;ul&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;ul"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&gt;\n"</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else if </span>nl.start == <span class="number">1 </span>{
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;ol&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;ol"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&gt;\n"</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else </span>{
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;ol&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;ol"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                        <span class="macro">writeln!</span>(<span class="self">self</span>.output, <span class="string">&quot; start=\&quot;{}\&quot;&gt;&quot;</span>, nl.start)<span class="question-mark">?</span>;
+                        <span class="macro">writeln!</span>(<span class="self">self</span>.output, <span class="string">" start=\"{}\"&gt;"</span>, nl.start)<span class="question-mark">?</span>;
                     }
                 } <span class="kw">else if </span>nl.list_type == ListType::Bullet {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/ul&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/ul&gt;\n"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/ol&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/ol&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::Item(..) =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;li&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;li"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/li&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/li&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::DescriptionList =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;dl&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;dl"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/dl&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/dl&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::DescriptionItem(..) =&gt; (),
             NodeValue::DescriptionTerm =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;dt&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;dt"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/dt&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/dt&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::DescriptionDetails =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;dd&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;dd"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/dd&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/dd&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::Heading(<span class="kw-2">ref </span>nch) =&gt; <span class="kw">match </span><span class="self">self</span>.plugins.render.heading_adapter {
                 <span class="prelude-val">None </span>=&gt; {
                     <span class="kw">if </span>entering {
                         <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                        <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot;&lt;h{}&quot;</span>, nch.level)<span class="question-mark">?</span>;
+                        <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">"&lt;h{}"</span>, nch.level)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
 
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>prefix) = <span class="self">self</span>.options.extension.header_ids {
                             <span class="kw">let </span><span class="kw-2">mut </span>text_content = Vec::with_capacity(<span class="number">20</span>);
@@ -1582,14 +1594,14 @@
                             id = <span class="self">self</span>.anchorizer.anchorize(id);
                             <span class="macro">write!</span>(
                                         <span class="self">self</span>.output,
-                                        <span class="string">&quot;&lt;a href=\&quot;#{}\&quot; aria-hidden=\&quot;true\&quot; class=\&quot;anchor\&quot; id=\&quot;{}{}\&quot;&gt;&lt;/a&gt;&quot;</span>,
+                                        <span class="string">"&lt;a href=\"#{}\" aria-hidden=\"true\" class=\"anchor\" id=\"{}{}\"&gt;&lt;/a&gt;"</span>,
                                         id,
                                         prefix,
                                         id
                                     )<span class="question-mark">?</span>;
                         }
                     } <span class="kw">else </span>{
-                        <span class="macro">writeln!</span>(<span class="self">self</span>.output, <span class="string">&quot;&lt;/h{}&gt;&quot;</span>, nch.level)<span class="question-mark">?</span>;
+                        <span class="macro">writeln!</span>(<span class="self">self</span>.output, <span class="string">"&lt;/h{}&gt;"</span>, nch.level)<span class="question-mark">?</span>;
                     }
                 }
                 <span class="prelude-val">Some</span>(adapter) =&gt; {
@@ -1638,19 +1650,19 @@
                         <span class="kw">let </span>info_str = str::from_utf8(<span class="kw-2">&amp;</span>info[first_tag..]).unwrap().trim();
 
                         <span class="kw">if </span><span class="self">self</span>.options.render.github_pre_lang {
-                            pre_attributes.insert(String::from(<span class="string">&quot;lang&quot;</span>), lang_str.to_string());
+                            pre_attributes.insert(String::from(<span class="string">"lang"</span>), lang_str.to_string());
 
                             <span class="kw">if </span><span class="self">self</span>.options.render.full_info_string &amp;&amp; !info_str.is_empty() {
                                 pre_attributes
-                                    .insert(String::from(<span class="string">&quot;data-meta&quot;</span>), info_str.trim().to_string());
+                                    .insert(String::from(<span class="string">"data-meta"</span>), info_str.trim().to_string());
                             }
                         } <span class="kw">else </span>{
-                            code_attr = <span class="macro">format!</span>(<span class="string">&quot;language-{}&quot;</span>, lang_str);
-                            code_attributes.insert(String::from(<span class="string">&quot;class&quot;</span>), code_attr);
+                            code_attr = <span class="macro">format!</span>(<span class="string">"language-{}"</span>, lang_str);
+                            code_attributes.insert(String::from(<span class="string">"class"</span>), code_attr);
 
                             <span class="kw">if </span><span class="self">self</span>.options.render.full_info_string &amp;&amp; !info_str.is_empty() {
                                 code_attributes
-                                    .insert(String::from(<span class="string">&quot;data-meta&quot;</span>), info_str.to_string());
+                                    .insert(String::from(<span class="string">"data-meta"</span>), info_str.to_string());
                             }
                         }
                     }
@@ -1658,17 +1670,17 @@
                     <span class="kw">if </span><span class="self">self</span>.options.render.sourcepos {
                         <span class="kw">let </span>ast = node.data.borrow();
                         pre_attributes
-                            .insert(<span class="string">&quot;data-sourcepos&quot;</span>.to_string(), ast.sourcepos.to_string());
+                            .insert(<span class="string">"data-sourcepos"</span>.to_string(), ast.sourcepos.to_string());
                     }
 
                     <span class="kw">match </span><span class="self">self</span>.plugins.render.codefence_syntax_highlighter {
                         <span class="prelude-val">None </span>=&gt; {
-                            write_opening_tag(<span class="self">self</span>.output, <span class="string">&quot;pre&quot;</span>, pre_attributes)<span class="question-mark">?</span>;
-                            write_opening_tag(<span class="self">self</span>.output, <span class="string">&quot;code&quot;</span>, code_attributes)<span class="question-mark">?</span>;
+                            write_opening_tag(<span class="self">self</span>.output, <span class="string">"pre"</span>, pre_attributes)<span class="question-mark">?</span>;
+                            write_opening_tag(<span class="self">self</span>.output, <span class="string">"code"</span>, code_attributes)<span class="question-mark">?</span>;
 
                             <span class="self">self</span>.escape(literal)<span class="question-mark">?</span>;
 
-                            <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/code&gt;&lt;/pre&gt;\n&quot;</span>)<span class="question-mark">?
+                            <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/code&gt;&lt;/pre&gt;\n"</span>)<span class="question-mark">?
                         </span>}
                         <span class="prelude-val">Some</span>(highlighter) =&gt; {
                             highlighter.write_pre_tag(<span class="self">self</span>.output, pre_attributes)<span class="question-mark">?</span>;
@@ -1683,7 +1695,7 @@
                                 <span class="kw-2">&amp;</span>ncb.literal,
                             )<span class="question-mark">?</span>;
 
-                            <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/code&gt;&lt;/pre&gt;\n&quot;</span>)<span class="question-mark">?
+                            <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/code&gt;&lt;/pre&gt;\n"</span>)<span class="question-mark">?
                         </span>}
                     }
                 }
@@ -1696,7 +1708,7 @@
                     <span class="kw">if </span><span class="self">self</span>.options.render.escape {
                         <span class="self">self</span>.escape(literal)<span class="question-mark">?</span>;
                     } <span class="kw">else if </span>!<span class="self">self</span>.options.render.unsafe_ {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;!-- raw HTML omitted --&gt;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;!-- raw HTML omitted --&gt;"</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else if </span><span class="self">self</span>.options.extension.tagfilter {
                         tagfilter_block(literal, <span class="kw-2">&amp;mut </span><span class="self">self</span>.output)<span class="question-mark">?</span>;
                     } <span class="kw">else </span>{
@@ -1708,9 +1720,9 @@
             NodeValue::ThematicBreak =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;hr&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;hr"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; /&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" /&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::Paragraph =&gt; {
@@ -1732,19 +1744,19 @@
                 <span class="kw">if </span>!tight {
                     <span class="kw">if </span>entering {
                         <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;p&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;p"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else </span>{
                         <span class="kw">if let </span>NodeValue::FootnoteDefinition(nfd) =
                             <span class="kw-2">&amp;</span>node.parent().unwrap().data.borrow().value
                         {
                             <span class="kw">if </span>node.next_sibling().is_none() {
-                                <span class="self">self</span>.output.write_all(<span class="string">b&quot; &quot;</span>)<span class="question-mark">?</span>;
+                                <span class="self">self</span>.output.write_all(<span class="string">b" "</span>)<span class="question-mark">?</span>;
                                 <span class="self">self</span>.put_footnote_backref(nfd)<span class="question-mark">?</span>;
                             }
                         }
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/p&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/p&gt;\n"</span>)<span class="question-mark">?</span>;
                     }
                 }
             }
@@ -1755,29 +1767,29 @@
             }
             NodeValue::LineBreak =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;br&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;br"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; /&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" /&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::SoftBreak =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="kw">if </span><span class="self">self</span>.options.render.hardbreaks {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;br&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;br"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot; /&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b" /&gt;\n"</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else </span>{
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;\n&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"\n"</span>)<span class="question-mark">?</span>;
                     }
                 }
             }
             NodeValue::Code(NodeCode { <span class="kw-2">ref </span>literal, .. }) =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;code&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;code"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape(literal.as_bytes())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/code&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/code&gt;"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::HtmlInline(<span class="kw-2">ref </span>literal) =&gt; {
@@ -1787,9 +1799,9 @@
                     <span class="kw">if </span><span class="self">self</span>.options.render.escape {
                         <span class="self">self</span>.escape(literal)<span class="question-mark">?</span>;
                     } <span class="kw">else if </span>!<span class="self">self</span>.options.render.unsafe_ {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;!-- raw HTML omitted --&gt;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;!-- raw HTML omitted --&gt;"</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else if </span><span class="self">self</span>.options.extension.tagfilter &amp;&amp; tagfilter(literal) {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&amp;lt;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&amp;lt;"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.output.write_all(<span class="kw-2">&amp;</span>literal[<span class="number">1</span>..])<span class="question-mark">?</span>;
                     } <span class="kw">else </span>{
                         <span class="self">self</span>.output.write_all(literal)<span class="question-mark">?</span>;
@@ -1802,79 +1814,79 @@
                     || !<span class="macro">matches!</span>(parent_node.unwrap().data.borrow().value, NodeValue::Strong)
                 {
                     <span class="kw">if </span>entering {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;strong&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;strong"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else </span>{
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/strong&gt;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/strong&gt;"</span>)<span class="question-mark">?</span>;
                     }
                 }
             }
             NodeValue::Emph =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;em&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;em"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/em&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/em&gt;"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::Strikethrough =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;del&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;del"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/del&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/del&gt;"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::Superscript =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;sup&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;sup"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/sup&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/sup&gt;"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::Link(<span class="kw-2">ref </span>nl) =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;a&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;a"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; href=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" href=\""</span>)<span class="question-mark">?</span>;
                     <span class="kw">let </span>url = nl.url.as_bytes();
                     <span class="kw">if </span><span class="self">self</span>.options.render.unsafe_ || !dangerous_url(url) {
                         <span class="self">self</span>.escape_href(url)<span class="question-mark">?</span>;
                     }
                     <span class="kw">if </span>!nl.title.is_empty() {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot; title=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"\" title=\""</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.escape(nl.title.as_bytes())<span class="question-mark">?</span>;
                     }
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/a&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/a&gt;"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::Image(<span class="kw-2">ref </span>nl) =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;img&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;img"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; src=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" src=\""</span>)<span class="question-mark">?</span>;
                     <span class="kw">let </span>url = nl.url.as_bytes();
                     <span class="kw">if </span><span class="self">self</span>.options.render.unsafe_ || !dangerous_url(url) {
                         <span class="self">self</span>.escape_href(url)<span class="question-mark">?</span>;
                     }
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot; alt=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\" alt=\""</span>)<span class="question-mark">?</span>;
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
                 } <span class="kw">else </span>{
                     <span class="kw">if </span>!nl.title.is_empty() {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot; title=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"\" title=\""</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.escape(nl.title.as_bytes())<span class="question-mark">?</span>;
                     }
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot; /&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\" /&gt;"</span>)<span class="question-mark">?</span>;
                 }
             }
-            <span class="attr">#[cfg(feature = <span class="string">&quot;shortcodes&quot;</span>)]
+            <span class="attr">#[cfg(feature = <span class="string">"shortcodes"</span>)]
             </span>NodeValue::ShortCode(<span class="kw-2">ref </span>nsc) =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.output.write_all(nsc.emoji().as_bytes())<span class="question-mark">?</span>;
@@ -1883,9 +1895,9 @@
             NodeValue::Table(..) =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;table&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;table"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;\n"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
                     <span class="kw">if </span>!node
                         .last_child()
@@ -1893,31 +1905,31 @@
                         .same_node(node.first_child().unwrap())
                     {
                         <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/tbody&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/tbody&gt;\n"</span>)<span class="question-mark">?</span>;
                     }
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/table&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/table&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::TableRow(header) =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
                     <span class="kw">if </span>header {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;thead&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;thead&gt;\n"</span>)<span class="question-mark">?</span>;
                     } <span class="kw">else if let </span><span class="prelude-val">Some</span>(n) = node.previous_sibling() {
                         <span class="kw">if let </span>NodeValue::TableRow(<span class="bool-val">true</span>) = n.data.borrow().value {
-                            <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;tbody&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                            <span class="self">self</span>.output.write_all(<span class="string">b"&lt;tbody&gt;\n"</span>)<span class="question-mark">?</span>;
                         }
                     }
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;tr&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;tr"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/tr&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/tr&gt;"</span>)<span class="question-mark">?</span>;
                     <span class="kw">if </span>header {
                         <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/thead&gt;&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/thead&gt;"</span>)<span class="question-mark">?</span>;
                     }
                 }
             }
@@ -1937,10 +1949,10 @@
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
                     <span class="kw">if </span>in_header {
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;th&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;th"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
                     } <span class="kw">else </span>{
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;td&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;td"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
                     }
 
@@ -1953,92 +1965,103 @@
 
                     <span class="kw">match </span>alignments[i] {
                         TableAlignment::Left =&gt; {
-                            <span class="self">self</span>.output.write_all(<span class="string">b&quot; align=\&quot;left\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                            <span class="self">self</span>.output.write_all(<span class="string">b" align=\"left\""</span>)<span class="question-mark">?</span>;
                         }
                         TableAlignment::Right =&gt; {
-                            <span class="self">self</span>.output.write_all(<span class="string">b&quot; align=\&quot;right\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                            <span class="self">self</span>.output.write_all(<span class="string">b" align=\"right\""</span>)<span class="question-mark">?</span>;
                         }
                         TableAlignment::Center =&gt; {
-                            <span class="self">self</span>.output.write_all(<span class="string">b&quot; align=\&quot;center\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                            <span class="self">self</span>.output.write_all(<span class="string">b" align=\"center\""</span>)<span class="question-mark">?</span>;
                         }
                         TableAlignment::None =&gt; (),
                     }
 
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else if </span>in_header {
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/th&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/th&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/td&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/td&gt;"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::FootnoteDefinition(<span class="kw-2">ref </span>nfd) =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="kw">if </span><span class="self">self</span>.footnote_ix == <span class="number">0 </span>{
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;section&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"&lt;section"</span>)<span class="question-mark">?</span>;
                         <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
                         <span class="self">self</span>.output
-                            .write_all(<span class="string">b&quot; class=\&quot;footnotes\&quot; data-footnotes&gt;\n&lt;ol&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                            .write_all(<span class="string">b" class=\"footnotes\" data-footnotes&gt;\n&lt;ol&gt;\n"</span>)<span class="question-mark">?</span>;
                     }
                     <span class="self">self</span>.footnote_ix += <span class="number">1</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;li&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;li"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot; id=\&quot;fn-&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b" id=\"fn-"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape_href(nfd.name.as_bytes())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\"&gt;"</span>)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
                     <span class="kw">if </span><span class="self">self</span>.put_footnote_backref(nfd)<span class="question-mark">? </span>{
-                        <span class="self">self</span>.output.write_all(<span class="string">b&quot;\n&quot;</span>)<span class="question-mark">?</span>;
+                        <span class="self">self</span>.output.write_all(<span class="string">b"\n"</span>)<span class="question-mark">?</span>;
                     }
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/li&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/li&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::FootnoteReference(<span class="kw-2">ref </span>nfr) =&gt; {
                 <span class="kw">if </span>entering {
-                    <span class="kw">let </span><span class="kw-2">mut </span>ref_id = <span class="macro">format!</span>(<span class="string">&quot;fnref-{}&quot;</span>, nfr.name);
+                    <span class="kw">let </span><span class="kw-2">mut </span>ref_id = <span class="macro">format!</span>(<span class="string">"fnref-{}"</span>, nfr.name);
 
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;sup&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;sup"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
 
                     <span class="kw">if </span>nfr.ref_num &gt; <span class="number">1 </span>{
-                        ref_id = <span class="macro">format!</span>(<span class="string">&quot;{}-{}&quot;</span>, ref_id, nfr.ref_num);
+                        ref_id = <span class="macro">format!</span>(<span class="string">"{}-{}"</span>, ref_id, nfr.ref_num);
                     }
 
                     <span class="self">self</span>.output
-                        .write_all(<span class="string">b&quot; class=\&quot;footnote-ref\&quot;&gt;&lt;a href=\&quot;#fn-&quot;</span>)<span class="question-mark">?</span>;
+                        .write_all(<span class="string">b" class=\"footnote-ref\"&gt;&lt;a href=\"#fn-"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape_href(nfr.name.as_bytes())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;\&quot; id=\&quot;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"\" id=\""</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.escape_href(ref_id.as_bytes())<span class="question-mark">?</span>;
-                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot;\&quot; data-footnote-ref&gt;{}&lt;/a&gt;&lt;/sup&gt;&quot;</span>, nfr.ix)<span class="question-mark">?</span>;
+                    <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">"\" data-footnote-ref&gt;{}&lt;/a&gt;&lt;/sup&gt;"</span>, nfr.ix)<span class="question-mark">?</span>;
                 }
             }
             NodeValue::TaskItem(symbol) =&gt; {
                 <span class="kw">if </span>entering {
                     <span class="self">self</span>.cr()<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;li&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;li"</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&gt;&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;"</span>)<span class="question-mark">?</span>;
                     <span class="macro">write!</span>(
                         <span class="self">self</span>.output,
-                        <span class="string">&quot;&lt;input type=\&quot;checkbox\&quot; {}disabled=\&quot;\&quot; /&gt; &quot;</span>,
+                        <span class="string">"&lt;input type=\"checkbox\" {}disabled=\"\" /&gt; "</span>,
                         <span class="kw">if </span>symbol.is_some() {
-                            <span class="string">&quot;checked=\&quot;\&quot; &quot;
+                            <span class="string">"checked=\"\" "
                         </span>} <span class="kw">else </span>{
-                            <span class="string">&quot;&quot;
+                            <span class="string">""
                         </span>}
                     )<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
-                    <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;/li&gt;\n&quot;</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/li&gt;\n"</span>)<span class="question-mark">?</span>;
+                }
+            }
+            NodeValue::MultilineBlockQuote(<span class="kw">_</span>) =&gt; {
+                <span class="kw">if </span>entering {
+                    <span class="self">self</span>.cr()<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;blockquote"</span>)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.render_sourcepos(node)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&gt;\n"</span>)<span class="question-mark">?</span>;
+                } <span class="kw">else </span>{
+                    <span class="self">self</span>.cr()<span class="question-mark">?</span>;
+                    <span class="self">self</span>.output.write_all(<span class="string">b"&lt;/blockquote&gt;\n"</span>)<span class="question-mark">?</span>;
                 }
             }
         }
         <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
     }
 
-    <span class="kw">fn </span>render_sourcepos&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>AstNode&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; io::Result&lt;()&gt; {
+    <span class="kw">fn </span>render_sourcepos&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>AstNode&lt;<span class="lifetime">'a</span>&gt;) -&gt; io::Result&lt;()&gt; {
         <span class="kw">if </span><span class="self">self</span>.options.render.sourcepos {
             <span class="kw">let </span>ast = node.data.borrow();
             <span class="kw">if </span>ast.sourcepos.start.line &gt; <span class="number">0 </span>{
-                <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot; data-sourcepos=\&quot;{}\&quot;&quot;</span>, ast.sourcepos)<span class="question-mark">?</span>;
+                <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">" data-sourcepos=\"{}\""</span>, ast.sourcepos)<span class="question-mark">?</span>;
             }
         }
         <span class="prelude-val">Ok</span>(())
@@ -2056,16 +2079,16 @@
 
         <span class="kw">for </span>ref_num <span class="kw">in </span><span class="number">1</span>..=nfd.total_references {
             <span class="kw">if </span>ref_num &gt; <span class="number">1 </span>{
-                ref_suffix = <span class="macro">format!</span>(<span class="string">&quot;-{}&quot;</span>, ref_num);
-                superscript = <span class="macro">format!</span>(<span class="string">&quot;&lt;sup class=\&quot;footnote-ref\&quot;&gt;{}&lt;/sup&gt;&quot;</span>, ref_num);
-                <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">&quot; &quot;</span>)<span class="question-mark">?</span>;
+                ref_suffix = <span class="macro">format!</span>(<span class="string">"-{}"</span>, ref_num);
+                superscript = <span class="macro">format!</span>(<span class="string">"&lt;sup class=\"footnote-ref\"&gt;{}&lt;/sup&gt;"</span>, ref_num);
+                <span class="macro">write!</span>(<span class="self">self</span>.output, <span class="string">" "</span>)<span class="question-mark">?</span>;
             }
 
-            <span class="self">self</span>.output.write_all(<span class="string">b&quot;&lt;a href=\&quot;#fnref-&quot;</span>)<span class="question-mark">?</span>;
+            <span class="self">self</span>.output.write_all(<span class="string">b"&lt;a href=\"#fnref-"</span>)<span class="question-mark">?</span>;
             <span class="self">self</span>.escape_href(nfd.name.as_bytes())<span class="question-mark">?</span>;
             <span class="macro">write!</span>(
                 <span class="self">self</span>.output,
-                <span class="string">&quot;{}\&quot; class=\&quot;footnote-backref\&quot; data-footnote-backref data-footnote-backref-idx=\&quot;{}{}\&quot; aria-label=\&quot;Back to reference {}{}\&quot;&gt;↩{}&lt;/a&gt;&quot;</span>,
+                <span class="string">"{}\" class=\"footnote-backref\" data-footnote-backref data-footnote-backref-idx=\"{}{}\" aria-label=\"Back to reference {}{}\"&gt;↩{}&lt;/a&gt;"</span>,
                 ref_suffix, <span class="self">self</span>.footnote_ix, ref_suffix, <span class="self">self</span>.footnote_ix, ref_suffix, superscript
             )<span class="question-mark">?</span>;
         }

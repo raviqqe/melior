@@ -1,5 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Derive a builder for a struct"><title>derive_builder - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="derive_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../derive_builder/index.html">derive_builder</a><span class="version">0.12.0</span></h2></div><div class="sidebar-elems"><ul class="block">
-            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#derives">Derive Macros</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">derive_builder</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/derive_builder/lib.rs.html#1-737">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Derive a builder for a struct</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Derive a builder for a struct"><title>derive_builder - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="derive_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../derive_builder/index.html">derive_builder</a><span class="version">0.12.0</span></h2></div><div class="sidebar-elems"><ul class="block">
+            <li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#derives">Derive Macros</a></li></ul></section></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../derive_builder/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">derive_builder</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/derive_builder/lib.rs.html#1-737">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Derive a builder for a struct</p>
 <p>This crate implements the <a href="https://web.archive.org/web/20170701044756/https://aturon.github.io/ownership/builders.html">builder pattern</a> for you.
 Just apply <code>#[derive(Builder)]</code> to a struct <code>Foo</code>, and it will derive an additional
 struct <code>FooBuilder</code> with <strong>setter</strong>-methods for all fields and a <strong>build</strong>-method
@@ -33,7 +34,7 @@ struct <code>FooBuilder</code> with <strong>setter</strong>-methods for all fiel
         <span class="prelude-val">Ok</span>(Lorem {
             ipsum: Clone::clone(<span class="self">self</span>.ipsum
                 .as_ref()
-                .ok_or(LoremBuilderError::from(UninitializedFieldError::new(<span class="string">&quot;ipsum&quot;</span>)))<span class="question-mark">?</span>),
+                .ok_or(LoremBuilderError::from(UninitializedFieldError::new(<span class="string">"ipsum"</span>)))<span class="question-mark">?</span>),
         })
     }
 }</code></pre></div>
@@ -148,7 +149,7 @@ setters.</p>
 You can override this:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Builder)]
-#[builder(name = <span class="string">&quot;FooConstructor&quot;</span>)]
+#[builder(name = <span class="string">"FooConstructor"</span>)]
 </span><span class="kw">struct </span>Foo { }
 
 <span class="kw">let </span>foo: Foo = FooConstructor::default().build()<span class="question-mark">?</span>;</code></pre></div>
@@ -173,11 +174,11 @@ take precedence over prefix definitions.</p>
 }
 
 <span class="kw">fn </span>main() {
-    <span class="comment">// `&quot;foo&quot;` will be converted into a `String` automatically.
-    </span><span class="kw">let </span>x = LoremBuilder::default().ipsum(<span class="string">&quot;foo&quot;</span>).build().unwrap();
+    <span class="comment">// `"foo"` will be converted into a `String` automatically.
+    </span><span class="kw">let </span>x = LoremBuilder::default().ipsum(<span class="string">"foo"</span>).build().unwrap();
 
     <span class="macro">assert_eq!</span>(x, Lorem {
-        ipsum: <span class="string">&quot;foo&quot;</span>.to_string(),
+        ipsum: <span class="string">"foo"</span>.to_string(),
     });
 }</code></pre></div>
 <h3 id="setters-for-option"><a href="#setters-for-option">Setters for Option</a></h3>
@@ -193,11 +194,11 @@ take precedence over prefix definitions.</p>
 }
 
 <span class="kw">fn </span>main() {
-    <span class="comment">// `&quot;foo&quot;` will be converted into a `String` automatically.
-    </span><span class="kw">let </span>x = LoremBuilder::default().ipsum(<span class="string">&quot;foo&quot;</span>).build().unwrap();
+    <span class="comment">// `"foo"` will be converted into a `String` automatically.
+    </span><span class="kw">let </span>x = LoremBuilder::default().ipsum(<span class="string">"foo"</span>).build().unwrap();
 
     <span class="macro">assert_eq!</span>(x, Lorem {
-        ipsum: <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>.to_string()),
+        ipsum: <span class="prelude-val">Some</span>(<span class="string">"foo"</span>.to_string()),
         foo: <span class="prelude-val">None
     </span>});
 }</code></pre></div>
@@ -221,21 +222,21 @@ to add <code>#![feature(try_from)]</code> to your crate to use it.</p>
 
 <span class="attr">#[derive(Builder, Debug, PartialEq)]
 </span><span class="kw">struct </span>Ipsum {
-    <span class="attr">#[builder(try_setter, setter(into, name = <span class="string">&quot;foo&quot;</span>))]
+    <span class="attr">#[builder(try_setter, setter(into, name = <span class="string">"foo"</span>))]
     </span><span class="kw">pub </span>dolor: u8,
 }
 
 <span class="kw">fn </span>main() {
    LoremBuilder::default()
        .try_ipsum(<span class="number">1u16</span>).unwrap()
-       .name(<span class="string">&quot;hello&quot;</span>)
+       .name(<span class="string">"hello"</span>)
        .build()
-       .expect(<span class="string">&quot;1 fits into a u8&quot;</span>);
+       .expect(<span class="string">"1 fits into a u8"</span>);
 
    IpsumBuilder::default()
        .try_foo(<span class="number">1u16</span>).unwrap()
        .build()
-       .expect(<span class="string">&quot;1 fits into a u8&quot;</span>);
+       .expect(<span class="string">"1 fits into a u8"</span>);
 }</code></pre></div>
 <h3 id="default-values"><a href="#default-values">Default Values</a></h3>
 <p>You can define default values for each field via annotation by <code>#[builder(default = &quot;...&quot;)]</code>,
@@ -248,12 +249,12 @@ where <code>...</code> stands for any Rust expression and must be string-escaped
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Builder, Debug, PartialEq)]
 </span><span class="kw">struct </span>Lorem {
-    <span class="attr">#[builder(default = <span class="string">&quot;42&quot;</span>)]
+    <span class="attr">#[builder(default = <span class="string">"42"</span>)]
     </span><span class="kw">pub </span>ipsum: u32,
 }
 
 <span class="kw">fn </span>main() {
-    <span class="comment">// If we don&#39;t set the field `ipsum`,
+    <span class="comment">// If we don't set the field `ipsum`,
     </span><span class="kw">let </span>x = LoremBuilder::default().build().unwrap();
 
     <span class="comment">// .. the custom default will be used for `ipsum`:
@@ -277,7 +278,7 @@ using <code>.unwrap_or()</code> and <code>.unwrap_or_else()</code>.</li>
     ipsum: String,
     <span class="comment">// Custom defaults can delegate to helper methods
     // and pass errors to the enclosing `build()` method via `?`.
-    </span><span class="attr">#[builder(default = <span class="string">&quot;self.default_dolor()?&quot;</span>)]
+    </span><span class="attr">#[builder(default = <span class="string">"self.default_dolor()?"</span>)]
     </span>dolor: String,
 }
 
@@ -285,8 +286,8 @@ using <code>.unwrap_or()</code> and <code>.unwrap_or_else()</code>.</li>
     <span class="comment">// Private helper method with access to the builder struct.
     </span><span class="kw">fn </span>default_dolor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, String&gt; {
         <span class="kw">match </span><span class="self">self</span>.ipsum {
-            <span class="prelude-val">Some</span>(<span class="kw-2">ref </span>x) <span class="kw">if </span>x.chars().count() &gt; <span class="number">3 </span>=&gt; <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(<span class="string">&quot;dolor {}&quot;</span>, x)),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="string">&quot;ipsum must at least 3 chars to build dolor&quot;</span>.to_string()),
+            <span class="prelude-val">Some</span>(<span class="kw-2">ref </span>x) <span class="kw">if </span>x.chars().count() &gt; <span class="number">3 </span>=&gt; <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(<span class="string">"dolor {}"</span>, x)),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="string">"ipsum must at least 3 chars to build dolor"</span>.to_string()),
         }
     }
 }
@@ -296,13 +297,13 @@ will wrap every type in an Option (<a href="#what-you-get">as illustrated earlie
 <h3 id="generic-structs"><a href="#generic-structs">Generic Structs</a></h3>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Builder, Debug, PartialEq, Default, Clone)]
 </span><span class="kw">struct </span>GenLorem&lt;T: Clone&gt; {
-    ipsum: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+    ipsum: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
     dolor: T,
 }
 
 <span class="kw">fn </span>main() {
-    <span class="kw">let </span>x = GenLoremBuilder::default().ipsum(<span class="string">&quot;sit&quot;</span>).dolor(<span class="number">42</span>).build().unwrap();
-    <span class="macro">assert_eq!</span>(x, GenLorem { ipsum: <span class="string">&quot;sit&quot;</span>.into(), dolor: <span class="number">42 </span>});
+    <span class="kw">let </span>x = GenLoremBuilder::default().ipsum(<span class="string">"sit"</span>).dolor(<span class="number">42</span>).build().unwrap();
+    <span class="macro">assert_eq!</span>(x, GenLorem { ipsum: <span class="string">"sit"</span>.into(), dolor: <span class="number">42 </span>});
 }</code></pre></div>
 <h3 id="build-method-customization"><a href="#build-method-customization">Build Method Customization</a></h3>
 <p>You can rename or suppress the auto-generated build method, leaving you free to implement
@@ -318,7 +319,7 @@ where the target struct is declared.</p>
 the <code>Ok</code> variant is not used by the <code>build</code> method.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Builder, Debug, PartialEq)]
-#[builder(build_fn(validate = <span class="string">&quot;Self::validate&quot;</span>))]
+#[builder(build_fn(validate = <span class="string">"Self::validate"</span>))]
 </span><span class="kw">struct </span>Lorem {
     <span class="kw">pub </span>ipsum: u8,
 }
@@ -328,8 +329,8 @@ the <code>Ok</code> variant is not used by the <code>build</code> method.</p>
     </span><span class="kw">fn </span>validate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>ipsum) = <span class="self">self</span>.ipsum {
             <span class="kw">match </span><span class="kw-2">*</span>ipsum {
-                i <span class="kw">if </span>i &lt; <span class="number">20 </span>=&gt; <span class="prelude-val">Err</span>(<span class="string">&quot;Try harder&quot;</span>.to_string()),
-                i <span class="kw">if </span>i &gt; <span class="number">100 </span>=&gt; <span class="prelude-val">Err</span>(<span class="string">&quot;You&#39;ll tire yourself out&quot;</span>.to_string()),
+                i <span class="kw">if </span>i &lt; <span class="number">20 </span>=&gt; <span class="prelude-val">Err</span>(<span class="string">"Try harder"</span>.to_string()),
+                i <span class="kw">if </span>i &gt; <span class="number">100 </span>=&gt; <span class="prelude-val">Err</span>(<span class="string">"You'll tire yourself out"</span>.to_string()),
                 <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>(())
             }
         } <span class="kw">else </span>{
@@ -339,11 +340,11 @@ the <code>Ok</code> variant is not used by the <code>build</code> method.</p>
 }
 
 <span class="kw">fn </span>main() {
-    <span class="comment">// If we&#39;re trying too hard...
+    <span class="comment">// If we're trying too hard...
     </span><span class="kw">let </span>x = LoremBuilder::default().ipsum(<span class="number">120</span>).build().unwrap_err();
 
     <span class="comment">// .. the build will fail:
-    </span><span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>x.to_string(), <span class="string">&quot;You&#39;ll tire yourself out&quot;</span>);
+    </span><span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>x.to_string(), <span class="string">"You'll tire yourself out"</span>);
 }</code></pre></div>
 <p>Note:</p>
 <ul>
@@ -379,11 +380,11 @@ those used by Serde, Diesel, or others.</p>
 </span><span class="kw">struct </span>Lorem {
     <span class="doccomment">/// `ipsum` may be any `String` (be creative).
     </span>ipsum: String,
-    <span class="attr">#[doc = <span class="string">r&quot;`dolor` is the estimated amount of work.&quot;</span>]
+    <span class="attr">#[doc = <span class="string">r"`dolor` is the estimated amount of work."</span>]
     </span>dolor: i32,
     <span class="comment">// `#[derive(Builder)]` understands conditional compilation via cfg-attributes,
-    // i.e. =&gt; &quot;no field = no setter&quot;.
-    </span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+    // i.e. =&gt; "no field = no setter".
+    </span><span class="attr">#[cfg(target_os = <span class="string">"macos"</span>)]
     #[allow(non_snake_case)]
     </span>Im_a_Mac: bool,
 }</code></pre></div>
@@ -398,24 +399,24 @@ those used by Serde, Diesel, or others.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Builder)]
 #[builder(derive(serde::Serialize))]
-#[builder_struct_attr(serde(rename_all = <span class="string">&quot;camelCase&quot;</span>))]
+#[builder_struct_attr(serde(rename_all = <span class="string">"camelCase"</span>))]
 </span><span class="kw">struct </span>Lorem {
-    <span class="attr">#[builder_field_attr(serde(rename=<span class="string">&quot;dolor&quot;</span>))]
+    <span class="attr">#[builder_field_attr(serde(rename=<span class="string">"dolor"</span>))]
     </span>ipsum: String,
 }
 
 <span class="kw">let </span><span class="kw-2">mut </span>show = LoremBuilder::default();
-show.ipsum(<span class="string">&quot;sit&quot;</span>.into());
-<span class="macro">assert_eq!</span>(serde_json::to_string(<span class="kw-2">&amp;</span>show).unwrap(), <span class="string">r#&quot;{&quot;dolor&quot;:&quot;sit&quot;}&quot;#</span>);</code></pre></div>
+show.ipsum(<span class="string">"sit"</span>.into());
+<span class="macro">assert_eq!</span>(serde_json::to_string(<span class="kw-2">&amp;</span>show).unwrap(), <span class="string">r#"{"dolor":"sit"}"#</span>);</code></pre></div>
 <h2 id="error-return-type-from-autogenerated-build-function"><a href="#error-return-type-from-autogenerated-build-function">Error return type from autogenerated <code>build</code> function</a></h2>
 <p>By default, <code>build</code> returns an autogenerated error type:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[doc=<span class="string">&quot;Error type for LoremBuilder&quot;</span>]
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[doc=<span class="string">"Error type for LoremBuilder"</span>]
 #[derive(Debug)]
 #[non_exhaustive]
 </span><span class="kw">pub enum </span>LoremBuilderError { <span class="comment">// where `LoremBuilder` is the name of the builder struct
     </span><span class="doccomment">/// Uninitialized field
-    </span>UninitializedField(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str),
+    </span>UninitializedField(<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str),
     <span class="doccomment">/// Custom validation error
     </span>ValidationError(String),
 }
@@ -429,7 +430,7 @@ show.ipsum(<span class="string">&quot;sit&quot;</span>.into());
 <p>Alternatively, you can specify your own error type:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Builder, Debug, PartialEq)]
-#[builder(build_fn(error = <span class="string">&quot;OurLoremError&quot;</span>))]
+#[builder(build_fn(error = <span class="string">"OurLoremError"</span>))]
 </span><span class="kw">struct </span>Lorem {
     <span class="kw">pub </span>ipsum: u32,
 }
@@ -441,28 +442,28 @@ show.ipsum(<span class="string">&quot;sit&quot;</span>.into());
 }
 
 <span class="kw">let </span>err: OurLoremError = LoremBuilder::default().build().unwrap_err();
-<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>err.<span class="number">0</span>, <span class="string">&quot;Field not initialized: ipsum&quot;</span>);</code></pre></div>
+<span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>err.<span class="number">0</span>, <span class="string">"Field not initialized: ipsum"</span>);</code></pre></div>
 <h2 id="completely-custom-fields-in-the-builder"><a href="#completely-custom-fields-in-the-builder">Completely custom fields in the builder</a></h2>
 <p>Instead of having an <code>Option</code>, you can have whatever type you like:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Debug, PartialEq, Default, Builder, Clone)]
 #[builder(derive(Debug, PartialEq))]
 </span><span class="kw">struct </span>Lorem {
-    <span class="attr">#[builder(setter(into), field(<span class="kw">type </span>= <span class="string">&quot;u32&quot;</span>))]
+    <span class="attr">#[builder(setter(into), field(<span class="kw">type </span>= <span class="string">"u32"</span>))]
     </span>ipsum: u32,
 
-    <span class="attr">#[builder(field(<span class="kw">type </span>= <span class="string">&quot;String&quot;</span>, build = <span class="string">&quot;()&quot;</span>))]
+    <span class="attr">#[builder(field(<span class="kw">type </span>= <span class="string">"String"</span>, build = <span class="string">"()"</span>))]
     </span>dolor: (),
 
-    <span class="attr">#[builder(field(<span class="kw">type </span>= <span class="string">&quot;&amp;&#39;static str&quot;</span>, build = <span class="string">&quot;self.amet.parse()?&quot;</span>))]
+    <span class="attr">#[builder(field(<span class="kw">type </span>= <span class="string">"&amp;'static str"</span>, build = <span class="string">"self.amet.parse()?"</span>))]
     </span>amet: u32,
 }
 
 <span class="kw">impl </span>From&lt;std::num::ParseIntError&gt; <span class="kw">for </span>LoremBuilderError { <span class="comment">// ...
 
 </span><span class="kw">let </span><span class="kw-2">mut </span>builder = LoremBuilder::default();
-builder.ipsum(<span class="number">42u16</span>).dolor(<span class="string">&quot;sit&quot;</span>.into()).amet(<span class="string">&quot;12&quot;</span>);
-<span class="macro">assert_eq!</span>(builder, LoremBuilder { ipsum: <span class="number">42</span>, dolor: <span class="string">&quot;sit&quot;</span>.into(), amet: <span class="string">&quot;12&quot; </span>});
+builder.ipsum(<span class="number">42u16</span>).dolor(<span class="string">"sit"</span>.into()).amet(<span class="string">"12"</span>);
+<span class="macro">assert_eq!</span>(builder, LoremBuilder { ipsum: <span class="number">42</span>, dolor: <span class="string">"sit"</span>.into(), amet: <span class="string">"12" </span>});
 <span class="kw">let </span>lorem = builder.build().unwrap();
 <span class="macro">assert_eq!</span>(lorem, Lorem { ipsum: <span class="number">42</span>, dolor: (), amet: <span class="number">12 </span>});</code></pre></div>
 <p>The builder field type (<code>type =</code>) must implement <code>Default</code>.</p>
@@ -491,5 +492,5 @@ dependency would occur. To break it you could try to depend on the
 <p><a href="https://github.com/colin-kiegel/rust-derive-builder/issues">Open an issue on GitHub</a></p>
 <p>If possible please try to provide the debugging info if you experience unexpected
 compilation errors (see above).</p>
-</div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.UninitializedFieldError.html" title="struct derive_builder::UninitializedFieldError">UninitializedFieldError</a></div><div class="desc docblock-short">Runtime error when a <code>build()</code> method is called and one or more required fields
-do not have a value.</div></li></ul><h2 id="derives" class="small-section-header"><a href="#derives">Derive Macros</a></h2><ul class="item-table"><li><div class="item-name"><a class="derive" href="derive.Builder.html" title="derive derive_builder::Builder">Builder</a></div><div class="desc docblock-short">Create a builder struct for the deriving struct.</div></li></ul></section></div></main></body></html>
+</div></details><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.UninitializedFieldError.html" title="struct derive_builder::UninitializedFieldError">UninitializedFieldError</a></div><div class="desc docblock-short">Runtime error when a <code>build()</code> method is called and one or more required fields
+do not have a value.</div></li></ul><h2 id="derives" class="section-header"><a href="#derives">Derive Macros</a></h2><ul class="item-table"><li><div class="item-name"><a class="derive" href="derive.Builder.html" title="derive derive_builder::Builder">Builder</a></div><div class="desc docblock-short">Create a builder struct for the deriving struct.</div></li></ul></section></div></main></body></html>

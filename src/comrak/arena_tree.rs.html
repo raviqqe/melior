@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.20.0/src/arena_tree.rs`."><title>arena_tree.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/comrak-0.21.0/src/arena_tree.rs`."><title>arena_tree.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="comrak" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -453,12 +454,12 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
 <span class="kw">use </span>std::fmt;
 
 <span class="doccomment">/// A node inside a DOM-like tree.
-</span><span class="kw">pub struct </span>Node&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a</span>&gt; {
-    parent: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;&gt;,
-    previous_sibling: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;&gt;,
-    next_sibling: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;&gt;,
-    first_child: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;&gt;,
-    last_child: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;&gt;,
+</span><span class="kw">pub struct </span>Node&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>&gt; {
+    parent: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;&gt;,
+    previous_sibling: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;&gt;,
+    next_sibling: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;&gt;,
+    first_child: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;&gt;,
+    last_child: Cell&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;&gt;,
 
     <span class="doccomment">/// The data held by the node.
     </span><span class="kw">pub </span>data: T,
@@ -466,13 +467,13 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
 
 <span class="doccomment">/// A simple Debug implementation that prints the children as a tree, without
 /// looping through the various interior pointer cycles.
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a</span>&gt; fmt::Debug <span class="kw">for </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>&gt; fmt::Debug <span class="kw">for </span>Node&lt;<span class="lifetime">'a</span>, T&gt;
 <span class="kw">where
     </span>T: fmt::Debug,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; <span class="prelude-ty">Result</span>&lt;(), fmt::Error&gt; {
-        <span class="kw">struct </span>Children&lt;<span class="lifetime">&#39;a</span>, T&gt;(<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;);
-        <span class="kw">impl</span>&lt;T: fmt::Debug&gt; fmt::Debug <span class="kw">for </span>Children&lt;<span class="lifetime">&#39;_</span>, T&gt; {
+        <span class="kw">struct </span>Children&lt;<span class="lifetime">'a</span>, T&gt;(<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;);
+        <span class="kw">impl</span>&lt;T: fmt::Debug&gt; fmt::Debug <span class="kw">for </span>Children&lt;<span class="lifetime">'_</span>, T&gt; {
             <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; <span class="prelude-ty">Result</span>&lt;(), fmt::Error&gt; {
                 f.debug_list()
                     .entries(std::iter::successors(<span class="self">self</span>.<span class="number">0</span>, |child| {
@@ -482,21 +483,21 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
             }
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>struct_fmt = f.debug_struct(<span class="string">&quot;Node&quot;</span>);
-        struct_fmt.field(<span class="string">&quot;data&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.data);
-        struct_fmt.field(<span class="string">&quot;children&quot;</span>, <span class="kw-2">&amp;</span>Children(<span class="self">self</span>.first_child.get()));
+        <span class="kw">let </span><span class="kw-2">mut </span>struct_fmt = f.debug_struct(<span class="string">"Node"</span>);
+        struct_fmt.field(<span class="string">"data"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.data);
+        struct_fmt.field(<span class="string">"children"</span>, <span class="kw-2">&amp;</span>Children(<span class="self">self</span>.first_child.get()));
         struct_fmt.finish()<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(())
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; Node&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; Node&lt;<span class="lifetime">'a</span>, T&gt; {
     <span class="doccomment">/// Create a new node from its associated data.
     ///
     /// Typically, this node needs to be moved into an arena allocator
     /// before it can be used in a tree.
-    </span><span class="kw">pub fn </span>new(data: T) -&gt; Node&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    </span><span class="kw">pub fn </span>new(data: T) -&gt; Node&lt;<span class="lifetime">'a</span>, T&gt; {
         Node {
             parent: Cell::new(<span class="prelude-val">None</span>),
             first_child: Cell::new(<span class="prelude-val">None</span>),
@@ -508,63 +509,63 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
     }
 
     <span class="doccomment">/// Return a reference to the parent node, unless this node is the root of the tree.
-    </span><span class="kw">pub fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; {
+    </span><span class="kw">pub fn </span>parent(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt; {
         <span class="self">self</span>.parent.get()
     }
 
     <span class="doccomment">/// Return a reference to the first child of this node, unless it has no child.
-    </span><span class="kw">pub fn </span>first_child(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; {
+    </span><span class="kw">pub fn </span>first_child(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt; {
         <span class="self">self</span>.first_child.get()
     }
 
     <span class="doccomment">/// Return a reference to the last child of this node, unless it has no child.
-    </span><span class="kw">pub fn </span>last_child(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; {
+    </span><span class="kw">pub fn </span>last_child(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt; {
         <span class="self">self</span>.last_child.get()
     }
 
     <span class="doccomment">/// Return a reference to the previous sibling of this node, unless it is a first child.
-    </span><span class="kw">pub fn </span>previous_sibling(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; {
+    </span><span class="kw">pub fn </span>previous_sibling(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt; {
         <span class="self">self</span>.previous_sibling.get()
     }
 
     <span class="doccomment">/// Return a reference to the next sibling of this node, unless it is a last child.
-    </span><span class="kw">pub fn </span>next_sibling(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; {
+    </span><span class="kw">pub fn </span>next_sibling(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt; {
         <span class="self">self</span>.next_sibling.get()
     }
 
     <span class="doccomment">/// Returns whether two references point to the same node.
-    </span><span class="kw">pub fn </span>same_node(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;) -&gt; bool {
+    </span><span class="kw">pub fn </span>same_node(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>Node&lt;<span class="lifetime">'a</span>, T&gt;) -&gt; bool {
         std::ptr::eq(<span class="self">self</span>, other)
     }
 
     <span class="doccomment">/// Return an iterator of references to this node and its ancestors.
     ///
     /// Call `.next().unwrap()` once on the iterator to skip the node itself.
-    </span><span class="kw">pub fn </span>ancestors(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; Ancestors&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    </span><span class="kw">pub fn </span>ancestors(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; Ancestors&lt;<span class="lifetime">'a</span>, T&gt; {
         Ancestors(<span class="prelude-val">Some</span>(<span class="self">self</span>))
     }
 
     <span class="doccomment">/// Return an iterator of references to this node and the siblings before it.
     ///
     /// Call `.next().unwrap()` once on the iterator to skip the node itself.
-    </span><span class="kw">pub fn </span>preceding_siblings(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; PrecedingSiblings&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    </span><span class="kw">pub fn </span>preceding_siblings(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; PrecedingSiblings&lt;<span class="lifetime">'a</span>, T&gt; {
         PrecedingSiblings(<span class="prelude-val">Some</span>(<span class="self">self</span>))
     }
 
     <span class="doccomment">/// Return an iterator of references to this node and the siblings after it.
     ///
     /// Call `.next().unwrap()` once on the iterator to skip the node itself.
-    </span><span class="kw">pub fn </span>following_siblings(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; FollowingSiblings&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    </span><span class="kw">pub fn </span>following_siblings(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; FollowingSiblings&lt;<span class="lifetime">'a</span>, T&gt; {
         FollowingSiblings(<span class="prelude-val">Some</span>(<span class="self">self</span>))
     }
 
     <span class="doccomment">/// Return an iterator of references to this node’s children.
-    </span><span class="kw">pub fn </span>children(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; Children&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    </span><span class="kw">pub fn </span>children(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; Children&lt;<span class="lifetime">'a</span>, T&gt; {
         Children(<span class="self">self</span>.first_child.get())
     }
 
     <span class="doccomment">/// Return an iterator of references to this node’s children, in reverse order.
-    </span><span class="kw">pub fn </span>reverse_children(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; ReverseChildren&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    </span><span class="kw">pub fn </span>reverse_children(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; ReverseChildren&lt;<span class="lifetime">'a</span>, T&gt; {
         ReverseChildren(<span class="self">self</span>.last_child.get())
     }
 
@@ -572,12 +573,12 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
     ///
     /// Parent nodes appear before the descendants.
     /// Call `.next().unwrap()` once on the iterator to skip the node itself.
-    </span><span class="kw">pub fn </span>descendants(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; Descendants&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    </span><span class="kw">pub fn </span>descendants(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; Descendants&lt;<span class="lifetime">'a</span>, T&gt; {
         Descendants(<span class="self">self</span>.traverse())
     }
 
     <span class="doccomment">/// Return an iterator of references to this node and its descendants, in tree order.
-    </span><span class="kw">pub fn </span>traverse(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; Traverse&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    </span><span class="kw">pub fn </span>traverse(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; Traverse&lt;<span class="lifetime">'a</span>, T&gt; {
         Traverse {
             root: <span class="self">self</span>,
             next: <span class="prelude-val">Some</span>(NodeEdge::Start(<span class="self">self</span>)),
@@ -585,7 +586,7 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
     }
 
     <span class="doccomment">/// Return an iterator of references to this node and its descendants, in tree order.
-    </span><span class="kw">pub fn </span>reverse_traverse(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; ReverseTraverse&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+    </span><span class="kw">pub fn </span>reverse_traverse(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; ReverseTraverse&lt;<span class="lifetime">'a</span>, T&gt; {
         ReverseTraverse {
             root: <span class="self">self</span>,
             next: <span class="prelude-val">Some</span>(NodeEdge::End(<span class="self">self</span>)),
@@ -612,7 +613,7 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
     }
 
     <span class="doccomment">/// Append a new child to this node, after existing children.
-    </span><span class="kw">pub fn </span>append(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, new_child: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;) {
+    </span><span class="kw">pub fn </span>append(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>, new_child: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;) {
         new_child.detach();
         new_child.parent.set(<span class="prelude-val">Some</span>(<span class="self">self</span>));
         <span class="kw">if let </span><span class="prelude-val">Some</span>(last_child) = <span class="self">self</span>.last_child.take() {
@@ -627,7 +628,7 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
     }
 
     <span class="doccomment">/// Prepend a new child to this node, before existing children.
-    </span><span class="kw">pub fn </span>prepend(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, new_child: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;) {
+    </span><span class="kw">pub fn </span>prepend(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>, new_child: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;) {
         new_child.detach();
         new_child.parent.set(<span class="prelude-val">Some</span>(<span class="self">self</span>));
         <span class="kw">if let </span><span class="prelude-val">Some</span>(first_child) = <span class="self">self</span>.first_child.take() {
@@ -642,7 +643,7 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
     }
 
     <span class="doccomment">/// Insert a new sibling after this node.
-    </span><span class="kw">pub fn </span>insert_after(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, new_sibling: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;) {
+    </span><span class="kw">pub fn </span>insert_after(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>, new_sibling: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;) {
         new_sibling.detach();
         new_sibling.parent.set(<span class="self">self</span>.parent.get());
         new_sibling.previous_sibling.set(<span class="prelude-val">Some</span>(<span class="self">self</span>));
@@ -661,7 +662,7 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
     }
 
     <span class="doccomment">/// Insert a new sibling before this node.
-    </span><span class="kw">pub fn </span>insert_before(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, new_sibling: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;) {
+    </span><span class="kw">pub fn </span>insert_before(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>, new_sibling: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;) {
         new_sibling.detach();
         new_sibling.parent.set(<span class="self">self</span>.parent.get());
         new_sibling.next_sibling.set(<span class="prelude-val">Some</span>(<span class="self">self</span>));
@@ -684,12 +685,12 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
     (<span class="attr">#[<span class="macro-nonterminal">$attr</span>:meta] </span><span class="macro-nonterminal">$name</span>:ident : <span class="macro-nonterminal">$next</span>:ident) =&gt; {
         <span class="attr">#[<span class="macro-nonterminal">$attr</span>]
         #[derive(Debug)]
-        </span><span class="kw">pub struct </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a</span>&gt;(<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;);
+        </span><span class="kw">pub struct </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>&gt;(<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;);
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; Iterator <span class="kw">for </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; {
-            <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;;
+        <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; Iterator <span class="kw">for </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">'a</span>, T&gt; {
+            <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;;
 
-            <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; {
+            <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt; {
                 <span class="kw">match </span><span class="self">self</span>.<span class="number">0</span>.take() {
                     <span class="prelude-val">Some</span>(node) =&gt; {
                         <span class="self">self</span>.<span class="number">0 </span>= node.<span class="macro-nonterminal">$next</span>.get();
@@ -703,38 +704,38 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
 }
 
 <span class="macro">axis_iterator! </span>{
-    <span class="attr">#[doc = <span class="string">&quot;An iterator of references to the ancestors a given node.&quot;</span>]
+    <span class="attr">#[doc = <span class="string">"An iterator of references to the ancestors a given node."</span>]
     </span>Ancestors: parent
 }
 
 <span class="macro">axis_iterator! </span>{
-    <span class="attr">#[doc = <span class="string">&quot;An iterator of references to the siblings before a given node.&quot;</span>]
+    <span class="attr">#[doc = <span class="string">"An iterator of references to the siblings before a given node."</span>]
     </span>PrecedingSiblings: previous_sibling
 }
 
 <span class="macro">axis_iterator! </span>{
-    <span class="attr">#[doc = <span class="string">&quot;An iterator of references to the siblings after a given node.&quot;</span>]
+    <span class="attr">#[doc = <span class="string">"An iterator of references to the siblings after a given node."</span>]
     </span>FollowingSiblings: next_sibling
 }
 
 <span class="macro">axis_iterator! </span>{
-    <span class="attr">#[doc = <span class="string">&quot;An iterator of references to the children of a given node.&quot;</span>]
+    <span class="attr">#[doc = <span class="string">"An iterator of references to the children of a given node."</span>]
     </span>Children: next_sibling
 }
 
 <span class="macro">axis_iterator! </span>{
-    <span class="attr">#[doc = <span class="string">&quot;An iterator of references to the children of a given node, in reverse order.&quot;</span>]
+    <span class="attr">#[doc = <span class="string">"An iterator of references to the children of a given node, in reverse order."</span>]
     </span>ReverseChildren: previous_sibling
 }
 
 <span class="doccomment">/// An iterator of references to a given node and its descendants, in tree order.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>Descendants&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a</span>&gt;(Traverse&lt;<span class="lifetime">&#39;a</span>, T&gt;);
+</span><span class="kw">pub struct </span>Descendants&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>&gt;(Traverse&lt;<span class="lifetime">'a</span>, T&gt;);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; Iterator <span class="kw">for </span>Descendants&lt;<span class="lifetime">&#39;a</span>, T&gt; {
-    <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;;
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; Iterator <span class="kw">for </span>Descendants&lt;<span class="lifetime">'a</span>, T&gt; {
+    <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;;
 
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt; {
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt; {
         <span class="kw">loop </span>{
             <span class="kw">match </span><span class="self">self</span>.<span class="number">0</span>.next() {
                 <span class="prelude-val">Some</span>(NodeEdge::Start(node)) =&gt; <span class="kw">return </span><span class="prelude-val">Some</span>(node),
@@ -763,15 +764,15 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
     (<span class="attr">#[<span class="macro-nonterminal">$attr</span>:meta] </span><span class="macro-nonterminal">$name</span>:ident : <span class="macro-nonterminal">$first_child</span>:ident, <span class="macro-nonterminal">$next_sibling</span>:ident) =&gt; {
         <span class="attr">#[<span class="macro-nonterminal">$attr</span>]
         #[derive(Debug)]
-        </span><span class="kw">pub struct </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">&#39;a</span>, T: <span class="lifetime">&#39;a</span>&gt; {
-            root: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;,
-            next: <span class="prelude-ty">Option</span>&lt;NodeEdge&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;&gt;,
+        </span><span class="kw">pub struct </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">'a</span>, T: <span class="lifetime">'a</span>&gt; {
+            root: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;,
+            next: <span class="prelude-ty">Option</span>&lt;NodeEdge&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;&gt;,
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; Iterator <span class="kw">for </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; {
-            <span class="kw">type </span>Item = NodeEdge&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;;
+        <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; Iterator <span class="kw">for </span><span class="macro-nonterminal">$name</span>&lt;<span class="lifetime">'a</span>, T&gt; {
+            <span class="kw">type </span>Item = NodeEdge&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;;
 
-            <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeEdge&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Node&lt;<span class="lifetime">&#39;a</span>, T&gt;&gt;&gt; {
+            <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeEdge&lt;<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Node&lt;<span class="lifetime">'a</span>, T&gt;&gt;&gt; {
                 <span class="kw">match </span><span class="self">self</span>.next.take() {
                     <span class="prelude-val">Some</span>(item) =&gt; {
                         <span class="self">self</span>.next = <span class="kw">match </span>item {
@@ -808,21 +809,21 @@ make it a cell (`Cell` or `RefCell`) or use cells inside of it.
 }
 
 <span class="macro">traverse_iterator! </span>{
-    <span class="attr">#[doc = <span class="string">&quot;An iterator of the start and end edges of a given
-    node and its descendants, in tree order.&quot;</span>]
+    <span class="attr">#[doc = <span class="string">"An iterator of the start and end edges of a given
+    node and its descendants, in tree order."</span>]
     </span>Traverse: first_child, next_sibling
 }
 
 <span class="macro">traverse_iterator! </span>{
-    <span class="attr">#[doc = <span class="string">&quot;An iterator of the start and end edges of a given
-    node and its descendants, in reverse tree order.&quot;</span>]
+    <span class="attr">#[doc = <span class="string">"An iterator of the start and end edges of a given
+    node and its descendants, in reverse tree order."</span>]
     </span>ReverseTraverse: last_child, previous_sibling
 }
 
 <span class="attr">#[test]
 </span><span class="kw">fn </span>it_works() {
-    <span class="kw">struct </span>DropTracker&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Cell&lt;u32&gt;);
-    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Drop <span class="kw">for </span>DropTracker&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">struct </span>DropTracker&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>Cell&lt;u32&gt;);
+    <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Drop <span class="kw">for </span>DropTracker&lt;<span class="lifetime">'a</span>&gt; {
         <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
             <span class="self">self</span>.<span class="number">0</span>.set(<span class="self">self</span>.<span class="number">0</span>.get() + <span class="number">1</span>);
         }

@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/work/melior/melior/target/debug/build/tblgen-a2d9211c684e2cec/out/bindings.rs`."><title>bindings.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../../../../../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../../../../../../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../../../../../../../../../../" data-static-root-path="../../../../../../../../../../../../static.files/" data-current-crate="tblgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.75.0 (82e1608df 2023-12-21)" data-channel="1.75.0" data-search-js="search-8fbf244ebcf71464.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../../../../../../../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../../../../../../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../../../../../../../../../src-files.js"></script><script defer src="../../../../../../../../../../../../static.files/main-9dd44ab47b99a0fb.js"></script><noscript><link rel="stylesheet" href="../../../../../../../../../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../../../../../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../../../../../../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../../../../../../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../../../../../../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../../../../../../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../../../../../../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/work/melior/melior/target/debug/build/tblgen-478433ed7e76e1c5/out/bindings.rs`."><title>bindings.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../../../../../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../../../../../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../../../../../../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../../../../../../../../../../" data-static-root-path="../../../../../../../../../../../../static.files/" data-current-crate="tblgen" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../../../../../../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../../../../../../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../../../../../../../../../src-files.js"></script><script defer src="../../../../../../../../../../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../../../../../../../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../../../../../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../../../../../../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../../../../../../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../../../../../../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../../../../../../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../../../../../../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -794,20 +795,20 @@
     <span class="macro">assert_eq!</span>(
         ::std::mem::size_of::&lt;max_align_t&gt;(),
         <span class="number">32usize</span>,
-        <span class="macro">concat!</span>(<span class="string">&quot;Size of: &quot;</span>, <span class="macro">stringify!</span>(max_align_t))
+        <span class="macro">concat!</span>(<span class="string">"Size of: "</span>, <span class="macro">stringify!</span>(max_align_t))
     );
     <span class="macro">assert_eq!</span>(
         ::std::mem::align_of::&lt;max_align_t&gt;(),
         <span class="number">16usize</span>,
-        <span class="macro">concat!</span>(<span class="string">&quot;Alignment of &quot;</span>, <span class="macro">stringify!</span>(max_align_t))
+        <span class="macro">concat!</span>(<span class="string">"Alignment of "</span>, <span class="macro">stringify!</span>(max_align_t))
     );
     <span class="macro">assert_eq!</span>(
         <span class="kw">unsafe </span>{ <span class="macro">::std::ptr::addr_of!</span>((<span class="kw-2">*</span>ptr).__clang_max_align_nonce1) <span class="kw">as </span>usize - ptr <span class="kw">as </span>usize },
         <span class="number">0usize</span>,
         <span class="macro">concat!</span>(
-            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="string">"Offset of field: "</span>,
             <span class="macro">stringify!</span>(max_align_t),
-            <span class="string">&quot;::&quot;</span>,
+            <span class="string">"::"</span>,
             <span class="macro">stringify!</span>(__clang_max_align_nonce1)
         )
     );
@@ -815,9 +816,9 @@
         <span class="kw">unsafe </span>{ <span class="macro">::std::ptr::addr_of!</span>((<span class="kw-2">*</span>ptr).__clang_max_align_nonce2) <span class="kw">as </span>usize - ptr <span class="kw">as </span>usize },
         <span class="number">16usize</span>,
         <span class="macro">concat!</span>(
-            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="string">"Offset of field: "</span>,
             <span class="macro">stringify!</span>(max_align_t),
-            <span class="string">&quot;::&quot;</span>,
+            <span class="string">"::"</span>,
             <span class="macro">stringify!</span>(__clang_max_align_nonce2)
         )
     );
@@ -868,20 +869,20 @@
     <span class="macro">assert_eq!</span>(
         ::std::mem::size_of::&lt;__fsid_t&gt;(),
         <span class="number">8usize</span>,
-        <span class="macro">concat!</span>(<span class="string">&quot;Size of: &quot;</span>, <span class="macro">stringify!</span>(__fsid_t))
+        <span class="macro">concat!</span>(<span class="string">"Size of: "</span>, <span class="macro">stringify!</span>(__fsid_t))
     );
     <span class="macro">assert_eq!</span>(
         ::std::mem::align_of::&lt;__fsid_t&gt;(),
         <span class="number">4usize</span>,
-        <span class="macro">concat!</span>(<span class="string">&quot;Alignment of &quot;</span>, <span class="macro">stringify!</span>(__fsid_t))
+        <span class="macro">concat!</span>(<span class="string">"Alignment of "</span>, <span class="macro">stringify!</span>(__fsid_t))
     );
     <span class="macro">assert_eq!</span>(
         <span class="kw">unsafe </span>{ <span class="macro">::std::ptr::addr_of!</span>((<span class="kw-2">*</span>ptr).__val) <span class="kw">as </span>usize - ptr <span class="kw">as </span>usize },
         <span class="number">0usize</span>,
         <span class="macro">concat!</span>(
-            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="string">"Offset of field: "</span>,
             <span class="macro">stringify!</span>(__fsid_t),
-            <span class="string">&quot;::&quot;</span>,
+            <span class="string">"::"</span>,
             <span class="macro">stringify!</span>(__val)
         )
     );
@@ -1037,20 +1038,20 @@
     <span class="macro">assert_eq!</span>(
         ::std::mem::size_of::&lt;TableGenStringRef&gt;(),
         <span class="number">16usize</span>,
-        <span class="macro">concat!</span>(<span class="string">&quot;Size of: &quot;</span>, <span class="macro">stringify!</span>(TableGenStringRef))
+        <span class="macro">concat!</span>(<span class="string">"Size of: "</span>, <span class="macro">stringify!</span>(TableGenStringRef))
     );
     <span class="macro">assert_eq!</span>(
         ::std::mem::align_of::&lt;TableGenStringRef&gt;(),
         <span class="number">8usize</span>,
-        <span class="macro">concat!</span>(<span class="string">&quot;Alignment of &quot;</span>, <span class="macro">stringify!</span>(TableGenStringRef))
+        <span class="macro">concat!</span>(<span class="string">"Alignment of "</span>, <span class="macro">stringify!</span>(TableGenStringRef))
     );
     <span class="macro">assert_eq!</span>(
         <span class="kw">unsafe </span>{ <span class="macro">::std::ptr::addr_of!</span>((<span class="kw-2">*</span>ptr).data) <span class="kw">as </span>usize - ptr <span class="kw">as </span>usize },
         <span class="number">0usize</span>,
         <span class="macro">concat!</span>(
-            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="string">"Offset of field: "</span>,
             <span class="macro">stringify!</span>(TableGenStringRef),
-            <span class="string">&quot;::&quot;</span>,
+            <span class="string">"::"</span>,
             <span class="macro">stringify!</span>(data)
         )
     );
@@ -1058,283 +1059,283 @@
         <span class="kw">unsafe </span>{ <span class="macro">::std::ptr::addr_of!</span>((<span class="kw-2">*</span>ptr).len) <span class="kw">as </span>usize - ptr <span class="kw">as </span>usize },
         <span class="number">8usize</span>,
         <span class="macro">concat!</span>(
-            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="string">"Offset of field: "</span>,
             <span class="macro">stringify!</span>(TableGenStringRef),
-            <span class="string">&quot;::&quot;</span>,
+            <span class="string">"::"</span>,
             <span class="macro">stringify!</span>(len)
         )
     );
 }
 <span class="kw">pub type </span>TableGenStringCallback = ::std::option::Option&lt;
-    <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>(arg1: TableGenStringRef, arg2: <span class="kw-2">*mut </span>::std::os::raw::c_void),
+    <span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn</span>(arg1: TableGenStringRef, arg2: <span class="kw-2">*mut </span>::std::os::raw::c_void),
 &gt;;
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenGet() -&gt; TableGenParserRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenFree(tg_ref: TableGenParserRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenAddSource(
         tg_ref: TableGenParserRef,
         source: <span class="kw-2">*const </span>::std::os::raw::c_char,
     ) -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenAddSourceFile(
         tg_ref: TableGenParserRef,
         source: TableGenStringRef,
     ) -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenAddIncludePath(tg_ref: TableGenParserRef, include: TableGenStringRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
-    <span class="attr">#[doc = <span class="string">&quot; NOTE: TableGen currently relies on global state within a given parser\n       invocation, so this function is not thread-safe.&quot;</span>]
+<span class="kw">extern </span><span class="string">"C" </span>{
+    <span class="attr">#[doc = <span class="string">" NOTE: TableGen currently relies on global state within a given parser\n       invocation, so this function is not thread-safe."</span>]
     </span><span class="kw">pub fn </span>tableGenParse(tg_ref: TableGenParserRef) -&gt; TableGenRecordKeeperRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperFree(rk_ref: TableGenRecordKeeperRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperGetClasses(rk_ref: TableGenRecordKeeperRef) -&gt; TableGenRecordMapRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperGetDefs(rk_ref: TableGenRecordKeeperRef) -&gt; TableGenRecordMapRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperGetClass(
         rk_ref: TableGenRecordKeeperRef,
         name: TableGenStringRef,
     ) -&gt; TableGenRecordRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperGetDef(
         rk_ref: TableGenRecordKeeperRef,
         name: TableGenStringRef,
     ) -&gt; TableGenRecordRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperGetAllDerivedDefinitions(
         rk_ref: TableGenRecordKeeperRef,
         className: TableGenStringRef,
     ) -&gt; TableGenRecordVectorRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordVectorGet(
         vec_ref: TableGenRecordVectorRef,
         index: usize,
     ) -&gt; TableGenRecordRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordVectorFree(vec_ref: TableGenRecordVectorRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperGetFirstClass(
         rk_ref: TableGenRecordKeeperRef,
     ) -&gt; TableGenRecordKeeperIteratorRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperGetFirstDef(
         rk_ref: TableGenRecordKeeperRef,
     ) -&gt; TableGenRecordKeeperIteratorRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperGetNextClass(item: <span class="kw-2">*mut </span>TableGenRecordKeeperIteratorRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperGetNextDef(item: <span class="kw-2">*mut </span>TableGenRecordKeeperIteratorRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperItemGetName(
         item: TableGenRecordKeeperIteratorRef,
     ) -&gt; TableGenStringRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperItemGetRecord(
         item: TableGenRecordKeeperIteratorRef,
     ) -&gt; TableGenRecordRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperIteratorFree(item: TableGenRecordKeeperIteratorRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordKeeperIteratorClone(
         item: TableGenRecordKeeperIteratorRef,
     ) -&gt; TableGenRecordKeeperIteratorRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordGetRecords(record_ref: TableGenRecordRef) -&gt; TableGenRecordKeeperRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordGetName(record_ref: TableGenRecordRef) -&gt; TableGenStringRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordGetValue(
         record_ref: TableGenRecordRef,
         name: TableGenStringRef,
     ) -&gt; TableGenRecordValRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordGetFieldType(
         record_ref: TableGenRecordRef,
         name: TableGenStringRef,
     ) -&gt; TableGenRecTyKind::Type;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordIsAnonymous(record_ref: TableGenRecordRef) -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordIsSubclassOf(
         record_ref: TableGenRecordRef,
         name: TableGenStringRef,
     ) -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordPrint(
         record_ref: TableGenRecordRef,
         callback: TableGenStringCallback,
         userData: <span class="kw-2">*mut </span>::std::os::raw::c_void,
     );
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordDump(record_ref: TableGenRecordRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordGetLoc(record_ref: TableGenRecordRef) -&gt; TableGenSourceLocationRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetName(rv_ref: TableGenRecordValRef) -&gt; TableGenStringRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetNameInit(rv_ref: TableGenRecordValRef) -&gt; TableGenTypedInitRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetType(rv_ref: TableGenRecordValRef) -&gt; TableGenRecTyKind::Type;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetValue(rv_ref: TableGenRecordValRef) -&gt; TableGenTypedInitRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValTest(rv_ref: TableGenRecordValRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordGetFirstValue(record_ref: TableGenRecordRef) -&gt; TableGenRecordValRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValNext(
         record: TableGenRecordRef,
         current: TableGenRecordValRef,
     ) -&gt; TableGenRecordValRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValPrint(
         rv_ref: TableGenRecordValRef,
         callback: TableGenStringCallback,
         userData: <span class="kw-2">*mut </span>::std::os::raw::c_void,
     );
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValDump(rv_ref: TableGenRecordValRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetLoc(rv_ref: TableGenRecordValRef) -&gt; TableGenSourceLocationRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetValAsNewString(
         rv_ref: TableGenRecordValRef,
     ) -&gt; <span class="kw-2">*mut </span>::std::os::raw::c_char;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetValAsBit(rv_ref: TableGenRecordValRef, bit: <span class="kw-2">*mut </span>i8)
         -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetValAsBits(rv_ref: TableGenRecordValRef, len: <span class="kw-2">*mut </span>usize) -&gt; <span class="kw-2">*mut </span>i8;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetValAsInt(
         rv_ref: TableGenRecordValRef,
         integer: <span class="kw-2">*mut </span>i64,
     ) -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetValAsRecord(rv_ref: TableGenRecordValRef) -&gt; TableGenRecordRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenRecordValGetValAsDefRecord(rv_ref: TableGenRecordValRef) -&gt; TableGenRecordRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenListRecordGetType(rv_ref: TableGenRecordValRef) -&gt; TableGenRecTyKind::Type;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenListRecordGet(
         rv_ref: TableGenTypedInitRef,
         index: usize,
     ) -&gt; TableGenTypedInitRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenListRecordNumElements(rv_ref: TableGenTypedInitRef) -&gt; usize;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenDagRecordOperator(rv_ref: TableGenTypedInitRef) -&gt; TableGenRecordRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenDagRecordGet(rv_ref: TableGenTypedInitRef, index: usize)
         -&gt; TableGenTypedInitRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenDagRecordArgName(
         rv_ref: TableGenTypedInitRef,
         index: usize,
     ) -&gt; TableGenStringRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenDagRecordNumArgs(rv_ref: TableGenTypedInitRef) -&gt; usize;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenInitRecType(ti: TableGenTypedInitRef) -&gt; TableGenRecTyKind::Type;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenBitInitGetValue(ti: TableGenTypedInitRef, bit: <span class="kw-2">*mut </span>i8) -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenBitsInitGetValue(ti: TableGenTypedInitRef, len: <span class="kw-2">*mut </span>usize) -&gt; <span class="kw-2">*mut </span>i8;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenBitsInitGetNumBits(ti: TableGenTypedInitRef, len: <span class="kw-2">*mut </span>usize) -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenBitsInitGetBitInit(
         ti: TableGenTypedInitRef,
         index: usize,
     ) -&gt; TableGenTypedInitRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenIntInitGetValue(ti: TableGenTypedInitRef, integer: <span class="kw-2">*mut </span>i64) -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenStringInitGetValue(ti: TableGenTypedInitRef) -&gt; TableGenStringRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenStringInitGetValueNewString(
         ti: TableGenTypedInitRef,
     ) -&gt; <span class="kw-2">*mut </span>::std::os::raw::c_char;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenDefInitGetValue(ti: TableGenTypedInitRef) -&gt; TableGenRecordRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenInitPrint(
         ti: TableGenTypedInitRef,
         callback: TableGenStringCallback,
         userData: <span class="kw-2">*mut </span>::std::os::raw::c_void,
     );
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenInitDump(ti: TableGenTypedInitRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenPrintError(
         ref_: TableGenParserRef,
         loc_ref: TableGenSourceLocationRef,
@@ -1344,24 +1345,24 @@
         userData: <span class="kw-2">*mut </span>::std::os::raw::c_void,
     ) -&gt; TableGenBool;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenSourceLocationNull() -&gt; TableGenSourceLocationRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenSourceLocationClone(
         loc_ref: TableGenSourceLocationRef,
     ) -&gt; TableGenSourceLocationRef;
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenSourceLocationFree(loc_ref: TableGenSourceLocationRef);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenBitArrayFree(bit_array: <span class="kw-2">*mut </span>i8);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenStringFree(str_: <span class="kw-2">*const </span>::std::os::raw::c_char);
 }
-<span class="kw">extern </span><span class="string">&quot;C&quot; </span>{
+<span class="kw">extern </span><span class="string">"C" </span>{
     <span class="kw">pub fn </span>tableGenStringArrayFree(str_array: <span class="kw-2">*mut *const </span>::std::os::raw::c_char);
 }
 </code></pre></div></section></main></body></html>
