@@ -411,6 +411,7 @@
 <a href="#410" id="410">410</a>
 <a href="#411" id="411">411</a>
 <a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>accessors;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>element_kind;
@@ -420,6 +421,7 @@
 <span class="kw">mod </span>variadic_kind;
 
 <span class="kw">use </span><span class="self">self</span>::{
+    accessors::generate_accessors,
     builder::{generate_operation_builder, OperationBuilder},
     element_kind::ElementKind,
     field_kind::FieldKind,
@@ -443,7 +445,7 @@
     <span class="kw">let </span>name = <span class="kw-2">&amp;</span>operation.full_name()<span class="question-mark">?</span>;
     <span class="kw">let </span>accessors = operation
         .fields()
-        .map(|field| field.accessors())
+        .map(generate_accessors)
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
     <span class="kw">let </span>builder = OperationBuilder::new(operation);
