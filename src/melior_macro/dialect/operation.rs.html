@@ -699,12 +699,12 @@
     }
 
     <span class="kw">fn </span>collect_results(
-        def: Record&lt;<span class="lifetime">'a</span>&gt;,
+        definition: Record&lt;<span class="lifetime">'a</span>&gt;,
         same_size: bool,
         attribute_sized: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;OperationField&gt;, usize), Error&gt; {
         <span class="self">Self</span>::collect_elements(
-            <span class="kw-2">&amp;</span><span class="self">Self</span>::dag_constraints(def, <span class="string">"results"</span>)<span class="question-mark">?
+            <span class="kw-2">&amp;</span><span class="self">Self</span>::dag_constraints(definition, <span class="string">"results"</span>)<span class="question-mark">?
                 </span>.into_iter()
                 .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
@@ -805,10 +805,10 @@
         definition
             .values()
             .filter_map(|value| {
-                <span class="kw">let </span><span class="prelude-val">Ok</span>(def) = Record::try_from(value) <span class="kw">else </span>{
+                <span class="kw">let </span><span class="prelude-val">Ok</span>(definition) = Record::try_from(value) <span class="kw">else </span>{
                     <span class="kw">return </span><span class="prelude-val">None</span>;
                 };
-                def.subclass_of(<span class="string">"Attr"</span>).then_some(def)
+                definition.subclass_of(<span class="string">"Attr"</span>).then_some(definition)
             })
             .map(|definition| {
                 <span class="kw">if </span>definition.subclass_of(<span class="string">"DerivedAttr"</span>) {
