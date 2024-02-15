@@ -96,13 +96,31 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::error::Error;
 <span class="kw">use </span>comrak::{arena_tree::NodeEdge, format_commonmark, nodes::NodeValue, parse_document, Arena};
 <span class="kw">use </span>convert_case::{Case, Casing};
 <span class="kw">use </span>proc_macro2::Ident;
 <span class="kw">use </span>quote::format_ident;
+<span class="kw">use </span>syn::{parse_quote, Type};
 
 <span class="kw">const </span>RESERVED_NAMES: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[<span class="string">"name"</span>, <span class="string">"operation"</span>, <span class="string">"builder"</span>];
+
+<span class="kw">pub fn </span>generate_result_type(r#type: Type) -&gt; Type {
+    <span class="macro">parse_quote!</span>(<span class="prelude-ty">Result</span>&lt;#r#type, ::melior::Error&gt;)
+}
+
+<span class="kw">pub fn </span>generate_iterator_type(r#type: Type) -&gt; Type {
+    <span class="macro">parse_quote!</span>(<span class="kw">impl </span>Iterator&lt;Item = #r#type&gt;)
+}
 
 <span class="kw">pub fn </span>sanitize_snake_case_name(name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, Error&gt; {
     sanitize_name(<span class="kw-2">&amp;</span>name.to_case(Case::Snake))
