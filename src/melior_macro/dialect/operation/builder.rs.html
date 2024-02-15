@@ -188,6 +188,7 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>type_state_item;
 <span class="kw">mod </span>type_state_list;
 
@@ -202,19 +203,25 @@
 
 <span class="kw">pub struct </span>OperationBuilder&lt;<span class="lifetime">'o</span>&gt; {
     operation: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Operation&lt;<span class="lifetime">'o</span>&gt;,
+    identifier: Ident,
     type_state: TypeStateList,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'o</span>&gt; OperationBuilder&lt;<span class="lifetime">'o</span>&gt; {
-    <span class="kw">pub fn </span>new(operation: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Operation&lt;<span class="lifetime">'o</span>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(operation: <span class="kw-2">&amp;</span><span class="lifetime">'o </span>Operation&lt;<span class="lifetime">'o</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             operation,
+            identifier: <span class="macro">format_ident!</span>(<span class="string">"{}Builder"</span>, operation.class_name()<span class="question-mark">?</span>),
             type_state: <span class="self">Self</span>::create_type_state(operation),
-        }
+        })
     }
 
     <span class="kw">pub fn </span>operation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Operation {
         <span class="self">self</span>.operation
+    }
+
+    <span class="kw">pub fn </span>identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ident {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.identifier
     }
 
     <span class="kw">pub fn </span>type_state(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TypeStateList {
@@ -227,8 +234,7 @@
         phantoms: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[TokenStream],
     ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt;&gt; + <span class="lifetime">'a </span>{
         <span class="self">self</span>.operation.fields().map(<span class="kw">move </span>|field| {
-            <span class="comment">// TODO Initialize a builder identifier out of this closure.
-            </span><span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier()<span class="question-mark">?</span>;
+            <span class="kw">let </span>builder_ident = <span class="self">self</span>.identifier();
             <span class="kw">let </span>name = sanitize_snake_case_name(field.name())<span class="question-mark">?</span>;
             <span class="kw">let </span>parameter_type = field.parameter_type();
             <span class="kw">let </span>argument = <span class="macro">quote! </span>{ #name: #parameter_type };
@@ -275,7 +281,7 @@
     }
 
     <span class="kw">pub fn </span>create_build_fn(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
-        <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier()<span class="question-mark">?</span>;
+        <span class="kw">let </span>builder_ident = <span class="self">self</span>.identifier();
         <span class="kw">let </span>arguments = <span class="self">self</span>.type_state.arguments_all_set(<span class="bool-val">true</span>);
         <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.operation.class_name()<span class="question-mark">?</span>);
         <span class="kw">let </span>error = <span class="macro">format!</span>(<span class="string">"should be a valid {class_name}"</span>);
@@ -294,7 +300,7 @@
     }
 
     <span class="kw">pub fn </span>create_new_fn(<span class="kw-2">&amp;</span><span class="self">self</span>, phantoms: <span class="kw-2">&amp;</span>[TokenStream]) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
-        <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier()<span class="question-mark">?</span>;
+        <span class="kw">let </span>builder_ident = <span class="self">self</span>.identifier();
         <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.operation.full_name()<span class="question-mark">?</span>;
         <span class="kw">let </span>arguments = <span class="self">self</span>.type_state.arguments_all_set(<span class="bool-val">false</span>);
 
@@ -312,7 +318,7 @@
     }
 
     <span class="kw">pub fn </span>create_op_builder_fn(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
-        <span class="kw">let </span>builder_ident = <span class="self">self</span>.builder_identifier()<span class="question-mark">?</span>;
+        <span class="kw">let </span>builder_ident = <span class="self">self</span>.identifier();
         <span class="kw">let </span>arguments = <span class="self">self</span>.type_state.arguments_all_set(<span class="bool-val">false</span>);
 
         <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
@@ -371,10 +377,6 @@
                 .map(|(index, field)| TypeStateItem::new(index, field.name().to_string()))
                 .collect(),
         )
-    }
-
-    <span class="kw">pub fn </span>builder_identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="macro">format_ident!</span>(<span class="string">"{}Builder"</span>, <span class="self">self</span>.operation.class_name()<span class="question-mark">?</span>))
     }
 }
 </code></pre></div></section></main></body></html>

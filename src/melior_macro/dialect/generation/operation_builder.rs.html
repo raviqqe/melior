@@ -90,7 +90,7 @@
     <span class="kw">let </span>new = builder.create_new_fn(phantom_arguments.as_slice())<span class="question-mark">?</span>;
     <span class="kw">let </span>build = builder.create_build_fn()<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>builder_identifier = builder.builder_identifier()<span class="question-mark">?</span>;
+    <span class="kw">let </span>builder_identifier = builder.identifier();
     <span class="kw">let </span>doc = <span class="macro">format!</span>(<span class="string">"Builder for {}"</span>, builder.operation().summary()<span class="question-mark">?</span>);
     <span class="kw">let </span>iter_arguments = builder.type_state().parameters();
 

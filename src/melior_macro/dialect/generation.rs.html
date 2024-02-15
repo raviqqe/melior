@@ -105,7 +105,7 @@
         .map(generate_attribute_accessors)
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>builder = OperationBuilder::new(operation);
+    <span class="kw">let </span>builder = OperationBuilder::new(operation)<span class="question-mark">?</span>;
     <span class="kw">let </span>builder_tokens = generate_operation_builder(<span class="kw-2">&amp;</span>builder)<span class="question-mark">?</span>;
     <span class="kw">let </span>builder_fn = builder.create_op_builder_fn()<span class="question-mark">?</span>;
     <span class="kw">let </span>default_constructor = builder.create_default_constructor()<span class="question-mark">?</span>;
