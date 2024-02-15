@@ -14,7 +14,8 @@ pub use self::{
 use super::utility::sanitize_documentation;
 use crate::dialect::{
     error::{Error, OdsError},
-    types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
+    r#trait::Trait,
+    types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
 };
 pub use operation_field::OperationFieldLike;
 use tblgen::{error::WithLocation, record::Record};
@@ -195,9 +196,8 @@ impl<'a> Operation<'a> {
 
         while let Some(trait_list) = trait_lists.pop() {
             for value in trait_list.iter() {
-                let definition: Record = value
-                    .try_into()
-                    .map_err(|error: tblgen::Error| error.set_location(definition))?;
+                let definition =
+                    Record::try_from(value).map_err(|error| error.set_location(definition))?;
 
                 if definition.subclass_of("TraitList") {
                     trait_lists.push(definition.list_value("traits")?);
@@ -329,7 +329,7 @@ impl<'a> Operation<'a> {
                         .with_location(*definition)
                         .into())
                 } else {
-                    Attribute::new(name, AttributeConstraint::new(*definition)?)
+                    Attribute::new(name, *definition)
                 }
             })
             .collect()
@@ -346,7 +346,7 @@ impl<'a> Operation<'a> {
             })
             .map(|definition| {
                 if definition.subclass_of("DerivedAttr") {
-                    Attribute::new(definition.name()?, AttributeConstraint::new(definition)?)
+                    Attribute::new(definition.name()?, definition)
                 } else {
                     Err(OdsError::ExpectedSuperClass("DerivedAttr")
                         .with_location(definition)
