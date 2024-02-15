@@ -373,7 +373,8 @@
 <span class="kw">use </span><span class="kw">super</span>::utility::sanitize_documentation;
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::{Error, OdsError},
-    types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
+    r#trait::Trait,
+    types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
 };
 <span class="kw">pub use </span>operation_field::OperationFieldLike;
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record};
@@ -554,9 +555,8 @@
 
         <span class="kw">while let </span><span class="prelude-val">Some</span>(trait_list) = trait_lists.pop() {
             <span class="kw">for </span>value <span class="kw">in </span>trait_list.iter() {
-                <span class="kw">let </span>definition: Record = value
-                    .try_into()
-                    .map_err(|error: tblgen::Error| error.set_location(definition))<span class="question-mark">?</span>;
+                <span class="kw">let </span>definition =
+                    Record::try_from(value).map_err(|error| error.set_location(definition))<span class="question-mark">?</span>;
 
                 <span class="kw">if </span>definition.subclass_of(<span class="string">"TraitList"</span>) {
                     trait_lists.push(definition.list_value(<span class="string">"traits"</span>)<span class="question-mark">?</span>);
@@ -688,7 +688,7 @@
                         .with_location(<span class="kw-2">*</span>definition)
                         .into())
                 } <span class="kw">else </span>{
-                    Attribute::new(name, AttributeConstraint::new(<span class="kw-2">*</span>definition)<span class="question-mark">?</span>)
+                    Attribute::new(name, <span class="kw-2">*</span>definition)
                 }
             })
             .collect()
@@ -705,7 +705,7 @@
             })
             .map(|definition| {
                 <span class="kw">if </span>definition.subclass_of(<span class="string">"DerivedAttr"</span>) {
-                    Attribute::new(definition.name()<span class="question-mark">?</span>, AttributeConstraint::new(definition)<span class="question-mark">?</span>)
+                    Attribute::new(definition.name()<span class="question-mark">?</span>, definition)
                 } <span class="kw">else </span>{
                     <span class="prelude-val">Err</span>(OdsError::ExpectedSuperClass(<span class="string">"DerivedAttr"</span>)
                         .with_location(definition)

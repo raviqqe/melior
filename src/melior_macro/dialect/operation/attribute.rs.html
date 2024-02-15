@@ -83,38 +83,190 @@
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error,
     operation::operation_field::OperationFieldLike,
-    types::AttributeConstraint,
     utility::{generate_result_type, sanitize_snake_case_name},
 };
+<span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
 <span class="kw">use </span>quote::quote;
+<span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>syn::{parse_quote, Type};
+<span class="kw">use </span>tblgen::{error::TableGenError, Record};
+
+<span class="macro">macro_rules! </span>prefixed_string {
+    (<span class="macro-nonterminal">$prefix</span>:literal, <span class="macro-nonterminal">$name</span>:ident) =&gt; {
+        <span class="macro">concat!</span>(<span class="macro-nonterminal">$prefix</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$name</span>))
+    };
+}
+
+<span class="macro">macro_rules! </span>mlir_attribute {
+    (<span class="macro-nonterminal">$name</span>:ident) =&gt; {
+        <span class="macro">prefixed_string!</span>(<span class="string">"::mlir::"</span>, <span class="macro-nonterminal">$name</span>)
+    };
+}
+
+<span class="macro">macro_rules! </span>melior_attribute {
+    (<span class="macro-nonterminal">$name</span>:ident) =&gt; {
+        <span class="macro">prefixed_string!</span>(<span class="string">"::melior::ir::attribute::"</span>, <span class="macro-nonterminal">$name</span>)
+    };
+}
+
+<span class="kw">static </span>ATTRIBUTE_TYPES: Lazy&lt;HashMap&lt;<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span><span class="kw-2">mut </span>map = HashMap::new();
+
+    <span class="macro">macro_rules! </span>initialize_attributes {
+        ($(<span class="macro-nonterminal">$mlir</span>:ident =&gt; <span class="macro-nonterminal">$melior</span>:ident),* $(,)<span class="kw-2">*</span>) =&gt; {
+            $(
+                map.insert(
+                    <span class="macro">mlir_attribute!</span>(<span class="macro-nonterminal">$mlir</span>),
+                    <span class="macro">melior_attribute!</span>(<span class="macro-nonterminal">$melior</span>),
+                );
+            )*
+        };
+    }
+
+    <span class="macro">initialize_attributes!</span>(
+        ArrayAttr =&gt; ArrayAttribute,
+        Attribute =&gt; Attribute,
+        DenseElementsAttr =&gt; DenseElementsAttribute,
+        DenseI32ArrayAttr =&gt; DenseI32ArrayAttribute,
+        FlatSymbolRefAttr =&gt; FlatSymbolRefAttribute,
+        FloatAttr =&gt; FloatAttribute,
+        IntegerAttr =&gt; IntegerAttribute,
+        StringAttr =&gt; StringAttribute,
+        TypeAttr =&gt; TypeAttribute,
+    );
+
+    map
+});
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Attribute&lt;<span class="lifetime">'a</span>&gt; {
     name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     sanitized_name: Ident,
-    constraint: AttributeConstraint&lt;<span class="lifetime">'a</span>&gt;,
+    storage_type_string: String,
+    storage_type: Type,
+    optional: bool,
+    default: bool,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Attribute&lt;<span class="lifetime">'a</span>&gt; {
-    <span class="kw">pub fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, constraint: AttributeConstraint&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+    <span class="kw">pub fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, record: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+        <span class="kw">let </span>storage_type_string = record.string_value(<span class="string">"storageType"</span>)<span class="question-mark">?</span>;
+
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             name,
             sanitized_name: sanitize_snake_case_name(name)<span class="question-mark">?</span>,
-            constraint,
+            storage_type: syn::parse_str(
+                ATTRIBUTE_TYPES
+                    .get(storage_type_string.trim())
+                    .copied()
+                    .unwrap_or(<span class="macro">melior_attribute!</span>(Attribute)),
+            )<span class="question-mark">?</span>,
+            storage_type_string,
+            optional: record.bit_value(<span class="string">"isOptional"</span>)<span class="question-mark">?</span>,
+            default: <span class="kw">match </span>record.string_value(<span class="string">"defaultValue"</span>) {
+                <span class="prelude-val">Ok</span>(value) =&gt; !value.is_empty(),
+                <span class="prelude-val">Err</span>(error) =&gt; {
+                    <span class="comment">// `defaultValue` can be uninitialized.
+                    </span><span class="kw">if </span>!<span class="macro">matches!</span>(error.error(), TableGenError::InitConversion { .. }) {
+                        <span class="kw">return </span><span class="prelude-val">Err</span>(error.into());
+                    }
+
+                    <span class="bool-val">false
+                </span>}
+            },
         })
     }
 
     <span class="kw">pub fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.constraint.is_optional()
+        <span class="self">self</span>.optional
     }
 
     <span class="kw">pub fn </span>is_unit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.constraint.is_unit()
+        <span class="self">self</span>.storage_type_string == <span class="macro">mlir_attribute!</span>(UnitAttr)
+    }
+
+    <span class="kw">pub fn </span>has_default_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.default
     }
 }
 
@@ -132,16 +284,16 @@
     }
 
     <span class="kw">fn </span>parameter_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type {
-        <span class="kw">if </span><span class="self">self</span>.constraint.is_unit() {
+        <span class="kw">if </span><span class="self">self</span>.is_unit() {
             <span class="macro">parse_quote!</span>(bool)
         } <span class="kw">else </span>{
-            <span class="kw">let </span>r#type = <span class="self">self</span>.constraint.storage_type();
+            <span class="kw">let </span>r#type = <span class="kw-2">&amp;</span><span class="self">self</span>.storage_type;
             <span class="macro">parse_quote!</span>(#r#type&lt;<span class="lifetime">'c</span>&gt;)
         }
     }
 
     <span class="kw">fn </span>return_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type {
-        <span class="kw">if </span><span class="self">self</span>.constraint.is_unit() {
+        <span class="kw">if </span><span class="self">self</span>.is_unit() {
             <span class="macro">parse_quote!</span>(bool)
         } <span class="kw">else </span>{
             generate_result_type(<span class="self">self</span>.parameter_type())
@@ -149,7 +301,7 @@
     }
 
     <span class="kw">fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.is_optional() || <span class="self">self</span>.constraint.has_default_value()
+        <span class="self">self</span>.is_optional() || <span class="self">self</span>.has_default_value()
     }
 
     <span class="kw">fn </span>is_result(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
