@@ -18,7 +18,7 @@ use crate::dialect::{
     types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
 };
 pub use operation_field::OperationFieldLike;
-use tblgen::{error::WithLocation, record::Record};
+use tblgen::{error::WithLocation, record::Record, TypedInit};
 
 #[derive(Debug)]
 pub struct Operation<'a> {
@@ -215,21 +215,23 @@ impl<'a> Operation<'a> {
 
     fn dag_constraints(
         definition: Record<'a>,
-        dag_field_name: &str,
+        name: &str,
     ) -> Result<Vec<(&'a str, Record<'a>)>, Error> {
         definition
-            .dag_value(dag_field_name)?
+            .dag_value(name)?
             .args()
             .map(|(name, argument)| {
-                let mut definition: Record = argument
-                    .try_into()
-                    .map_err(|error: tblgen::Error| error.set_location(definition))?;
+                let definition =
+                    Record::try_from(argument).map_err(|error| error.set_location(definition))?;
 
-                if definition.subclass_of("OpVariable") {
-                    definition = definition.def_value("constraint")?;
-                }
-
-                Ok((name, definition))
+                Ok((
+                    name,
+                    if definition.subclass_of("OpVariable") {
+                        definition.def_value("constraint")?
+                    } else {
+                        definition
+                    },
+                ))
             })
             .collect()
     }
@@ -276,7 +278,7 @@ impl<'a> Operation<'a> {
     ) -> Result<(Vec<OperationField<'a>>, usize), Error> {
         let unfixed_count = elements
             .iter()
-            .filter(|(_, constraint)| constraint.has_unfixed())
+            .filter(|(_, constraint)| constraint.is_unfixed())
             .count();
         let mut variadic_kind = VariadicKind::new(unfixed_count, same_size, attribute_sized);
         let mut fields = vec![];
@@ -295,7 +297,7 @@ impl<'a> Operation<'a> {
 
             match &mut variadic_kind {
                 VariadicKind::Simple { unfixed_seen } => {
-                    if constraint.has_unfixed() {
+                    if constraint.is_unfixed() {
                         *unfixed_seen = true;
                     }
                 }
@@ -304,7 +306,7 @@ impl<'a> Operation<'a> {
                     preceding_variadic_count,
                     ..
                 } => {
-                    if constraint.has_unfixed() {
+                    if constraint.is_unfixed() {
                         *preceding_variadic_count += 1;
                     } else {
                         *preceding_simple_count += 1;
@@ -338,12 +340,11 @@ impl<'a> Operation<'a> {
     fn collect_derived_attributes(definition: Record<'a>) -> Result<Vec<Attribute<'a>>, Error> {
         definition
             .values()
-            .filter_map(|value| {
-                let Ok(definition) = Record::try_from(value) else {
-                    return None;
-                };
-                definition.subclass_of("Attr").then_some(definition)
-            })
+            .filter(|value| matches!(value.init, TypedInit::Def(_)))
+            .map(Record::try_from)
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .filter(|definition| definition.subclass_of("Attr"))
             .map(|definition| {
                 if definition.subclass_of("DerivedAttr") {
                     Attribute::new(definition.name()?, definition)
