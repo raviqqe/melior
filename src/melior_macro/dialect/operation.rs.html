@@ -357,6 +357,7 @@
 <a href="#356" id="356">356</a>
 <a href="#357" id="357">357</a>
 <a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>element_kind;
@@ -377,7 +378,7 @@
     types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
 };
 <span class="kw">pub use </span>operation_field::OperationFieldLike;
-<span class="kw">use </span>tblgen::{error::WithLocation, record::Record};
+<span class="kw">use </span>tblgen::{error::WithLocation, record::Record, TypedInit};
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Operation&lt;<span class="lifetime">'a</span>&gt; {
@@ -574,21 +575,23 @@
 
     <span class="kw">fn </span>dag_constraints(
         definition: Record&lt;<span class="lifetime">'a</span>&gt;,
-        dag_field_name: <span class="kw-2">&amp;</span>str,
+        name: <span class="kw-2">&amp;</span>str,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, Record&lt;<span class="lifetime">'a</span>&gt;)&gt;, Error&gt; {
         definition
-            .dag_value(dag_field_name)<span class="question-mark">?
+            .dag_value(name)<span class="question-mark">?
             </span>.args()
             .map(|(name, argument)| {
-                <span class="kw">let </span><span class="kw-2">mut </span>definition: Record = argument
-                    .try_into()
-                    .map_err(|error: tblgen::Error| error.set_location(definition))<span class="question-mark">?</span>;
+                <span class="kw">let </span>definition =
+                    Record::try_from(argument).map_err(|error| error.set_location(definition))<span class="question-mark">?</span>;
 
-                <span class="kw">if </span>definition.subclass_of(<span class="string">"OpVariable"</span>) {
-                    definition = definition.def_value(<span class="string">"constraint"</span>)<span class="question-mark">?</span>;
-                }
-
-                <span class="prelude-val">Ok</span>((name, definition))
+                <span class="prelude-val">Ok</span>((
+                    name,
+                    <span class="kw">if </span>definition.subclass_of(<span class="string">"OpVariable"</span>) {
+                        definition.def_value(<span class="string">"constraint"</span>)<span class="question-mark">?
+                    </span>} <span class="kw">else </span>{
+                        definition
+                    },
+                ))
             })
             .collect()
     }
@@ -635,7 +638,7 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;, usize), Error&gt; {
         <span class="kw">let </span>unfixed_count = elements
             .iter()
-            .filter(|(<span class="kw">_</span>, constraint)| constraint.has_unfixed())
+            .filter(|(<span class="kw">_</span>, constraint)| constraint.is_unfixed())
             .count();
         <span class="kw">let </span><span class="kw-2">mut </span>variadic_kind = VariadicKind::new(unfixed_count, same_size, attribute_sized);
         <span class="kw">let </span><span class="kw-2">mut </span>fields = <span class="macro">vec!</span>[];
@@ -654,7 +657,7 @@
 
             <span class="kw">match </span><span class="kw-2">&amp;mut </span>variadic_kind {
                 VariadicKind::Simple { unfixed_seen } =&gt; {
-                    <span class="kw">if </span>constraint.has_unfixed() {
+                    <span class="kw">if </span>constraint.is_unfixed() {
                         <span class="kw-2">*</span>unfixed_seen = <span class="bool-val">true</span>;
                     }
                 }
@@ -663,7 +666,7 @@
                     preceding_variadic_count,
                     ..
                 } =&gt; {
-                    <span class="kw">if </span>constraint.has_unfixed() {
+                    <span class="kw">if </span>constraint.is_unfixed() {
                         <span class="kw-2">*</span>preceding_variadic_count += <span class="number">1</span>;
                     } <span class="kw">else </span>{
                         <span class="kw-2">*</span>preceding_simple_count += <span class="number">1</span>;
@@ -697,12 +700,11 @@
     <span class="kw">fn </span>collect_derived_attributes(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Attribute&lt;<span class="lifetime">'a</span>&gt;&gt;, Error&gt; {
         definition
             .values()
-            .filter_map(|value| {
-                <span class="kw">let </span><span class="prelude-val">Ok</span>(definition) = Record::try_from(value) <span class="kw">else </span>{
-                    <span class="kw">return </span><span class="prelude-val">None</span>;
-                };
-                definition.subclass_of(<span class="string">"Attr"</span>).then_some(definition)
-            })
+            .filter(|value| <span class="macro">matches!</span>(value.init, TypedInit::Def(<span class="kw">_</span>)))
+            .map(Record::try_from)
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?
+            </span>.into_iter()
+            .filter(|definition| definition.subclass_of(<span class="string">"Attr"</span>))
             .map(|definition| {
                 <span class="kw">if </span>definition.subclass_of(<span class="string">"DerivedAttr"</span>) {
                     Attribute::new(definition.name()<span class="question-mark">?</span>, definition)

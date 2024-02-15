@@ -244,7 +244,7 @@
                         <span class="kw">let </span>group_len = total_var_len / #unfixed_count;
                         <span class="kw">let </span>start = #preceding_simple_count + #preceding_variadic_count * group_len;
                     };
-                    <span class="kw">let </span>get_elements = <span class="kw">if </span>constraint.has_unfixed() {
+                    <span class="kw">let </span>get_elements = <span class="kw">if </span>constraint.is_unfixed() {
                         <span class="macro">quote! </span>{
                             <span class="self">self</span>.operation.#plural().skip(start).take(group_len)
                         }
@@ -271,7 +271,7 @@
                             .sum::&lt;i32&gt;() <span class="kw">as </span>usize;
                         <span class="kw">let </span>group_len = attribute.element(#index)<span class="question-mark">? </span><span class="kw">as </span>usize;
                     };
-                    <span class="kw">let </span>get_elements = <span class="kw">if </span>!constraint.has_unfixed() {
+                    <span class="kw">let </span>get_elements = <span class="kw">if </span>!constraint.is_unfixed() {
                         <span class="macro">quote! </span>{
                             <span class="self">self</span>.operation.#kind_ident(start)
                         }
