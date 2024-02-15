@@ -1,6 +1,7 @@
 use super::{element_kind::ElementKind, SequenceInfo, VariadicKind};
-use crate::dialect::types::{
-    AttributeConstraint, RegionConstraint, SuccessorConstraint, TypeConstraint,
+use crate::dialect::{
+    types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
+    utility::{generate_iterator_type, generate_result_type},
 };
 use syn::{parse_quote, Type};
 
@@ -11,9 +12,6 @@ pub enum FieldKind<'a> {
         constraint: TypeConstraint<'a>,
         sequence_info: SequenceInfo,
         variadic_kind: VariadicKind,
-    },
-    Attribute {
-        constraint: AttributeConstraint<'a>,
     },
     Successor {
         constraint: SuccessorConstraint<'a>,
@@ -26,33 +24,11 @@ pub enum FieldKind<'a> {
 }
 
 impl<'a> FieldKind<'a> {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Self::Element { kind, .. } => kind.as_str(),
-            Self::Attribute { .. } => "attribute",
-            Self::Successor { .. } => "successor",
-            Self::Region { .. } => "region",
-        }
-    }
-
     pub fn is_optional(&self) -> bool {
         match self {
             Self::Element { constraint, .. } => constraint.is_optional(),
-            Self::Attribute { constraint, .. } => {
-                constraint.is_optional() || constraint.has_default_value()
-            }
             Self::Successor { .. } | Self::Region { .. } => false,
         }
-    }
-
-    pub fn is_result(&self) -> bool {
-        matches!(
-            self,
-            Self::Element {
-                kind: ElementKind::Result,
-                ..
-            }
-        )
     }
 
     pub fn parameter_type(&self) -> Type {
@@ -74,14 +50,6 @@ impl<'a> FieldKind<'a> {
                     base_type
                 }
             }
-            Self::Attribute { constraint } => {
-                if constraint.is_unit() {
-                    parse_quote!(bool)
-                } else {
-                    let r#type = constraint.storage_type();
-                    parse_quote!(#r#type<'c>)
-                }
-            }
             Self::Successor { constraint, .. } => {
                 let r#type: Type = parse_quote!(&::melior::ir::Block<'c>);
                 if constraint.is_variadic() {
@@ -99,14 +67,6 @@ impl<'a> FieldKind<'a> {
                 }
             }
         }
-    }
-
-    fn create_result_type(r#type: Type) -> Type {
-        parse_quote!(Result<#r#type, ::melior::Error>)
-    }
-
-    fn create_iterator_type(r#type: Type) -> Type {
-        parse_quote!(impl Iterator<Item = #r#type>)
     }
 
     pub fn return_type(&self) -> Type {
@@ -127,34 +87,27 @@ impl<'a> FieldKind<'a> {
                 };
 
                 if !constraint.is_variadic() {
-                    Self::create_result_type(base_type)
+                    generate_result_type(base_type)
                 } else if variadic_kind == &VariadicKind::AttributeSized {
-                    Self::create_result_type(Self::create_iterator_type(base_type))
+                    generate_result_type(generate_iterator_type(base_type))
                 } else {
-                    Self::create_iterator_type(base_type)
-                }
-            }
-            Self::Attribute { constraint } => {
-                if constraint.is_unit() {
-                    parse_quote!(bool)
-                } else {
-                    Self::create_result_type(self.parameter_type())
+                    generate_iterator_type(base_type)
                 }
             }
             Self::Successor { constraint, .. } => {
                 let r#type: Type = parse_quote!(::melior::ir::BlockRef<'c, '_>);
                 if constraint.is_variadic() {
-                    Self::create_iterator_type(r#type)
+                    generate_iterator_type(r#type)
                 } else {
-                    Self::create_result_type(r#type)
+                    generate_result_type(r#type)
                 }
             }
             Self::Region { constraint, .. } => {
                 let r#type: Type = parse_quote!(::melior::ir::RegionRef<'c, '_>);
                 if constraint.is_variadic() {
-                    Self::create_iterator_type(r#type)
+                    generate_iterator_type(r#type)
                 } else {
-                    Self::create_result_type(r#type)
+                    generate_result_type(r#type)
                 }
             }
         }

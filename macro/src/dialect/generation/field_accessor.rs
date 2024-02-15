@@ -1,55 +1,24 @@
-use super::{
-    super::{error::Error, utility::sanitize_snake_case_name},
-    ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind,
+use crate::dialect::{
+    error::Error,
+    operation::{ElementKind, FieldKind, OperationField, SequenceInfo, VariadicKind},
 };
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
-pub fn generate_accessors(field: &OperationField) -> Result<TokenStream, Error> {
-    let setter = {
-        let ident = sanitize_snake_case_name(&format!("set_{}", field.name))?;
-
-        generate_setter(field).map(|body| {
-            let parameter_type = &field.kind.parameter_type();
-
-            quote! {
-                pub fn #ident(&mut self, context: &'c ::melior::Context, value: #parameter_type) {
-                    #body
-                }
-            }
-        })
-    };
-    let remover = {
-        let ident = sanitize_snake_case_name(&format!("remove_{}", field.name))?;
-        generate_remover(field).map(|body| {
-                quote! {
-                    pub fn #ident(&mut self, context: &'c ::melior::Context) -> Result<(), ::melior::Error> {
-                        #body
-                    }
-                }
-            })
-    };
-    let getter = {
-        let ident = &field.sanitized_name;
-        let return_type = &field.kind.return_type();
-        generate_getter(field).map(|body| {
-            quote! {
-                #[allow(clippy::needless_question_mark)]
-                pub fn #ident(&self, context: &'c ::melior::Context) -> #return_type {
-                    #body
-                }
-            }
-        })
-    };
+pub fn generate_accessor(field: &OperationField) -> Result<TokenStream, Error> {
+    let ident = &field.sanitized_name;
+    let return_type = &field.kind.return_type();
+    let body = generate_getter(field);
 
     Ok(quote! {
-        #getter
-        #setter
-        #remover
+        #[allow(clippy::needless_question_mark)]
+        pub fn #ident(&self, context: &'c ::melior::Context) -> #return_type {
+            #body
+        }
     })
 }
 
-fn generate_getter(field: &OperationField) -> Option<TokenStream> {
+fn generate_getter(field: &OperationField) -> TokenStream {
     match &field.kind {
         FieldKind::Element {
             kind,
@@ -66,7 +35,7 @@ fn generate_getter(field: &OperationField) -> Option<TokenStream> {
             };
             let name = field.name;
 
-            Some(match variadic_kind {
+            match variadic_kind {
                 VariadicKind::Simple { unfixed_seen } => {
                     if constraint.is_optional() {
                         // Optional element, and some singular elements.
@@ -158,13 +127,13 @@ fn generate_getter(field: &OperationField) -> Option<TokenStream> {
 
                     quote! { #compute_start_length #get_elements }
                 }
-            })
+            }
         }
         FieldKind::Successor {
             constraint,
             sequence_info: SequenceInfo { index, .. },
         } => {
-            Some(if constraint.is_variadic() {
+            if constraint.is_variadic() {
                 // Only the last successor can be variadic
                 quote! {
                     self.operation.successors().skip(#index)
@@ -173,13 +142,13 @@ fn generate_getter(field: &OperationField) -> Option<TokenStream> {
                 quote! {
                     self.operation.successor(#index)
                 }
-            })
+            }
         }
         FieldKind::Region {
             constraint,
             sequence_info: SequenceInfo { index, .. },
         } => {
-            Some(if constraint.is_variadic() {
+            if constraint.is_variadic() {
                 // Only the last region can be variadic
                 quote! {
                     self.operation.regions().skip(#index)
@@ -188,52 +157,7 @@ fn generate_getter(field: &OperationField) -> Option<TokenStream> {
                 quote! {
                     self.operation.region(#index)
                 }
-            })
-        }
-        FieldKind::Attribute { constraint } => {
-            let name = &field.name;
-
-            Some(if constraint.is_unit() {
-                quote! { self.operation.attribute(#name).is_some() }
-            } else {
-                // TODO Handle returning `melior::Attribute`.
-                quote! { Ok(self.operation.attribute(#name)?.try_into()?) }
-            })
-        }
-    }
-}
-
-fn generate_remover(field: &OperationField) -> Option<TokenStream> {
-    if let FieldKind::Attribute { constraint } = &field.kind {
-        if constraint.is_unit() || constraint.is_optional() {
-            let name = &field.name;
-
-            Some(quote! { self.operation.remove_attribute(#name) })
-        } else {
-            None
-        }
-    } else {
-        None
-    }
-}
-
-fn generate_setter(field: &OperationField) -> Option<TokenStream> {
-    let FieldKind::Attribute { constraint } = &field.kind else {
-        return None;
-    };
-    let name = &field.name;
-
-    Some(if constraint.is_unit() {
-        quote! {
-            if value {
-                self.operation.set_attribute(#name, Attribute::unit(&self.operation.context()));
-            } else {
-                self.operation.remove_attribute(#name)
             }
         }
-    } else {
-        quote! {
-            self.operation.set_attribute(#name, &value.into());
-        }
-    })
+    }
 }

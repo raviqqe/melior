@@ -4,59 +4,11 @@ mod type_state_list;
 use self::{type_state_item::TypeStateItem, type_state_list::TypeStateList};
 use super::{
     super::{error::Error, utility::sanitize_snake_case_name},
-    FieldKind, Operation, OperationField,
+    operation_field::OperationFieldLike,
+    Operation,
 };
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-
-pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStream, Error> {
-    let field_names = builder
-        .type_state
-        .field_names()
-        .map(sanitize_snake_case_name)
-        .collect::<Result<Vec<_>, _>>()?;
-
-    let phantom_fields = builder
-        .type_state
-        .parameters()
-        .zip(&field_names)
-        .map(|(r#type, name)| {
-            quote! {
-                #name: ::std::marker::PhantomData<#r#type>
-            }
-        });
-
-    let phantom_arguments = field_names
-        .iter()
-        .map(|name| quote! { #name: ::std::marker::PhantomData })
-        .collect::<Vec<_>>();
-
-    let builder_fns = builder
-        .create_builder_fns(&field_names, phantom_arguments.as_slice())
-        .collect::<Result<Vec<_>, _>>()?;
-
-    let new = builder.create_new_fn(phantom_arguments.as_slice())?;
-    let build = builder.create_build_fn()?;
-
-    let builder_identifier = builder.builder_identifier()?;
-    let doc = format!("Builder for {}", builder.operation.summary()?);
-    let iter_arguments = builder.type_state.parameters();
-
-    Ok(quote! {
-        #[doc = #doc]
-        pub struct #builder_identifier<'c, #(#iter_arguments),*> {
-            builder: ::melior::ir::operation::OperationBuilder<'c>,
-            context: &'c ::melior::Context,
-            #(#phantom_fields),*
-        }
-
-        #new
-
-        #(#builder_fns)*
-
-        #build
-    })
-}
 
 pub struct OperationBuilder<'o> {
     operation: &'o Operation<'o>,
@@ -71,6 +23,14 @@ impl<'o> OperationBuilder<'o> {
         }
     }
 
+    pub fn operation(&self) -> &Operation {
+        self.operation
+    }
+
+    pub fn type_state(&self) -> &TypeStateList {
+        &self.type_state
+    }
+
     pub fn create_builder_fns<'a>(
         &'a self,
         field_names: &'a [Ident],
@@ -79,49 +39,17 @@ impl<'o> OperationBuilder<'o> {
         self.operation.fields().map(move |field| {
             // TODO Initialize a builder identifier out of this closure.
             let builder_ident = self.builder_identifier()?;
-            let name = sanitize_snake_case_name(field.name)?;
-            let parameter_type = field.kind.parameter_type();
+            let name = sanitize_snake_case_name(field.name())?;
+            let parameter_type = field.parameter_type();
             let argument = quote! { #name: #parameter_type };
-            let add = format_ident!("add_{}s", field.kind.as_str());
+            let add = format_ident!("add_{}", field.plural_identifier());
 
             // Argument types can be singular and variadic, but add functions in melior
             // are always variadic, so we need to create a slice or vec for singular
             // arguments
-            let add_arguments = match &field.kind {
-                FieldKind::Element { constraint, .. } => {
-                    if constraint.has_unfixed() && !constraint.is_optional() {
-                        quote! { #name }
-                    } else {
-                        quote! { &[#name] }
-                    }
-                }
-                FieldKind::Attribute { .. } => {
-                    let name_string = &field.name;
+            let add_arguments = field.add_arguments(&name);
 
-                    quote! {
-                        &[(
-                            ::melior::ir::Identifier::new(self.context, #name_string),
-                            #name.into(),
-                        )]
-                    }
-                }
-                FieldKind::Successor { constraint, .. } => {
-                    if constraint.is_variadic() {
-                        quote! { #name }
-                    } else {
-                        quote! { &[#name] }
-                    }
-                }
-                FieldKind::Region { constraint, .. } => {
-                    if constraint.is_variadic() {
-                        quote! { #name }
-                    } else {
-                        quote! { vec![#name] }
-                    }
-                }
-            };
-
-            Ok(if field.kind.is_optional() {
+            Ok(if field.is_optional() {
                 let parameters = self.type_state.parameters().collect::<Vec<_>>();
 
                 quote! {
@@ -132,12 +60,12 @@ impl<'o> OperationBuilder<'o> {
                         }
                     }
                 }
-            } else if field.kind.is_result() && self.operation.can_infer_type {
+            } else if field.is_result() && self.operation.can_infer_type {
                 quote!()
             } else {
-                let parameters = self.type_state.parameters_without(field.name);
-                let arguments_set = self.type_state.arguments_set(field.name, true);
-                let arguments_unset = self.type_state.arguments_set(field.name, false);
+                let parameters = self.type_state.parameters_without(field.name());
+                let arguments_set = self.type_state.arguments_set(field.name(), true);
+                let arguments_unset = self.type_state.arguments_set(field.name(), false);
 
                 quote! {
                     impl<'c, #(#parameters),*> #builder_ident<'c, #(#arguments_unset),*> {
@@ -156,7 +84,7 @@ impl<'o> OperationBuilder<'o> {
         })
     }
 
-    fn create_build_fn(&self) -> Result<TokenStream, Error> {
+    pub fn create_build_fn(&self) -> Result<TokenStream, Error> {
         let builder_ident = self.builder_identifier()?;
         let arguments = self.type_state.arguments_all_set(true);
         let class_name = format_ident!("{}", &self.operation.class_name()?);
@@ -175,7 +103,7 @@ impl<'o> OperationBuilder<'o> {
         })
     }
 
-    fn create_new_fn(&self, phantoms: &[TokenStream]) -> Result<TokenStream, Error> {
+    pub fn create_new_fn(&self, phantoms: &[TokenStream]) -> Result<TokenStream, Error> {
         let builder_ident = self.builder_identifier()?;
         let name = &self.operation.full_name()?;
         let arguments = self.type_state.arguments_all_set(false);
@@ -212,8 +140,8 @@ impl<'o> OperationBuilder<'o> {
         let name = sanitize_snake_case_name(self.operation.short_name()?)?;
         let arguments = Self::required_fields(self.operation)
             .map(|field| {
-                let parameter_type = &field.kind.parameter_type();
-                let parameter_name = &field.sanitized_name;
+                let parameter_type = &field.parameter_type();
+                let parameter_name = &field.sanitized_name();
 
                 quote! { #parameter_name: #parameter_type }
             })
@@ -221,7 +149,7 @@ impl<'o> OperationBuilder<'o> {
             .collect::<Vec<_>>();
         let builder_calls = Self::required_fields(self.operation)
             .map(|field| {
-                let parameter_name = &field.sanitized_name;
+                let parameter_name = &field.sanitized_name();
 
                 quote! { .#parameter_name(#parameter_name) }
             })
@@ -238,11 +166,11 @@ impl<'o> OperationBuilder<'o> {
         })
     }
 
-    fn required_fields<'a, 'b>(
-        operation: &'a Operation<'b>,
-    ) -> impl Iterator<Item = &'a OperationField<'b>> {
+    fn required_fields<'a>(
+        operation: &'a Operation,
+    ) -> impl Iterator<Item = &'a dyn OperationFieldLike> {
         operation.fields().filter(|field| {
-            (!field.kind.is_result() || !operation.can_infer_type) && !field.kind.is_optional()
+            (!field.is_result() || !operation.can_infer_type) && !field.is_optional()
         })
     }
 
@@ -250,12 +178,12 @@ impl<'o> OperationBuilder<'o> {
         TypeStateList::new(
             Self::required_fields(operation)
                 .enumerate()
-                .map(|(index, field)| TypeStateItem::new(index, field.name.to_string()))
+                .map(|(index, field)| TypeStateItem::new(index, field.name().to_string()))
                 .collect(),
         )
     }
 
-    fn builder_identifier(&self) -> Result<Ident, Error> {
+    pub fn builder_identifier(&self) -> Result<Ident, Error> {
         Ok(format_ident!("{}Builder", self.operation.class_name()?))
     }
 }

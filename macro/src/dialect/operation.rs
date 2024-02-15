@@ -1,4 +1,4 @@
-mod accessors;
+mod attribute;
 mod builder;
 mod element_kind;
 mod field_kind;
@@ -6,13 +6,9 @@ mod operation_field;
 mod sequence_info;
 mod variadic_kind;
 
-use self::{
-    accessors::generate_accessors,
-    builder::{generate_operation_builder, OperationBuilder},
-    element_kind::ElementKind,
-    field_kind::FieldKind,
-    operation_field::OperationField,
-    sequence_info::SequenceInfo,
+pub use self::{
+    attribute::Attribute, builder::OperationBuilder, element_kind::ElementKind,
+    field_kind::FieldKind, operation_field::OperationField, sequence_info::SequenceInfo,
     variadic_kind::VariadicKind,
 };
 use super::utility::sanitize_documentation;
@@ -20,69 +16,8 @@ use crate::dialect::{
     error::{Error, OdsError},
     types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
 };
-use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
+pub use operation_field::OperationFieldLike;
 use tblgen::{error::WithLocation, record::Record};
-
-pub fn generate_operation(operation: &Operation) -> Result<TokenStream, Error> {
-    let summary = operation.summary()?;
-    let description = operation.description()?;
-    let class_name = format_ident!("{}", operation.class_name()?);
-    let name = &operation.full_name()?;
-    let accessors = operation
-        .fields()
-        .map(generate_accessors)
-        .collect::<Result<Vec<_>, _>>()?;
-
-    let builder = OperationBuilder::new(operation);
-    let builder_tokens = generate_operation_builder(&builder)?;
-    let builder_fn = builder.create_op_builder_fn()?;
-    let default_constructor = builder.create_default_constructor()?;
-
-    Ok(quote! {
-        #[doc = #summary]
-        #[doc = "\n\n"]
-        #[doc = #description]
-        pub struct #class_name<'c> {
-            operation: ::melior::ir::operation::Operation<'c>,
-        }
-
-        impl<'c> #class_name<'c> {
-            pub fn name() -> &'static str {
-                #name
-            }
-
-            pub fn operation(&self) -> &::melior::ir::operation::Operation<'c> {
-                &self.operation
-            }
-
-            #builder_fn
-
-            #(#accessors)*
-        }
-
-        #builder_tokens
-
-        #default_constructor
-
-        impl<'c> TryFrom<::melior::ir::operation::Operation<'c>> for #class_name<'c> {
-            type Error = ::melior::Error;
-
-            fn try_from(
-                operation: ::melior::ir::operation::Operation<'c>,
-            ) -> Result<Self, Self::Error> {
-                // TODO Check an operation name.
-                Ok(Self { operation })
-            }
-        }
-
-        impl<'c> From<#class_name<'c>> for ::melior::ir::operation::Operation<'c> {
-            fn from(operation: #class_name<'c>) -> ::melior::ir::operation::Operation<'c> {
-                operation.operation
-            }
-        }
-    })
-}
 
 #[derive(Debug)]
 pub struct Operation<'a> {
@@ -92,8 +27,8 @@ pub struct Operation<'a> {
     successors: Vec<OperationField<'a>>,
     results: Vec<OperationField<'a>>,
     operands: Vec<OperationField<'a>>,
-    attributes: Vec<OperationField<'a>>,
-    derived_attributes: Vec<OperationField<'a>>,
+    attributes: Vec<Attribute<'a>>,
+    derived_attributes: Vec<Attribute<'a>>,
 }
 
 impl<'a> Operation<'a> {
@@ -187,14 +122,29 @@ impl<'a> Operation<'a> {
         sanitize_documentation(self.definition.str_value("description")?)
     }
 
-    pub fn fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
+    pub fn fields(&self) -> impl Iterator<Item = &dyn OperationFieldLike> + Clone {
         self.results
             .iter()
             .chain(&self.operands)
             .chain(&self.regions)
             .chain(&self.successors)
-            .chain(&self.attributes)
-            .chain(&self.derived_attributes)
+            .map(|field| -> &dyn OperationFieldLike { field })
+            .chain(
+                self.attributes()
+                    .map(|field| -> &dyn OperationFieldLike { field }),
+            )
+    }
+
+    pub fn operation_fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
+        self.results
+            .iter()
+            .chain(&self.operands)
+            .chain(&self.regions)
+            .chain(&self.successors)
+    }
+
+    pub fn attributes(&self) -> impl Iterator<Item = &Attribute<'a>> + Clone {
+        self.attributes.iter().chain(&self.derived_attributes)
     }
 
     fn collect_successors(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
@@ -369,7 +319,7 @@ impl<'a> Operation<'a> {
 
     fn collect_attributes(
         arguments: &[(&'a str, Record<'a>)],
-    ) -> Result<Vec<OperationField<'a>>, Error> {
+    ) -> Result<Vec<Attribute<'a>>, Error> {
         arguments
             .iter()
             .filter(|(_, definition)| definition.subclass_of("Attr"))
@@ -379,15 +329,13 @@ impl<'a> Operation<'a> {
                         .with_location(*definition)
                         .into())
                 } else {
-                    OperationField::new_attribute(name, AttributeConstraint::new(*definition)?)
+                    Attribute::new(name, AttributeConstraint::new(*definition)?)
                 }
             })
             .collect()
     }
 
-    fn collect_derived_attributes(
-        definition: Record<'a>,
-    ) -> Result<Vec<OperationField<'a>>, Error> {
+    fn collect_derived_attributes(definition: Record<'a>) -> Result<Vec<Attribute<'a>>, Error> {
         definition
             .values()
             .filter_map(|value| {
@@ -398,10 +346,7 @@ impl<'a> Operation<'a> {
             })
             .map(|definition| {
                 if definition.subclass_of("DerivedAttr") {
-                    OperationField::new_attribute(
-                        definition.name()?,
-                        AttributeConstraint::new(definition)?,
-                    )
+                    Attribute::new(definition.name()?, AttributeConstraint::new(definition)?)
                 } else {
                     Err(OdsError::ExpectedSuperClass("DerivedAttr")
                         .with_location(definition)
