@@ -80,9 +80,18 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute_accessor;
 <span class="kw">mod </span>field_accessor;
 <span class="kw">mod </span>operation_builder;
+<span class="kw">mod </span>region_accessor;
 
 <span class="kw">use </span><span class="self">self</span>::{
     attribute_accessor::generate_attribute_accessors,
@@ -90,6 +99,7 @@
     operation_builder::{
         generate_default_constructor, generate_operation_builder, generate_operation_builder_fn,
     },
+    region_accessor::generate_region_accessor,
 };
 <span class="kw">use </span><span class="kw">super</span>::operation::{Operation, OperationBuilder};
 <span class="kw">use </span><span class="kw">crate</span>::dialect::error::Error;
@@ -103,8 +113,13 @@
     <span class="kw">let </span>name = <span class="kw-2">&amp;</span>operation.full_name()<span class="question-mark">?</span>;
 
     <span class="kw">let </span>field_accessors = operation
-        .operation_fields()
+        .general_fields()
         .map(generate_accessor)
+        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+    <span class="kw">let </span>region_accessors = operation
+        .regions()
+        .enumerate()
+        .map(|(index, region)| generate_region_accessor(index, region))
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
     <span class="kw">let </span>attribute_accessors = operation
         .attributes()
@@ -136,6 +151,7 @@
             #builder_fn
 
             #(#field_accessors)*
+            #(#region_accessors)*
             #(#attribute_accessors)*
         }
 

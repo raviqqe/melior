@@ -224,7 +224,7 @@
         .map(|name| <span class="macro">quote! </span>{ #name: ::std::marker::PhantomData })
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-    <span class="kw">let </span>builder_fns = generate_builder_fns(builder, <span class="kw-2">&amp;</span>field_names, phantom_arguments.as_slice())<span class="question-mark">?</span>;
+    <span class="kw">let </span>builder_fns = generate_field_fns(builder, <span class="kw-2">&amp;</span>field_names, phantom_arguments.as_slice())<span class="question-mark">?</span>;
 
     <span class="kw">let </span>new_fn = generate_new_fn(builder, phantom_arguments.as_slice())<span class="question-mark">?</span>;
     <span class="kw">let </span>build_fn = generate_build_fn(builder)<span class="question-mark">?</span>;
@@ -249,7 +249,7 @@
     })
 }
 
-<span class="kw">fn </span>generate_builder_fns(
+<span class="kw">fn </span>generate_field_fns(
     builder: <span class="kw-2">&amp;</span>OperationBuilder,
     field_names: <span class="kw-2">&amp;</span>[Ident],
     phantoms: <span class="kw-2">&amp;</span>[TokenStream],

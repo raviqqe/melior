@@ -159,7 +159,6 @@
 <a href="#158" id="158">158</a>
 <a href="#159" id="159">159</a>
 <a href="#160" id="160">160</a>
-<a href="#161" id="161">161</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error,
     operation::operation_field::OperationFieldLike,
@@ -169,8 +168,7 @@
 <span class="kw">use </span>proc_macro2::{Span, TokenStream};
 <span class="kw">use </span>quote::quote;
 <span class="kw">use </span>std::collections::HashMap;
-<span class="kw">use </span>syn::Ident;
-<span class="kw">use </span>syn::{parse_quote, Type};
+<span class="kw">use </span>syn::{parse_quote, Ident, Type};
 <span class="kw">use </span>tblgen::{error::TableGenError, Record};
 
 <span class="macro">macro_rules! </span>prefixed_string {

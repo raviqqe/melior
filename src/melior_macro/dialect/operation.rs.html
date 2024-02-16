@@ -367,18 +367,20 @@
 <a href="#366" id="366">366</a>
 <a href="#367" id="367">367</a>
 <a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>element_kind;
 <span class="kw">mod </span>field_kind;
 <span class="kw">mod </span>operation_field;
+<span class="kw">mod </span>region;
 <span class="kw">mod </span>sequence_info;
 <span class="kw">mod </span>variadic_kind;
 
 <span class="kw">pub use </span><span class="self">self</span>::{
     attribute::Attribute, builder::OperationBuilder, element_kind::ElementKind,
-    field_kind::FieldKind, operation_field::OperationField, sequence_info::SequenceInfo,
-    variadic_kind::VariadicKind,
+    field_kind::FieldKind, operation_field::OperationField, region::Region,
+    sequence_info::SequenceInfo, variadic_kind::VariadicKind,
 };
 <span class="kw">use </span><span class="kw">super</span>::utility::sanitize_documentation;
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
@@ -393,7 +395,7 @@
 </span><span class="kw">pub struct </span>Operation&lt;<span class="lifetime">'a</span>&gt; {
     definition: Record&lt;<span class="lifetime">'a</span>&gt;,
     can_infer_type: bool,
-    regions: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    regions: Vec&lt;Region&lt;<span class="lifetime">'a</span>&gt;&gt;,
     successors: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
     results: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
     operands: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
@@ -496,25 +498,29 @@
         sanitize_documentation(<span class="self">self</span>.definition.str_value(<span class="string">"description"</span>)<span class="question-mark">?</span>)
     }
 
-    <span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationFieldLike&gt; + Clone {
+    <span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationFieldLike&gt; {
+        <span class="kw">fn </span>convert(field: <span class="kw-2">&amp;</span><span class="kw">impl </span>OperationFieldLike) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationFieldLike {
+            field
+        }
+
         <span class="self">self</span>.results
             .iter()
             .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.operands)
-            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.regions)
-            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.successors)
-            .map(|field| -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationFieldLike { field })
-            .chain(
-                <span class="self">self</span>.attributes()
-                    .map(|field| -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationFieldLike { field }),
-            )
+            .map(convert)
+            .chain(<span class="self">self</span>.regions.iter().map(convert))
+            .chain(<span class="self">self</span>.successors.iter().map(convert))
+            .chain(<span class="self">self</span>.attributes().map(convert))
     }
 
-    <span class="kw">pub fn </span>operation_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationField&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
+    <span class="kw">pub fn </span>general_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationField&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
         <span class="self">self</span>.results
             .iter()
             .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.operands)
-            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.regions)
             .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.successors)
+    }
+
+    <span class="kw">pub fn </span>regions(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Region&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
+        <span class="self">self</span>.regions.iter()
     }
 
     <span class="kw">pub fn </span>attributes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Attribute&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
@@ -547,22 +553,18 @@
             .collect()
     }
 
-    <span class="kw">fn </span>collect_regions(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
-        <span class="kw">let </span>regions_dag = definition.dag_value(<span class="string">"regions"</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>len = regions_dag.num_args();
-
-        regions_dag
-            .args()
-            .enumerate()
-            .map(|(index, (name, value))| {
-                OperationField::new_region(
+    <span class="kw">fn </span>collect_regions(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Region&gt;, Error&gt; {
+        definition
+            .dag_value(<span class="string">"regions"</span>)<span class="question-mark">?
+            </span>.args()
+            .map(|(name, value)| {
+                Region::new(
                     name,
                     RegionConstraint::new(
                         value
                             .try_into()
                             .map_err(|error: tblgen::Error| error.set_location(definition))<span class="question-mark">?</span>,
                     ),
-                    SequenceInfo { index, len },
                 )
             })
             .collect()

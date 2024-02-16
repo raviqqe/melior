@@ -130,32 +130,10 @@
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
-<a href="#132" id="132">132</a>
-<a href="#133" id="133">133</a>
-<a href="#134" id="134">134</a>
-<a href="#135" id="135">135</a>
-<a href="#136" id="136">136</a>
-<a href="#137" id="137">137</a>
-<a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{element_kind::ElementKind, field_kind::FieldKind, SequenceInfo, VariadicKind};
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error,
-    types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
+    types::{SuccessorConstraint, TypeConstraint},
     utility::sanitize_snake_case_identifier,
 };
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
@@ -234,13 +212,6 @@
                     <span class="macro">quote! </span>{ <span class="kw-2">&amp;</span>[#name] }
                 }
             }
-            FieldKind::Region { constraint, .. } =&gt; {
-                <span class="kw">if </span>constraint.is_variadic() {
-                    <span class="macro">quote! </span>{ #name }
-                } <span class="kw">else </span>{
-                    <span class="macro">quote! </span>{ <span class="macro">vec!</span>[#name] }
-                }
-            }
         }
     }
 }
@@ -252,25 +223,10 @@
             plural_identifier: <span class="kw">match </span>kind {
                 FieldKind::Element { kind, .. } =&gt; <span class="macro">format_ident!</span>(<span class="string">"{}s"</span>, kind.as_str()),
                 FieldKind::Successor { .. } =&gt; <span class="macro">format_ident!</span>(<span class="string">"successors"</span>),
-                FieldKind::Region { .. } =&gt; <span class="macro">format_ident!</span>(<span class="string">"regions"</span>),
             },
             sanitized_name: sanitize_snake_case_identifier(name)<span class="question-mark">?</span>,
             kind,
         })
-    }
-
-    <span class="kw">pub fn </span>new_region(
-        name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
-        constraint: RegionConstraint&lt;<span class="lifetime">'a</span>&gt;,
-        sequence_info: SequenceInfo,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
-        <span class="self">Self</span>::new(
-            name,
-            FieldKind::Region {
-                constraint,
-                sequence_info,
-            },
-        )
     }
 
     <span class="kw">pub fn </span>new_successor(
