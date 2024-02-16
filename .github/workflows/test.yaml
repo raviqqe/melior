@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: gentoo/stage3
+      image: fedora
     steps:
       - uses: actions/checkout@v4
       - run: tools/ci/setup.sh
@@ -16,7 +16,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: gentoo/stage3
+      image: fedora
     steps:
       - uses: actions/checkout@v4
       - run: tools/ci/setup.sh
@@ -24,7 +24,7 @@ jobs:
   bench:
     runs-on: ubuntu-latest
     container:
-      image: gentoo/stage3
+      image: fedora
     steps:
       - uses: actions/checkout@v4
       - run: tools/ci/setup.sh
@@ -33,7 +33,7 @@ jobs:
     # TODO Remove this job when refactoring of dialect macros is done.
     runs-on: ubuntu-latest
     container:
-      image: gentoo/stage3
+      image: fedora
     steps:
       - uses: actions/checkout@v4
       - run: tools/ci/setup.sh
