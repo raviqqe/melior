@@ -2,6 +2,6 @@
 
 set -e
 
-dnf -y install llvm rustup
+dnf -y install llvm
 
-rustup default stable
+curl -fsS https://sh.rustup.rs | sh
