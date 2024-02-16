@@ -2,4 +2,4 @@
 
 set -e
 
-dnf -y install llvm rust
+dnf -y install cargo llvm rust
