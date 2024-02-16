@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: swatinem/rust-cache@v2
-      - run: sudo pacman -Syu llvm
+      - run: tools/setup.sh
       - run: cargo build --all-features
   test:
     runs-on: ubuntu-latest
@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: swatinem/rust-cache@v2
-      - run: sudo pacman -Syu llvm
+      - run: tools/setup.sh
       - run: cargo test --all-features
   bench:
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: swatinem/rust-cache@v2
-      - run: sudo pacman -Syu llvm
+      - run: tools/setup.sh
       - run: cargo bench
   dialect_build:
     # TODO Remove this job when refactoring of dialect macros is done.
@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: swatinem/rust-cache@v2
-      - run: sudo pacman -Syu llvm
+      - run: tools/setup.sh
       - run: cargo install cargo-expand
       - run: cd melior && cargo expand --features ods-dialects > ~/current.rs
       - uses: actions/checkout@v4
