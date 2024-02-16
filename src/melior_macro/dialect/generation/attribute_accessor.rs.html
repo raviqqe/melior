@@ -83,7 +83,7 @@
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error,
     operation::{Attribute, OperationFieldLike},
-    utility::sanitize_snake_case_name,
+    utility::sanitize_snake_case_identifier,
 };
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::quote;
@@ -103,7 +103,7 @@
 <span class="kw">fn </span>generate_getter(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
     <span class="kw">let </span>name = attribute.name();
 
-    <span class="kw">let </span>ident = attribute.sanitized_name();
+    <span class="kw">let </span>identifier = attribute.singular_identifier();
     <span class="kw">let </span>return_type = attribute.return_type();
     <span class="kw">let </span>body = <span class="kw">if </span>attribute.is_unit() {
         <span class="macro">quote! </span>{ <span class="self">self</span>.operation.attribute(#name).is_some() }
@@ -114,7 +114,7 @@
 
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
         <span class="attr">#[allow(clippy::needless_question_mark)]
-        </span><span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context) -&gt; #return_type {
+        </span><span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context) -&gt; #return_type {
             #body
         }
     })
@@ -137,7 +137,7 @@
         }
     };
 
-    <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"set_{}"</span>, attribute.name()))<span class="question-mark">?</span>;
+    <span class="kw">let </span>ident = sanitize_snake_case_identifier(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"set_{}"</span>, attribute.name()))<span class="question-mark">?</span>;
     <span class="kw">let </span>r#type = attribute.parameter_type();
 
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
@@ -150,7 +150,7 @@
 <span class="kw">fn </span>generate_remover(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TokenStream&gt;, Error&gt; {
     <span class="prelude-val">Ok</span>(<span class="kw">if </span>attribute.is_unit() || attribute.is_optional() {
         <span class="kw">let </span>name = attribute.name();
-        <span class="kw">let </span>ident = sanitize_snake_case_name(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"remove_{}"</span>, attribute.name()))<span class="question-mark">?</span>;
+        <span class="kw">let </span>ident = sanitize_snake_case_identifier(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"remove_{}"</span>, attribute.name()))<span class="question-mark">?</span>;
 
         <span class="prelude-val">Some</span>(<span class="macro">quote! </span>{
             <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {

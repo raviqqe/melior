@@ -105,6 +105,12 @@
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::error::Error;
 <span class="kw">use </span>comrak::{arena_tree::NodeEdge, format_commonmark, nodes::NodeValue, parse_document, Arena};
 <span class="kw">use </span>convert_case::{Case, Casing};
@@ -122,7 +128,7 @@
     <span class="macro">parse_quote!</span>(<span class="kw">impl </span>Iterator&lt;Item = #r#type&gt;)
 }
 
-<span class="kw">pub fn </span>sanitize_snake_case_name(name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, Error&gt; {
+<span class="kw">pub fn </span>sanitize_snake_case_identifier(name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Ident, Error&gt; {
     sanitize_name(<span class="kw-2">&amp;</span>name.to_case(Case::Snake))
 }
 
@@ -179,20 +185,26 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>sanitize_name_with_dot() {
-        <span class="macro">assert_eq!</span>(sanitize_snake_case_name(<span class="string">"foo.bar"</span>).unwrap(), <span class="string">"foo_bar"</span>);
+        <span class="macro">assert_eq!</span>(
+            sanitize_snake_case_identifier(<span class="string">"foo.bar"</span>).unwrap(),
+            <span class="string">"foo_bar"
+        </span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>sanitize_name_with_dot_and_underscore() {
         <span class="macro">assert_eq!</span>(
-            sanitize_snake_case_name(<span class="string">"foo.bar_baz"</span>).unwrap(),
+            sanitize_snake_case_identifier(<span class="string">"foo.bar_baz"</span>).unwrap(),
             <span class="string">"foo_bar_baz"
         </span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>sanitize_reserved_name() {
-        <span class="macro">assert_eq!</span>(sanitize_snake_case_name(<span class="string">"builder"</span>).unwrap(), <span class="string">"_builder"</span>);
+        <span class="macro">assert_eq!</span>(
+            sanitize_snake_case_identifier(<span class="string">"builder"</span>).unwrap(),
+            <span class="string">"_builder"
+        </span>);
     }
 
     <span class="attr">#[test]

@@ -128,7 +128,7 @@
 <span class="kw">use </span><span class="self">self</span>::{
     error::Error,
     generation::generate_operation,
-    utility::{sanitize_documentation, sanitize_snake_case_name},
+    utility::{sanitize_documentation, sanitize_snake_case_identifier},
 };
 <span class="kw">pub use </span>input::DialectInput;
 <span class="kw">use </span>operation::Operation;
@@ -200,7 +200,7 @@
         <span class="string">"`{name}` dialect.\n\n{}"</span>,
         sanitize_documentation(dialect.str_value(<span class="string">"description"</span>).unwrap_or(<span class="string">""</span>),)<span class="question-mark">?
     </span>);
-    <span class="kw">let </span>name = sanitize_snake_case_name(name)<span class="question-mark">?</span>;
+    <span class="kw">let </span>name = sanitize_snake_case_identifier(name)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
         <span class="attr">#[doc = #doc]
