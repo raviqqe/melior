@@ -2,6 +2,6 @@
 
 set -e
 
-pacman -Syu --noconfirm base-devel llvm rustup
+emerge -g llvm rustup
 
 rustup default stable
