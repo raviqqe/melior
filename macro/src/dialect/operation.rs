@@ -67,6 +67,10 @@ impl<'a> Operation<'a> {
         })
     }
 
+    pub fn can_infer_type(&self) -> bool {
+        self.can_infer_type
+    }
+
     fn dialect(&self) -> Result<Record, Error> {
         Ok(self.definition.def_value("opDialect")?)
     }
@@ -146,6 +150,11 @@ impl<'a> Operation<'a> {
 
     pub fn attributes(&self) -> impl Iterator<Item = &Attribute<'a>> + Clone {
         self.attributes.iter().chain(&self.derived_attributes)
+    }
+
+    pub fn required_fields(&self) -> impl Iterator<Item = &dyn OperationFieldLike> {
+        self.fields()
+            .filter(|field| (!field.is_result() || !self.can_infer_type) && !field.is_optional())
     }
 
     fn collect_successors(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
