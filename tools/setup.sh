@@ -2,4 +2,4 @@
 
 set -e
 
-pacman -Syu base-devel llvm
+pacman -Syu --noconfirm base-devel llvm
