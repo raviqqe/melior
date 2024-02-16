@@ -3,13 +3,14 @@ mod builder;
 mod element_kind;
 mod field_kind;
 mod operation_field;
+mod region;
 mod sequence_info;
 mod variadic_kind;
 
 pub use self::{
     attribute::Attribute, builder::OperationBuilder, element_kind::ElementKind,
-    field_kind::FieldKind, operation_field::OperationField, sequence_info::SequenceInfo,
-    variadic_kind::VariadicKind,
+    field_kind::FieldKind, operation_field::OperationField, region::Region,
+    sequence_info::SequenceInfo, variadic_kind::VariadicKind,
 };
 use super::utility::sanitize_documentation;
 use crate::dialect::{
@@ -24,7 +25,7 @@ use tblgen::{error::WithLocation, record::Record, TypedInit};
 pub struct Operation<'a> {
     definition: Record<'a>,
     can_infer_type: bool,
-    regions: Vec<OperationField<'a>>,
+    regions: Vec<Region<'a>>,
     successors: Vec<OperationField<'a>>,
     results: Vec<OperationField<'a>>,
     operands: Vec<OperationField<'a>>,
@@ -127,25 +128,29 @@ impl<'a> Operation<'a> {
         sanitize_documentation(self.definition.str_value("description")?)
     }
 
-    pub fn fields(&self) -> impl Iterator<Item = &dyn OperationFieldLike> + Clone {
+    pub fn fields(&self) -> impl Iterator<Item = &dyn OperationFieldLike> {
+        fn convert(field: &impl OperationFieldLike) -> &dyn OperationFieldLike {
+            field
+        }
+
         self.results
             .iter()
             .chain(&self.operands)
-            .chain(&self.regions)
-            .chain(&self.successors)
-            .map(|field| -> &dyn OperationFieldLike { field })
-            .chain(
-                self.attributes()
-                    .map(|field| -> &dyn OperationFieldLike { field }),
-            )
+            .map(convert)
+            .chain(self.regions.iter().map(convert))
+            .chain(self.successors.iter().map(convert))
+            .chain(self.attributes().map(convert))
     }
 
-    pub fn operation_fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
+    pub fn general_fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
         self.results
             .iter()
             .chain(&self.operands)
-            .chain(&self.regions)
             .chain(&self.successors)
+    }
+
+    pub fn regions(&self) -> impl Iterator<Item = &Region<'a>> + Clone {
+        self.regions.iter()
     }
 
     pub fn attributes(&self) -> impl Iterator<Item = &Attribute<'a>> + Clone {
@@ -178,22 +183,18 @@ impl<'a> Operation<'a> {
             .collect()
     }
 
-    fn collect_regions(definition: Record<'a>) -> Result<Vec<OperationField>, Error> {
-        let regions_dag = definition.dag_value("regions")?;
-        let len = regions_dag.num_args();
-
-        regions_dag
+    fn collect_regions(definition: Record<'a>) -> Result<Vec<Region>, Error> {
+        definition
+            .dag_value("regions")?
             .args()
-            .enumerate()
-            .map(|(index, (name, value))| {
-                OperationField::new_region(
+            .map(|(name, value)| {
+                Region::new(
                     name,
                     RegionConstraint::new(
                         value
                             .try_into()
                             .map_err(|error: tblgen::Error| error.set_location(definition))?,
                     ),
-                    SequenceInfo { index, len },
                 )
             })
             .collect()
