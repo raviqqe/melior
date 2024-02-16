@@ -11,7 +11,6 @@ jobs:
       image: gentoo/stage3
     steps:
       - uses: actions/checkout@v4
-      - uses: swatinem/rust-cache@v2
       - run: tools/ci/setup.sh
       - run: cargo build --all-features
   test:
@@ -20,7 +19,6 @@ jobs:
       image: gentoo/stage3
     steps:
       - uses: actions/checkout@v4
-      - uses: swatinem/rust-cache@v2
       - run: tools/ci/setup.sh
       - run: cargo test --all-features
   bench:
@@ -29,7 +27,6 @@ jobs:
       image: gentoo/stage3
     steps:
       - uses: actions/checkout@v4
-      - uses: swatinem/rust-cache@v2
       - run: tools/ci/setup.sh
       - run: cargo bench
   dialect_build:
@@ -39,7 +36,6 @@ jobs:
       image: gentoo/stage3
     steps:
       - uses: actions/checkout@v4
-      - uses: swatinem/rust-cache@v2
       - run: tools/ci/setup.sh
       - run: cargo install cargo-expand
       - run: cd melior && cargo expand --features ods-dialects > ~/current.rs
