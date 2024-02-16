@@ -7,42 +7,40 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: archlinux
     steps:
       - uses: actions/checkout@v4
       - uses: swatinem/rust-cache@v2
-      - uses: homebrew/actions/setup-homebrew@master
-      - run: tools/setup.sh
+      - run: sudo pacman -Syu llvm
       - run: cargo build --all-features
   test:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux
     steps:
       - uses: actions/checkout@v4
       - uses: swatinem/rust-cache@v2
-      - uses: homebrew/actions/setup-homebrew@master
-      - run: tools/setup.sh
+      - run: sudo pacman -Syu llvm
       - run: cargo test --all-features
   bench:
     runs-on: ubuntu-latest
+    container:
+      image: archlinux
     steps:
       - uses: actions/checkout@v4
       - uses: swatinem/rust-cache@v2
-      - uses: homebrew/actions/setup-homebrew@master
-      - run: tools/setup.sh
+      - run: sudo pacman -Syu llvm
       - run: cargo bench
   dialect_build:
     # TODO Remove this job when refactoring of dialect macros is done.
     runs-on: ubuntu-latest
+    container:
+      image: archlinux
     steps:
       - uses: actions/checkout@v4
       - uses: swatinem/rust-cache@v2
-      - uses: homebrew/actions/setup-homebrew@master
-      - run: tools/setup.sh
+      - run: sudo pacman -Syu llvm
       - run: cargo install cargo-expand
       - run: cd melior && cargo expand --features ods-dialects > ~/current.rs
       - uses: actions/checkout@v4
