@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["_2_d_sdot","intr_sdot","intr_smull"],"struct":["SMullOp","SMullOpBuilder","Sdot2dOp","Sdot2dOpBuilder","SdotOp","SdotOpBuilder"]};
+window.SIDEBAR_ITEMS = {"fn":["_2_d_sdot","intr_sdot","intr_smull"],"struct":["SMullOperation","SMullOperationBuilder","Sdot2dOperation","Sdot2dOperationBuilder","SdotOperation","SdotOperationBuilder"]};

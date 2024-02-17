@@ -448,7 +448,7 @@
             <span class="kw">let </span>i64_type = IntegerType::new(<span class="kw-2">&amp;</span>context, <span class="number">64</span>);
 
             block.append_operation(
-                llvm::AllocaOpBuilder::new(<span class="kw-2">&amp;</span>context, location)
+                llvm::AllocaOperationBuilder::new(<span class="kw-2">&amp;</span>context, location)
                     .alignment(IntegerAttribute::new(<span class="number">8</span>, i64_type.into()))
                     .elem_type(TypeAttribute::new(i64_type.into()))
                     .array_size(alloca_size)

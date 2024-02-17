@@ -365,6 +365,12 @@
 <a href="#364" id="364">364</a>
 <a href="#365" id="365">365</a>
 <a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>operand;
@@ -392,6 +398,7 @@
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Operation&lt;<span class="lifetime">'a</span>&gt; {
     definition: Record&lt;<span class="lifetime">'a</span>&gt;,
+    name: String,
     can_infer_type: bool,
     regions: Vec&lt;Region&lt;<span class="lifetime">'a</span>&gt;&gt;,
     successors: Vec&lt;Successor&lt;<span class="lifetime">'a</span>&gt;&gt;,
@@ -415,6 +422,7 @@
         )<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            name: <span class="self">Self</span>::build_name(definition)<span class="question-mark">?</span>,
             successors: <span class="self">Self</span>::collect_successors(definition)<span class="question-mark">?</span>,
             operands: <span class="self">Self</span>::collect_operands(
                 <span class="kw-2">&amp;</span>arguments,
@@ -436,6 +444,23 @@
         })
     }
 
+    <span class="kw">fn </span>build_name(definition: Record) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
+        <span class="kw">let </span>name = definition.name()<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(<span class="kw">if let </span><span class="prelude-val">Some</span>((<span class="kw">_</span>, name)) = name.split_once(<span class="string">'_'</span>) {
+            name
+        } <span class="kw">else </span>{
+            name
+        }
+        .trim_end_matches(<span class="string">"Op"</span>)
+        .to_owned()
+            + <span class="string">"Operation"</span>)
+    }
+
+    <span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.name
+    }
+
     <span class="kw">pub fn </span>can_infer_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.can_infer_type
     }
@@ -448,26 +473,13 @@
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.dialect()<span class="question-mark">?</span>.name()<span class="question-mark">?</span>)
     }
 
-    <span class="kw">pub fn </span>class_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Error&gt; {
-        <span class="kw">let </span>name = <span class="self">self</span>.definition.name()<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>(<span class="kw">if </span>name.starts_with(<span class="string">'_'</span>) {
-            name
-        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(name) = name.split(<span class="string">'_'</span>).nth(<span class="number">1</span>) {
-            <span class="comment">// Trim dialect prefix from name.
-            </span>name
-        } <span class="kw">else </span>{
-            name
-        })
-    }
-
-    <span class="kw">pub fn </span>short_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Error&gt; {
+    <span class="kw">pub fn </span>operation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.definition.str_value(<span class="string">"opName"</span>)<span class="question-mark">?</span>)
     }
 
-    <span class="kw">pub fn </span>full_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
+    <span class="kw">pub fn </span>full_operation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
         <span class="kw">let </span>dialect_name = <span class="self">self</span>.dialect()<span class="question-mark">?</span>.string_value(<span class="string">"name"</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>short_name = <span class="self">self</span>.short_name()<span class="question-mark">?</span>;
+        <span class="kw">let </span>short_name = <span class="self">self</span>.operation_name()<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="kw">if </span>dialect_name.is_empty() {
             short_name.into()
@@ -477,12 +489,12 @@
     }
 
     <span class="kw">pub fn </span>summary(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        <span class="kw">let </span>short_name = <span class="self">self</span>.short_name()<span class="question-mark">?</span>;
-        <span class="kw">let </span>class_name = <span class="self">self</span>.class_name()<span class="question-mark">?</span>;
+        <span class="kw">let </span>short_name = <span class="self">self</span>.operation_name()<span class="question-mark">?</span>;
+        <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
         <span class="kw">let </span>summary = <span class="self">self</span>.definition.str_value(<span class="string">"summary"</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>([
-            <span class="macro">format!</span>(<span class="string">"[`{short_name}`]({class_name}) operation."</span>),
+            <span class="macro">format!</span>(<span class="string">"[`{short_name}`]({name}) operation."</span>),
             <span class="kw">if </span>summary.is_empty() {
                 Default::default()
             } <span class="kw">else </span>{

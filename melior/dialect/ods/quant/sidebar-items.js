@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["dcast","qcast","scast"],"struct":["DequantizeCastOp","DequantizeCastOpBuilder","QuantizeCastOp","QuantizeCastOpBuilder","StorageCastOp","StorageCastOpBuilder"]};
+window.SIDEBAR_ITEMS = {"fn":["dcast","qcast","scast"],"struct":["DequantizeCastOperation","DequantizeCastOperationBuilder","QuantizeCastOperation","QuantizeCastOperationBuilder","StorageCastOperation","StorageCastOperationBuilder"]};

@@ -48,7 +48,7 @@
 <span class="kw">mod </span>type_state_list;
 
 <span class="kw">use </span><span class="self">self</span>::{type_state_item::TypeStateItem, type_state_list::TypeStateList};
-<span class="kw">use super</span>::{<span class="kw">super</span>::error::Error, Operation};
+<span class="kw">use </span><span class="kw">super</span>::Operation;
 <span class="kw">use </span>quote::format_ident;
 <span class="kw">use </span>syn::Ident;
 
@@ -59,12 +59,12 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; OperationBuilder&lt;<span class="lifetime">'a</span>&gt; {
-    <span class="kw">pub fn </span>new(operation: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Operation&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(operation: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>Operation&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
             operation,
-            identifier: <span class="macro">format_ident!</span>(<span class="string">"{}Builder"</span>, operation.class_name()<span class="question-mark">?</span>),
+            identifier: <span class="macro">format_ident!</span>(<span class="string">"{}Builder"</span>, operation.name()),
             type_state: <span class="self">Self</span>::create_type_state(operation),
-        })
+        }
     }
 
     <span class="kw">pub fn </span>operation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Operation {

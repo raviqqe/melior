@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["index","softmax","yield"],"struct":["IndexOp","IndexOpBuilder","SoftmaxOp","SoftmaxOpBuilder","YieldOp","YieldOpBuilder"]};
+window.SIDEBAR_ITEMS = {"fn":["index","softmax","yield"],"struct":["IndexOperation","IndexOperationBuilder","SoftmaxOperation","SoftmaxOperationBuilder","YieldOperation","YieldOperationBuilder"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["assert","br","cond_br","switch"],"struct":["AssertOp","AssertOpBuilder","BranchOp","BranchOpBuilder","CondBranchOp","CondBranchOpBuilder","SwitchOp","SwitchOpBuilder"]};
+window.SIDEBAR_ITEMS = {"fn":["assert","br","cond_br","switch"],"struct":["AssertOperation","AssertOperationBuilder","BranchOperation","BranchOperationBuilder","CondBranchOperation","CondBranchOperationBuilder","SwitchOperation","SwitchOperationBuilder"]};

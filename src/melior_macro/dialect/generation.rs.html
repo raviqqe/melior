@@ -134,8 +134,8 @@
 <span class="kw">pub fn </span>generate_operation(operation: <span class="kw-2">&amp;</span>Operation) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
     <span class="kw">let </span>summary = operation.summary()<span class="question-mark">?</span>;
     <span class="kw">let </span>description = operation.description()<span class="question-mark">?</span>;
-    <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, operation.class_name()<span class="question-mark">?</span>);
-    <span class="kw">let </span>name = <span class="kw-2">&amp;</span>operation.full_name()<span class="question-mark">?</span>;
+    <span class="kw">let </span>identifier = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, operation.name());
+    <span class="kw">let </span>operation_name = operation.full_operation_name()<span class="question-mark">?</span>;
 
     <span class="kw">let </span>result_accessors = operation
         .results()
@@ -162,7 +162,7 @@
         .map(generate_attribute_accessors)
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-    <span class="kw">let </span>builder = OperationBuilder::new(operation)<span class="question-mark">?</span>;
+    <span class="kw">let </span>builder = OperationBuilder::new(operation);
     <span class="kw">let </span>builder_tokens = generate_operation_builder(<span class="kw-2">&amp;</span>builder)<span class="question-mark">?</span>;
     <span class="kw">let </span>builder_fn = generate_operation_builder_fn(<span class="kw-2">&amp;</span>builder);
     <span class="kw">let </span>default_constructor = generate_default_constructor(<span class="kw-2">&amp;</span>builder)<span class="question-mark">?</span>;
@@ -171,14 +171,14 @@
         <span class="attr">#[doc = #summary]
         #[doc = <span class="string">"\n\n"</span>]
         #[doc = #description]
-        </span><span class="kw">pub struct </span>#class_name&lt;<span class="lifetime">'c</span>&gt; {
+        </span><span class="kw">pub struct </span>#identifier&lt;<span class="lifetime">'c</span>&gt; {
             operation: ::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt;,
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; #class_name&lt;<span class="lifetime">'c</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; #identifier&lt;<span class="lifetime">'c</span>&gt; {
             <span class="doccomment">/// Returns a name.
             </span><span class="kw">pub fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
-                #name
+                #operation_name
             }
 
             <span class="doccomment">/// Returns a generic operation.
@@ -199,7 +199,7 @@
 
         #default_constructor
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; TryFrom&lt;::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt;&gt; <span class="kw">for </span>#class_name&lt;<span class="lifetime">'c</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; TryFrom&lt;::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt;&gt; <span class="kw">for </span>#identifier&lt;<span class="lifetime">'c</span>&gt; {
             <span class="kw">type </span>Error = ::melior::Error;
 
             <span class="kw">fn </span>try_from(
@@ -210,8 +210,8 @@
             }
         }
 
-        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; From&lt;#class_name&lt;<span class="lifetime">'c</span>&gt;&gt; <span class="kw">for </span>::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt; {
-            <span class="kw">fn </span>from(operation: #class_name&lt;<span class="lifetime">'c</span>&gt;) -&gt; ::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt; {
+        <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; From&lt;#identifier&lt;<span class="lifetime">'c</span>&gt;&gt; <span class="kw">for </span>::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt; {
+            <span class="kw">fn </span>from(operation: #identifier&lt;<span class="lifetime">'c</span>&gt;) -&gt; <span class="self">Self </span>{
                 operation.operation
             }
         }
