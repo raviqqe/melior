@@ -141,21 +141,21 @@
         .results()
         .enumerate()
         .map(|(index, result)| generate_result_accessor(result, index, operation.result_len()))
-        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
     <span class="kw">let </span>operand_accessors = operation
         .operands()
         .enumerate()
         .map(|(index, operand)| generate_operand_accessor(operand, index, operation.operand_len()))
-        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
     <span class="kw">let </span>region_accessors = operation
         .regions()
         .enumerate()
-        .map(|(index, region)| generate_region_accessor(index, region))
+        .map(|(index, region)| generate_region_accessor(region, index))
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
     <span class="kw">let </span>successor_accessors = operation
         .successors()
         .enumerate()
-        .map(|(index, region)| generate_successor_accessor(index, region))
+        .map(|(index, region)| generate_successor_accessor(region, index))
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
     <span class="kw">let </span>attribute_accessors = operation
         .attributes()
