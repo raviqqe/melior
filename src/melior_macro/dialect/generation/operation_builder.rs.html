@@ -224,7 +224,7 @@
         .map(|name| <span class="macro">quote! </span>{ #name: ::std::marker::PhantomData })
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-    <span class="kw">let </span>builder_fns = generate_field_fns(builder, <span class="kw-2">&amp;</span>field_names, phantom_arguments.as_slice())<span class="question-mark">?</span>;
+    <span class="kw">let </span>builder_fns = generate_field_fns(builder, <span class="kw-2">&amp;</span>field_names, phantom_arguments.as_slice());
 
     <span class="kw">let </span>new_fn = generate_new_fn(builder, phantom_arguments.as_slice())<span class="question-mark">?</span>;
     <span class="kw">let </span>build_fn = generate_build_fn(builder)<span class="question-mark">?</span>;
@@ -253,10 +253,10 @@
     builder: <span class="kw-2">&amp;</span>OperationBuilder,
     field_names: <span class="kw-2">&amp;</span>[Ident],
     phantoms: <span class="kw-2">&amp;</span>[TokenStream],
-) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;TokenStream&gt;, Error&gt; {
+) -&gt; Vec&lt;TokenStream&gt; {
     builder.operation().fields().map(<span class="kw">move </span>|field| {
         <span class="kw">let </span>builder_identifier = builder.identifier();
-        <span class="kw">let </span>identifier = sanitize_snake_case_identifier(field.name())<span class="question-mark">?</span>;
+        <span class="kw">let </span>identifier = field.singular_identifier();
         <span class="kw">let </span>parameter_type = field.parameter_type();
         <span class="kw">let </span>argument = <span class="macro">quote! </span>{ #identifier: #parameter_type };
         <span class="kw">let </span>add = <span class="macro">format_ident!</span>(<span class="string">"add_{}"</span>, field.plural_kind_identifier());
@@ -264,9 +264,9 @@
         <span class="comment">// Argument types can be singular and variadic. But `add` functions in Melior
         // are always variadic, so we need to create a slice or `Vec` for singular
         // arguments.
-        </span><span class="kw">let </span>add_arguments = field.add_arguments(<span class="kw-2">&amp;</span>identifier);
+        </span><span class="kw">let </span>add_arguments = field.add_arguments(identifier);
 
-        <span class="prelude-val">Ok</span>(<span class="kw">if </span>field.is_optional() {
+        <span class="kw">if </span>field.is_optional() {
             <span class="kw">let </span>parameters = builder.type_state().parameters().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
             <span class="macro">quote! </span>{
@@ -297,7 +297,7 @@
                     }
                 }
             }
-        })
+        }
     }).collect()
 }
 
@@ -341,18 +341,18 @@
     })
 }
 
-<span class="kw">pub fn </span>generate_operation_builder_fn(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
+<span class="kw">pub fn </span>generate_operation_builder_fn(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; TokenStream {
     <span class="kw">let </span>builder_ident = builder.identifier();
     <span class="kw">let </span>arguments = builder.type_state().arguments_all_set(<span class="bool-val">false</span>);
 
-    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
+    <span class="macro">quote! </span>{
         <span class="kw">pub fn </span>builder(
             context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context,
             location: ::melior::ir::Location&lt;<span class="lifetime">'c</span>&gt;
-        ) -&gt; #builder_ident&lt;<span class="lifetime">'c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
+            ) -&gt; #builder_ident&lt;<span class="lifetime">'c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
             #builder_ident::new(context, location)
         }
-    })
+    }
 }
 
 <span class="kw">pub fn </span>generate_default_constructor(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {

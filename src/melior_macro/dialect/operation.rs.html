@@ -364,10 +364,6 @@
 <a href="#363" id="363">363</a>
 <a href="#364" id="364">364</a>
 <a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>element_kind;
@@ -375,12 +371,13 @@
 <span class="kw">mod </span>operation_field;
 <span class="kw">mod </span>region;
 <span class="kw">mod </span>sequence_info;
+<span class="kw">mod </span>successor;
 <span class="kw">mod </span>variadic_kind;
 
 <span class="kw">pub use </span><span class="self">self</span>::{
     attribute::Attribute, builder::OperationBuilder, element_kind::ElementKind,
     field_kind::FieldKind, operation_field::OperationField, region::Region,
-    sequence_info::SequenceInfo, variadic_kind::VariadicKind,
+    sequence_info::SequenceInfo, successor::Successor, variadic_kind::VariadicKind,
 };
 <span class="kw">use </span><span class="kw">super</span>::utility::sanitize_documentation;
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
@@ -396,7 +393,7 @@
     definition: Record&lt;<span class="lifetime">'a</span>&gt;,
     can_infer_type: bool,
     regions: Vec&lt;Region&lt;<span class="lifetime">'a</span>&gt;&gt;,
-    successors: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    successors: Vec&lt;Successor&lt;<span class="lifetime">'a</span>&gt;&gt;,
     results: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
     operands: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
     attributes: Vec&lt;Attribute&lt;<span class="lifetime">'a</span>&gt;&gt;,
@@ -513,17 +510,18 @@
     }
 
     <span class="kw">pub fn </span>general_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationField&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
-        <span class="self">self</span>.results
-            .iter()
-            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.operands)
-            .chain(<span class="kw-2">&amp;</span><span class="self">self</span>.successors)
+        <span class="self">self</span>.results.iter().chain(<span class="kw-2">&amp;</span><span class="self">self</span>.operands)
     }
 
-    <span class="kw">pub fn </span>regions(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Region&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
+    <span class="kw">pub fn </span>successors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Successor&lt;<span class="lifetime">'a</span>&gt;&gt; {
+        <span class="self">self</span>.successors.iter()
+    }
+
+    <span class="kw">pub fn </span>regions(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Region&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="self">self</span>.regions.iter()
     }
 
-    <span class="kw">pub fn </span>attributes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Attribute&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
+    <span class="kw">pub fn </span>attributes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Attribute&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="self">self</span>.attributes.iter().chain(<span class="kw-2">&amp;</span><span class="self">self</span>.derived_attributes)
     }
 
@@ -532,22 +530,16 @@
             .filter(|field| (!field.is_result() || !<span class="self">self</span>.can_infer_type) &amp;&amp; !field.is_optional())
     }
 
-    <span class="kw">fn </span>collect_successors(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&gt;, Error&gt; {
-        <span class="kw">let </span>successors_dag = definition.dag_value(<span class="string">"successors"</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>len = successors_dag.num_args();
-
-        successors_dag
-            .args()
-            .enumerate()
-            .map(|(index, (name, value))| {
-                OperationField::new_successor(
+    <span class="kw">fn </span>collect_successors(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Successor&gt;, Error&gt; {
+        definition
+            .dag_value(<span class="string">"successors"</span>)<span class="question-mark">?
+            </span>.args()
+            .map(|(name, value)| {
+                Successor::new(
                     name,
                     SuccessorConstraint::new(
-                        value
-                            .try_into()
-                            .map_err(|error: tblgen::Error| error.set_location(definition))<span class="question-mark">?</span>,
+                        Record::try_from(value).map_err(|error| error.set_location(definition))<span class="question-mark">?</span>,
                     ),
-                    SequenceInfo { index, len },
                 )
             })
             .collect()

@@ -73,30 +73,9 @@
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
-<a href="#93" id="93">93</a>
-<a href="#94" id="94">94</a>
-<a href="#95" id="95">95</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{element_kind::ElementKind, SequenceInfo, VariadicKind};
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
-    types::{SuccessorConstraint, TypeConstraint},
+    types::TypeConstraint,
     utility::{generate_iterator_type, generate_result_type},
 };
 <span class="kw">use </span>syn::{parse_quote, Type};
@@ -109,17 +88,12 @@
         sequence_info: SequenceInfo,
         variadic_kind: VariadicKind,
     },
-    Successor {
-        constraint: SuccessorConstraint&lt;<span class="lifetime">'a</span>&gt;,
-        sequence_info: SequenceInfo,
-    },
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; FieldKind&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">pub fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Element { constraint, .. } =&gt; constraint.is_optional(),
-            <span class="self">Self</span>::Successor { .. } =&gt; <span class="bool-val">false</span>,
         }
     }
 
@@ -140,14 +114,6 @@
                     <span class="macro">parse_quote! </span>{ <span class="kw-2">&amp;</span>[#base_type] }
                 } <span class="kw">else </span>{
                     base_type
-                }
-            }
-            <span class="self">Self</span>::Successor { constraint, .. } =&gt; {
-                <span class="kw">let </span>r#type: Type = <span class="macro">parse_quote!</span>(<span class="kw-2">&amp;</span>::melior::ir::Block&lt;<span class="lifetime">'c</span>&gt;);
-                <span class="kw">if </span>constraint.is_variadic() {
-                    <span class="macro">parse_quote!</span>(<span class="kw-2">&amp;</span>[#r#type])
-                } <span class="kw">else </span>{
-                    r#type
                 }
             }
         }
@@ -176,14 +142,6 @@
                     generate_result_type(generate_iterator_type(base_type))
                 } <span class="kw">else </span>{
                     generate_iterator_type(base_type)
-                }
-            }
-            <span class="self">Self</span>::Successor { constraint, .. } =&gt; {
-                <span class="kw">let </span>r#type: Type = <span class="macro">parse_quote!</span>(::melior::ir::BlockRef&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;);
-                <span class="kw">if </span>constraint.is_variadic() {
-                    generate_iterator_type(r#type)
-                } <span class="kw">else </span>{
-                    generate_result_type(r#type)
                 }
             }
         }
