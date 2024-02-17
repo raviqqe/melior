@@ -86,6 +86,18 @@
 <a href="#85" id="85">85</a>
 <a href="#86" id="86">86</a>
 <a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Dialect handles, instances, and registry.
 
 </span><span class="kw">pub mod </span>arith;
@@ -104,7 +116,7 @@
     string_ref::StringRef,
 };
 <span class="kw">use </span>mlir_sys::{mlirDialectEqual, mlirDialectGetContext, mlirDialectGetNamespace, MlirDialect};
-<span class="kw">use </span>std::marker::PhantomData;
+<span class="kw">use </span>std::{marker::PhantomData, str::Utf8Error};
 
 <span class="attr">#[cfg(feature = <span class="string">"ods-dialects"</span>)]
 </span><span class="kw">pub mod </span>ods;
@@ -123,9 +135,8 @@
     }
 
     <span class="doccomment">/// Gets a namespace.
-    </span><span class="comment">// TODO Return &amp;str.
-    </span><span class="kw">pub fn </span>namespace(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StringRef {
-        <span class="kw">unsafe </span>{ StringRef::from_raw(mlirDialectGetNamespace(<span class="self">self</span>.raw)) }
+    </span><span class="kw">pub fn </span>namespace(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Utf8Error&gt; {
+        <span class="kw">unsafe </span>{ StringRef::from_raw(mlirDialectGetNamespace(<span class="self">self</span>.raw)) }.as_str()
     }
 
     <span class="doccomment">/// Creates a dialect from a raw object.
@@ -152,6 +163,19 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>namespace() {
+        <span class="kw">let </span>context = Context::new();
+
+        <span class="macro">assert_eq!</span>(
+            DialectHandle::llvm()
+                .load_dialect(<span class="kw-2">&amp;</span>context)
+                .namespace()
+                .unwrap(),
+            <span class="string">"llvm"
+        </span>);
+    }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>equal() {
