@@ -159,6 +159,18 @@
 <a href="#158" id="158">158</a>
 <a href="#159" id="159">159</a>
 <a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error,
     operation::operation_field::OperationField,
@@ -223,6 +235,8 @@
     name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     singular_identifier: Ident,
     storage_type_string: String,
+    set_identifier: Ident,
+    remove_identifier: Ident,
     storage_type: Type,
     optional: bool,
     default: bool,
@@ -235,6 +249,8 @@
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             name,
             singular_identifier: sanitize_snake_case_identifier(name)<span class="question-mark">?</span>,
+            set_identifier: sanitize_snake_case_identifier(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"set_{name}"</span>))<span class="question-mark">?</span>,
+            remove_identifier: sanitize_snake_case_identifier(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"remove_{name}"</span>))<span class="question-mark">?</span>,
             storage_type: syn::parse_str(
                 ATTRIBUTE_TYPES
                     .get(storage_type_string.trim())
@@ -255,6 +271,14 @@
                 </span>}
             },
         })
+    }
+
+    <span class="kw">pub fn </span>set_identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ident {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.set_identifier
+    }
+
+    <span class="kw">pub fn </span>remove_identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ident {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.remove_identifier
     }
 
     <span class="kw">pub fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {

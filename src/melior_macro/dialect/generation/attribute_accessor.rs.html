@@ -76,31 +76,23 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
-    error::Error,
-    operation::{Attribute, OperationField},
-    utility::sanitize_snake_case_identifier,
-};
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::operation::{Attribute, OperationField};
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::quote;
 
-<span class="kw">pub fn </span>generate_attribute_accessors(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
-    <span class="kw">let </span>getter = generate_getter(attribute)<span class="question-mark">?</span>;
-    <span class="kw">let </span>setter = generate_setter(attribute)<span class="question-mark">?</span>;
-    <span class="kw">let </span>remover = generate_remover(attribute)<span class="question-mark">?</span>;
+<span class="kw">pub fn </span>generate_attribute_accessors(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; TokenStream {
+    <span class="kw">let </span>getter = generate_getter(attribute);
+    <span class="kw">let </span>setter = generate_setter(attribute);
+    <span class="kw">let </span>remover = generate_remover(attribute);
 
-    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
+    <span class="macro">quote! </span>{
         #getter
         #setter
         #remover
-    })
+    }
 }
 
-<span class="kw">fn </span>generate_getter(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
+<span class="kw">fn </span>generate_getter(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; TokenStream {
     <span class="kw">let </span>name = attribute.name();
 
     <span class="kw">let </span>identifier = attribute.singular_identifier();
@@ -112,15 +104,15 @@
         </span><span class="macro">quote! </span>{ <span class="prelude-val">Ok</span>(<span class="self">self</span>.operation.attribute(#name)<span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>) }
     };
 
-    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
+    <span class="macro">quote! </span>{
         <span class="attr">#[allow(clippy::needless_question_mark)]
         </span><span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; #return_type {
             #body
         }
-    })
+    }
 }
 
-<span class="kw">fn </span>generate_setter(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
+<span class="kw">fn </span>generate_setter(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; TokenStream {
     <span class="kw">let </span>name = attribute.name();
 
     <span class="kw">let </span>body = <span class="kw">if </span>attribute.is_unit() {
@@ -137,28 +129,28 @@
         }
     };
 
-    <span class="kw">let </span>ident = sanitize_snake_case_identifier(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"set_{}"</span>, attribute.name()))<span class="question-mark">?</span>;
+    <span class="kw">let </span>identifier = attribute.set_identifier();
     <span class="kw">let </span>r#type = attribute.parameter_type();
 
-    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
-        <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context, value: #r#type) {
+    <span class="macro">quote! </span>{
+        <span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context, value: #r#type) {
             #body
         }
-    })
+    }
 }
 
-<span class="kw">fn </span>generate_remover(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TokenStream&gt;, Error&gt; {
-    <span class="prelude-val">Ok</span>(<span class="kw">if </span>attribute.is_unit() || attribute.is_optional() {
+<span class="kw">fn </span>generate_remover(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
+    <span class="kw">if </span>attribute.is_unit() || attribute.is_optional() {
         <span class="kw">let </span>name = attribute.name();
-        <span class="kw">let </span>ident = sanitize_snake_case_identifier(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"remove_{}"</span>, attribute.name()))<span class="question-mark">?</span>;
+        <span class="kw">let </span>identifier = attribute.remove_identifier();
 
         <span class="prelude-val">Some</span>(<span class="macro">quote! </span>{
-            <span class="kw">pub fn </span>#ident(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {
+            <span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {
                 <span class="self">self</span>.operation.remove_attribute(#name)
             }
         })
     } <span class="kw">else </span>{
         <span class="prelude-val">None
-    </span>})
+    </span>}
 }
 </code></pre></div></section></main></body></html>
