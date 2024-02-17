@@ -161,7 +161,7 @@
 <a href="#160" id="160">160</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error,
-    operation::operation_field::OperationFieldLike,
+    operation::operation_field::OperationField,
     utility::{generate_result_type, sanitize_snake_case_identifier},
 };
 <span class="kw">use </span>once_cell::sync::Lazy;
@@ -270,7 +270,7 @@
     }
 }
 
-<span class="kw">impl </span>OperationFieldLike <span class="kw">for </span>Attribute&lt;<span class="lifetime">'_</span>&gt; {
+<span class="kw">impl </span>OperationField <span class="kw">for </span>Attribute&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
         <span class="self">self</span>.name
     }

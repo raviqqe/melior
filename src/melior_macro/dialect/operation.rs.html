@@ -367,33 +367,20 @@
 <a href="#366" id="366">366</a>
 <a href="#367" id="367">367</a>
 <a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
-<a href="#372" id="372">372</a>
-<a href="#373" id="373">373</a>
-<a href="#374" id="374">374</a>
-<a href="#375" id="375">375</a>
-<a href="#376" id="376">376</a>
-<a href="#377" id="377">377</a>
-<a href="#378" id="378">378</a>
-<a href="#379" id="379">379</a>
-<a href="#380" id="380">380</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
-<span class="kw">mod </span>field_kind;
+<span class="kw">mod </span>operand;
 <span class="kw">mod </span>operation_element;
 <span class="kw">mod </span>operation_field;
-<span class="kw">mod </span>operation_result;
 <span class="kw">mod </span>region;
-<span class="kw">mod </span>sequence_info;
+<span class="kw">mod </span>result;
 <span class="kw">mod </span>successor;
 <span class="kw">mod </span>variadic_kind;
 
 <span class="kw">pub use </span><span class="self">self</span>::{
-    attribute::Attribute, builder::OperationBuilder, operation_element::OperationElement,
-    operation_field::OperationField, operation_result::OperationResult, region::Region,
-    sequence_info::SequenceInfo, successor::Successor, variadic_kind::VariadicKind,
+    attribute::Attribute, builder::OperationBuilder, operand::Operand,
+    operation_element::OperationElement, region::Region, result::OperationResult,
+    successor::Successor, variadic_kind::VariadicKind,
 };
 <span class="kw">use </span><span class="kw">super</span>::utility::sanitize_documentation;
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
@@ -401,7 +388,7 @@
     r#trait::Trait,
     types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
 };
-<span class="kw">pub use </span>operation_field::OperationFieldLike;
+<span class="kw">pub use </span>operation_field::OperationField;
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record, TypedInit};
 
 <span class="attr">#[derive(Debug)]
@@ -411,7 +398,7 @@
     regions: Vec&lt;Region&lt;<span class="lifetime">'a</span>&gt;&gt;,
     successors: Vec&lt;Successor&lt;<span class="lifetime">'a</span>&gt;&gt;,
     results: Vec&lt;OperationResult&lt;<span class="lifetime">'a</span>&gt;&gt;,
-    operands: Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    operands: Vec&lt;Operand&lt;<span class="lifetime">'a</span>&gt;&gt;,
     attributes: Vec&lt;Attribute&lt;<span class="lifetime">'a</span>&gt;&gt;,
     derived_attributes: Vec&lt;Attribute&lt;<span class="lifetime">'a</span>&gt;&gt;,
 }
@@ -511,10 +498,11 @@
         sanitize_documentation(<span class="self">self</span>.definition.str_value(<span class="string">"description"</span>)<span class="question-mark">?</span>)
     }
 
-    <span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationFieldLike&gt; {
-        <span class="kw">fn </span>convert(field: <span class="kw-2">&amp;</span><span class="kw">impl </span>OperationFieldLike) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationFieldLike {
+    <span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationField&gt; {
+        <span class="kw">fn </span>convert(field: <span class="kw-2">&amp;</span><span class="kw">impl </span>OperationField) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationField {
             field
         }
+
         <span class="self">self</span>.results
             .iter()
             .map(convert)
@@ -524,7 +512,7 @@
             .chain(<span class="self">self</span>.attributes().map(convert))
     }
 
-    <span class="kw">pub fn </span>operands(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationField&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
+    <span class="kw">pub fn </span>operands(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Operand&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
         <span class="self">self</span>.operands.iter()
     }
 
@@ -552,7 +540,7 @@
         <span class="self">self</span>.attributes.iter().chain(<span class="kw-2">&amp;</span><span class="self">self</span>.derived_attributes)
     }
 
-    <span class="kw">pub fn </span>required_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationFieldLike&gt; {
+    <span class="kw">pub fn </span>required_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationField&gt; {
         <span class="self">self</span>.fields()
             .filter(|field| (!field.is_result() || !<span class="self">self</span>.can_infer_type) &amp;&amp; !field.is_optional())
     }
@@ -645,9 +633,7 @@
                 </span>.into_iter()
                 .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
-            |name, constraint, _sequence_info, variadic_kind| {
-                OperationResult::new(name, constraint, variadic_kind)
-            },
+            OperationResult::new,
             same_size,
             attribute_sized,
         )
@@ -657,16 +643,14 @@
         arguments: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, Record&lt;<span class="lifetime">'a</span>&gt;)],
         same_size: bool,
         attribute_sized: bool,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;OperationField&lt;<span class="lifetime">'a</span>&gt;&gt;, Error&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Operand&lt;<span class="lifetime">'a</span>&gt;&gt;, Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">Self</span>::collect_elements(
             <span class="kw-2">&amp;</span>arguments
                 .iter()
                 .filter(|(<span class="kw">_</span>, definition)| definition.subclass_of(<span class="string">"TypeConstraint"</span>))
                 .map(|(name, definition)| (<span class="kw-2">*</span>name, TypeConstraint::new(<span class="kw-2">*</span>definition)))
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
-            |name, constraint, sequence_info, variadic_kind| {
-                OperationField::new(name, constraint, sequence_info, variadic_kind)
-            },
+            Operand::new,
             same_size,
             attribute_sized,
         )<span class="question-mark">?
@@ -675,7 +659,7 @@
 
     <span class="kw">fn </span>collect_elements&lt;T&gt;(
         elements: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, TypeConstraint&lt;<span class="lifetime">'a</span>&gt;)],
-        create: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, TypeConstraint&lt;<span class="lifetime">'a</span>&gt;, SequenceInfo, VariadicKind) -&gt; <span class="prelude-ty">Result</span>&lt;T, Error&gt;,
+        create: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, TypeConstraint&lt;<span class="lifetime">'a</span>&gt;, VariadicKind) -&gt; <span class="prelude-ty">Result</span>&lt;T, Error&gt;,
         same_size: bool,
         attribute_sized: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;T&gt;, usize), Error&gt; {
@@ -686,16 +670,8 @@
         <span class="kw">let </span><span class="kw-2">mut </span>variadic_kind = VariadicKind::new(unfixed_count, same_size, attribute_sized);
         <span class="kw">let </span><span class="kw-2">mut </span>fields = <span class="macro">vec!</span>[];
 
-        <span class="kw">for </span>(index, (name, constraint)) <span class="kw">in </span>elements.iter().enumerate() {
-            fields.push(create(
-                name,
-                <span class="kw-2">*</span>constraint,
-                SequenceInfo {
-                    index,
-                    len: elements.len(),
-                },
-                variadic_kind.clone(),
-            )<span class="question-mark">?</span>);
+        <span class="kw">for </span>(name, constraint) <span class="kw">in </span>elements {
+            fields.push(create(name, <span class="kw-2">*</span>constraint, variadic_kind.clone())<span class="question-mark">?</span>);
 
             <span class="kw">match </span><span class="kw-2">&amp;mut </span>variadic_kind {
                 VariadicKind::Simple { unfixed_seen } =&gt; {

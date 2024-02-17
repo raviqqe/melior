@@ -112,13 +112,13 @@
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::operation::{OperationElement, OperationFieldLike, VariadicKind};
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::operation::{OperationElement, OperationField, VariadicKind};
 <span class="kw">use </span>proc_macro2::{Span, TokenStream};
 <span class="kw">use </span>quote::quote;
 <span class="kw">use </span>syn::Ident;
 
 <span class="kw">pub fn </span>generate_element_getter(
-    field: <span class="kw-2">&amp;</span>(<span class="kw">impl </span>OperationFieldLike + OperationElement),
+    field: <span class="kw-2">&amp;</span>(<span class="kw">impl </span>OperationField + OperationElement),
     singular_kind: <span class="kw-2">&amp;</span>str,
     plural_kind: <span class="kw-2">&amp;</span>str,
     error_variant: <span class="kw-2">&amp;</span>Ident,

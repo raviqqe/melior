@@ -9,9 +9,9 @@
 <a href="#8" id="8">8</a>
 <a href="#9" id="9">9</a>
 <a href="#10" id="10">10</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{OperationFieldLike, VariadicKind};
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{OperationField, VariadicKind};
 
-<span class="kw">pub trait </span>OperationElement: OperationFieldLike {
+<span class="kw">pub trait </span>OperationElement: OperationField {
     <span class="kw">fn </span>is_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool;
     <span class="kw">fn </span>variadic_kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VariadicKind;
 
