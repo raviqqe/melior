@@ -2,6 +2,7 @@ mod attribute_accessor;
 mod field_accessor;
 mod operation_builder;
 mod region_accessor;
+mod successor_accessor;
 
 use self::{
     attribute_accessor::generate_attribute_accessors,
@@ -10,6 +11,7 @@ use self::{
         generate_default_constructor, generate_operation_builder, generate_operation_builder_fn,
     },
     region_accessor::generate_region_accessor,
+    successor_accessor::generate_successor_accessor,
 };
 use super::operation::{Operation, OperationBuilder};
 use crate::dialect::error::Error;
@@ -26,11 +28,16 @@ pub fn generate_operation(operation: &Operation) -> Result<TokenStream, Error> {
         .general_fields()
         .map(generate_accessor)
         .collect::<Result<Vec<_>, _>>()?;
+    let successor_accessors = operation
+        .successors()
+        .enumerate()
+        .map(|(index, region)| generate_successor_accessor(index, region))
+        .collect::<Vec<_>>();
     let region_accessors = operation
         .regions()
         .enumerate()
         .map(|(index, region)| generate_region_accessor(index, region))
-        .collect::<Result<Vec<_>, _>>()?;
+        .collect::<Vec<_>>();
     let attribute_accessors = operation
         .attributes()
         .map(generate_attribute_accessors)
@@ -38,7 +45,7 @@ pub fn generate_operation(operation: &Operation) -> Result<TokenStream, Error> {
 
     let builder = OperationBuilder::new(operation)?;
     let builder_tokens = generate_operation_builder(&builder)?;
-    let builder_fn = generate_operation_builder_fn(&builder)?;
+    let builder_fn = generate_operation_builder_fn(&builder);
     let default_constructor = generate_default_constructor(&builder)?;
 
     Ok(quote! {
@@ -61,6 +68,7 @@ pub fn generate_operation(operation: &Operation) -> Result<TokenStream, Error> {
             #builder_fn
 
             #(#field_accessors)*
+            #(#successor_accessors)*
             #(#region_accessors)*
             #(#attribute_accessors)*
         }
