@@ -189,19 +189,11 @@
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
 <a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error, operation::OperationBuilder, utility::sanitize_snake_case_identifier,
 };
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::{format_ident, quote};
-<span class="kw">use </span>syn::Ident;
 
 <span class="kw">pub fn </span>generate_operation_builder(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
     <span class="kw">let </span>field_names = builder
@@ -223,12 +215,12 @@
 
     <span class="kw">let </span>phantom_arguments = field_names
         .iter()
-        .map(|name| <span class="macro">quote! </span>{ #name: ::std::marker::PhantomData })
+        .map(|name| <span class="macro">quote! </span>{ #name: Default::default() })
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-    <span class="kw">let </span>builder_fns = generate_field_fns(builder, <span class="kw-2">&amp;</span>field_names, phantom_arguments.as_slice());
+    <span class="kw">let </span>field_fns = generate_field_fns(builder, <span class="kw-2">&amp;</span>phantom_arguments);
 
-    <span class="kw">let </span>new_fn = generate_new_fn(builder, phantom_arguments.as_slice())<span class="question-mark">?</span>;
+    <span class="kw">let </span>new_fn = generate_new_fn(builder, <span class="kw-2">&amp;</span>phantom_arguments)<span class="question-mark">?</span>;
     <span class="kw">let </span>build_fn = generate_build_fn(builder)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>builder_identifier = builder.identifier();
@@ -245,18 +237,14 @@
 
         #new_fn
 
-        #(#builder_fns)*
+        #(#field_fns)*
 
         #build_fn
     })
 }
 
 <span class="comment">// TODO Split this function for different kinds of fields.
-</span><span class="kw">fn </span>generate_field_fns(
-    builder: <span class="kw-2">&amp;</span>OperationBuilder,
-    field_names: <span class="kw-2">&amp;</span>[Ident],
-    phantoms: <span class="kw-2">&amp;</span>[TokenStream],
-) -&gt; Vec&lt;TokenStream&gt; {
+</span><span class="kw">fn </span>generate_field_fns(builder: <span class="kw-2">&amp;</span>OperationBuilder, phantoms: <span class="kw-2">&amp;</span>[TokenStream]) -&gt; Vec&lt;TokenStream&gt; {
     builder.operation().fields().map(<span class="kw">move </span>|field| {
         <span class="kw">let </span>builder_identifier = builder.identifier();
         <span class="kw">let </span>identifier = field.singular_identifier();
@@ -289,12 +277,10 @@
 
             <span class="macro">quote! </span>{
                 <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>, #(#parameters),<span class="kw-2">*</span>&gt; #builder_identifier&lt;<span class="lifetime">'c</span>, #(#arguments_unset),<span class="kw-2">*</span>&gt; {
-                    <span class="kw">pub fn </span>#identifier(<span class="kw-2">mut </span><span class="self">self</span>, #argument) -&gt; #builder_identifier&lt;<span class="lifetime">'c</span>, #(#arguments_set),<span class="kw-2">*</span>&gt; {
-                        <span class="self">self</span>.builder = <span class="self">self</span>.builder.#add(#add_arguments);
-                        <span class="kw">let </span><span class="self">Self </span>{ context, <span class="kw-2">mut </span>builder, #(#field_names),* } = <span class="self">self</span>;
+                    <span class="kw">pub fn </span>#identifier(<span class="self">self</span>, #argument) -&gt; #builder_identifier&lt;<span class="lifetime">'c</span>, #(#arguments_set),<span class="kw-2">*</span>&gt; {
                         #builder_identifier {
-                            context,
-                            builder,
+                            context: <span class="self">self</span>.context,
+                            builder: <span class="self">self</span>.builder.#add(#add_arguments),
                             #(#phantoms),*
                         }
                     }
