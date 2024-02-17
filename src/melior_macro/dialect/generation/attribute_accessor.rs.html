@@ -133,7 +133,7 @@
     <span class="kw">let </span>r#type = attribute.parameter_type();
 
     <span class="macro">quote! </span>{
-        <span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context, value: #r#type) {
+        <span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: #r#type) {
             #body
         }
     }
@@ -145,7 +145,7 @@
         <span class="kw">let </span>identifier = attribute.remove_identifier();
 
         <span class="prelude-val">Some</span>(<span class="macro">quote! </span>{
-            <span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;mut </span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {
+            <span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ::melior::Error&gt; {
                 <span class="self">self</span>.operation.remove_attribute(#name)
             }
         })
