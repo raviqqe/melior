@@ -384,7 +384,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::{Error, OdsError},
     r#trait::Trait,
-    types::TypeConstraint,
+    r#type::Type,
 };
 <span class="kw">pub use </span>operation_field::OperationField;
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record, TypedInit};
@@ -627,7 +627,7 @@
         <span class="self">Self</span>::collect_elements(
             <span class="kw-2">&amp;</span><span class="self">Self</span>::dag_constraints(definition, <span class="string">"results"</span>)<span class="question-mark">?
                 </span>.into_iter()
-                .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
+                .map(|(name, constraint)| (name, Type::new(constraint)))
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
             OperationResult::new,
             same_size,
@@ -644,7 +644,7 @@
             <span class="kw-2">&amp;</span>arguments
                 .iter()
                 .filter(|(<span class="kw">_</span>, definition)| definition.subclass_of(<span class="string">"TypeConstraint"</span>))
-                .map(|(name, definition)| (<span class="kw-2">*</span>name, TypeConstraint::new(<span class="kw-2">*</span>definition)))
+                .map(|(name, definition)| (<span class="kw-2">*</span>name, Type::new(<span class="kw-2">*</span>definition)))
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
             Operand::new,
             same_size,
@@ -654,24 +654,24 @@
     }
 
     <span class="kw">fn </span>collect_elements&lt;T&gt;(
-        elements: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, TypeConstraint&lt;<span class="lifetime">'a</span>&gt;)],
-        create: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, TypeConstraint&lt;<span class="lifetime">'a</span>&gt;, VariadicKind) -&gt; <span class="prelude-ty">Result</span>&lt;T, Error&gt;,
+        elements: <span class="kw-2">&amp;</span>[(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, Type)],
+        create: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, Type, VariadicKind) -&gt; <span class="prelude-ty">Result</span>&lt;T, Error&gt;,
         same_size: bool,
         attribute_sized: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;T&gt;, usize), Error&gt; {
         <span class="kw">let </span>unfixed_count = elements
             .iter()
-            .filter(|(<span class="kw">_</span>, constraint)| constraint.is_unfixed())
+            .filter(|(<span class="kw">_</span>, r#type)| r#type.is_unfixed())
             .count();
         <span class="kw">let </span><span class="kw-2">mut </span>variadic_kind = VariadicKind::new(unfixed_count, same_size, attribute_sized);
         <span class="kw">let </span><span class="kw-2">mut </span>fields = <span class="macro">vec!</span>[];
 
-        <span class="kw">for </span>(name, constraint) <span class="kw">in </span>elements {
-            fields.push(create(name, <span class="kw-2">*</span>constraint, variadic_kind.clone())<span class="question-mark">?</span>);
+        <span class="kw">for </span>(name, r#type) <span class="kw">in </span>elements {
+            fields.push(create(name, <span class="kw-2">*</span>r#type, variadic_kind.clone())<span class="question-mark">?</span>);
 
             <span class="kw">match </span><span class="kw-2">&amp;mut </span>variadic_kind {
                 VariadicKind::Simple { unfixed_seen } =&gt; {
-                    <span class="kw">if </span>constraint.is_unfixed() {
+                    <span class="kw">if </span>r#type.is_unfixed() {
                         <span class="kw-2">*</span>unfixed_seen = <span class="bool-val">true</span>;
                     }
                 }
@@ -680,7 +680,7 @@
                     preceding_variadic_count,
                     ..
                 } =&gt; {
-                    <span class="kw">if </span>constraint.is_unfixed() {
+                    <span class="kw">if </span>r#type.is_unfixed() {
                         <span class="kw-2">*</span>preceding_variadic_count += <span class="number">1</span>;
                     } <span class="kw">else </span>{
                         <span class="kw-2">*</span>preceding_simple_count += <span class="number">1</span>;

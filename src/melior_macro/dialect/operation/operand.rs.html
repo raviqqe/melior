@@ -96,7 +96,7 @@
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{OperationElement, OperationField, VariadicKind};
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error,
-    types::TypeConstraint,
+    r#type::Type <span class="kw">as </span>ElementType,
     utility::{generate_iterator_type, generate_result_type, sanitize_snake_case_identifier},
 };
 <span class="kw">use </span>proc_macro2::{Ident, TokenStream};
@@ -107,20 +107,20 @@
 </span><span class="kw">pub struct </span>Operand&lt;<span class="lifetime">'a</span>&gt; {
     name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     singular_identifier: Ident,
-    constraint: TypeConstraint&lt;<span class="lifetime">'a</span>&gt;,
+    r#type: ElementType,
     variadic_kind: VariadicKind,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Operand&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">pub fn </span>new(
         name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
-        constraint: TypeConstraint&lt;<span class="lifetime">'a</span>&gt;,
+        r#type: ElementType,
         variadic_kind: VariadicKind,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             name,
             singular_identifier: sanitize_snake_case_identifier(name)<span class="question-mark">?</span>,
-            constraint,
+            r#type,
             variadic_kind,
         })
     }
@@ -142,7 +142,7 @@
     <span class="kw">fn </span>parameter_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type {
         <span class="kw">let </span>r#type: Type = <span class="macro">parse_quote!</span>(::melior::ir::Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;);
 
-        <span class="kw">if </span><span class="self">self</span>.constraint.is_variadic() {
+        <span class="kw">if </span><span class="self">self</span>.r#type.is_variadic() {
             <span class="macro">parse_quote! </span>{ <span class="kw-2">&amp;</span>[#r#type] }
         } <span class="kw">else </span>{
             r#type
@@ -152,7 +152,7 @@
     <span class="kw">fn </span>return_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type {
         <span class="kw">let </span>r#type: Type = <span class="macro">parse_quote!</span>(::melior::ir::Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;);
 
-        <span class="kw">if </span>!<span class="self">self</span>.constraint.is_variadic() {
+        <span class="kw">if </span>!<span class="self">self</span>.r#type.is_variadic() {
             generate_result_type(r#type)
         } <span class="kw">else if </span><span class="self">self</span>.variadic_kind == VariadicKind::AttributeSized {
             generate_result_type(generate_iterator_type(r#type))
@@ -162,7 +162,7 @@
     }
 
     <span class="kw">fn </span>is_optional(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.constraint.is_optional()
+        <span class="self">self</span>.r#type.is_optional()
     }
 
     <span class="kw">fn </span>is_result(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -170,7 +170,7 @@
     </span>}
 
     <span class="kw">fn </span>add_arguments(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; TokenStream {
-        <span class="kw">if </span><span class="self">self</span>.constraint.is_variadic() {
+        <span class="kw">if </span><span class="self">self</span>.r#type.is_variadic() {
             <span class="macro">quote! </span>{ #name }
         } <span class="kw">else </span>{
             <span class="macro">quote! </span>{ <span class="kw-2">&amp;</span>[#name] }
@@ -180,7 +180,7 @@
 
 <span class="kw">impl </span>OperationElement <span class="kw">for </span>Operand&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">fn </span>is_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.constraint.is_variadic()
+        <span class="self">self</span>.r#type.is_variadic()
     }
 
     <span class="kw">fn </span>variadic_kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VariadicKind {
