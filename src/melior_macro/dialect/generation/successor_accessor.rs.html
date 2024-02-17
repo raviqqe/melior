@@ -23,7 +23,6 @@
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
-<a href="#25" id="25">25</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::operation::{OperationField, Successor};
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::quote;
@@ -43,8 +42,7 @@
     };
 
     <span class="macro">quote! </span>{
-        <span class="attr">#[allow(clippy::needless_question_mark)]
-        </span><span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context) -&gt; #return_type {
+        <span class="kw">pub fn </span>#identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; #return_type {
             #body
         }
     }
