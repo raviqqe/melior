@@ -2,7 +2,7 @@ mod type_state_item;
 mod type_state_list;
 
 use self::{type_state_item::TypeStateItem, type_state_list::TypeStateList};
-use super::{super::error::Error, Operation};
+use super::Operation;
 use quote::format_ident;
 use syn::Ident;
 
@@ -13,12 +13,12 @@ pub struct OperationBuilder<'a> {
 }
 
 impl<'a> OperationBuilder<'a> {
-    pub fn new(operation: &'a Operation<'a>) -> Result<Self, Error> {
-        Ok(Self {
+    pub fn new(operation: &'a Operation<'a>) -> Self {
+        Self {
             operation,
-            identifier: format_ident!("{}Builder", operation.class_name()?),
+            identifier: format_ident!("{}Builder", operation.name()),
             type_state: Self::create_type_state(operation),
-        })
+        }
     }
 
     pub fn operation(&self) -> &Operation {

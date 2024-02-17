@@ -78,18 +78,18 @@ fn generate_field_fns(builder: &OperationBuilder) -> Vec<TokenStream> {
 }
 
 fn generate_build_fn(builder: &OperationBuilder) -> Result<TokenStream, Error> {
-    let builder_ident = builder.identifier();
+    let builder_identifier = builder.identifier();
     let arguments = builder.type_state().arguments_all_set(true);
-    let class_name = format_ident!("{}", &builder.operation().class_name()?);
-    let error = format!("should be a valid {class_name}");
+    let operation_identifier = format_ident!("{}", &builder.operation().name());
+    let error = format!("should be a valid {operation_identifier}");
     let maybe_infer = builder
         .operation()
         .can_infer_type()
         .then_some(quote! { .enable_result_type_inference() });
 
     Ok(quote! {
-        impl<'c> #builder_ident<'c, #(#arguments),*> {
-            pub fn build(self) -> #class_name<'c> {
+        impl<'c> #builder_identifier<'c, #(#arguments),*> {
+            pub fn build(self) -> #operation_identifier<'c> {
                 self.builder #maybe_infer.build().expect("valid operation").try_into().expect(#error)
             }
         }
@@ -98,7 +98,7 @@ fn generate_build_fn(builder: &OperationBuilder) -> Result<TokenStream, Error> {
 
 fn generate_new_fn(builder: &OperationBuilder) -> Result<TokenStream, Error> {
     let builder_ident = builder.identifier();
-    let name = &builder.operation().full_name()?;
+    let name = &builder.operation().full_operation_name()?;
     let arguments = builder.type_state().arguments_all_set(false);
 
     Ok(quote! {
@@ -106,7 +106,7 @@ fn generate_new_fn(builder: &OperationBuilder) -> Result<TokenStream, Error> {
             pub fn new(context: &'c ::melior::Context, location: ::melior::ir::Location<'c>) -> Self {
                 Self {
                     context,
-                    builder: ::melior::ir::operation::OperationBuilder::new( #name, location),
+                    builder: ::melior::ir::operation::OperationBuilder::new(#name, location),
                     _state: Default::default(),
                 }
             }
@@ -130,8 +130,8 @@ pub fn generate_operation_builder_fn(builder: &OperationBuilder) -> TokenStream 
 }
 
 pub fn generate_default_constructor(builder: &OperationBuilder) -> Result<TokenStream, Error> {
-    let class_name = format_ident!("{}", &builder.operation().class_name()?);
-    let name = sanitize_snake_case_identifier(builder.operation().short_name()?)?;
+    let identifier = format_ident!("{}", &builder.operation().name());
+    let name = sanitize_snake_case_identifier(builder.operation().operation_name()?)?;
     let arguments = builder
         .operation()
         .required_fields()
@@ -158,8 +158,8 @@ pub fn generate_default_constructor(builder: &OperationBuilder) -> Result<TokenS
     Ok(quote! {
         #[allow(clippy::too_many_arguments)]
         #[doc = #doc]
-        pub fn #name<'c>(context: &'c ::melior::Context, #(#arguments),*) -> #class_name<'c> {
-            #class_name::builder(context, location)#(#builder_calls)*.build()
+        pub fn #name<'c>(context: &'c ::melior::Context, #(#arguments),*) -> #identifier<'c> {
+            #identifier::builder(context, location)#(#builder_calls)*.build()
         }
     })
 }

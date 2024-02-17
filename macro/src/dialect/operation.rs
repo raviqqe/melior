@@ -25,6 +25,7 @@ use tblgen::{error::WithLocation, record::Record, TypedInit};
 #[derive(Debug)]
 pub struct Operation<'a> {
     definition: Record<'a>,
+    name: String,
     can_infer_type: bool,
     regions: Vec<Region<'a>>,
     successors: Vec<Successor<'a>>,
@@ -48,6 +49,7 @@ impl<'a> Operation<'a> {
         )?;
 
         Ok(Self {
+            name: Self::build_name(definition)?,
             successors: Self::collect_successors(definition)?,
             operands: Self::collect_operands(
                 &arguments,
@@ -69,6 +71,23 @@ impl<'a> Operation<'a> {
         })
     }
 
+    fn build_name(definition: Record) -> Result<String, Error> {
+        let name = definition.name()?;
+
+        Ok(if let Some((_, name)) = name.split_once('_') {
+            name
+        } else {
+            name
+        }
+        .trim_end_matches("Op")
+        .to_owned()
+            + "Operation")
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
     pub fn can_infer_type(&self) -> bool {
         self.can_infer_type
     }
@@ -81,26 +100,13 @@ impl<'a> Operation<'a> {
         Ok(self.dialect()?.name()?)
     }
 
-    pub fn class_name(&self) -> Result<&str, Error> {
-        let name = self.definition.name()?;
-
-        Ok(if name.starts_with('_') {
-            name
-        } else if let Some(name) = name.split('_').nth(1) {
-            // Trim dialect prefix from name.
-            name
-        } else {
-            name
-        })
-    }
-
-    pub fn short_name(&self) -> Result<&str, Error> {
+    pub fn operation_name(&self) -> Result<&str, Error> {
         Ok(self.definition.str_value("opName")?)
     }
 
-    pub fn full_name(&self) -> Result<String, Error> {
+    pub fn full_operation_name(&self) -> Result<String, Error> {
         let dialect_name = self.dialect()?.string_value("name")?;
-        let short_name = self.short_name()?;
+        let short_name = self.operation_name()?;
 
         Ok(if dialect_name.is_empty() {
             short_name.into()
@@ -110,12 +116,12 @@ impl<'a> Operation<'a> {
     }
 
     pub fn summary(&self) -> Result<String, Error> {
-        let short_name = self.short_name()?;
-        let class_name = self.class_name()?;
+        let short_name = self.operation_name()?;
+        let name = &self.name;
         let summary = self.definition.str_value("summary")?;
 
         Ok([
-            format!("[`{short_name}`]({class_name}) operation."),
+            format!("[`{short_name}`]({name}) operation."),
             if summary.is_empty() {
                 Default::default()
             } else {
