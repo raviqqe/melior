@@ -103,11 +103,7 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{element_kind::ElementKind, field_kind::FieldKind, SequenceInfo, VariadicKind};
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{field_kind::FieldKind, OperationElement, SequenceInfo, VariadicKind};
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error, types::TypeConstraint, utility::sanitize_snake_case_identifier,
 };
@@ -117,8 +113,7 @@
 
 <span class="comment">// TODO Rename this `OperationField`.
 </span><span class="kw">pub trait </span>OperationFieldLike {
-    <span class="comment">// TODO Remove this.
-    </span><span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
     <span class="kw">fn </span>singular_identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ident;
     <span class="kw">fn </span>plural_kind_identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Ident;
     <span class="kw">fn </span>parameter_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type;
@@ -129,12 +124,32 @@
     <span class="kw">fn </span>add_arguments(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; TokenStream;
 }
 
-<span class="attr">#[derive(Debug, Clone)]
+<span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>OperationField&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">pub</span>(<span class="kw">crate</span>) name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     <span class="kw">pub</span>(<span class="kw">crate</span>) plural_identifier: Ident,
     <span class="kw">pub</span>(<span class="kw">crate</span>) sanitized_name: Ident,
     <span class="kw">pub</span>(<span class="kw">crate</span>) kind: FieldKind&lt;<span class="lifetime">'a</span>&gt;,
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; OperationField&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">pub fn </span>new(
+        name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+        constraint: TypeConstraint&lt;<span class="lifetime">'a</span>&gt;,
+        sequence_info: SequenceInfo,
+        variadic_kind: VariadicKind,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            name,
+            plural_identifier: <span class="macro">format_ident!</span>(<span class="string">"operands"</span>),
+            sanitized_name: sanitize_snake_case_identifier(name)<span class="question-mark">?</span>,
+            kind: FieldKind::Element {
+                constraint,
+                sequence_info,
+                variadic_kind,
+            },
+        })
+    }
 }
 
 <span class="kw">impl </span>OperationFieldLike <span class="kw">for </span>OperationField&lt;<span class="lifetime">'_</span>&gt; {
@@ -163,19 +178,13 @@
     }
 
     <span class="kw">fn </span>is_result(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="macro">matches!</span>(
-            <span class="self">self</span>.kind,
-            FieldKind::Element {
-                kind: ElementKind::Result,
-                ..
-            }
-        )
-    }
+        <span class="bool-val">false
+    </span>}
 
     <span class="kw">fn </span>add_arguments(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>Ident) -&gt; TokenStream {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
             FieldKind::Element { constraint, .. } =&gt; {
-                <span class="kw">if </span>constraint.is_unfixed() &amp;&amp; !constraint.is_optional() {
+                <span class="kw">if </span>constraint.is_variadic() {
                     <span class="macro">quote! </span>{ #name }
                 } <span class="kw">else </span>{
                     <span class="macro">quote! </span>{ <span class="kw-2">&amp;</span>[#name] }
@@ -185,34 +194,17 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; OperationField&lt;<span class="lifetime">'a</span>&gt; {
-    <span class="kw">fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, kind: FieldKind&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
-            name,
-            plural_identifier: <span class="kw">match </span>kind {
-                FieldKind::Element { kind, .. } =&gt; <span class="macro">format_ident!</span>(<span class="string">"{}s"</span>, kind.as_str()),
-            },
-            sanitized_name: sanitize_snake_case_identifier(name)<span class="question-mark">?</span>,
-            kind,
-        })
+<span class="kw">impl </span>OperationElement <span class="kw">for </span>OperationField&lt;<span class="lifetime">'_</span>&gt; {
+    <span class="kw">fn </span>is_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
+            FieldKind::Element { constraint, .. } =&gt; constraint.is_variadic(),
+        }
     }
 
-    <span class="kw">pub fn </span>new_element(
-        name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
-        constraint: TypeConstraint&lt;<span class="lifetime">'a</span>&gt;,
-        kind: ElementKind,
-        sequence_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
-        <span class="self">Self</span>::new(
-            name,
-            FieldKind::Element {
-                kind,
-                constraint,
-                sequence_info,
-                variadic_kind,
-            },
-        )
+    <span class="kw">fn </span>variadic_kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VariadicKind {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.kind {
+            FieldKind::Element { variadic_kind, .. } =&gt; variadic_kind,
+        }
     }
 }
 </code></pre></div></section></main></body></html>

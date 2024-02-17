@@ -56,34 +56,16 @@
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
-<a href="#58" id="58">58</a>
-<a href="#59" id="59">59</a>
-<a href="#60" id="60">60</a>
-<a href="#61" id="61">61</a>
-<a href="#62" id="62">62</a>
-<a href="#63" id="63">63</a>
-<a href="#64" id="64">64</a>
-<a href="#65" id="65">65</a>
-<a href="#66" id="66">66</a>
-<a href="#67" id="67">67</a>
-<a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{element_kind::ElementKind, SequenceInfo, VariadicKind};
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{SequenceInfo, VariadicKind};
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     types::TypeConstraint,
     utility::{generate_iterator_type, generate_result_type},
 };
 <span class="kw">use </span>syn::{parse_quote, Type};
 
-<span class="attr">#[derive(Debug, Clone)]
+<span class="attr">#[derive(Debug)]
 </span><span class="kw">pub enum </span>FieldKind&lt;<span class="lifetime">'a</span>&gt; {
     Element {
-        kind: ElementKind,
         constraint: TypeConstraint&lt;<span class="lifetime">'a</span>&gt;,
         sequence_info: SequenceInfo,
         variadic_kind: VariadicKind,
@@ -99,21 +81,13 @@
 
     <span class="kw">pub fn </span>parameter_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type {
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Element {
-                kind, constraint, ..
-            } =&gt; {
-                <span class="kw">let </span>base_type: Type = <span class="kw">match </span>kind {
-                    ElementKind::Operand =&gt; {
-                        <span class="macro">parse_quote!</span>(::melior::ir::Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;)
-                    }
-                    ElementKind::Result =&gt; {
-                        <span class="macro">parse_quote!</span>(::melior::ir::Type&lt;<span class="lifetime">'c</span>&gt;)
-                    }
-                };
+            <span class="self">Self</span>::Element { constraint, .. } =&gt; {
+                <span class="kw">let </span>r#type: Type = <span class="macro">parse_quote!</span>(::melior::ir::Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;);
+
                 <span class="kw">if </span>constraint.is_variadic() {
-                    <span class="macro">parse_quote! </span>{ <span class="kw-2">&amp;</span>[#base_type] }
+                    <span class="macro">parse_quote! </span>{ <span class="kw-2">&amp;</span>[#r#type] }
                 } <span class="kw">else </span>{
-                    base_type
+                    r#type
                 }
             }
         }
@@ -122,26 +96,18 @@
     <span class="kw">pub fn </span>return_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Type {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Element {
-                kind,
                 constraint,
                 variadic_kind,
                 ..
             } =&gt; {
-                <span class="kw">let </span>base_type: Type = <span class="kw">match </span>kind {
-                    ElementKind::Operand =&gt; {
-                        <span class="macro">parse_quote!</span>(::melior::ir::Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;)
-                    }
-                    ElementKind::Result =&gt; {
-                        <span class="macro">parse_quote!</span>(::melior::ir::operation::OperationResult&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;)
-                    }
-                };
+                <span class="kw">let </span>r#type: Type = <span class="macro">parse_quote!</span>(::melior::ir::Value&lt;<span class="lifetime">'c</span>, <span class="lifetime">'_</span>&gt;);
 
                 <span class="kw">if </span>!constraint.is_variadic() {
-                    generate_result_type(base_type)
+                    generate_result_type(r#type)
                 } <span class="kw">else if </span>variadic_kind == <span class="kw-2">&amp;</span>VariadicKind::AttributeSized {
-                    generate_result_type(generate_iterator_type(base_type))
+                    generate_result_type(generate_iterator_type(r#type))
                 } <span class="kw">else </span>{
-                    generate_iterator_type(base_type)
+                    generate_iterator_type(r#type)
                 }
             }
         }

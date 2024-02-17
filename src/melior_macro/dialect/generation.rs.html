@@ -96,19 +96,32 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute_accessor;
-<span class="kw">mod </span>field_accessor;
+<span class="kw">mod </span>element_accessor;
+<span class="kw">mod </span>operand_accessor;
 <span class="kw">mod </span>operation_builder;
 <span class="kw">mod </span>region_accessor;
+<span class="kw">mod </span>result_accessor;
 <span class="kw">mod </span>successor_accessor;
 
 <span class="kw">use </span><span class="self">self</span>::{
     attribute_accessor::generate_attribute_accessors,
-    field_accessor::generate_accessor,
+    operand_accessor::generate_operand_accessor,
     operation_builder::{
         generate_default_constructor, generate_operation_builder, generate_operation_builder_fn,
     },
     region_accessor::generate_region_accessor,
+    result_accessor::generate_result_accessor,
     successor_accessor::generate_successor_accessor,
 };
 <span class="kw">use </span><span class="kw">super</span>::operation::{Operation, OperationBuilder};
@@ -122,9 +135,15 @@
     <span class="kw">let </span>class_name = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, operation.class_name()<span class="question-mark">?</span>);
     <span class="kw">let </span>name = <span class="kw-2">&amp;</span>operation.full_name()<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>field_accessors = operation
-        .general_fields()
-        .map(generate_accessor)
+    <span class="kw">let </span>result_accessors = operation
+        .results()
+        .enumerate()
+        .map(|(index, result)| generate_result_accessor(result, index, operation.result_len()))
+        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+    <span class="kw">let </span>operand_accessors = operation
+        .operands()
+        .enumerate()
+        .map(|(index, operand)| generate_operand_accessor(operand, index, operation.operand_len()))
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
     <span class="kw">let </span>successor_accessors = operation
         .successors()
@@ -165,7 +184,8 @@
 
             #builder_fn
 
-            #(#field_accessors)*
+            #(#result_accessors)*
+            #(#operand_accessors)*
             #(#successor_accessors)*
             #(#region_accessors)*
             #(#attribute_accessors)*
