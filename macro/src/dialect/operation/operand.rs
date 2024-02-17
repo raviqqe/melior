@@ -1,22 +1,22 @@
-use super::{OperationElement, OperationFieldLike, VariadicKind};
+use super::{OperationElement, OperationField, VariadicKind};
 use crate::dialect::{
     error::Error,
     types::TypeConstraint,
     utility::{generate_iterator_type, generate_result_type, sanitize_snake_case_identifier},
 };
-use proc_macro2::{Span, TokenStream};
-use quote::quote;
-use syn::{parse_quote, Ident, Type};
+use proc_macro2::{Ident, TokenStream};
+use quote::{format_ident, quote};
+use syn::{parse_quote, Type};
 
 #[derive(Debug)]
-pub struct OperationResult<'a> {
+pub struct Operand<'a> {
     name: &'a str,
     singular_identifier: Ident,
     constraint: TypeConstraint<'a>,
     variadic_kind: VariadicKind,
 }
 
-impl<'a> OperationResult<'a> {
+impl<'a> Operand<'a> {
     pub fn new(
         name: &'a str,
         constraint: TypeConstraint<'a>,
@@ -31,7 +31,7 @@ impl<'a> OperationResult<'a> {
     }
 }
 
-impl OperationFieldLike for OperationResult<'_> {
+impl OperationField for Operand<'_> {
     fn name(&self) -> &str {
         self.name
     }
@@ -41,12 +41,11 @@ impl OperationFieldLike for OperationResult<'_> {
     }
 
     fn plural_kind_identifier(&self) -> Ident {
-        Ident::new("results", Span::call_site())
+        format_ident!("operands")
     }
 
-    // TODO Share this logic with `Operand`.
     fn parameter_type(&self) -> Type {
-        let r#type: Type = parse_quote!(::melior::ir::Type<'c>);
+        let r#type: Type = parse_quote!(::melior::ir::Value<'c, '_>);
 
         if self.constraint.is_variadic() {
             parse_quote! { &[#r#type] }
@@ -55,9 +54,8 @@ impl OperationFieldLike for OperationResult<'_> {
         }
     }
 
-    // TODO Share this logic with `Operand`.
     fn return_type(&self) -> Type {
-        let r#type: Type = parse_quote!(::melior::ir::operation::OperationResult<'c, '_>);
+        let r#type: Type = parse_quote!(::melior::ir::Value<'c, '_>);
 
         if !self.constraint.is_variadic() {
             generate_result_type(r#type)
@@ -73,11 +71,11 @@ impl OperationFieldLike for OperationResult<'_> {
     }
 
     fn is_result(&self) -> bool {
-        true
+        false
     }
 
     fn add_arguments(&self, name: &Ident) -> TokenStream {
-        if self.constraint.is_unfixed() && !self.constraint.is_optional() {
+        if self.constraint.is_variadic() {
             quote! { #name }
         } else {
             quote! { &[#name] }
@@ -85,7 +83,7 @@ impl OperationFieldLike for OperationResult<'_> {
     }
 }
 
-impl OperationElement for OperationResult<'_> {
+impl OperationElement for Operand<'_> {
     fn is_variadic(&self) -> bool {
         self.constraint.is_variadic()
     }

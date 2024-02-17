@@ -1,18 +1,17 @@
 mod attribute;
 mod builder;
-mod field_kind;
+mod operand;
 mod operation_element;
 mod operation_field;
-mod operation_result;
 mod region;
-mod sequence_info;
+mod result;
 mod successor;
 mod variadic_kind;
 
 pub use self::{
-    attribute::Attribute, builder::OperationBuilder, operation_element::OperationElement,
-    operation_field::OperationField, operation_result::OperationResult, region::Region,
-    sequence_info::SequenceInfo, successor::Successor, variadic_kind::VariadicKind,
+    attribute::Attribute, builder::OperationBuilder, operand::Operand,
+    operation_element::OperationElement, region::Region, result::OperationResult,
+    successor::Successor, variadic_kind::VariadicKind,
 };
 use super::utility::sanitize_documentation;
 use crate::dialect::{
@@ -20,7 +19,7 @@ use crate::dialect::{
     r#trait::Trait,
     types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
 };
-pub use operation_field::OperationFieldLike;
+pub use operation_field::OperationField;
 use tblgen::{error::WithLocation, record::Record, TypedInit};
 
 #[derive(Debug)]
@@ -30,7 +29,7 @@ pub struct Operation<'a> {
     regions: Vec<Region<'a>>,
     successors: Vec<Successor<'a>>,
     results: Vec<OperationResult<'a>>,
-    operands: Vec<OperationField<'a>>,
+    operands: Vec<Operand<'a>>,
     attributes: Vec<Attribute<'a>>,
     derived_attributes: Vec<Attribute<'a>>,
 }
@@ -130,10 +129,11 @@ impl<'a> Operation<'a> {
         sanitize_documentation(self.definition.str_value("description")?)
     }
 
-    pub fn fields(&self) -> impl Iterator<Item = &dyn OperationFieldLike> {
-        fn convert(field: &impl OperationFieldLike) -> &dyn OperationFieldLike {
+    pub fn fields(&self) -> impl Iterator<Item = &dyn OperationField> {
+        fn convert(field: &impl OperationField) -> &dyn OperationField {
             field
         }
+
         self.results
             .iter()
             .map(convert)
@@ -143,7 +143,7 @@ impl<'a> Operation<'a> {
             .chain(self.attributes().map(convert))
     }
 
-    pub fn operands(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
+    pub fn operands(&self) -> impl Iterator<Item = &Operand<'a>> + Clone {
         self.operands.iter()
     }
 
@@ -171,7 +171,7 @@ impl<'a> Operation<'a> {
         self.attributes.iter().chain(&self.derived_attributes)
     }
 
-    pub fn required_fields(&self) -> impl Iterator<Item = &dyn OperationFieldLike> {
+    pub fn required_fields(&self) -> impl Iterator<Item = &dyn OperationField> {
         self.fields()
             .filter(|field| (!field.is_result() || !self.can_infer_type) && !field.is_optional())
     }
@@ -264,9 +264,7 @@ impl<'a> Operation<'a> {
                 .into_iter()
                 .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
                 .collect::<Vec<_>>(),
-            |name, constraint, _sequence_info, variadic_kind| {
-                OperationResult::new(name, constraint, variadic_kind)
-            },
+            OperationResult::new,
             same_size,
             attribute_sized,
         )
@@ -276,16 +274,14 @@ impl<'a> Operation<'a> {
         arguments: &[(&'a str, Record<'a>)],
         same_size: bool,
         attribute_sized: bool,
-    ) -> Result<Vec<OperationField<'a>>, Error> {
+    ) -> Result<Vec<Operand<'a>>, Error> {
         Ok(Self::collect_elements(
             &arguments
                 .iter()
                 .filter(|(_, definition)| definition.subclass_of("TypeConstraint"))
                 .map(|(name, definition)| (*name, TypeConstraint::new(*definition)))
                 .collect::<Vec<_>>(),
-            |name, constraint, sequence_info, variadic_kind| {
-                OperationField::new(name, constraint, sequence_info, variadic_kind)
-            },
+            Operand::new,
             same_size,
             attribute_sized,
         )?
@@ -294,7 +290,7 @@ impl<'a> Operation<'a> {
 
     fn collect_elements<T>(
         elements: &[(&'a str, TypeConstraint<'a>)],
-        create: impl Fn(&'a str, TypeConstraint<'a>, SequenceInfo, VariadicKind) -> Result<T, Error>,
+        create: impl Fn(&'a str, TypeConstraint<'a>, VariadicKind) -> Result<T, Error>,
         same_size: bool,
         attribute_sized: bool,
     ) -> Result<(Vec<T>, usize), Error> {
@@ -305,16 +301,8 @@ impl<'a> Operation<'a> {
         let mut variadic_kind = VariadicKind::new(unfixed_count, same_size, attribute_sized);
         let mut fields = vec![];
 
-        for (index, (name, constraint)) in elements.iter().enumerate() {
-            fields.push(create(
-                name,
-                *constraint,
-                SequenceInfo {
-                    index,
-                    len: elements.len(),
-                },
-                variadic_kind.clone(),
-            )?);
+        for (name, constraint) in elements {
+            fields.push(create(name, *constraint, variadic_kind.clone())?);
 
             match &mut variadic_kind {
                 VariadicKind::Simple { unfixed_seen } => {
