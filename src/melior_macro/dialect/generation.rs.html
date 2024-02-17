@@ -106,6 +106,8 @@
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute_accessor;
 <span class="kw">mod </span>element_accessor;
 <span class="kw">mod </span>operand_accessor;
@@ -174,11 +176,13 @@
         }
 
         <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; #class_name&lt;<span class="lifetime">'c</span>&gt; {
-            <span class="kw">pub fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
+            <span class="doccomment">/// Returns a name.
+            </span><span class="kw">pub fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str {
                 #name
             }
 
-            <span class="kw">pub fn </span>operation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt; {
+            <span class="doccomment">/// Returns a generic operation.
+            </span><span class="kw">pub fn </span>as_operation(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt; {
                 <span class="kw-2">&amp;</span><span class="self">self</span>.operation
             }
 

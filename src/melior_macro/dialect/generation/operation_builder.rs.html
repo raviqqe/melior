@@ -194,6 +194,8 @@
 <a href="#193" id="193">193</a>
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error, operation::OperationBuilder, utility::sanitize_snake_case_identifier,
 };
@@ -249,7 +251,8 @@
     })
 }
 
-<span class="kw">fn </span>generate_field_fns(
+<span class="comment">// TODO Split this function for different kinds of fields.
+</span><span class="kw">fn </span>generate_field_fns(
     builder: <span class="kw-2">&amp;</span>OperationBuilder,
     field_names: <span class="kw-2">&amp;</span>[Ident],
     phantoms: <span class="kw-2">&amp;</span>[TokenStream],
@@ -346,10 +349,11 @@
     <span class="kw">let </span>arguments = builder.type_state().arguments_all_set(<span class="bool-val">false</span>);
 
     <span class="macro">quote! </span>{
-        <span class="kw">pub fn </span>builder(
+        <span class="doccomment">/// Creates a builder.
+        </span><span class="kw">pub fn </span>builder(
             context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context,
             location: ::melior::ir::Location&lt;<span class="lifetime">'c</span>&gt;
-            ) -&gt; #builder_ident&lt;<span class="lifetime">'c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
+        ) -&gt; #builder_ident&lt;<span class="lifetime">'c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
             #builder_ident::new(context, location)
         }
     }
