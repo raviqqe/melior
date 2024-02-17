@@ -365,8 +365,6 @@
 <a href="#364" id="364">364</a>
 <a href="#365" id="365">365</a>
 <a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>operand;
@@ -386,7 +384,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::{Error, OdsError},
     r#trait::Trait,
-    types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
+    types::TypeConstraint,
 };
 <span class="kw">pub use </span>operation_field::OperationField;
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record, TypedInit};
@@ -552,9 +550,9 @@
             .map(|(name, value)| {
                 Successor::new(
                     name,
-                    SuccessorConstraint::new(
-                        Record::try_from(value).map_err(|error| error.set_location(definition))<span class="question-mark">?</span>,
-                    ),
+                    Record::try_from(value)
+                        .map_err(|error| error.set_location(definition))<span class="question-mark">?
+                        </span>.subclass_of(<span class="string">"VariadicSuccessor"</span>),
                 )
             })
             .collect()
@@ -567,11 +565,9 @@
             .map(|(name, value)| {
                 Region::new(
                     name,
-                    RegionConstraint::new(
-                        value
-                            .try_into()
-                            .map_err(|error: tblgen::Error| error.set_location(definition))<span class="question-mark">?</span>,
-                    ),
+                    Record::try_from(value)
+                        .map_err(|error| error.set_location(definition))<span class="question-mark">?
+                        </span>.subclass_of(<span class="string">"VariadicRegion"</span>),
                 )
             })
             .collect()

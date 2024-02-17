@@ -78,11 +78,9 @@
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::OperationField;
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error,
-    types::RegionConstraint,
     utility::{generate_iterator_type, generate_result_type, sanitize_snake_case_identifier},
 };
 <span class="kw">use </span>proc_macro2::{Span, TokenStream};
@@ -93,20 +91,20 @@
 </span><span class="kw">pub struct </span>Region&lt;<span class="lifetime">'a</span>&gt; {
     name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     singular_identifier: Ident,
-    constraint: RegionConstraint&lt;<span class="lifetime">'a</span>&gt;,
+    variadic: bool,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Region&lt;<span class="lifetime">'a</span>&gt; {
-    <span class="kw">pub fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, constraint: RegionConstraint&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+    <span class="kw">pub fn </span>new(name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str, variadic: bool) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             name,
             singular_identifier: sanitize_snake_case_identifier(name)<span class="question-mark">?</span>,
-            constraint,
+            variadic,
         })
     }
 
     <span class="kw">pub fn </span>is_variadic(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.constraint.is_variadic()
+        <span class="self">self</span>.variadic
     }
 }
 
