@@ -60,10 +60,6 @@
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
 <a href="#61" id="61">61</a>
-<a href="#62" id="62">62</a>
-<a href="#63" id="63">63</a>
-<a href="#64" id="64">64</a>
-<a href="#65" id="65">65</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::type_state_item::TypeStateItem;
 <span class="kw">use </span>quote::quote;
 <span class="kw">use </span>std::iter::repeat;
@@ -83,10 +79,6 @@
             unset: syn::parse2(<span class="macro">quote!</span>(::melior::dialect::ods::__private::Unset)).unwrap(),
             set: syn::parse2(<span class="macro">quote!</span>(::melior::dialect::ods::__private::Set)).unwrap(),
         }
-    }
-
-    <span class="kw">pub fn </span>field_names(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>str&gt; {
-        <span class="self">self</span>.items.iter().map(|item| item.field_name())
     }
 
     <span class="kw">pub fn </span>parameters(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; {

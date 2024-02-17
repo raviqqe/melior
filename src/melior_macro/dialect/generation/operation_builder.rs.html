@@ -164,31 +164,6 @@
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
-<a href="#167" id="167">167</a>
-<a href="#168" id="168">168</a>
-<a href="#169" id="169">169</a>
-<a href="#170" id="170">170</a>
-<a href="#171" id="171">171</a>
-<a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::Error, operation::OperationBuilder, utility::sanitize_snake_case_identifier,
 };
@@ -196,43 +171,21 @@
 <span class="kw">use </span>quote::{format_ident, quote};
 
 <span class="kw">pub fn </span>generate_operation_builder(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
-    <span class="kw">let </span>field_names = builder
-        .type_state()
-        .field_names()
-        .map(sanitize_snake_case_identifier)
-        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>phantom_fields =
-        builder
-            .type_state()
-            .parameters()
-            .zip(<span class="kw-2">&amp;</span>field_names)
-            .map(|(r#type, name)| {
-                <span class="macro">quote! </span>{
-                    #name: ::std::marker::PhantomData&lt;#r#type&gt;
-                }
-            });
-
-    <span class="kw">let </span>phantom_arguments = field_names
-        .iter()
-        .map(|name| <span class="macro">quote! </span>{ #name: Default::default() })
-        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-
-    <span class="kw">let </span>field_fns = generate_field_fns(builder, <span class="kw-2">&amp;</span>phantom_arguments);
-
-    <span class="kw">let </span>new_fn = generate_new_fn(builder, <span class="kw-2">&amp;</span>phantom_arguments)<span class="question-mark">?</span>;
+    <span class="kw">let </span>state_types = builder.type_state().parameters();
+    <span class="kw">let </span>field_fns = generate_field_fns(builder);
+    <span class="kw">let </span>new_fn = generate_new_fn(builder)<span class="question-mark">?</span>;
     <span class="kw">let </span>build_fn = generate_build_fn(builder)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>builder_identifier = builder.identifier();
+    <span class="kw">let </span>identifier = builder.identifier();
     <span class="kw">let </span>doc = <span class="macro">format!</span>(<span class="string">"A builder for {}"</span>, builder.operation().summary()<span class="question-mark">?</span>);
     <span class="kw">let </span>type_arguments = builder.type_state().parameters();
 
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
         <span class="attr">#[doc = #doc]
-        </span><span class="kw">pub struct </span>#builder_identifier&lt;<span class="lifetime">'c</span>, #(#type_arguments),<span class="kw-2">*</span>&gt; {
+        </span><span class="kw">pub struct </span>#identifier&lt;<span class="lifetime">'c</span>, #(#type_arguments),<span class="kw-2">*</span>&gt; {
             builder: ::melior::ir::operation::OperationBuilder&lt;<span class="lifetime">'c</span>&gt;,
             context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context,
-            #(#phantom_fields),*
+            _state: ::std::marker::PhantomData&lt;(#(#state_types),<span class="kw-2">*</span>)&gt;,
         }
 
         #new_fn
@@ -244,7 +197,7 @@
 }
 
 <span class="comment">// TODO Split this function for different kinds of fields.
-</span><span class="kw">fn </span>generate_field_fns(builder: <span class="kw-2">&amp;</span>OperationBuilder, phantoms: <span class="kw-2">&amp;</span>[TokenStream]) -&gt; Vec&lt;TokenStream&gt; {
+</span><span class="kw">fn </span>generate_field_fns(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; Vec&lt;TokenStream&gt; {
     builder.operation().fields().map(<span class="kw">move </span>|field| {
         <span class="kw">let </span>builder_identifier = builder.identifier();
         <span class="kw">let </span>identifier = field.singular_identifier();
@@ -281,7 +234,7 @@
                         #builder_identifier {
                             context: <span class="self">self</span>.context,
                             builder: <span class="self">self</span>.builder.#add(#add_arguments),
-                            #(#phantoms),*
+                            _state: Default::default(),
                         }
                     }
                 }
@@ -309,10 +262,7 @@
     })
 }
 
-<span class="kw">fn </span>generate_new_fn(
-    builder: <span class="kw-2">&amp;</span>OperationBuilder,
-    phantoms: <span class="kw-2">&amp;</span>[TokenStream],
-) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
+<span class="kw">fn </span>generate_new_fn(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
     <span class="kw">let </span>builder_ident = builder.identifier();
     <span class="kw">let </span>name = <span class="kw-2">&amp;</span>builder.operation().full_name()<span class="question-mark">?</span>;
     <span class="kw">let </span>arguments = builder.type_state().arguments_all_set(<span class="bool-val">false</span>);
@@ -323,7 +273,7 @@
                 <span class="self">Self </span>{
                     context,
                     builder: ::melior::ir::operation::OperationBuilder::new( #name, location),
-                    #(#phantoms),*
+                    _state: Default::default(),
                 }
             }
         }
