@@ -383,7 +383,7 @@
         })
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-    <span class="kw">let </span>doc = <span class="macro">format!</span>(<span class="string">"Creates a new {}"</span>, builder.operation().summary()<span class="question-mark">?</span>);
+    <span class="kw">let </span>doc = <span class="macro">format!</span>(<span class="string">"Creates a {}"</span>, builder.operation().summary()<span class="question-mark">?</span>);
 
     <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
         <span class="attr">#[allow(clippy::too_many_arguments)]

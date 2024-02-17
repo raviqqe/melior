@@ -340,6 +340,7 @@
 <a href="#339" id="339">339</a>
 <a href="#340" id="340">340</a>
 <a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! External passes
 
 </span><span class="kw">use </span><span class="kw">super</span>::Pass;
@@ -398,24 +399,25 @@
 }
 
 <span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn </span>callback_initialize&lt;<span class="lifetime">'a</span>, T: RunExternalPass&lt;<span class="lifetime">'a</span>&gt;&gt;(
-    ctx: MlirContext,
+    context: MlirContext,
     pass: <span class="kw-2">*mut </span>T,
 ) -&gt; MlirLogicalResult {
     pass.as_mut()
         .expect(<span class="string">"pass should be valid when called"</span>)
-        .initialize(ContextRef::from_raw(ctx));
+        .initialize(ContextRef::from_raw(context));
+
     MlirLogicalResult { value: <span class="number">1 </span>}
 }
 
 <span class="kw">unsafe extern </span><span class="string">"C" </span><span class="kw">fn </span>callback_run&lt;<span class="lifetime">'a</span>, T: RunExternalPass&lt;<span class="lifetime">'a</span>&gt;&gt;(
-    op: MlirOperation,
+    operation: MlirOperation,
     mlir_pass: MlirExternalPass,
     pass: <span class="kw-2">*mut </span>T,
 ) {
     pass.as_mut()
         .expect(<span class="string">"pass should be valid when called"</span>)
         .run(
-            OperationRef::from_raw(op),
+            OperationRef::from_raw(operation),
             ExternalPass::from_raw(mlir_pass),
         )
 }
