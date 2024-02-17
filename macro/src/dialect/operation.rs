@@ -17,7 +17,7 @@ use super::utility::sanitize_documentation;
 use crate::dialect::{
     error::{Error, OdsError},
     r#trait::Trait,
-    types::{RegionConstraint, SuccessorConstraint, TypeConstraint},
+    types::TypeConstraint,
 };
 pub use operation_field::OperationField;
 use tblgen::{error::WithLocation, record::Record, TypedInit};
@@ -183,9 +183,9 @@ impl<'a> Operation<'a> {
             .map(|(name, value)| {
                 Successor::new(
                     name,
-                    SuccessorConstraint::new(
-                        Record::try_from(value).map_err(|error| error.set_location(definition))?,
-                    ),
+                    Record::try_from(value)
+                        .map_err(|error| error.set_location(definition))?
+                        .subclass_of("VariadicSuccessor"),
                 )
             })
             .collect()
@@ -198,11 +198,9 @@ impl<'a> Operation<'a> {
             .map(|(name, value)| {
                 Region::new(
                     name,
-                    RegionConstraint::new(
-                        value
-                            .try_into()
-                            .map_err(|error: tblgen::Error| error.set_location(definition))?,
-                    ),
+                    Record::try_from(value)
+                        .map_err(|error| error.set_location(definition))?
+                        .subclass_of("VariadicRegion"),
                 )
             })
             .collect()
