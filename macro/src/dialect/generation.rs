@@ -1,16 +1,19 @@
 mod attribute_accessor;
-mod field_accessor;
+mod element_accessor;
+mod operand_accessor;
 mod operation_builder;
 mod region_accessor;
+mod result_accessor;
 mod successor_accessor;
 
 use self::{
     attribute_accessor::generate_attribute_accessors,
-    field_accessor::generate_accessor,
+    operand_accessor::generate_operand_accessor,
     operation_builder::{
         generate_default_constructor, generate_operation_builder, generate_operation_builder_fn,
     },
     region_accessor::generate_region_accessor,
+    result_accessor::generate_result_accessor,
     successor_accessor::generate_successor_accessor,
 };
 use super::operation::{Operation, OperationBuilder};
@@ -24,9 +27,15 @@ pub fn generate_operation(operation: &Operation) -> Result<TokenStream, Error> {
     let class_name = format_ident!("{}", operation.class_name()?);
     let name = &operation.full_name()?;
 
-    let field_accessors = operation
-        .general_fields()
-        .map(generate_accessor)
+    let result_accessors = operation
+        .results()
+        .enumerate()
+        .map(|(index, result)| generate_result_accessor(result, index, operation.result_len()))
+        .collect::<Result<Vec<_>, _>>()?;
+    let operand_accessors = operation
+        .operands()
+        .enumerate()
+        .map(|(index, operand)| generate_operand_accessor(operand, index, operation.operand_len()))
         .collect::<Result<Vec<_>, _>>()?;
     let successor_accessors = operation
         .successors()
@@ -67,7 +76,8 @@ pub fn generate_operation(operation: &Operation) -> Result<TokenStream, Error> {
 
             #builder_fn
 
-            #(#field_accessors)*
+            #(#result_accessors)*
+            #(#operand_accessors)*
             #(#successor_accessors)*
             #(#region_accessors)*
             #(#attribute_accessors)*

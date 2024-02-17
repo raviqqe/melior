@@ -1,4 +1,4 @@
-use super::{element_kind::ElementKind, field_kind::FieldKind, SequenceInfo, VariadicKind};
+use super::{field_kind::FieldKind, OperationElement, SequenceInfo, VariadicKind};
 use crate::dialect::{
     error::Error, types::TypeConstraint, utility::sanitize_snake_case_identifier,
 };
@@ -8,7 +8,6 @@ use syn::Type;
 
 // TODO Rename this `OperationField`.
 pub trait OperationFieldLike {
-    // TODO Remove this.
     fn name(&self) -> &str;
     fn singular_identifier(&self) -> &Ident;
     fn plural_kind_identifier(&self) -> Ident;
@@ -20,12 +19,32 @@ pub trait OperationFieldLike {
     fn add_arguments(&self, name: &Ident) -> TokenStream;
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct OperationField<'a> {
     pub(crate) name: &'a str,
     pub(crate) plural_identifier: Ident,
     pub(crate) sanitized_name: Ident,
     pub(crate) kind: FieldKind<'a>,
+}
+
+impl<'a> OperationField<'a> {
+    pub fn new(
+        name: &'a str,
+        constraint: TypeConstraint<'a>,
+        sequence_info: SequenceInfo,
+        variadic_kind: VariadicKind,
+    ) -> Result<Self, Error> {
+        Ok(Self {
+            name,
+            plural_identifier: format_ident!("operands"),
+            sanitized_name: sanitize_snake_case_identifier(name)?,
+            kind: FieldKind::Element {
+                constraint,
+                sequence_info,
+                variadic_kind,
+            },
+        })
+    }
 }
 
 impl OperationFieldLike for OperationField<'_> {
@@ -54,19 +73,13 @@ impl OperationFieldLike for OperationField<'_> {
     }
 
     fn is_result(&self) -> bool {
-        matches!(
-            self.kind,
-            FieldKind::Element {
-                kind: ElementKind::Result,
-                ..
-            }
-        )
+        false
     }
 
     fn add_arguments(&self, name: &Ident) -> TokenStream {
         match &self.kind {
             FieldKind::Element { constraint, .. } => {
-                if constraint.is_unfixed() && !constraint.is_optional() {
+                if constraint.is_variadic() {
                     quote! { #name }
                 } else {
                     quote! { &[#name] }
@@ -76,33 +89,16 @@ impl OperationFieldLike for OperationField<'_> {
     }
 }
 
-impl<'a> OperationField<'a> {
-    fn new(name: &'a str, kind: FieldKind<'a>) -> Result<Self, Error> {
-        Ok(Self {
-            name,
-            plural_identifier: match kind {
-                FieldKind::Element { kind, .. } => format_ident!("{}s", kind.as_str()),
-            },
-            sanitized_name: sanitize_snake_case_identifier(name)?,
-            kind,
-        })
+impl OperationElement for OperationField<'_> {
+    fn is_variadic(&self) -> bool {
+        match &self.kind {
+            FieldKind::Element { constraint, .. } => constraint.is_variadic(),
+        }
     }
 
-    pub fn new_element(
-        name: &'a str,
-        constraint: TypeConstraint<'a>,
-        kind: ElementKind,
-        sequence_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    ) -> Result<Self, Error> {
-        Self::new(
-            name,
-            FieldKind::Element {
-                kind,
-                constraint,
-                sequence_info,
-                variadic_kind,
-            },
-        )
+    fn variadic_kind(&self) -> &VariadicKind {
+        match &self.kind {
+            FieldKind::Element { variadic_kind, .. } => variadic_kind,
+        }
     }
 }

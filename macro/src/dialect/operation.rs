@@ -1,16 +1,17 @@
 mod attribute;
 mod builder;
-mod element_kind;
 mod field_kind;
+mod operation_element;
 mod operation_field;
+mod operation_result;
 mod region;
 mod sequence_info;
 mod successor;
 mod variadic_kind;
 
 pub use self::{
-    attribute::Attribute, builder::OperationBuilder, element_kind::ElementKind,
-    field_kind::FieldKind, operation_field::OperationField, region::Region,
+    attribute::Attribute, builder::OperationBuilder, operation_element::OperationElement,
+    operation_field::OperationField, operation_result::OperationResult, region::Region,
     sequence_info::SequenceInfo, successor::Successor, variadic_kind::VariadicKind,
 };
 use super::utility::sanitize_documentation;
@@ -28,7 +29,7 @@ pub struct Operation<'a> {
     can_infer_type: bool,
     regions: Vec<Region<'a>>,
     successors: Vec<Successor<'a>>,
-    results: Vec<OperationField<'a>>,
+    results: Vec<OperationResult<'a>>,
     operands: Vec<OperationField<'a>>,
     attributes: Vec<Attribute<'a>>,
     derived_attributes: Vec<Attribute<'a>>,
@@ -133,18 +134,29 @@ impl<'a> Operation<'a> {
         fn convert(field: &impl OperationFieldLike) -> &dyn OperationFieldLike {
             field
         }
-
         self.results
             .iter()
-            .chain(&self.operands)
             .map(convert)
+            .chain(self.operands.iter().map(convert))
             .chain(self.regions.iter().map(convert))
             .chain(self.successors.iter().map(convert))
             .chain(self.attributes().map(convert))
     }
 
-    pub fn general_fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
-        self.results.iter().chain(&self.operands)
+    pub fn operands(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
+        self.operands.iter()
+    }
+
+    pub fn operand_len(&self) -> usize {
+        self.operands.len()
+    }
+
+    pub fn results(&self) -> impl Iterator<Item = &OperationResult<'a>> + Clone {
+        self.results.iter()
+    }
+
+    pub fn result_len(&self) -> usize {
+        self.results.len()
     }
 
     pub fn successors(&self) -> impl Iterator<Item = &Successor<'a>> {
@@ -246,13 +258,15 @@ impl<'a> Operation<'a> {
         definition: Record<'a>,
         same_size: bool,
         attribute_sized: bool,
-    ) -> Result<(Vec<OperationField>, usize), Error> {
+    ) -> Result<(Vec<OperationResult>, usize), Error> {
         Self::collect_elements(
             &Self::dag_constraints(definition, "results")?
                 .into_iter()
                 .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
                 .collect::<Vec<_>>(),
-            ElementKind::Result,
+            |name, constraint, _sequence_info, variadic_kind| {
+                OperationResult::new(name, constraint, variadic_kind)
+            },
             same_size,
             attribute_sized,
         )
@@ -269,19 +283,21 @@ impl<'a> Operation<'a> {
                 .filter(|(_, definition)| definition.subclass_of("TypeConstraint"))
                 .map(|(name, definition)| (*name, TypeConstraint::new(*definition)))
                 .collect::<Vec<_>>(),
-            ElementKind::Operand,
+            |name, constraint, sequence_info, variadic_kind| {
+                OperationField::new(name, constraint, sequence_info, variadic_kind)
+            },
             same_size,
             attribute_sized,
         )?
         .0)
     }
 
-    fn collect_elements(
+    fn collect_elements<T>(
         elements: &[(&'a str, TypeConstraint<'a>)],
-        element_kind: ElementKind,
+        create: impl Fn(&'a str, TypeConstraint<'a>, SequenceInfo, VariadicKind) -> Result<T, Error>,
         same_size: bool,
         attribute_sized: bool,
-    ) -> Result<(Vec<OperationField<'a>>, usize), Error> {
+    ) -> Result<(Vec<T>, usize), Error> {
         let unfixed_count = elements
             .iter()
             .filter(|(_, constraint)| constraint.is_unfixed())
@@ -290,10 +306,9 @@ impl<'a> Operation<'a> {
         let mut fields = vec![];
 
         for (index, (name, constraint)) in elements.iter().enumerate() {
-            fields.push(OperationField::new_element(
+            fields.push(create(
                 name,
                 *constraint,
-                element_kind,
                 SequenceInfo {
                     index,
                     len: elements.len(),
