@@ -374,7 +374,6 @@
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
 <a href="#375" id="375">375</a>
-<a href="#376" id="376">376</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>operand;
@@ -516,20 +515,6 @@
         sanitize_documentation(<span class="self">self</span>.definition.str_value(<span class="string">"description"</span>)<span class="question-mark">?</span>)
     }
 
-    <span class="kw">pub fn </span>fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationField&gt; {
-        <span class="kw">fn </span>convert(field: <span class="kw-2">&amp;</span><span class="kw">impl </span>OperationField) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationField {
-            field
-        }
-
-        <span class="self">self</span>.results
-            .iter()
-            .map(convert)
-            .chain(<span class="self">self</span>.operands.iter().map(convert))
-            .chain(<span class="self">self</span>.regions.iter().map(convert))
-            .chain(<span class="self">self</span>.successors.iter().map(convert))
-            .chain(<span class="self">self</span>.attributes().map(convert))
-    }
-
     <span class="kw">pub fn </span>operands(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Operand&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
         <span class="self">self</span>.operands.iter()
     }
@@ -559,8 +544,21 @@
     }
 
     <span class="kw">pub fn </span>required_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationField&gt; {
-        <span class="self">self</span>.fields()
-            .filter(|field| (!field.is_result() || !<span class="self">self</span>.can_infer_type) &amp;&amp; !field.is_optional())
+        <span class="kw">fn </span>convert(field: <span class="kw-2">&amp;</span><span class="kw">impl </span>OperationField) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>OperationField {
+            field
+        }
+
+        (<span class="kw">if </span><span class="self">self</span>.can_infer_type {
+            Default::default()
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.results.iter()
+        })
+        .map(convert)
+        .chain(<span class="self">self</span>.operands.iter().map(convert))
+        .chain(<span class="self">self</span>.regions.iter().map(convert))
+        .chain(<span class="self">self</span>.successors.iter().map(convert))
+        .chain(<span class="self">self</span>.attributes().map(convert))
+        .filter(|field| !field.is_optional())
     }
 
     <span class="kw">fn </span>collect_successors(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Successor&gt;, Error&gt; {
