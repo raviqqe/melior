@@ -31,10 +31,10 @@ pub struct Operation<'a> {
     operation_name: &'a str,
     summary: &'a str,
     can_infer_type: bool,
-    regions: Vec<Region<'a>>,
-    successors: Vec<Successor<'a>>,
     results: Vec<OperationResult<'a>>,
     operands: Vec<Operand<'a>>,
+    regions: Vec<Region<'a>>,
+    successors: Vec<Successor<'a>>,
     attributes: Vec<Attribute<'a>>,
     derived_attributes: Vec<Attribute<'a>>,
 }
@@ -139,14 +139,6 @@ impl<'a> Operation<'a> {
         sanitize_documentation(self.definition.str_value("description")?)
     }
 
-    pub fn operands(&self) -> impl Iterator<Item = &Operand<'a>> + Clone {
-        self.operands.iter()
-    }
-
-    pub fn operand_len(&self) -> usize {
-        self.operands.len()
-    }
-
     pub fn results(&self) -> impl Iterator<Item = &OperationResult<'a>> + Clone {
         self.results.iter()
     }
@@ -155,12 +147,20 @@ impl<'a> Operation<'a> {
         self.results.len()
     }
 
-    pub fn successors(&self) -> impl Iterator<Item = &Successor<'a>> {
-        self.successors.iter()
+    pub fn operands(&self) -> impl Iterator<Item = &Operand<'a>> + Clone {
+        self.operands.iter()
+    }
+
+    pub fn operand_len(&self) -> usize {
+        self.operands.len()
     }
 
     pub fn regions(&self) -> impl Iterator<Item = &Region<'a>> {
         self.regions.iter()
+    }
+
+    pub fn successors(&self) -> impl Iterator<Item = &Successor<'a>> {
+        self.successors.iter()
     }
 
     pub fn attributes(&self) -> impl Iterator<Item = &Attribute<'a>> {
