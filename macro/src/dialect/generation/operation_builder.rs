@@ -7,7 +7,6 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
 pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStream, Error> {
-    let state_types = builder.type_state().parameters();
     let result_fns = builder
         .operation()
         .results()
@@ -33,6 +32,7 @@ pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStr
         .attributes()
         .map(|attribute| generate_field_fn(builder, attribute))
         .collect::<Vec<_>>();
+
     let new_fn = generate_new_fn(builder);
     let build_fn = generate_build_fn(builder)?;
 
@@ -42,6 +42,7 @@ pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStr
         builder.operation().documentation_name()
     );
     let type_arguments = builder.type_state().parameters();
+    let state_types = builder.type_state().parameters();
 
     Ok(quote! {
         #[doc = #doc]
