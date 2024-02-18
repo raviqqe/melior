@@ -139,7 +139,7 @@ impl<'a> Operation<'a> {
         sanitize_documentation(self.definition.str_value("description")?)
     }
 
-    pub fn fields(&self) -> impl Iterator<Item = &dyn OperationField> {
+    fn fields(&self) -> impl Iterator<Item = &dyn OperationField> {
         fn convert(field: &impl OperationField) -> &dyn OperationField {
             field
         }
