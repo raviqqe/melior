@@ -374,6 +374,18 @@
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
 <a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>operand;
@@ -398,6 +410,9 @@
 };
 <span class="kw">pub use </span>operation_field::OperationField;
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record, TypedInit};
+
+<span class="comment">// spell-checker: disable-next-line
+</span><span class="kw">const </span>VOWELS: <span class="kw-2">&amp;</span>str = <span class="string">"aeiou"</span>;
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Operation&lt;<span class="lifetime">'a</span>&gt; {
@@ -496,7 +511,16 @@
     }
 
     <span class="kw">pub fn </span>documentation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="macro">format!</span>(<span class="string">"a(n) [`{}`]({}) operation"</span>, <span class="self">self</span>.operation_name, <span class="kw-2">&amp;</span><span class="self">self</span>.name)
+        <span class="macro">format!</span>(
+            <span class="string">"{} [`{}`]({}) operation"</span>,
+            <span class="kw">if </span>VOWELS.contains(<span class="kw-2">&amp;</span><span class="self">self</span>.operation_name()[..<span class="number">1</span>]) {
+                <span class="string">"an"
+            </span>} <span class="kw">else </span>{
+                <span class="string">"a"
+            </span>},
+            <span class="self">self</span>.operation_name,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.name
+        )
     }
 
     <span class="kw">pub fn </span>summary(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
