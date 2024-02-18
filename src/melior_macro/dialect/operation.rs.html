@@ -371,6 +371,11 @@
 <a href="#370" id="370">370</a>
 <a href="#371" id="371">371</a>
 <a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>operand;
@@ -399,6 +404,9 @@
 </span><span class="kw">pub struct </span>Operation&lt;<span class="lifetime">'a</span>&gt; {
     definition: Record&lt;<span class="lifetime">'a</span>&gt;,
     name: String,
+    dialect_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+    operation_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+    summary: String,
     can_infer_type: bool,
     regions: Vec&lt;Region&lt;<span class="lifetime">'a</span>&gt;&gt;,
     successors: Vec&lt;Successor&lt;<span class="lifetime">'a</span>&gt;&gt;,
@@ -423,6 +431,9 @@
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             name: <span class="self">Self</span>::build_name(definition)<span class="question-mark">?</span>,
+            dialect_name: definition.def_value(<span class="string">"opDialect"</span>)<span class="question-mark">?</span>.str_value(<span class="string">"name"</span>)<span class="question-mark">?</span>,
+            operation_name: definition.str_value(<span class="string">"opName"</span>)<span class="question-mark">?</span>,
+            summary: definition.str_value(<span class="string">"summary"</span>)<span class="question-mark">?</span>.into(),
             successors: <span class="self">Self</span>::collect_successors(definition)<span class="question-mark">?</span>,
             operands: <span class="self">Self</span>::collect_operands(
                 <span class="kw-2">&amp;</span>arguments,
@@ -473,35 +484,34 @@
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.dialect()<span class="question-mark">?</span>.name()<span class="question-mark">?</span>)
     }
 
-    <span class="kw">pub fn </span>operation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>.definition.str_value(<span class="string">"opName"</span>)<span class="question-mark">?</span>)
+    <span class="kw">pub fn </span>operation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="self">self</span>.operation_name
     }
 
-    <span class="kw">pub fn </span>full_operation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        <span class="kw">let </span>dialect_name = <span class="self">self</span>.dialect()<span class="question-mark">?</span>.string_value(<span class="string">"name"</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>short_name = <span class="self">self</span>.operation_name()<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>(<span class="kw">if </span>dialect_name.is_empty() {
-            short_name.into()
+    <span class="kw">pub fn </span>full_operation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="kw">if </span><span class="self">self</span>.dialect_name.is_empty() {
+            <span class="self">self</span>.operation_name.into()
         } <span class="kw">else </span>{
-            <span class="macro">format!</span>(<span class="string">"{dialect_name}.{short_name}"</span>)
-        })
+            <span class="macro">format!</span>(<span class="string">"{}.{}"</span>, <span class="self">self</span>.dialect_name, <span class="self">self</span>.operation_name)
+        }
     }
 
-    <span class="kw">pub fn </span>summary(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        <span class="kw">let </span>short_name = <span class="self">self</span>.operation_name()<span class="question-mark">?</span>;
-        <span class="kw">let </span>name = <span class="kw-2">&amp;</span><span class="self">self</span>.name;
-        <span class="kw">let </span>summary = <span class="self">self</span>.definition.str_value(<span class="string">"summary"</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub fn </span>documentation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="macro">format!</span>(<span class="string">"a(n) [`{}`]({}) operation"</span>, <span class="self">self</span>.operation_name, <span class="kw-2">&amp;</span><span class="self">self</span>.name)
+    }
 
-        <span class="prelude-val">Ok</span>([
-            <span class="macro">format!</span>(<span class="string">"[`{short_name}`]({name}) operation."</span>),
-            <span class="kw">if </span>summary.is_empty() {
+    <span class="kw">pub fn </span>summary(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="kw">let </span>name = <span class="self">self</span>.documentation_name();
+
+        <span class="macro">format!</span>(
+            <span class="string">"{}. {}"</span>,
+            name[..<span class="number">1</span>].to_uppercase() + <span class="kw-2">&amp;</span>name[<span class="number">1</span>..],
+            <span class="kw">if </span><span class="self">self</span>.summary.is_empty() {
                 Default::default()
             } <span class="kw">else </span>{
-                summary[<span class="number">0</span>..<span class="number">1</span>].to_uppercase() + <span class="kw-2">&amp;</span>summary[<span class="number">1</span>..] + <span class="string">"."
+                <span class="self">self</span>.summary.to_owned() + <span class="string">"."
             </span>},
-        ]
-        .join(<span class="string">" "</span>))
+        )
     }
 
     <span class="kw">pub fn </span>description(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {

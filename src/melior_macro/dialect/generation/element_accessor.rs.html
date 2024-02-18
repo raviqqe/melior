@@ -135,8 +135,8 @@
     index: usize,
     length: usize,
 ) -&gt; TokenStream {
-    <span class="kw">let </span>kind_singular_identifier = Ident::new(singular_kind, Span::call_site());
-    <span class="kw">let </span>kind_plural_identifier = Ident::new(plural_kind, Span::call_site());
+    <span class="kw">let </span>singular_kind_identifier = Ident::new(singular_kind, Span::call_site());
+    <span class="kw">let </span>plural_kind_identifier = Ident::new(plural_kind, Span::call_site());
     <span class="kw">let </span>count = Ident::new(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"{singular_kind}_count"</span>), Span::call_site());
     <span class="kw">let </span>name = field.name();
 
@@ -150,7 +150,7 @@
                     <span class="kw">if </span><span class="self">self</span>.operation.#count() &lt; #length {
                         <span class="prelude-val">Err</span>(::melior::Error::#error_variant(#name))
                     } <span class="kw">else </span>{
-                        <span class="self">self</span>.operation.#kind_singular_identifier(#index)
+                        <span class="self">self</span>.operation.#singular_kind_identifier(#index)
                     }
                 }
             } <span class="kw">else if </span>field.is_variadic() {
@@ -159,19 +159,19 @@
                 // singular elements from the number of elements.
                 </span><span class="macro">quote! </span>{
                     <span class="kw">let </span>group_length = <span class="self">self</span>.operation.#count() - #length + <span class="number">1</span>;
-                    <span class="self">self</span>.operation.#kind_plural_identifier().skip(#index).take(group_length)
+                    <span class="self">self</span>.operation.#plural_kind_identifier().skip(#index).take(group_length)
                 }
             } <span class="kw">else if </span><span class="kw-2">*</span>unfixed_seen {
                 <span class="comment">// Single element after unfixed group
                 // Compute the length of that variable group and take the next element
                 </span><span class="macro">quote! </span>{
                     <span class="kw">let </span>group_length = <span class="self">self</span>.operation.#count() - #length + <span class="number">1</span>;
-                    <span class="self">self</span>.operation.#kind_singular_identifier(#index + group_length - <span class="number">1</span>)
+                    <span class="self">self</span>.operation.#singular_kind_identifier(#index + group_length - <span class="number">1</span>)
                 }
             } <span class="kw">else </span>{
                 <span class="comment">// All elements so far are singular
                 </span><span class="macro">quote! </span>{
-                    <span class="self">self</span>.operation.#kind_singular_identifier(#index)
+                    <span class="self">self</span>.operation.#singular_kind_identifier(#index)
                 }
             }
         }
@@ -182,11 +182,11 @@
         } =&gt; {
             <span class="kw">let </span>get_elements = <span class="kw">if </span>field.is_unfixed() {
                 <span class="macro">quote! </span>{
-                    <span class="self">self</span>.operation.#kind_plural_identifier().skip(start).take(group_len)
+                    <span class="self">self</span>.operation.#plural_kind_identifier().skip(start).take(group_len)
                 }
             } <span class="kw">else </span>{
                 <span class="macro">quote! </span>{
-                    <span class="self">self</span>.operation.#kind_singular_identifier(start)
+                    <span class="self">self</span>.operation.#singular_kind_identifier(start)
                 }
             };
 
@@ -202,19 +202,19 @@
             <span class="kw">let </span>segment_size_attribute = <span class="macro">format!</span>(<span class="string">"{singular_kind}_segment_sizes"</span>);
             <span class="kw">let </span>get_elements = <span class="kw">if </span>!field.is_unfixed() {
                 <span class="macro">quote! </span>{
-                    <span class="self">self</span>.operation.#kind_singular_identifier(start)
+                    <span class="self">self</span>.operation.#singular_kind_identifier(start)
                 }
             } <span class="kw">else if </span>field.is_optional() {
                 <span class="macro">quote! </span>{
                     <span class="kw">if </span>group_len == <span class="number">0 </span>{
                         <span class="prelude-val">Err</span>(::melior::Error::#error_variant(#name))
                     } <span class="kw">else </span>{
-                        <span class="self">self</span>.operation.#kind_singular_identifier(start)
+                        <span class="self">self</span>.operation.#singular_kind_identifier(start)
                     }
                 }
             } <span class="kw">else </span>{
                 <span class="macro">quote! </span>{
-                    <span class="prelude-val">Ok</span>(<span class="self">self</span>.operation.#kind_plural_identifier().skip(start).take(group_len))
+                    <span class="prelude-val">Ok</span>(<span class="self">self</span>.operation.#plural_kind_identifier().skip(start).take(group_len))
                 }
             };
 
