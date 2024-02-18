@@ -375,7 +375,6 @@
 <a href="#374" id="374">374</a>
 <a href="#375" id="375">375</a>
 <a href="#376" id="376">376</a>
-<a href="#377" id="377">377</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>operand;
@@ -396,6 +395,7 @@
     error::{Error, OdsError},
     r#trait::Trait,
     r#type::Type,
+    utility::capitalize_string,
 };
 <span class="kw">pub use </span>operation_field::OperationField;
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record, TypedInit};
@@ -406,7 +406,7 @@
     name: String,
     dialect_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     operation_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
-    summary: String,
+    summary: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     can_infer_type: bool,
     regions: Vec&lt;Region&lt;<span class="lifetime">'a</span>&gt;&gt;,
     successors: Vec&lt;Successor&lt;<span class="lifetime">'a</span>&gt;&gt;,
@@ -433,7 +433,7 @@
             name: <span class="self">Self</span>::build_name(definition)<span class="question-mark">?</span>,
             dialect_name: definition.def_value(<span class="string">"opDialect"</span>)<span class="question-mark">?</span>.str_value(<span class="string">"name"</span>)<span class="question-mark">?</span>,
             operation_name: definition.str_value(<span class="string">"opName"</span>)<span class="question-mark">?</span>,
-            summary: definition.str_value(<span class="string">"summary"</span>)<span class="question-mark">?</span>.into(),
+            summary: definition.str_value(<span class="string">"summary"</span>)<span class="question-mark">?</span>,
             successors: <span class="self">Self</span>::collect_successors(definition)<span class="question-mark">?</span>,
             operands: <span class="self">Self</span>::collect_operands(
                 <span class="kw-2">&amp;</span>arguments,
@@ -501,15 +501,13 @@
     }
 
     <span class="kw">pub fn </span>summary(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="kw">let </span>name = <span class="self">self</span>.documentation_name();
-
         <span class="macro">format!</span>(
             <span class="string">"{}. {}"</span>,
-            name[..<span class="number">1</span>].to_uppercase() + <span class="kw-2">&amp;</span>name[<span class="number">1</span>..],
+            capitalize_string(<span class="kw-2">&amp;</span><span class="self">self</span>.documentation_name()),
             <span class="kw">if </span><span class="self">self</span>.summary.is_empty() {
                 Default::default()
             } <span class="kw">else </span>{
-                <span class="self">self</span>.summary.to_owned() + <span class="string">"."
+                capitalize_string(<span class="self">self</span>.summary) + <span class="string">"."
             </span>},
         )
     }
