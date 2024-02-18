@@ -750,7 +750,7 @@
 ) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
     OperationBuilder::new(<span class="string">"scf.execute_region"</span>, location)
         .add_results(result_types)
-        .add_regions(<span class="macro">vec!</span>[region])
+        .add_regions([region])
         .build()
         .expect(<span class="string">"valid operation"</span>)
 }
@@ -765,7 +765,7 @@
 ) -&gt; Operation&lt;<span class="lifetime">'c</span>&gt; {
     OperationBuilder::new(<span class="string">"scf.for"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[start, end, step])
-        .add_regions(<span class="macro">vec!</span>[region])
+        .add_regions([region])
         .build()
         .expect(<span class="string">"valid operation"</span>)
 }
@@ -781,7 +781,7 @@
     OperationBuilder::new(<span class="string">"scf.if"</span>, location)
         .add_operands(<span class="kw-2">&amp;</span>[condition])
         .add_results(result_types)
-        .add_regions(<span class="macro">vec!</span>[then_region, else_region])
+        .add_regions([then_region, else_region])
         .build()
         .expect(<span class="string">"valid operation"</span>)
 }
@@ -799,7 +799,7 @@
         .add_operands(<span class="kw-2">&amp;</span>[condition])
         .add_results(result_types)
         .add_attributes(<span class="kw-2">&amp;</span>[(Identifier::new(context, <span class="string">"cases"</span>), cases.into())])
-        .add_regions(regions)
+        .add_regions_vec(regions)
         .build()
         .expect(<span class="string">"valid operation"</span>)
 }
@@ -815,7 +815,7 @@
     OperationBuilder::new(<span class="string">"scf.while"</span>, location)
         .add_operands(initial_values)
         .add_results(result_types)
-        .add_regions(<span class="macro">vec!</span>[before_region, after_region])
+        .add_regions([before_region, after_region])
         .build()
         .expect(<span class="string">"valid operation"</span>)
 }

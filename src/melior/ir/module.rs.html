@@ -277,7 +277,7 @@
 
         <span class="kw">let </span>module = Module::from_operation(
             OperationBuilder::new(<span class="string">"builtin.module"</span>, Location::unknown(<span class="kw-2">&amp;</span>context))
-                .add_regions(<span class="macro">vec!</span>[region])
+                .add_regions([region])
                 .build()
                 .unwrap(),
         )
