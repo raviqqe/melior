@@ -200,7 +200,7 @@ impl<'c> Operation<'c> {
     }
 
     /// Sets the attribute with the given name to the given attribute.
-    pub fn set_attribute(&mut self, name: &str, attribute: &Attribute<'c>) {
+    pub fn set_attribute(&mut self, name: &str, attribute: Attribute<'c>) {
         unsafe {
             mlirOperationSetAttributeByName(
                 self.raw,
@@ -569,7 +569,7 @@ mod tests {
         );
         assert!(operation.remove_attribute("foo").is_ok());
         assert!(operation.remove_attribute("foo").is_err());
-        operation.set_attribute("foo", &StringAttribute::new(&context, "foo").into());
+        operation.set_attribute("foo", StringAttribute::new(&context, "foo").into());
         assert_eq!(
             operation.attribute("foo").map(|a| a.to_string()),
             Ok("\"foo\"".into())

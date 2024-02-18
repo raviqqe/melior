@@ -22,7 +22,6 @@ fn generate_getter(attribute: &Attribute) -> TokenStream {
     let body = if attribute.is_unit() {
         quote! { self.operation.attribute(#name).is_some() }
     } else {
-        // TODO Handle returning `melior::Attribute`.
         quote! { Ok(self.operation.attribute(#name)?.try_into()?) }
     };
 
@@ -40,14 +39,14 @@ fn generate_setter(attribute: &Attribute) -> TokenStream {
     let body = if attribute.is_unit() {
         quote! {
             if value {
-                self.operation.set_attribute(#name, Attribute::unit(&self.operation.context()));
+                self.operation.set_attribute(#name, Attribute::unit(self.operation.context()));
             } else {
                 self.operation.remove_attribute(#name)
             }
         }
     } else {
         quote! {
-            self.operation.set_attribute(#name, &value.into());
+            self.operation.set_attribute(#name, value.into());
         }
     };
 
@@ -62,7 +61,7 @@ fn generate_setter(attribute: &Attribute) -> TokenStream {
 }
 
 fn generate_remover(attribute: &Attribute) -> Option<TokenStream> {
-    if attribute.is_unit() || attribute.is_optional() {
+    if attribute.is_optional() {
         let name = attribute.name();
         let identifier = attribute.remove_identifier();
 
