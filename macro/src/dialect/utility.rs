@@ -65,6 +65,14 @@ pub fn sanitize_documentation(string: &str) -> Result<String, Error> {
     Ok(String::from_utf8(buffer)?)
 }
 
+pub fn capitalize_string(string: &str) -> String {
+    if string.is_empty() {
+        "".into()
+    } else {
+        string[..1].to_uppercase() + &string[1..]
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -108,5 +116,10 @@ mod tests {
             &sanitize_documentation("```\nfoo\n```\n\n```\nbar\n```\n").unwrap(),
             "``` text\nfoo\n```\n\n``` text\nbar\n```\n"
         );
+    }
+
+    #[test]
+    fn capitalize() {
+        assert_eq!(&capitalize_string("foo"), "Foo");
     }
 }
