@@ -1,12 +1,38 @@
 use crate::dialect::{
-    error::Error, operation::OperationBuilder, utility::sanitize_snake_case_identifier,
+    error::Error,
+    operation::{OperationBuilder, OperationField},
+    utility::sanitize_snake_case_identifier,
 };
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
 pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStream, Error> {
-    let state_types = builder.type_state().parameters();
-    let field_fns = generate_field_fns(builder);
+    let result_fns = builder
+        .operation()
+        .results()
+        .map(|result| generate_field_fn(builder, result))
+        .collect::<Vec<_>>();
+    let operand_fns = builder
+        .operation()
+        .operands()
+        .map(|operand| generate_field_fn(builder, operand))
+        .collect::<Vec<_>>();
+    let region_fns = builder
+        .operation()
+        .regions()
+        .map(|region| generate_field_fn(builder, region))
+        .collect::<Vec<_>>();
+    let successor_fns = builder
+        .operation()
+        .successors()
+        .map(|successor| generate_field_fn(builder, successor))
+        .collect::<Vec<_>>();
+    let attribute_fns = builder
+        .operation()
+        .attributes()
+        .map(|attribute| generate_field_fn(builder, attribute))
+        .collect::<Vec<_>>();
+
     let new_fn = generate_new_fn(builder);
     let build_fn = generate_build_fn(builder)?;
 
@@ -16,6 +42,7 @@ pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStr
         builder.operation().documentation_name()
     );
     let type_arguments = builder.type_state().parameters();
+    let state_types = builder.type_state().parameters();
 
     Ok(quote! {
         #[doc = #doc]
@@ -27,57 +54,59 @@ pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStr
 
         #new_fn
 
-        #(#field_fns)*
+        #(#result_fns)*
+        #(#operand_fns)*
+        #(#region_fns)*
+        #(#successor_fns)*
+        #(#attribute_fns)*
 
         #build_fn
     })
 }
 
 // TODO Split this function for different kinds of fields.
-fn generate_field_fns(builder: &OperationBuilder) -> Vec<TokenStream> {
-    builder.operation().fields().map(move |field| {
-        let builder_identifier = builder.identifier();
-        let identifier = field.singular_identifier();
-        let parameter_type = field.parameter_type();
-        let argument = quote! { #identifier: #parameter_type };
-        let add = format_ident!("add_{}", field.plural_kind_identifier());
+fn generate_field_fn(builder: &OperationBuilder, field: &impl OperationField) -> TokenStream {
+    let builder_identifier = builder.identifier();
+    let identifier = field.singular_identifier();
+    let parameter_type = field.parameter_type();
+    let argument = quote! { #identifier: #parameter_type };
+    let add = format_ident!("add_{}", field.plural_kind_identifier());
 
-        // Argument types can be singular and variadic. But `add` functions in Melior
-        // are always variadic, so we need to create a slice or `Vec` for singular
-        // arguments.
-        let add_arguments = field.add_arguments(identifier);
+    // Argument types can be singular and variadic. But `add` functions in Melior
+    // are always variadic, so we need to create a slice or `Vec` for singular
+    // arguments.
+    let add_arguments = field.add_arguments(identifier);
 
-        if field.is_optional() {
-            let parameters = builder.type_state().parameters().collect::<Vec<_>>();
+    if field.is_optional() {
+        let parameters = builder.type_state().parameters().collect::<Vec<_>>();
 
-            quote! {
-                impl<'c, #(#parameters),*> #builder_identifier<'c, #(#parameters),*> {
-                    pub fn #identifier(mut self, #argument) -> #builder_identifier<'c, #(#parameters),*> {
-                        self.builder = self.builder.#add(#add_arguments);
-                        self
-                    }
+        quote! {
+            impl<'c, #(#parameters),*> #builder_identifier<'c, #(#parameters),*> {
+                pub fn #identifier(mut self, #argument) -> #builder_identifier<'c, #(#parameters),*> {
+                    self.builder = self.builder.#add(#add_arguments);
+                    self
                 }
             }
-        } else if field.is_result() && builder.operation().can_infer_type() {
-            quote!()
-        } else {
-            let parameters = builder.type_state().parameters_without(field.name());
-            let arguments_set = builder.type_state().arguments_set(field.name(), true);
-            let arguments_unset = builder.type_state().arguments_set(field.name(), false);
+        }
+    } else if field.is_result() && builder.operation().can_infer_type() {
+        quote!()
+    } else {
+        let parameters = builder.type_state().parameters_without(field.name());
+        let arguments_set = builder.type_state().arguments_set(field.name(), true);
+        let arguments_unset = builder.type_state().arguments_set(field.name(), false);
 
-            quote! {
-                impl<'c, #(#parameters),*> #builder_identifier<'c, #(#arguments_unset),*> {
-                    pub fn #identifier(self, #argument) -> #builder_identifier<'c, #(#arguments_set),*> {
-                        #builder_identifier {
-                            context: self.context,
-                            builder: self.builder.#add(#add_arguments),
-                            _state: Default::default(),
-                        }
+        quote! {
+            impl<'c, #(#parameters),*> #builder_identifier<'c, #(#arguments_unset),*> {
+                pub fn #identifier(self, #argument) -> #builder_identifier<'c, #(#arguments_set),*> {
+                    #builder_identifier {
+                        context: self.context,
+                        builder: self.builder.#add(#add_arguments),
+                        _state: Default::default(),
                     }
                 }
             }
         }
-    }).collect()
+    }
 }
 
 fn generate_build_fn(builder: &OperationBuilder) -> Result<TokenStream, Error> {
