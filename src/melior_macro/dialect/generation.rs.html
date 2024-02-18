@@ -107,7 +107,6 @@
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
 <a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute_accessor;
 <span class="kw">mod </span>element_accessor;
 <span class="kw">mod </span>operand_accessor;
@@ -127,13 +126,12 @@
     successor_accessor::generate_successor_accessor,
 };
 <span class="kw">use </span><span class="kw">super</span>::operation::{Operation, OperationBuilder};
-<span class="kw">use </span><span class="kw">crate</span>::dialect::error::Error;
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::{format_ident, quote};
 
-<span class="kw">pub fn </span>generate_operation(operation: <span class="kw-2">&amp;</span>Operation) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
+<span class="kw">pub fn </span>generate_operation(operation: <span class="kw-2">&amp;</span>Operation) -&gt; TokenStream {
     <span class="kw">let </span>summary = operation.summary();
-    <span class="kw">let </span>description = operation.description()<span class="question-mark">?</span>;
+    <span class="kw">let </span>description = operation.description();
     <span class="kw">let </span>identifier = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, operation.name());
     <span class="kw">let </span>operation_name = operation.full_operation_name();
 
@@ -163,11 +161,11 @@
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
     <span class="kw">let </span>builder = OperationBuilder::new(operation);
-    <span class="kw">let </span>builder_tokens = generate_operation_builder(<span class="kw-2">&amp;</span>builder)<span class="question-mark">?</span>;
+    <span class="kw">let </span>builder_tokens = generate_operation_builder(<span class="kw-2">&amp;</span>builder);
     <span class="kw">let </span>builder_fn = generate_operation_builder_fn(<span class="kw-2">&amp;</span>builder);
-    <span class="kw">let </span>default_constructor = generate_default_constructor(<span class="kw-2">&amp;</span>builder)<span class="question-mark">?</span>;
+    <span class="kw">let </span>default_constructor = generate_default_constructor(<span class="kw-2">&amp;</span>builder);
 
-    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
+    <span class="macro">quote! </span>{
         <span class="attr">#[doc = #summary]
         #[doc = <span class="string">"\n\n"</span>]
         #[doc = #description]
@@ -204,7 +202,7 @@
 
             <span class="kw">fn </span>try_from(
                 operation: ::melior::ir::operation::Operation&lt;<span class="lifetime">'c</span>&gt;,
-            ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+                ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
                 <span class="comment">// TODO Check an operation name.
                 </span><span class="prelude-val">Ok</span>(<span class="self">Self </span>{ operation })
             }
@@ -215,6 +213,6 @@
                 operation.operation
             }
         }
-    })
+    }
 }
 </code></pre></div></section></main></body></html>

@@ -194,19 +194,11 @@
 <a href="#193" id="193">193</a>
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::{
-    error::Error,
-    operation::{OperationBuilder, OperationField},
-    utility::sanitize_snake_case_identifier,
-};
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::operation::{OperationBuilder, OperationField};
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::{format_ident, quote};
 
-<span class="kw">pub fn </span>generate_operation_builder(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
+<span class="kw">pub fn </span>generate_operation_builder(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; TokenStream {
     <span class="kw">let </span>result_fns = <span class="kw">if </span>builder.operation().can_infer_type() {
         Default::default()
     } <span class="kw">else </span>{
@@ -238,7 +230,7 @@
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
     <span class="kw">let </span>new_fn = generate_new_fn(builder);
-    <span class="kw">let </span>build_fn = generate_build_fn(builder)<span class="question-mark">?</span>;
+    <span class="kw">let </span>build_fn = generate_build_fn(builder);
 
     <span class="kw">let </span>identifier = builder.identifier();
     <span class="kw">let </span>doc = <span class="macro">format!</span>(
@@ -248,7 +240,7 @@
     <span class="kw">let </span>type_arguments = builder.type_state().parameters();
     <span class="kw">let </span>state_types = builder.type_state().parameters();
 
-    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
+    <span class="macro">quote! </span>{
         <span class="attr">#[doc = #doc]
         </span><span class="kw">pub struct </span>#identifier&lt;<span class="lifetime">'c</span>, #(#type_arguments),<span class="kw-2">*</span>&gt; {
             builder: ::melior::ir::operation::OperationBuilder&lt;<span class="lifetime">'c</span>&gt;,
@@ -265,7 +257,7 @@
         #(#attribute_fns)*
 
         #build_fn
-    })
+    }
 }
 
 <span class="comment">// TODO Split this function for different kinds of fields.
@@ -311,7 +303,7 @@
     }
 }
 
-<span class="kw">fn </span>generate_build_fn(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
+<span class="kw">fn </span>generate_build_fn(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; TokenStream {
     <span class="kw">let </span>identifier = builder.identifier();
     <span class="kw">let </span>arguments = builder.type_state().arguments_all_set(<span class="bool-val">true</span>);
     <span class="kw">let </span>operation_identifier = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, <span class="kw-2">&amp;</span>builder.operation().name());
@@ -321,13 +313,13 @@
         .can_infer_type()
         .then_some(<span class="macro">quote! </span>{ .enable_result_type_inference() });
 
-    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
+    <span class="macro">quote! </span>{
         <span class="kw">impl</span>&lt;<span class="lifetime">'c</span>&gt; #identifier&lt;<span class="lifetime">'c</span>, #(#arguments),<span class="kw-2">*</span>&gt; {
             <span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; #operation_identifier&lt;<span class="lifetime">'c</span>&gt; {
                 <span class="self">self</span>.builder #maybe_infer.build().expect(<span class="string">"valid operation"</span>).try_into().expect(#error)
             }
         }
-    })
+    }
 }
 
 <span class="kw">fn </span>generate_new_fn(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; TokenStream {
@@ -363,17 +355,17 @@
     }
 }
 
-<span class="kw">pub fn </span>generate_default_constructor(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; <span class="prelude-ty">Result</span>&lt;TokenStream, Error&gt; {
-    <span class="kw">let </span>identifier = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, <span class="kw-2">&amp;</span>builder.operation().name());
-    <span class="kw">let </span>name = sanitize_snake_case_identifier(builder.operation().operation_name())<span class="question-mark">?</span>;
+<span class="kw">pub fn </span>generate_default_constructor(builder: <span class="kw-2">&amp;</span>OperationBuilder) -&gt; TokenStream {
+    <span class="kw">let </span>operation_identifier = <span class="macro">format_ident!</span>(<span class="string">"{}"</span>, <span class="kw-2">&amp;</span>builder.operation().name());
+    <span class="kw">let </span>constructor_identifier = builder.operation().constructor_identifier();
     <span class="kw">let </span>arguments = builder
         .operation()
         .required_fields()
         .map(|field| {
-            <span class="kw">let </span>parameter_type = <span class="kw-2">&amp;</span>field.parameter_type();
-            <span class="kw">let </span>parameter_name = <span class="kw-2">&amp;</span>field.singular_identifier();
+            <span class="kw">let </span>r#type = <span class="kw-2">&amp;</span>field.parameter_type();
+            <span class="kw">let </span>name = <span class="kw-2">&amp;</span>field.singular_identifier();
 
-            <span class="macro">quote! </span>{ #parameter_name: #parameter_type }
+            <span class="macro">quote! </span>{ #name: #r#type }
         })
         .chain([<span class="macro">quote! </span>{ location: ::melior::ir::Location&lt;<span class="lifetime">'c</span>&gt; }])
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
@@ -381,20 +373,20 @@
         .operation()
         .required_fields()
         .map(|field| {
-            <span class="kw">let </span>parameter_name = <span class="kw-2">&amp;</span>field.singular_identifier();
+            <span class="kw">let </span>name = <span class="kw-2">&amp;</span>field.singular_identifier();
 
-            <span class="macro">quote! </span>{ .#parameter_name(#parameter_name) }
+            <span class="macro">quote! </span>{ .#name(#name) }
         })
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
     <span class="kw">let </span>doc = <span class="macro">format!</span>(<span class="string">"Creates {}."</span>, builder.operation().documentation_name());
 
-    <span class="prelude-val">Ok</span>(<span class="macro">quote! </span>{
+    <span class="macro">quote! </span>{
         <span class="attr">#[allow(clippy::too_many_arguments)]
         #[doc = #doc]
-        </span><span class="kw">pub fn </span>#name&lt;<span class="lifetime">'c</span>&gt;(context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context, #(#arguments),<span class="kw-2">*</span>) -&gt; #identifier&lt;<span class="lifetime">'c</span>&gt; {
-            #identifier::builder(context, location)#(#builder_calls)<span class="kw-2">*</span>.build()
+        </span><span class="kw">pub fn </span>#constructor_identifier&lt;<span class="lifetime">'c</span>&gt;(context: <span class="kw-2">&amp;</span><span class="lifetime">'c </span>::melior::Context, #(#arguments),<span class="kw-2">*</span>) -&gt; #operation_identifier&lt;<span class="lifetime">'c</span>&gt; {
+            #operation_identifier::builder(context, location)#(#builder_calls)<span class="kw-2">*</span>.build()
         }
-    })
+    }
 }
 </code></pre></div></section></main></body></html>

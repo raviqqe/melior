@@ -386,6 +386,12 @@
 <a href="#385" id="385">385</a>
 <a href="#386" id="386">386</a>
 <a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>attribute;
 <span class="kw">mod </span>builder;
 <span class="kw">mod </span>operand;
@@ -401,7 +407,7 @@
     operation_element::OperationElement, region::Region, result::OperationResult,
     successor::Successor, variadic_kind::VariadicKind,
 };
-<span class="kw">use </span><span class="kw">super</span>::utility::sanitize_documentation;
+<span class="kw">use </span><span class="kw">super</span>::utility::{sanitize_documentation, sanitize_snake_case_identifier};
 <span class="kw">use </span><span class="kw">crate</span>::dialect::{
     error::{Error, OdsError},
     r#trait::Trait,
@@ -409,6 +415,8 @@
     utility::capitalize_string,
 };
 <span class="kw">pub use </span>operation_field::OperationField;
+<span class="kw">use </span>std::collections::HashSet;
+<span class="kw">use </span>syn::Ident;
 <span class="kw">use </span>tblgen::{error::WithLocation, record::Record, TypedInit};
 
 <span class="comment">// spell-checker: disable-next-line
@@ -416,11 +424,13 @@
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Operation&lt;<span class="lifetime">'a</span>&gt; {
-    definition: Record&lt;<span class="lifetime">'a</span>&gt;,
     name: String,
+    short_dialect_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     dialect_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     operation_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+    constructor_identifier: Ident,
     summary: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
+    description: String,
     can_infer_type: bool,
     results: Vec&lt;OperationResult&lt;<span class="lifetime">'a</span>&gt;&gt;,
     operands: Vec&lt;Operand&lt;<span class="lifetime">'a</span>&gt;&gt;,
@@ -432,31 +442,29 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; Operation&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">pub fn </span>new(definition: Record&lt;<span class="lifetime">'a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+        <span class="kw">let </span>operation_name = definition.str_value(<span class="string">"opName"</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>traits = <span class="self">Self</span>::collect_traits(definition)<span class="question-mark">?</span>;
-        <span class="kw">let </span>has_trait = |name| traits.iter().any(|r#trait| r#trait.name() == <span class="prelude-val">Some</span>(name));
+        <span class="kw">let </span>trait_names = traits
+            .iter()
+            .flat_map(|r#trait| r#trait.name())
+            .collect::&lt;HashSet&lt;<span class="kw">_</span>&gt;&gt;();
 
         <span class="kw">let </span>arguments = <span class="self">Self</span>::dag_constraints(definition, <span class="string">"arguments"</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>regions = <span class="self">Self</span>::collect_regions(definition)<span class="question-mark">?</span>;
         <span class="kw">let </span>(results, unfixed_result_count) = <span class="self">Self</span>::collect_results(
             definition,
-            has_trait(<span class="string">"::mlir::OpTrait::SameVariadicResultSize"</span>),
-            has_trait(<span class="string">"::mlir::OpTrait::AttrSizedResultSegments"</span>),
+            trait_names.contains(<span class="string">"::mlir::OpTrait::SameVariadicResultSize"</span>),
+            trait_names.contains(<span class="string">"::mlir::OpTrait::AttrSizedResultSegments"</span>),
         )<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             name: <span class="self">Self</span>::build_name(definition)<span class="question-mark">?</span>,
-            dialect_name: definition.def_value(<span class="string">"opDialect"</span>)<span class="question-mark">?</span>.str_value(<span class="string">"name"</span>)<span class="question-mark">?</span>,
-            operation_name: definition.str_value(<span class="string">"opName"</span>)<span class="question-mark">?</span>,
+            dialect_name: definition.def_value(<span class="string">"opDialect"</span>)<span class="question-mark">?</span>.name()<span class="question-mark">?</span>,
+            short_dialect_name: definition.def_value(<span class="string">"opDialect"</span>)<span class="question-mark">?</span>.str_value(<span class="string">"name"</span>)<span class="question-mark">?</span>,
+            operation_name,
+            constructor_identifier: sanitize_snake_case_identifier(operation_name)<span class="question-mark">?</span>,
             summary: definition.str_value(<span class="string">"summary"</span>)<span class="question-mark">?</span>,
-            successors: <span class="self">Self</span>::collect_successors(definition)<span class="question-mark">?</span>,
-            operands: <span class="self">Self</span>::collect_operands(
-                <span class="kw-2">&amp;</span>arguments,
-                has_trait(<span class="string">"::mlir::OpTrait::SameVariadicOperandSize"</span>),
-                has_trait(<span class="string">"::mlir::OpTrait::AttrSizedOperandSegments"</span>),
-            )<span class="question-mark">?</span>,
-            results,
-            attributes: <span class="self">Self</span>::collect_attributes(<span class="kw-2">&amp;</span>arguments)<span class="question-mark">?</span>,
-            derived_attributes: <span class="self">Self</span>::collect_derived_attributes(definition)<span class="question-mark">?</span>,
+            description: sanitize_documentation(definition.str_value(<span class="string">"description"</span>)<span class="question-mark">?</span>)<span class="question-mark">?</span>,
             can_infer_type: traits.iter().any(|r#trait| {
                 (r#trait.name() == <span class="prelude-val">Some</span>(<span class="string">"::mlir::OpTrait::FirstAttrDerivedResultType"</span>)
                     || r#trait.name() == <span class="prelude-val">Some</span>(<span class="string">"::mlir::OpTrait::SameOperandsAndResultType"</span>))
@@ -464,8 +472,16 @@
                     </span>|| r#trait.name() == <span class="prelude-val">Some</span>(<span class="string">"::mlir::InferTypeOpInterface::Trait"</span>)
                         &amp;&amp; regions.is_empty()
             }),
+            results,
+            operands: <span class="self">Self</span>::collect_operands(
+                <span class="kw-2">&amp;</span>arguments,
+                trait_names.contains(<span class="string">"::mlir::OpTrait::SameVariadicOperandSize"</span>),
+                trait_names.contains(<span class="string">"::mlir::OpTrait::AttrSizedOperandSegments"</span>),
+            )<span class="question-mark">?</span>,
             regions,
-            definition,
+            successors: <span class="self">Self</span>::collect_successors(definition)<span class="question-mark">?</span>,
+            attributes: <span class="self">Self</span>::collect_attributes(<span class="kw-2">&amp;</span>arguments)<span class="question-mark">?</span>,
+            derived_attributes: <span class="self">Self</span>::collect_derived_attributes(definition)<span class="question-mark">?</span>,
         })
     }
 
@@ -490,12 +506,8 @@
         <span class="self">self</span>.can_infer_type
     }
 
-    <span class="kw">fn </span>dialect(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Record, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>.definition.def_value(<span class="string">"opDialect"</span>)<span class="question-mark">?</span>)
-    }
-
-    <span class="kw">pub fn </span>dialect_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>str, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>.dialect()<span class="question-mark">?</span>.name()<span class="question-mark">?</span>)
+    <span class="kw">pub fn </span>dialect_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="self">self</span>.dialect_name
     }
 
     <span class="kw">pub fn </span>operation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
@@ -503,11 +515,7 @@
     }
 
     <span class="kw">pub fn </span>full_operation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="kw">if </span><span class="self">self</span>.dialect_name.is_empty() {
-            <span class="self">self</span>.operation_name.into()
-        } <span class="kw">else </span>{
-            <span class="macro">format!</span>(<span class="string">"{}.{}"</span>, <span class="self">self</span>.dialect_name, <span class="self">self</span>.operation_name)
-        }
+        <span class="macro">format!</span>(<span class="string">"{}.{}"</span>, <span class="self">self</span>.short_dialect_name, <span class="self">self</span>.operation_name)
     }
 
     <span class="kw">pub fn </span>documentation_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
@@ -535,8 +543,12 @@
         )
     }
 
-    <span class="kw">pub fn </span>description(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        sanitize_documentation(<span class="self">self</span>.definition.str_value(<span class="string">"description"</span>)<span class="question-mark">?</span>)
+    <span class="kw">pub fn </span>description(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.description
+    }
+
+    <span class="kw">pub fn </span>constructor_identifier(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Ident {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.constructor_identifier
     }
 
     <span class="kw">pub fn </span>results(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationResult&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {

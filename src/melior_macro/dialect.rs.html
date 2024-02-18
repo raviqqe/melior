@@ -112,11 +112,6 @@
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>error;
 <span class="kw">mod </span>generation;
 <span class="kw">mod </span>input;
@@ -187,14 +182,9 @@
         .map(Operation::new)
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?
         </span>.iter()
-        .map(|operation| {
-            <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, Error&gt;(<span class="kw">if </span>operation.dialect_name()<span class="question-mark">? </span>== dialect_name {
-                <span class="prelude-val">Some</span>(generate_operation(operation)<span class="question-mark">?</span>)
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>})
-        })
-        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+        .filter(|operation| operation.dialect_name() == dialect_name)
+        .map(generate_operation)
+        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
     <span class="kw">let </span>doc = <span class="macro">format!</span>(
         <span class="string">"`{name}` dialect.\n\n{}"</span>,
