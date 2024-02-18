@@ -75,7 +75,6 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::dialect::operation::{Attribute, OperationField};
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::quote;
@@ -100,8 +99,7 @@
     <span class="kw">let </span>body = <span class="kw">if </span>attribute.is_unit() {
         <span class="macro">quote! </span>{ <span class="self">self</span>.operation.attribute(#name).is_some() }
     } <span class="kw">else </span>{
-        <span class="comment">// TODO Handle returning `melior::Attribute`.
-        </span><span class="macro">quote! </span>{ <span class="prelude-val">Ok</span>(<span class="self">self</span>.operation.attribute(#name)<span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>) }
+        <span class="macro">quote! </span>{ <span class="prelude-val">Ok</span>(<span class="self">self</span>.operation.attribute(#name)<span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>) }
     };
 
     <span class="macro">quote! </span>{
@@ -118,14 +116,14 @@
     <span class="kw">let </span>body = <span class="kw">if </span>attribute.is_unit() {
         <span class="macro">quote! </span>{
             <span class="kw">if </span>value {
-                <span class="self">self</span>.operation.set_attribute(#name, Attribute::unit(<span class="kw-2">&amp;</span><span class="self">self</span>.operation.context()));
+                <span class="self">self</span>.operation.set_attribute(#name, Attribute::unit(<span class="self">self</span>.operation.context()));
             } <span class="kw">else </span>{
                 <span class="self">self</span>.operation.remove_attribute(#name)
             }
         }
     } <span class="kw">else </span>{
         <span class="macro">quote! </span>{
-            <span class="self">self</span>.operation.set_attribute(#name, <span class="kw-2">&amp;</span>value.into());
+            <span class="self">self</span>.operation.set_attribute(#name, value.into());
         }
     };
 
@@ -140,7 +138,7 @@
 }
 
 <span class="kw">fn </span>generate_remover(attribute: <span class="kw-2">&amp;</span>Attribute) -&gt; <span class="prelude-ty">Option</span>&lt;TokenStream&gt; {
-    <span class="kw">if </span>attribute.is_unit() || attribute.is_optional() {
+    <span class="kw">if </span>attribute.is_optional() {
         <span class="kw">let </span>name = attribute.name();
         <span class="kw">let </span>identifier = attribute.remove_identifier();
 

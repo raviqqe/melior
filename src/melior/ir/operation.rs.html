@@ -847,7 +847,7 @@
     }
 
     <span class="doccomment">/// Sets the attribute with the given name to the given attribute.
-    </span><span class="kw">pub fn </span>set_attribute(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str, attribute: <span class="kw-2">&amp;</span>Attribute&lt;<span class="lifetime">'c</span>&gt;) {
+    </span><span class="kw">pub fn </span>set_attribute(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str, attribute: Attribute&lt;<span class="lifetime">'c</span>&gt;) {
         <span class="kw">unsafe </span>{
             mlirOperationSetAttributeByName(
                 <span class="self">self</span>.raw,
@@ -1216,7 +1216,7 @@
         );
         <span class="macro">assert!</span>(operation.remove_attribute(<span class="string">"foo"</span>).is_ok());
         <span class="macro">assert!</span>(operation.remove_attribute(<span class="string">"foo"</span>).is_err());
-        operation.set_attribute(<span class="string">"foo"</span>, <span class="kw-2">&amp;</span>StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>).into());
+        operation.set_attribute(<span class="string">"foo"</span>, StringAttribute::new(<span class="kw-2">&amp;</span>context, <span class="string">"foo"</span>).into());
         <span class="macro">assert_eq!</span>(
             operation.attribute(<span class="string">"foo"</span>).map(|a| a.to_string()),
             <span class="prelude-val">Ok</span>(<span class="string">"\"foo\""</span>.into())

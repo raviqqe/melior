@@ -26,8 +26,8 @@
 <a href="#25" id="25">25</a>
 <a href="#26" id="26">26</a>
 <a href="#27" id="27">27</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>quote::{format_ident, quote};
-<span class="kw">use </span>syn::GenericArgument;
+</pre></div><pre class="rust"><code><span class="kw">use </span>quote::format_ident;
+<span class="kw">use </span>syn::{parse_quote, GenericArgument};
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>TypeStateItem {
@@ -40,7 +40,7 @@
         <span class="kw">let </span>identifier = <span class="macro">format_ident!</span>(<span class="string">"T{}"</span>, index);
 
         <span class="self">Self </span>{
-            generic_parameter: syn::parse2(<span class="macro">quote!</span>(#identifier)).expect(<span class="string">"valid GenericArgument"</span>),
+            generic_parameter: <span class="macro">parse_quote!</span>(#identifier),
             field_name,
         }
     }

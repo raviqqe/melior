@@ -59,11 +59,9 @@
 <a href="#58" id="58">58</a>
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
-<a href="#61" id="61">61</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::type_state_item::TypeStateItem;
-<span class="kw">use </span>quote::quote;
 <span class="kw">use </span>std::iter::repeat;
-<span class="kw">use </span>syn::GenericArgument;
+<span class="kw">use </span>syn::{parse_quote, GenericArgument};
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>TypeStateList {
@@ -76,8 +74,8 @@
     <span class="kw">pub fn </span>new(items: Vec&lt;TypeStateItem&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             items,
-            unset: syn::parse2(<span class="macro">quote!</span>(::melior::dialect::ods::__private::Unset)).unwrap(),
-            set: syn::parse2(<span class="macro">quote!</span>(::melior::dialect::ods::__private::Set)).unwrap(),
+            unset: <span class="macro">parse_quote!</span>(::melior::dialect::ods::__private::Unset),
+            set: <span class="macro">parse_quote!</span>(::melior::dialect::ods::__private::Set),
         }
     }
 
