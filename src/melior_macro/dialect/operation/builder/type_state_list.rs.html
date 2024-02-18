@@ -82,7 +82,7 @@
     }
 
     <span class="kw">pub fn </span>parameters(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>GenericArgument&gt; {
-        <span class="self">self</span>.items.iter().map(|item| item.generic_param())
+        <span class="self">self</span>.items.iter().map(|item| item.generic_parameter())
     }
 
     <span class="kw">pub fn </span>parameters_without&lt;<span class="lifetime">'a</span>&gt;(
@@ -92,7 +92,7 @@
         <span class="self">self</span>.items
             .iter()
             .filter(<span class="kw">move </span>|item| item.field_name() != field_name)
-            .map(|item| item.generic_param())
+            .map(|item| item.generic_parameter())
     }
 
     <span class="kw">pub fn </span>arguments_set&lt;<span class="lifetime">'a</span>&gt;(
@@ -104,7 +104,7 @@
             <span class="kw">if </span>item.field_name() == field_name {
                 <span class="self">self</span>.set_argument(set)
             } <span class="kw">else </span>{
-                item.generic_param()
+                item.generic_parameter()
             }
         })
     }
