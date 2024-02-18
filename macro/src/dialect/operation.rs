@@ -13,7 +13,7 @@ pub use self::{
     operation_element::OperationElement, region::Region, result::OperationResult,
     successor::Successor, variadic_kind::VariadicKind,
 };
-use super::utility::sanitize_documentation;
+use super::utility::{sanitize_documentation, sanitize_snake_case_identifier};
 use crate::dialect::{
     error::{Error, OdsError},
     r#trait::Trait,
@@ -21,6 +21,8 @@ use crate::dialect::{
     utility::capitalize_string,
 };
 pub use operation_field::OperationField;
+use std::collections::HashSet;
+use syn::Ident;
 use tblgen::{error::WithLocation, record::Record, TypedInit};
 
 // spell-checker: disable-next-line
@@ -28,11 +30,13 @@ const VOWELS: &str = "aeiou";
 
 #[derive(Debug)]
 pub struct Operation<'a> {
-    definition: Record<'a>,
     name: String,
+    short_dialect_name: &'a str,
     dialect_name: &'a str,
     operation_name: &'a str,
+    constructor_identifier: Ident,
     summary: &'a str,
+    description: String,
     can_infer_type: bool,
     results: Vec<OperationResult<'a>>,
     operands: Vec<Operand<'a>>,
@@ -44,31 +48,29 @@ pub struct Operation<'a> {
 
 impl<'a> Operation<'a> {
     pub fn new(definition: Record<'a>) -> Result<Self, Error> {
+        let operation_name = definition.str_value("opName")?;
         let traits = Self::collect_traits(definition)?;
-        let has_trait = |name| traits.iter().any(|r#trait| r#trait.name() == Some(name));
+        let trait_names = traits
+            .iter()
+            .flat_map(|r#trait| r#trait.name())
+            .collect::<HashSet<_>>();
 
         let arguments = Self::dag_constraints(definition, "arguments")?;
         let regions = Self::collect_regions(definition)?;
         let (results, unfixed_result_count) = Self::collect_results(
             definition,
-            has_trait("::mlir::OpTrait::SameVariadicResultSize"),
-            has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
+            trait_names.contains("::mlir::OpTrait::SameVariadicResultSize"),
+            trait_names.contains("::mlir::OpTrait::AttrSizedResultSegments"),
         )?;
 
         Ok(Self {
             name: Self::build_name(definition)?,
-            dialect_name: definition.def_value("opDialect")?.str_value("name")?,
-            operation_name: definition.str_value("opName")?,
+            dialect_name: definition.def_value("opDialect")?.name()?,
+            short_dialect_name: definition.def_value("opDialect")?.str_value("name")?,
+            operation_name,
+            constructor_identifier: sanitize_snake_case_identifier(operation_name)?,
             summary: definition.str_value("summary")?,
-            successors: Self::collect_successors(definition)?,
-            operands: Self::collect_operands(
-                &arguments,
-                has_trait("::mlir::OpTrait::SameVariadicOperandSize"),
-                has_trait("::mlir::OpTrait::AttrSizedOperandSegments"),
-            )?,
-            results,
-            attributes: Self::collect_attributes(&arguments)?,
-            derived_attributes: Self::collect_derived_attributes(definition)?,
+            description: sanitize_documentation(definition.str_value("description")?)?,
             can_infer_type: traits.iter().any(|r#trait| {
                 (r#trait.name() == Some("::mlir::OpTrait::FirstAttrDerivedResultType")
                     || r#trait.name() == Some("::mlir::OpTrait::SameOperandsAndResultType"))
@@ -76,8 +78,16 @@ impl<'a> Operation<'a> {
                     || r#trait.name() == Some("::mlir::InferTypeOpInterface::Trait")
                         && regions.is_empty()
             }),
+            results,
+            operands: Self::collect_operands(
+                &arguments,
+                trait_names.contains("::mlir::OpTrait::SameVariadicOperandSize"),
+                trait_names.contains("::mlir::OpTrait::AttrSizedOperandSegments"),
+            )?,
             regions,
-            definition,
+            successors: Self::collect_successors(definition)?,
+            attributes: Self::collect_attributes(&arguments)?,
+            derived_attributes: Self::collect_derived_attributes(definition)?,
         })
     }
 
@@ -102,12 +112,8 @@ impl<'a> Operation<'a> {
         self.can_infer_type
     }
 
-    fn dialect(&self) -> Result<Record, Error> {
-        Ok(self.definition.def_value("opDialect")?)
-    }
-
-    pub fn dialect_name(&self) -> Result<&str, Error> {
-        Ok(self.dialect()?.name()?)
+    pub fn dialect_name(&self) -> &str {
+        self.dialect_name
     }
 
     pub fn operation_name(&self) -> &str {
@@ -115,11 +121,7 @@ impl<'a> Operation<'a> {
     }
 
     pub fn full_operation_name(&self) -> String {
-        if self.dialect_name.is_empty() {
-            self.operation_name.into()
-        } else {
-            format!("{}.{}", self.dialect_name, self.operation_name)
-        }
+        format!("{}.{}", self.short_dialect_name, self.operation_name)
     }
 
     pub fn documentation_name(&self) -> String {
@@ -147,8 +149,12 @@ impl<'a> Operation<'a> {
         )
     }
 
-    pub fn description(&self) -> Result<String, Error> {
-        sanitize_documentation(self.definition.str_value("description")?)
+    pub fn description(&self) -> &str {
+        &self.description
+    }
+
+    pub fn constructor_identifier(&self) -> &Ident {
+        &self.constructor_identifier
     }
 
     pub fn results(&self) -> impl Iterator<Item = &OperationResult<'a>> + Clone {

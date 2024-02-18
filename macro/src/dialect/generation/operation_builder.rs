@@ -1,12 +1,8 @@
-use crate::dialect::{
-    error::Error,
-    operation::{OperationBuilder, OperationField},
-    utility::sanitize_snake_case_identifier,
-};
+use crate::dialect::operation::{OperationBuilder, OperationField};
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
-pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStream, Error> {
+pub fn generate_operation_builder(builder: &OperationBuilder) -> TokenStream {
     let result_fns = if builder.operation().can_infer_type() {
         Default::default()
     } else {
@@ -38,7 +34,7 @@ pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStr
         .collect::<Vec<_>>();
 
     let new_fn = generate_new_fn(builder);
-    let build_fn = generate_build_fn(builder)?;
+    let build_fn = generate_build_fn(builder);
 
     let identifier = builder.identifier();
     let doc = format!(
@@ -48,7 +44,7 @@ pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStr
     let type_arguments = builder.type_state().parameters();
     let state_types = builder.type_state().parameters();
 
-    Ok(quote! {
+    quote! {
         #[doc = #doc]
         pub struct #identifier<'c, #(#type_arguments),*> {
             builder: ::melior::ir::operation::OperationBuilder<'c>,
@@ -65,7 +61,7 @@ pub fn generate_operation_builder(builder: &OperationBuilder) -> Result<TokenStr
         #(#attribute_fns)*
 
         #build_fn
-    })
+    }
 }
 
 // TODO Split this function for different kinds of fields.
@@ -111,7 +107,7 @@ fn generate_field_fn(builder: &OperationBuilder, field: &impl OperationField) ->
     }
 }
 
-fn generate_build_fn(builder: &OperationBuilder) -> Result<TokenStream, Error> {
+fn generate_build_fn(builder: &OperationBuilder) -> TokenStream {
     let identifier = builder.identifier();
     let arguments = builder.type_state().arguments_all_set(true);
     let operation_identifier = format_ident!("{}", &builder.operation().name());
@@ -121,13 +117,13 @@ fn generate_build_fn(builder: &OperationBuilder) -> Result<TokenStream, Error> {
         .can_infer_type()
         .then_some(quote! { .enable_result_type_inference() });
 
-    Ok(quote! {
+    quote! {
         impl<'c> #identifier<'c, #(#arguments),*> {
             pub fn build(self) -> #operation_identifier<'c> {
                 self.builder #maybe_infer.build().expect("valid operation").try_into().expect(#error)
             }
         }
-    })
+    }
 }
 
 fn generate_new_fn(builder: &OperationBuilder) -> TokenStream {
@@ -163,17 +159,17 @@ pub fn generate_operation_builder_fn(builder: &OperationBuilder) -> TokenStream 
     }
 }
 
-pub fn generate_default_constructor(builder: &OperationBuilder) -> Result<TokenStream, Error> {
-    let identifier = format_ident!("{}", &builder.operation().name());
-    let name = sanitize_snake_case_identifier(builder.operation().operation_name())?;
+pub fn generate_default_constructor(builder: &OperationBuilder) -> TokenStream {
+    let operation_identifier = format_ident!("{}", &builder.operation().name());
+    let constructor_identifier = builder.operation().constructor_identifier();
     let arguments = builder
         .operation()
         .required_fields()
         .map(|field| {
-            let parameter_type = &field.parameter_type();
-            let parameter_name = &field.singular_identifier();
+            let r#type = &field.parameter_type();
+            let name = &field.singular_identifier();
 
-            quote! { #parameter_name: #parameter_type }
+            quote! { #name: #r#type }
         })
         .chain([quote! { location: ::melior::ir::Location<'c> }])
         .collect::<Vec<_>>();
@@ -181,19 +177,19 @@ pub fn generate_default_constructor(builder: &OperationBuilder) -> Result<TokenS
         .operation()
         .required_fields()
         .map(|field| {
-            let parameter_name = &field.singular_identifier();
+            let name = &field.singular_identifier();
 
-            quote! { .#parameter_name(#parameter_name) }
+            quote! { .#name(#name) }
         })
         .collect::<Vec<_>>();
 
     let doc = format!("Creates {}.", builder.operation().documentation_name());
 
-    Ok(quote! {
+    quote! {
         #[allow(clippy::too_many_arguments)]
         #[doc = #doc]
-        pub fn #name<'c>(context: &'c ::melior::Context, #(#arguments),*) -> #identifier<'c> {
-            #identifier::builder(context, location)#(#builder_calls)*.build()
+        pub fn #constructor_identifier<'c>(context: &'c ::melior::Context, #(#arguments),*) -> #operation_identifier<'c> {
+            #operation_identifier::builder(context, location)#(#builder_calls)*.build()
         }
-    })
+    }
 }

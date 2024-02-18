@@ -68,14 +68,9 @@ fn generate_dialect_module(
         .map(Operation::new)
         .collect::<Result<Vec<_>, _>>()?
         .iter()
-        .map(|operation| {
-            Ok::<_, Error>(if operation.dialect_name()? == dialect_name {
-                Some(generate_operation(operation)?)
-            } else {
-                None
-            })
-        })
-        .collect::<Result<Vec<_>, _>>()?;
+        .filter(|operation| operation.dialect_name() == dialect_name)
+        .map(generate_operation)
+        .collect::<Vec<_>>();
 
     let doc = format!(
         "`{name}` dialect.\n\n{}",
