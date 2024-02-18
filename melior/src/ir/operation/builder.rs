@@ -11,7 +11,10 @@ use mlir_sys::{
     mlirOperationStateAddSuccessors, mlirOperationStateEnableResultTypeInference,
     mlirOperationStateGet, MlirOperationState,
 };
-use std::marker::PhantomData;
+use std::{
+    marker::PhantomData,
+    mem::{forget, transmute, ManuallyDrop},
+};
 
 /// An operation builder.
 pub struct OperationBuilder<'c> {
@@ -34,7 +37,7 @@ impl<'c> OperationBuilder<'c> {
             mlirOperationStateAddResults(
                 &mut self.raw,
                 results.len() as isize,
-                results as *const _ as *const _,
+                results.as_ptr() as *const _,
             )
         }
 
@@ -47,7 +50,7 @@ impl<'c> OperationBuilder<'c> {
             mlirOperationStateAddOperands(
                 &mut self.raw,
                 operands.len() as isize,
-                operands as *const _ as *const _,
+                operands.as_ptr() as *const _,
             )
         }
 
@@ -55,12 +58,27 @@ impl<'c> OperationBuilder<'c> {
     }
 
     /// Adds regions.
-    pub fn add_regions(mut self, regions: Vec<Region<'c>>) -> Self {
+    pub fn add_regions<const N: usize>(mut self, regions: [Region<'c>; N]) -> Self {
         unsafe {
             mlirOperationStateAddOwnedRegions(
                 &mut self.raw,
                 regions.len() as isize,
-                regions.leak().as_ptr() as *const _ as *const _,
+                regions.as_ptr() as *const _,
+            )
+        }
+
+        forget(regions);
+
+        self
+    }
+
+    /// Adds regions in a [`Vec`](std::vec::Vec).
+    pub fn add_regions_vec(mut self, regions: Vec<Region<'c>>) -> Self {
+        unsafe {
+            mlirOperationStateAddOwnedRegions(
+                &mut self.raw,
+                regions.len() as isize,
+                transmute::<_, Vec<ManuallyDrop<Region>>>(regions).as_ptr() as *const _,
             )
         }
 
@@ -70,38 +88,29 @@ impl<'c> OperationBuilder<'c> {
     /// Adds successor blocks.
     // TODO Fix this to ensure blocks are alive while they are referenced by the
     // operation.
-    // TODO Should we accept `BlockRef`?
     pub fn add_successors(mut self, successors: &[&Block<'c>]) -> Self {
-        unsafe {
-            mlirOperationStateAddSuccessors(
-                &mut self.raw,
-                successors.len() as isize,
-                successors
-                    .iter()
-                    .map(|block| block.to_raw())
-                    .collect::<Vec<_>>()
-                    .as_ptr() as *const _,
-            )
+        for block in successors {
+            unsafe {
+                mlirOperationStateAddSuccessors(&mut self.raw, 1, &[block.to_raw()] as *const _)
+            }
         }
 
         self
     }
 
     /// Adds attributes.
-    // TODO Should we accept `NamedAttribute`?
     pub fn add_attributes(mut self, attributes: &[(Identifier<'c>, Attribute<'c>)]) -> Self {
-        unsafe {
-            mlirOperationStateAddAttributes(
-                &mut self.raw,
-                attributes.len() as isize,
-                attributes
-                    .iter()
-                    .map(|(identifier, attribute)| {
-                        mlirNamedAttributeGet(identifier.to_raw(), attribute.to_raw())
-                    })
-                    .collect::<Vec<_>>()
-                    .as_ptr() as *const _,
-            )
+        for (identifier, attribute) in attributes {
+            unsafe {
+                mlirOperationStateAddAttributes(
+                    &mut self.raw,
+                    1,
+                    &[mlirNamedAttributeGet(
+                        identifier.to_raw(),
+                        attribute.to_raw(),
+                    )] as *const _,
+                )
+            }
         }
 
         self
@@ -172,7 +181,7 @@ mod tests {
         context.set_allow_unregistered_dialects(true);
 
         OperationBuilder::new("foo", Location::unknown(&context))
-            .add_regions(vec![Region::new()])
+            .add_regions([Region::new()])
             .build()
             .unwrap();
     }
