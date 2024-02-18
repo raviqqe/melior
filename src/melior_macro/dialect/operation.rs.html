@@ -407,10 +407,10 @@
     operation_name: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     summary: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>str,
     can_infer_type: bool,
-    regions: Vec&lt;Region&lt;<span class="lifetime">'a</span>&gt;&gt;,
-    successors: Vec&lt;Successor&lt;<span class="lifetime">'a</span>&gt;&gt;,
     results: Vec&lt;OperationResult&lt;<span class="lifetime">'a</span>&gt;&gt;,
     operands: Vec&lt;Operand&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    regions: Vec&lt;Region&lt;<span class="lifetime">'a</span>&gt;&gt;,
+    successors: Vec&lt;Successor&lt;<span class="lifetime">'a</span>&gt;&gt;,
     attributes: Vec&lt;Attribute&lt;<span class="lifetime">'a</span>&gt;&gt;,
     derived_attributes: Vec&lt;Attribute&lt;<span class="lifetime">'a</span>&gt;&gt;,
 }
@@ -515,14 +515,6 @@
         sanitize_documentation(<span class="self">self</span>.definition.str_value(<span class="string">"description"</span>)<span class="question-mark">?</span>)
     }
 
-    <span class="kw">pub fn </span>operands(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Operand&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
-        <span class="self">self</span>.operands.iter()
-    }
-
-    <span class="kw">pub fn </span>operand_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.operands.len()
-    }
-
     <span class="kw">pub fn </span>results(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>OperationResult&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
         <span class="self">self</span>.results.iter()
     }
@@ -531,12 +523,20 @@
         <span class="self">self</span>.results.len()
     }
 
-    <span class="kw">pub fn </span>successors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Successor&lt;<span class="lifetime">'a</span>&gt;&gt; {
-        <span class="self">self</span>.successors.iter()
+    <span class="kw">pub fn </span>operands(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Operand&lt;<span class="lifetime">'a</span>&gt;&gt; + Clone {
+        <span class="self">self</span>.operands.iter()
+    }
+
+    <span class="kw">pub fn </span>operand_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.operands.len()
     }
 
     <span class="kw">pub fn </span>regions(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Region&lt;<span class="lifetime">'a</span>&gt;&gt; {
         <span class="self">self</span>.regions.iter()
+    }
+
+    <span class="kw">pub fn </span>successors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Successor&lt;<span class="lifetime">'a</span>&gt;&gt; {
+        <span class="self">self</span>.successors.iter()
     }
 
     <span class="kw">pub fn </span>attributes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Attribute&lt;<span class="lifetime">'a</span>&gt;&gt; {
