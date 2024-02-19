@@ -305,7 +305,7 @@ impl<'c> PartialEq for Operation<'c> {
 
 impl<'c> Eq for Operation<'c> {}
 
-impl<'a> Display for Operation<'a> {
+impl<'c> Display for Operation<'c> {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
         let mut data = (formatter, Ok(()));
 
@@ -337,27 +337,6 @@ pub struct OperationRef<'c, 'a> {
 }
 
 impl<'c, 'a> OperationRef<'c, 'a> {
-    /// Gets a result at a position.
-    pub fn result(self, index: usize) -> Result<OperationResult<'c, 'a>, Error> {
-        unsafe { self.to_ref() }.result(index)
-    }
-
-    /// Gets an operation.
-    ///
-    /// This function is different from `deref` because the correct lifetime is
-    /// kept for the return type.
-    ///
-    /// # Safety
-    ///
-    /// The returned reference is safe to use only in the lifetime scope of the
-    /// operation reference.
-    pub unsafe fn to_ref(&self) -> &'a Operation<'c> {
-        // As we can't deref OperationRef<'a> into `&'a Operation`, we forcibly cast its
-        // lifetime here to extend it from the lifetime of `ObjectRef<'a>` itself into
-        // `'a`.
-        transmute(self)
-    }
-
     /// Converts an operation reference into a raw object.
     pub const fn to_raw(self) -> MlirOperation {
         self.raw
@@ -390,7 +369,7 @@ impl<'c, 'a> OperationRef<'c, 'a> {
 }
 
 impl<'c, 'a> Deref for OperationRef<'c, 'a> {
-    type Target = Operation<'a>;
+    type Target = Operation<'c>;
 
     fn deref(&self) -> &Self::Target {
         unsafe { transmute(self) }
