@@ -1078,17 +1078,16 @@ mod tests {
             {
                 let block = Block::new(&[(integer_type, location)]);
 
-                let res = block
-                    .append_operation(intr_bitreverse(
-                        block.argument(0).unwrap().into(),
-                        integer_type,
-                        location,
-                    ))
-                    .result(0)
-                    .unwrap()
-                    .into();
+                let operation = block.append_operation(intr_bitreverse(
+                    block.argument(0).unwrap().into(),
+                    integer_type,
+                    location,
+                ));
 
-                block.append_operation(func::r#return(&[res], location));
+                block.append_operation(func::r#return(
+                    &[operation.result(0).unwrap().into()],
+                    location,
+                ));
 
                 let region = Region::new();
                 region.append_block(block);
@@ -1121,19 +1120,18 @@ mod tests {
             {
                 let block = Block::new(&[(integer_type, location)]);
 
-                let res = block
-                    .append_operation(intr_abs(
-                        &context,
-                        block.argument(0).unwrap().into(),
-                        true,
-                        integer_type,
-                        location,
-                    ))
-                    .result(0)
-                    .unwrap()
-                    .into();
+                let operation = block.append_operation(intr_abs(
+                    &context,
+                    block.argument(0).unwrap().into(),
+                    true,
+                    integer_type,
+                    location,
+                ));
 
-                block.append_operation(func::r#return(&[res], location));
+                block.append_operation(func::r#return(
+                    &[operation.result(0).unwrap().into()],
+                    location,
+                ));
 
                 let region = Region::new();
                 region.append_block(block);
@@ -1167,17 +1165,16 @@ mod tests {
             {
                 let block = Block::new(&[(integer_type, location)]);
 
-                let res = block
-                    .append_operation(zext(
-                        block.argument(0).unwrap().into(),
-                        integer_double_type,
-                        location,
-                    ))
-                    .result(0)
-                    .unwrap()
-                    .into();
+                let operation = block.append_operation(zext(
+                    block.argument(0).unwrap().into(),
+                    integer_double_type,
+                    location,
+                ));
 
-                block.append_operation(func::r#return(&[res], location));
+                block.append_operation(func::r#return(
+                    &[operation.result(0).unwrap().into()],
+                    location,
+                ));
 
                 let region = Region::new();
                 region.append_block(block);
