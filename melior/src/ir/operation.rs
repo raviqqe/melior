@@ -731,27 +731,28 @@ mod tests {
     fn remove_from_parent() {
         let context = create_test_context();
         context.set_allow_unregistered_dialects(true);
+
+        let location = Location::unknown(&context);
         let mut block = Block::new(&[]);
 
         let first_operation = block.append_operation(
-            OperationBuilder::new("foo", Location::unknown(&context))
+            OperationBuilder::new("foo", location)
                 .add_results(&[Type::index(&context)])
                 .build()
                 .unwrap(),
         );
         block.append_operation(
-            OperationBuilder::new("bar", Location::unknown(&context))
+            OperationBuilder::new("bar", location)
                 .add_operands(&[first_operation.result(0).unwrap().into()])
                 .build()
                 .unwrap(),
         );
-        block
-            .first_operation_mut()
-            .unwrap()
-            .next_in_block_mut()
-            .unwrap()
-            .remove_from_parent();
+        block.first_operation_mut().unwrap().remove_from_parent();
 
         assert_eq!(block.first_operation().unwrap().next_in_block(), None);
+        assert_eq!(
+            block.first_operation().unwrap().to_string(),
+            "\"bar\"(<<UNKNOWN SSA VALUE>>) : (index) -> ()"
+        );
     }
 }
