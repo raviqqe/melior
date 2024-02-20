@@ -23,8 +23,9 @@ use mlir_sys::{
     mlirOperationGetContext, mlirOperationGetName, mlirOperationGetNextInBlock,
     mlirOperationGetNumAttributes, mlirOperationGetNumOperands, mlirOperationGetNumRegions,
     mlirOperationGetNumResults, mlirOperationGetNumSuccessors, mlirOperationGetOperand,
-    mlirOperationGetRegion, mlirOperationGetResult, mlirOperationGetSuccessor, mlirOperationPrint,
-    mlirOperationPrintWithFlags, mlirOperationRemoveAttributeByName, mlirOperationRemoveFromParent,
+    mlirOperationGetParentOperation, mlirOperationGetRegion, mlirOperationGetResult,
+    mlirOperationGetSuccessor, mlirOperationPrint, mlirOperationPrintWithFlags,
+    mlirOperationRemoveAttributeByName, mlirOperationRemoveFromParent,
     mlirOperationSetAttributeByName, mlirOperationVerify, MlirOperation,
 };
 use std::{
@@ -225,6 +226,16 @@ impl<'c> Operation<'c> {
     /// Returns a mutable reference to the next operation in the same block.
     pub fn next_in_block_mut(&self) -> Option<OperationRefMut<'c, '_>> {
         unsafe { OperationRefMut::from_option_raw(mlirOperationGetNextInBlock(self.raw)) }
+    }
+
+    /// Returns a reference to the next operation in the same block.
+    pub fn previous_in_block(&self) -> Option<OperationRef<'c, '_>> {
+        unsafe { OperationRef::from_option_raw(mlirOperationGetNextInBlock(self.raw)) }
+    }
+
+    /// Returns a reference to a parent operation.
+    pub fn parent_operation(&self) -> Option<OperationRef<'c, '_>> {
+        unsafe { OperationRef::from_option_raw(mlirOperationGetParentOperation(self.raw)) }
     }
 
     /// Removes itself from a parent block.
@@ -753,6 +764,45 @@ mod tests {
         assert_eq!(
             block.first_operation().unwrap().to_string(),
             "\"bar\"(<<UNKNOWN SSA VALUE>>) : (index) -> ()"
+        );
+    }
+
+    #[test]
+    fn parent_operation() {
+        let context = create_test_context();
+        context.set_allow_unregistered_dialects(true);
+
+        let location = Location::unknown(&context);
+        let block = Block::new(&[]);
+
+        let operation = block.append_operation(
+            OperationBuilder::new("foo", location)
+                .add_results(&[Type::index(&context)])
+                .add_regions([{
+                    let region = Region::new();
+
+                    let block = Block::new(&[]);
+                    block.append_operation(OperationBuilder::new("bar", location).build().unwrap());
+
+                    region.append_block(block);
+                    region
+                }])
+                .build()
+                .unwrap(),
+        );
+
+        assert_eq!(operation.parent_operation(), None);
+        assert_eq!(
+            &operation
+                .region(0)
+                .unwrap()
+                .first_block()
+                .unwrap()
+                .first_operation()
+                .unwrap()
+                .parent_operation()
+                .unwrap(),
+            &operation
         );
     }
 }
