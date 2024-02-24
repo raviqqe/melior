@@ -41,15 +41,14 @@ pub fn generate_operation_builder(builder: &OperationBuilder) -> TokenStream {
         "A builder for {}.",
         builder.operation().documentation_name()
     );
-    let type_arguments = builder.type_state().parameters();
-    let state_types = builder.type_state().parameters();
+    let type_parameters = builder.type_state().parameters().collect::<Vec<_>>();
 
     quote! {
         #[doc = #doc]
-        pub struct #identifier<'c, #(#type_arguments),*> {
+        pub struct #identifier<'c, #(#type_parameters),*> {
             builder: ::melior::ir::operation::OperationBuilder<'c>,
             context: &'c ::melior::Context,
-            _state: ::std::marker::PhantomData<(#(#state_types),*)>,
+            _state: ::std::marker::PhantomData<(#(#type_parameters),*)>,
         }
 
         #new_fn
@@ -90,8 +89,8 @@ fn generate_field_fn(builder: &OperationBuilder, field: &impl OperationField) ->
         }
     } else {
         let parameters = builder.type_state().parameters_without(field.name());
-        let arguments_set = builder.type_state().arguments_set(field.name(), true);
-        let arguments_unset = builder.type_state().arguments_set(field.name(), false);
+        let arguments_set = builder.type_state().arguments_with(field.name(), true);
+        let arguments_unset = builder.type_state().arguments_with(field.name(), false);
 
         quote! {
             impl<'c, #(#parameters),*> #builder_identifier<'c, #(#arguments_unset),*> {
@@ -109,7 +108,7 @@ fn generate_field_fn(builder: &OperationBuilder, field: &impl OperationField) ->
 
 fn generate_build_fn(builder: &OperationBuilder) -> TokenStream {
     let identifier = builder.identifier();
-    let arguments = builder.type_state().arguments_all_set(true);
+    let arguments = builder.type_state().arguments_with_all(true);
     let operation_identifier = format_ident!("{}", &builder.operation().name());
     let error = format!("should be a valid {operation_identifier}");
     let maybe_infer = builder
@@ -129,7 +128,7 @@ fn generate_build_fn(builder: &OperationBuilder) -> TokenStream {
 fn generate_new_fn(builder: &OperationBuilder) -> TokenStream {
     let identifier = builder.identifier();
     let name = &builder.operation().full_operation_name();
-    let arguments = builder.type_state().arguments_all_set(false);
+    let arguments = builder.type_state().arguments_with_all(false);
 
     quote! {
         impl<'c> #identifier<'c, #(#arguments),*> {
@@ -146,7 +145,7 @@ fn generate_new_fn(builder: &OperationBuilder) -> TokenStream {
 
 pub fn generate_operation_builder_fn(builder: &OperationBuilder) -> TokenStream {
     let builder_ident = builder.identifier();
-    let arguments = builder.type_state().arguments_all_set(false);
+    let arguments = builder.type_state().arguments_with_all(false);
 
     quote! {
         /// Creates a builder.
