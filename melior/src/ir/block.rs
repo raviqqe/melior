@@ -117,7 +117,7 @@ impl<'c> Block<'c> {
     }
 
     /// Appends an operation.
-    pub fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, '_> {
+    pub fn append_operation(&mut self, operation: Operation<'c>) -> OperationRef<'c, '_> {
         unsafe {
             let operation = operation.into_raw();
 
@@ -128,10 +128,8 @@ impl<'c> Block<'c> {
     }
 
     /// Inserts an operation.
-    // TODO How can we make those update functions take `&mut self`?
-    // TODO Use cells?
     pub fn insert_operation(
-        &self,
+        &mut self,
         position: usize,
         operation: Operation<'c>,
     ) -> OperationRef<'c, '_> {
@@ -146,7 +144,7 @@ impl<'c> Block<'c> {
 
     /// Inserts an operation after another.
     pub fn insert_operation_after(
-        &self,
+        &mut self,
         one: OperationRef<'c, '_>,
         other: Operation<'c>,
     ) -> OperationRef<'c, '_> {
@@ -161,7 +159,7 @@ impl<'c> Block<'c> {
 
     /// Inserts an operation before another.
     pub fn insert_operation_before(
-        &self,
+        &mut self,
         one: OperationRef<'c, '_>,
         other: Operation<'c>,
     ) -> OperationRef<'c, '_> {
@@ -181,7 +179,7 @@ impl<'c> Block<'c> {
     /// This function might invalidate existing references to the block if you
     /// drop it too early.
     // TODO Implement this for BlockRefMut instead and mark it safe.
-    pub unsafe fn detach(&self) -> Option<Block<'c>> {
+    pub unsafe fn detach(&mut self) -> Option<Block<'c>> {
         if self.parent_region().is_some() {
             mlirBlockDetach(self.raw);
 
