@@ -106,7 +106,7 @@ impl<'c> Block<'c> {
     }
 
     /// Adds an argument.
-    pub fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, '_> {
+    pub fn add_argument(&mut self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, '_> {
         unsafe {
             Value::from_raw(mlirBlockAddArgument(
                 self.raw,
