@@ -61,8 +61,13 @@ impl TypeState {
         &'a self,
         field: &'a str,
     ) -> impl Iterator<Item = GenericArgument> + 'a {
-        self.all_fields()
-            .flat_map(|(fields, prefix)| Self::build_parameters_without(fields, prefix, field))
+        self.ordered_fields()
+            .flat_map(|(fields, prefix)| {
+                Self::build_ordered_parameters_without(fields, prefix, field)
+            })
+            .chain(self.unordered_fields().flat_map(|(fields, prefix)| {
+                Self::build_unordered_parameters_without(fields, prefix, field)
+            }))
     }
 
     pub fn arguments_with<'a>(
@@ -70,9 +75,13 @@ impl TypeState {
         field: &'a str,
         set: bool,
     ) -> impl Iterator<Item = GenericArgument> + 'a {
-        self.all_fields().flat_map(move |(fields, prefix)| {
-            Self::build_arguments_with(fields, prefix, field, set)
-        })
+        self.ordered_fields()
+            .flat_map(move |(fields, prefix)| {
+                Self::build_ordered_arguments_with(fields, prefix, field, set)
+            })
+            .chain(self.unordered_fields().flat_map(move |(fields, prefix)| {
+                Self::build_unordered_arguments_with(fields, prefix, field, set)
+            }))
     }
 
     pub fn arguments_with_all(&self, set: bool) -> impl Iterator<Item = GenericArgument> + '_ {
@@ -87,7 +96,21 @@ impl TypeState {
         (0..fields.len()).map(|index| Self::build_generic_argument(prefix, index))
     }
 
-    fn build_parameters_without<'a>(
+    fn build_ordered_parameters_without<'a>(
+        fields: &'a [String],
+        prefix: &'a str,
+        field: &'a str,
+    ) -> impl Iterator<Item = GenericArgument> + 'a {
+        Self::build_parameters(fields, prefix).skip(
+            fields
+                .iter()
+                .position(|other| *other == field)
+                .map(|index| index + 1)
+                .unwrap_or(0),
+        )
+    }
+
+    fn build_unordered_parameters_without<'a>(
         fields: &'a [String],
         prefix: &'a str,
         field: &'a str,
@@ -99,7 +122,25 @@ impl TypeState {
             .map(|(index, _)| Self::build_generic_argument(prefix, index))
     }
 
-    fn build_arguments_with<'a>(
+    fn build_ordered_arguments_with<'a>(
+        fields: &'a [String],
+        prefix: &'a str,
+        field: &'a str,
+        set: bool,
+    ) -> Box<dyn Iterator<Item = GenericArgument> + 'a> {
+        let Some(index) = fields.iter().position(|other| *other == field) else {
+            return Box::new(Self::build_parameters(fields, prefix));
+        };
+
+        Box::new(
+            repeat(Self::build_argument(true))
+                .take(index)
+                .chain([Self::build_argument(set)])
+                .chain(Self::build_parameters(fields, prefix).skip(index + 1)),
+        )
+    }
+
+    fn build_unordered_arguments_with<'a>(
         fields: &'a [String],
         prefix: &'a str,
         field: &'a str,
