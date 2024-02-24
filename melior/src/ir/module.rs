@@ -1,4 +1,6 @@
-use super::{operation::OperationRefMut, BlockRef, Location, Operation, OperationRef};
+use super::{
+    block::BlockRefMut, operation::OperationRefMut, BlockRef, Location, Operation, OperationRef,
+};
 use crate::{
     context::{Context, ContextRef},
     string_ref::StringRef,
@@ -50,6 +52,11 @@ impl<'c> Module<'c> {
     /// Returns a block of a module body.
     pub fn body(&self) -> BlockRef<'c, '_> {
         unsafe { BlockRef::from_raw(mlirModuleGetBody(self.raw)) }
+    }
+
+    /// Returns a block of a module body.
+    pub fn body_mut(&mut self) -> BlockRefMut<'c, '_> {
+        unsafe { BlockRefMut::from_raw(mlirModuleGetBody(self.raw)) }
     }
 
     /// Converts an operation into a module.

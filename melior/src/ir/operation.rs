@@ -442,7 +442,7 @@ impl<'c, 'a> Debug for OperationRef<'c, 'a> {
 #[derive(Clone, Copy)]
 pub struct OperationRefMut<'c, 'a> {
     raw: MlirOperation,
-    _reference: PhantomData<&'a Operation<'c>>,
+    _reference: PhantomData<&'a mut Operation<'c>>,
 }
 
 impl<'c, 'a> OperationRefMut<'c, 'a> {

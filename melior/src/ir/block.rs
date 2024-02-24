@@ -20,7 +20,7 @@ use std::{
     fmt::{self, Debug, Display, Formatter},
     marker::PhantomData,
     mem::{forget, transmute},
-    ops::Deref,
+    ops::{Deref, DerefMut},
 };
 
 /// A block.
@@ -316,6 +316,74 @@ impl<'c, 'a> Display for BlockRef<'c, 'a> {
 }
 
 impl<'c, 'a> Debug for BlockRef<'c, 'a> {
+    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
+        Debug::fmt(self.deref(), formatter)
+    }
+}
+
+/// A reference of a block.
+#[derive(Clone, Copy)]
+pub struct BlockRefMut<'c, 'a> {
+    raw: MlirBlock,
+    _reference: PhantomData<&'a mut Block<'c>>,
+}
+
+impl<'c, 'a> BlockRefMut<'c, 'a> {
+    /// Creates a mutable reference to a  block from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_raw(raw: MlirBlock) -> Self {
+        Self {
+            raw,
+            _reference: Default::default(),
+        }
+    }
+
+    /// Creates a optional mutable reference to a block from a raw object.
+    ///
+    /// # Safety
+    ///
+    /// A raw object must be valid.
+    pub unsafe fn from_option_raw(raw: MlirBlock) -> Option<Self> {
+        if raw.ptr.is_null() {
+            None
+        } else {
+            Some(Self::from_raw(raw))
+        }
+    }
+}
+
+impl<'c, 'a> Deref for BlockRefMut<'c, 'a> {
+    type Target = Block<'a>;
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { transmute(self) }
+    }
+}
+
+impl<'c, 'a> DerefMut for BlockRefMut<'c, 'a> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe { transmute(self) }
+    }
+}
+
+impl<'c, 'a> PartialEq for BlockRefMut<'c, 'a> {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { mlirBlockEqual(self.raw, other.raw) }
+    }
+}
+
+impl<'c, 'a> Eq for BlockRefMut<'c, 'a> {}
+
+impl<'c, 'a> Display for BlockRefMut<'c, 'a> {
+    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
+        Display::fmt(self.deref(), formatter)
+    }
+}
+
+impl<'c, 'a> Debug for BlockRefMut<'c, 'a> {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
         Debug::fmt(self.deref(), formatter)
     }

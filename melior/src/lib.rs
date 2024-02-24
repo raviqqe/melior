@@ -71,7 +71,7 @@ mod tests {
         let integer_type = IntegerType::new(&context, 64).into();
 
         let function = {
-            let block = Block::new(&[(integer_type, location), (integer_type, location)]);
+            let mut block = Block::new(&[(integer_type, location), (integer_type, location)]);
 
             let sum = block.append_operation(arith::addi(
                 block.argument(0).unwrap().into(),
@@ -216,7 +216,7 @@ mod tests {
             )
         };
 
-        module.body().append_operation(function);
+        module.body_mut().append_operation(function);
 
         assert!(module.as_operation().verify());
         insta::assert_display_snapshot!(module.as_operation());
@@ -234,7 +234,7 @@ mod tests {
 
         fn compile_add<'c, 'a>(
             context: &'c Context,
-            block: &'a Block<'c>,
+            block: &'a mut Block<'c>,
             lhs: Value<'c, '_>,
             rhs: Value<'c, '_>,
         ) -> Value<'c, 'a> {
@@ -252,12 +252,12 @@ mod tests {
                 FunctionType::new(&context, &[integer_type, integer_type], &[integer_type]).into(),
             ),
             {
-                let block = Block::new(&[(integer_type, location), (integer_type, location)]);
+                let mut block = Block::new(&[(integer_type, location), (integer_type, location)]);
 
                 block.append_operation(func::r#return(
                     &[compile_add(
                         &context,
-                        &block,
+                        &mut block,
                         block.argument(0).unwrap().into(),
                         block.argument(1).unwrap().into(),
                     )],
