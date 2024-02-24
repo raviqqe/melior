@@ -1,379 +1,278 @@
-mod accessors;
+mod attribute;
 mod builder;
+mod operand;
+mod operation_element;
+mod operation_field;
+mod region;
+mod result;
+mod successor;
+mod variadic_kind;
 
-use self::builder::OperationBuilder;
-use super::utility::{sanitize_documentation, sanitize_snake_case_name};
+pub use self::{
+    attribute::Attribute, builder::OperationBuilder, operand::Operand,
+    operation_element::OperationElement, region::Region, result::OperationResult,
+    successor::Successor, variadic_kind::VariadicKind,
+};
+use super::utility::{sanitize_documentation, sanitize_snake_case_identifier};
 use crate::dialect::{
     error::{Error, OdsError},
-    types::{AttributeConstraint, RegionConstraint, SuccessorConstraint, Trait, TypeConstraint},
+    r#trait::Trait,
+    r#type::Type,
+    utility::capitalize_string,
 };
-use proc_macro2::{Ident, TokenStream};
-use quote::{format_ident, quote, ToTokens, TokenStreamExt};
-use syn::{parse_quote, Type};
-use tblgen::{error::WithLocation, record::Record};
+pub use operation_field::OperationField;
+use std::collections::HashSet;
+use syn::Ident;
+use tblgen::{error::WithLocation, record::Record, TypedInit};
 
-#[derive(Debug, Clone, Copy)]
-pub enum ElementKind {
-    Operand,
-    Result,
-}
+// spell-checker: disable-next-line
+const VOWELS: &str = "aeiou";
 
-impl ElementKind {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Self::Operand => "operand",
-            Self::Result => "result",
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub enum FieldKind<'a> {
-    Element {
-        kind: ElementKind,
-        constraint: TypeConstraint<'a>,
-        sequence_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    },
-    Attribute {
-        constraint: AttributeConstraint<'a>,
-    },
-    Successor {
-        constraint: SuccessorConstraint<'a>,
-        sequence_info: SequenceInfo,
-    },
-    Region {
-        constraint: RegionConstraint<'a>,
-        sequence_info: SequenceInfo,
-    },
-}
-
-impl<'a> FieldKind<'a> {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Self::Element { kind, .. } => kind.as_str(),
-            Self::Attribute { .. } => "attribute",
-            Self::Successor { .. } => "successor",
-            Self::Region { .. } => "region",
-        }
-    }
-
-    pub fn is_optional(&self) -> Result<bool, Error> {
-        Ok(match self {
-            Self::Element { constraint, .. } => constraint.is_optional(),
-            Self::Attribute { constraint, .. } => {
-                constraint.is_optional()? || constraint.has_default_value()?
-            }
-            Self::Successor { .. } | Self::Region { .. } => false,
-        })
-    }
-
-    pub fn is_result(&self) -> bool {
-        matches!(
-            self,
-            Self::Element {
-                kind: ElementKind::Result,
-                ..
-            }
-        )
-    }
-
-    pub fn parameter_type(&self) -> Result<Type, Error> {
-        Ok(match self {
-            Self::Element {
-                kind, constraint, ..
-            } => {
-                let base_type: Type = match kind {
-                    ElementKind::Operand => {
-                        parse_quote!(::melior::ir::Value<'c, '_>)
-                    }
-                    ElementKind::Result => {
-                        parse_quote!(::melior::ir::Type<'c>)
-                    }
-                };
-                if constraint.is_variadic() {
-                    parse_quote! { &[#base_type] }
-                } else {
-                    base_type
-                }
-            }
-            Self::Attribute { constraint } => {
-                if constraint.is_unit()? {
-                    parse_quote!(bool)
-                } else {
-                    let r#type: Type = syn::parse_str(constraint.storage_type()?)?;
-                    parse_quote!(#r#type<'c>)
-                }
-            }
-            Self::Successor { constraint, .. } => {
-                let r#type: Type = parse_quote!(&::melior::ir::Block<'c>);
-                if constraint.is_variadic() {
-                    parse_quote!(&[#r#type])
-                } else {
-                    r#type
-                }
-            }
-            Self::Region { constraint, .. } => {
-                let r#type: Type = parse_quote!(::melior::ir::Region<'c>);
-                if constraint.is_variadic() {
-                    parse_quote!(Vec<#r#type>)
-                } else {
-                    r#type
-                }
-            }
-        })
-    }
-
-    fn create_result_type(r#type: Type) -> Type {
-        parse_quote!(Result<#r#type, ::melior::Error>)
-    }
-
-    fn create_iterator_type(r#type: Type) -> Type {
-        parse_quote!(impl Iterator<Item = #r#type>)
-    }
-
-    pub fn return_type(&self) -> Result<Type, Error> {
-        Ok(match self {
-            Self::Element {
-                kind,
-                constraint,
-                variadic_kind,
-                ..
-            } => {
-                let base_type: Type = match kind {
-                    ElementKind::Operand => {
-                        parse_quote!(::melior::ir::Value<'c, '_>)
-                    }
-                    ElementKind::Result => {
-                        parse_quote!(::melior::ir::operation::OperationResult<'c, '_>)
-                    }
-                };
-                if !constraint.is_variadic() {
-                    Self::create_result_type(base_type)
-                } else if let VariadicKind::AttrSized {} = variadic_kind {
-                    Self::create_result_type(Self::create_iterator_type(base_type))
-                } else {
-                    Self::create_iterator_type(base_type)
-                }
-            }
-            Self::Attribute { constraint } => {
-                if constraint.is_unit()? {
-                    parse_quote!(bool)
-                } else {
-                    Self::create_result_type(self.parameter_type()?)
-                }
-            }
-            Self::Successor { constraint, .. } => {
-                let r#type: Type = parse_quote!(::melior::ir::BlockRef<'c, '_>);
-                if constraint.is_variadic() {
-                    Self::create_iterator_type(r#type)
-                } else {
-                    Self::create_result_type(r#type)
-                }
-            }
-            Self::Region { constraint, .. } => {
-                let r#type: Type = parse_quote!(::melior::ir::RegionRef<'c, '_>);
-                if constraint.is_variadic() {
-                    Self::create_iterator_type(r#type)
-                } else {
-                    Self::create_result_type(r#type)
-                }
-            }
-        })
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct SequenceInfo {
-    index: usize,
-    len: usize,
-}
-
-#[derive(Clone, Debug)]
-pub enum VariadicKind {
-    Simple {
-        seen_variable_length: bool,
-    },
-    SameSize {
-        num_variable_length: usize,
-        num_preceding_simple: usize,
-        num_preceding_variadic: usize,
-    },
-    AttrSized {},
-}
-
-impl VariadicKind {
-    pub fn new(num_variable_length: usize, same_size: bool, attr_sized: bool) -> Self {
-        if num_variable_length <= 1 {
-            VariadicKind::Simple {
-                seen_variable_length: false,
-            }
-        } else if same_size {
-            VariadicKind::SameSize {
-                num_variable_length,
-                num_preceding_simple: 0,
-                num_preceding_variadic: 0,
-            }
-        } else if attr_sized {
-            VariadicKind::AttrSized {}
-        } else {
-            unimplemented!()
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct OperationField<'a> {
-    pub(crate) name: &'a str,
-    pub(crate) sanitized_name: Ident,
-    pub(crate) kind: FieldKind<'a>,
-}
-
-impl<'a> OperationField<'a> {
-    fn new(name: &'a str, kind: FieldKind<'a>) -> Result<Self, Error> {
-        Ok(Self {
-            name,
-            sanitized_name: sanitize_snake_case_name(name)?,
-            kind,
-        })
-    }
-
-    fn new_attribute(name: &'a str, constraint: AttributeConstraint<'a>) -> Result<Self, Error> {
-        Self::new(name, FieldKind::Attribute { constraint })
-    }
-
-    fn new_region(
-        name: &'a str,
-        constraint: RegionConstraint<'a>,
-        sequence_info: SequenceInfo,
-    ) -> Result<Self, Error> {
-        Self::new(
-            name,
-            FieldKind::Region {
-                constraint,
-                sequence_info,
-            },
-        )
-    }
-
-    fn new_successor(
-        name: &'a str,
-        constraint: SuccessorConstraint<'a>,
-        sequence_info: SequenceInfo,
-    ) -> Result<Self, Error> {
-        Self::new(
-            name,
-            FieldKind::Successor {
-                constraint,
-                sequence_info,
-            },
-        )
-    }
-
-    fn new_element(
-        name: &'a str,
-        constraint: TypeConstraint<'a>,
-        kind: ElementKind,
-        sequence_info: SequenceInfo,
-        variadic_kind: VariadicKind,
-    ) -> Result<Self, Error> {
-        Self::new(
-            name,
-            FieldKind::Element {
-                kind,
-                constraint,
-                sequence_info,
-                variadic_kind,
-            },
-        )
-    }
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Operation<'a> {
-    pub(crate) dialect: Record<'a>,
-    pub(crate) short_name: &'a str,
-    pub(crate) full_name: String,
-    pub(crate) class_name: &'a str,
-    pub(crate) summary: String,
-    pub(crate) can_infer_type: bool,
+    name: String,
+    short_dialect_name: &'a str,
+    dialect_name: &'a str,
+    operation_name: &'a str,
+    constructor_identifier: Ident,
+    summary: &'a str,
     description: String,
-    regions: Vec<OperationField<'a>>,
-    successors: Vec<OperationField<'a>>,
-    results: Vec<OperationField<'a>>,
-    operands: Vec<OperationField<'a>>,
-    attributes: Vec<OperationField<'a>>,
-    derived_attributes: Vec<OperationField<'a>>,
+    can_infer_type: bool,
+    results: Vec<OperationResult<'a>>,
+    operands: Vec<Operand<'a>>,
+    regions: Vec<Region<'a>>,
+    successors: Vec<Successor<'a>>,
+    attributes: Vec<Attribute<'a>>,
+    derived_attributes: Vec<Attribute<'a>>,
 }
 
 impl<'a> Operation<'a> {
-    pub fn fields(&self) -> impl Iterator<Item = &OperationField<'a>> + Clone {
-        self.results
+    pub fn new(definition: Record<'a>) -> Result<Self, Error> {
+        let operation_name = definition.str_value("opName")?;
+        let traits = Self::collect_traits(definition)?;
+        let trait_names = traits
             .iter()
-            .chain(self.operands.iter())
-            .chain(self.regions.iter())
-            .chain(self.successors.iter())
-            .chain(self.attributes.iter())
-            .chain(self.derived_attributes.iter())
+            .flat_map(|r#trait| r#trait.name())
+            .collect::<HashSet<_>>();
+
+        let arguments = Self::dag_constraints(definition, "arguments")?;
+        let regions = Self::collect_regions(definition)?;
+        let (results, unfixed_result_count) = Self::collect_results(
+            definition,
+            trait_names.contains("::mlir::OpTrait::SameVariadicResultSize"),
+            trait_names.contains("::mlir::OpTrait::AttrSizedResultSegments"),
+        )?;
+
+        Ok(Self {
+            name: Self::build_name(definition)?,
+            dialect_name: definition.def_value("opDialect")?.name()?,
+            short_dialect_name: definition.def_value("opDialect")?.str_value("name")?,
+            operation_name,
+            constructor_identifier: sanitize_snake_case_identifier(operation_name)?,
+            summary: definition.str_value("summary")?,
+            description: sanitize_documentation(definition.str_value("description")?)?,
+            can_infer_type: traits.iter().any(|r#trait| {
+                (r#trait.name() == Some("::mlir::OpTrait::FirstAttrDerivedResultType")
+                    || r#trait.name() == Some("::mlir::OpTrait::SameOperandsAndResultType"))
+                    && unfixed_result_count == 0
+                    || r#trait.name() == Some("::mlir::InferTypeOpInterface::Trait")
+                        && regions.is_empty()
+            }),
+            results,
+            operands: Self::collect_operands(
+                &arguments,
+                trait_names.contains("::mlir::OpTrait::SameVariadicOperandSize"),
+                trait_names.contains("::mlir::OpTrait::AttrSizedOperandSegments"),
+            )?,
+            regions,
+            successors: Self::collect_successors(definition)?,
+            attributes: Self::collect_attributes(&arguments)?,
+            derived_attributes: Self::collect_derived_attributes(definition)?,
+        })
     }
 
-    fn collect_successors(def: Record<'a>) -> Result<Vec<OperationField>, Error> {
-        let successors_dag = def.dag_value("successors")?;
-        let len = successors_dag.num_args();
-        successors_dag
+    fn build_name(definition: Record) -> Result<String, Error> {
+        let name = definition.name()?;
+
+        Ok(if let Some((_, name)) = name.split_once('_') {
+            name
+        } else {
+            name
+        }
+        .trim_end_matches("Op")
+        .to_owned()
+            + "Operation")
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn can_infer_type(&self) -> bool {
+        self.can_infer_type
+    }
+
+    pub fn dialect_name(&self) -> &str {
+        self.dialect_name
+    }
+
+    pub fn operation_name(&self) -> &str {
+        self.operation_name
+    }
+
+    pub fn full_operation_name(&self) -> String {
+        format!("{}.{}", self.short_dialect_name, self.operation_name)
+    }
+
+    pub fn documentation_name(&self) -> String {
+        format!(
+            "{} [`{}`]({}) operation",
+            if VOWELS.contains(&self.operation_name()[..1]) {
+                "an"
+            } else {
+                "a"
+            },
+            self.operation_name,
+            &self.name
+        )
+    }
+
+    pub fn summary(&self) -> String {
+        format!(
+            "{}. {}",
+            capitalize_string(&self.documentation_name()),
+            if self.summary.is_empty() {
+                Default::default()
+            } else {
+                capitalize_string(self.summary) + "."
+            },
+        )
+    }
+
+    pub fn description(&self) -> &str {
+        &self.description
+    }
+
+    pub fn constructor_identifier(&self) -> &Ident {
+        &self.constructor_identifier
+    }
+
+    pub fn results(&self) -> impl Iterator<Item = &OperationResult<'a>> + Clone {
+        self.results.iter()
+    }
+
+    pub fn result_len(&self) -> usize {
+        self.results.len()
+    }
+
+    pub fn operands(&self) -> impl Iterator<Item = &Operand<'a>> + Clone {
+        self.operands.iter()
+    }
+
+    pub fn operand_len(&self) -> usize {
+        self.operands.len()
+    }
+
+    pub fn regions(&self) -> impl Iterator<Item = &Region<'a>> {
+        self.regions.iter()
+    }
+
+    pub fn successors(&self) -> impl Iterator<Item = &Successor<'a>> {
+        self.successors.iter()
+    }
+
+    pub fn attributes(&self) -> impl Iterator<Item = &Attribute<'a>> {
+        self.attributes.iter()
+    }
+
+    pub fn all_attributes(&self) -> impl Iterator<Item = &Attribute<'a>> {
+        self.attributes().chain(&self.derived_attributes)
+    }
+
+    pub fn required_results(&self) -> impl Iterator<Item = &OperationResult> {
+        if self.can_infer_type {
+            Default::default()
+        } else {
+            self.results.iter()
+        }
+        .filter(|field| !field.is_optional())
+    }
+
+    pub fn required_operands(&self) -> impl Iterator<Item = &Operand> {
+        self.operands.iter().filter(|field| !field.is_optional())
+    }
+
+    pub fn required_regions(&self) -> impl Iterator<Item = &Region> {
+        self.regions.iter().filter(|field| !field.is_optional())
+    }
+
+    pub fn required_successors(&self) -> impl Iterator<Item = &Successor> {
+        self.successors.iter().filter(|field| !field.is_optional())
+    }
+
+    pub fn required_attributes(&self) -> impl Iterator<Item = &Attribute> {
+        self.attributes.iter().filter(|field| !field.is_optional())
+    }
+
+    pub fn required_fields(&self) -> impl Iterator<Item = &dyn OperationField> {
+        fn convert(field: &impl OperationField) -> &dyn OperationField {
+            field
+        }
+
+        self.required_results()
+            .map(convert)
+            .chain(self.required_operands().map(convert))
+            .chain(self.required_regions().map(convert))
+            .chain(self.required_successors().map(convert))
+            .chain(self.required_attributes().map(convert))
+    }
+
+    fn collect_successors(definition: Record<'a>) -> Result<Vec<Successor>, Error> {
+        definition
+            .dag_value("successors")?
             .args()
-            .enumerate()
-            .map(|(index, (name, value))| {
-                OperationField::new_successor(
+            .map(|(name, value)| {
+                Successor::new(
                     name,
-                    SuccessorConstraint::new(
-                        value
-                            .try_into()
-                            .map_err(|error: tblgen::Error| error.set_location(def))?,
-                    ),
-                    SequenceInfo { index, len },
+                    Record::try_from(value)
+                        .map_err(|error| error.set_location(definition))?
+                        .subclass_of("VariadicSuccessor"),
                 )
             })
             .collect()
     }
 
-    fn collect_regions(def: Record<'a>) -> Result<Vec<OperationField>, Error> {
-        let regions_dag = def.dag_value("regions")?;
-        let len = regions_dag.num_args();
-        regions_dag
+    fn collect_regions(definition: Record<'a>) -> Result<Vec<Region>, Error> {
+        definition
+            .dag_value("regions")?
             .args()
-            .enumerate()
-            .map(|(index, (name, value))| {
-                OperationField::new_region(
+            .map(|(name, value)| {
+                Region::new(
                     name,
-                    RegionConstraint::new(
-                        value
-                            .try_into()
-                            .map_err(|error: tblgen::Error| error.set_location(def))?,
-                    ),
-                    SequenceInfo { index, len },
+                    Record::try_from(value)
+                        .map_err(|error| error.set_location(definition))?
+                        .subclass_of("VariadicRegion"),
                 )
             })
             .collect()
     }
 
-    fn collect_traits(def: Record<'a>) -> Result<Vec<Trait>, Error> {
-        let mut work_list = vec![def.list_value("traits")?];
-        let mut traits = Vec::new();
+    fn collect_traits(definition: Record<'a>) -> Result<Vec<Trait>, Error> {
+        let mut trait_lists = vec![definition.list_value("traits")?];
+        let mut traits = vec![];
 
-        while let Some(trait_def) = work_list.pop() {
-            for value in trait_def.iter() {
-                let trait_def: Record = value
-                    .try_into()
-                    .map_err(|error: tblgen::Error| error.set_location(def))?;
+        while let Some(trait_list) = trait_lists.pop() {
+            for value in trait_list.iter() {
+                let definition =
+                    Record::try_from(value).map_err(|error| error.set_location(definition))?;
 
-                if trait_def.subclass_of("TraitList") {
-                    work_list.push(trait_def.list_value("traits")?);
+                if definition.subclass_of("TraitList") {
+                    trait_lists.push(definition.list_value("traits")?);
                 } else {
-                    if trait_def.subclass_of("Interface") {
-                        work_list.push(trait_def.list_value("baseInterfaces")?);
+                    if definition.subclass_of("Interface") {
+                        trait_lists.push(definition.list_value("baseInterfaces")?);
                     }
-                    traits.push(Trait::new(trait_def)?)
+                    traits.push(Trait::new(definition)?)
                 }
             }
         }
@@ -382,273 +281,137 @@ impl<'a> Operation<'a> {
     }
 
     fn dag_constraints(
-        def: Record<'a>,
-        dag_field_name: &str,
+        definition: Record<'a>,
+        name: &str,
     ) -> Result<Vec<(&'a str, Record<'a>)>, Error> {
-        def.dag_value(dag_field_name)?
+        definition
+            .dag_value(name)?
             .args()
-            .map(|(name, arg)| {
-                let mut arg_def: Record = arg
-                    .try_into()
-                    .map_err(|error: tblgen::Error| error.set_location(def))?;
+            .map(|(name, argument)| {
+                let definition =
+                    Record::try_from(argument).map_err(|error| error.set_location(definition))?;
 
-                if arg_def.subclass_of("OpVariable") {
-                    arg_def = arg_def.def_value("constraint")?;
-                }
-
-                Ok((name, arg_def))
+                Ok((
+                    name,
+                    if definition.subclass_of("OpVariable") {
+                        definition.def_value("constraint")?
+                    } else {
+                        definition
+                    },
+                ))
             })
             .collect()
     }
 
     fn collect_results(
-        def: Record<'a>,
+        definition: Record<'a>,
         same_size: bool,
-        attr_sized: bool,
-    ) -> Result<(Vec<OperationField>, usize), Error> {
+        attribute_sized: bool,
+    ) -> Result<(Vec<OperationResult>, usize), Error> {
         Self::collect_elements(
-            &Self::dag_constraints(def, "results")?
+            &Self::dag_constraints(definition, "results")?
                 .into_iter()
-                .map(|(name, constraint)| (name, TypeConstraint::new(constraint)))
+                .map(|(name, constraint)| (name, Type::new(constraint)))
                 .collect::<Vec<_>>(),
-            ElementKind::Result,
+            OperationResult::new,
             same_size,
-            attr_sized,
+            attribute_sized,
         )
     }
 
     fn collect_operands(
         arguments: &[(&'a str, Record<'a>)],
         same_size: bool,
-        attr_sized: bool,
-    ) -> Result<Vec<OperationField<'a>>, Error> {
+        attribute_sized: bool,
+    ) -> Result<Vec<Operand<'a>>, Error> {
         Ok(Self::collect_elements(
             &arguments
                 .iter()
-                .filter(|(_, arg_def)| arg_def.subclass_of("TypeConstraint"))
-                .map(|(name, arg_def)| (*name, TypeConstraint::new(*arg_def)))
+                .filter(|(_, definition)| definition.subclass_of("TypeConstraint"))
+                .map(|(name, definition)| (*name, Type::new(*definition)))
                 .collect::<Vec<_>>(),
-            ElementKind::Operand,
+            Operand::new,
             same_size,
-            attr_sized,
+            attribute_sized,
         )?
         .0)
     }
 
-    fn collect_elements(
-        elements: &[(&'a str, TypeConstraint<'a>)],
-        element_kind: ElementKind,
+    fn collect_elements<T>(
+        elements: &[(&'a str, Type)],
+        create: impl Fn(&'a str, Type, VariadicKind) -> Result<T, Error>,
         same_size: bool,
-        attr_sized: bool,
-    ) -> Result<(Vec<OperationField<'a>>, usize), Error> {
-        let num_variable_length = elements
+        attribute_sized: bool,
+    ) -> Result<(Vec<T>, usize), Error> {
+        let unfixed_count = elements
             .iter()
-            .filter(|(_, constraint)| constraint.has_variable_length())
+            .filter(|(_, r#type)| r#type.is_unfixed())
             .count();
-        let mut variadic_kind = VariadicKind::new(num_variable_length, same_size, attr_sized);
+        let mut variadic_kind = VariadicKind::new(unfixed_count, same_size, attribute_sized);
         let mut fields = vec![];
 
-        for (index, (name, constraint)) in elements.iter().enumerate() {
-            fields.push(OperationField::new_element(
-                name,
-                *constraint,
-                element_kind,
-                SequenceInfo {
-                    index,
-                    len: elements.len(),
-                },
-                variadic_kind.clone(),
-            )?);
+        for (name, r#type) in elements {
+            fields.push(create(name, *r#type, variadic_kind.clone())?);
 
             match &mut variadic_kind {
-                VariadicKind::Simple {
-                    seen_variable_length,
-                } => {
-                    if constraint.has_variable_length() {
-                        *seen_variable_length = true;
+                VariadicKind::Simple { unfixed_seen } => {
+                    if r#type.is_unfixed() {
+                        *unfixed_seen = true;
                     }
                 }
                 VariadicKind::SameSize {
-                    num_preceding_simple,
-                    num_preceding_variadic,
+                    preceding_simple_count,
+                    preceding_variadic_count,
                     ..
                 } => {
-                    if constraint.has_variable_length() {
-                        *num_preceding_variadic += 1;
+                    if r#type.is_unfixed() {
+                        *preceding_variadic_count += 1;
                     } else {
-                        *num_preceding_simple += 1;
+                        *preceding_simple_count += 1;
                     }
                 }
-                VariadicKind::AttrSized {} => {}
+                VariadicKind::AttributeSized => {}
             }
         }
 
-        Ok((fields, num_variable_length))
+        Ok((fields, unfixed_count))
     }
 
     fn collect_attributes(
         arguments: &[(&'a str, Record<'a>)],
-    ) -> Result<Vec<OperationField<'a>>, Error> {
+    ) -> Result<Vec<Attribute<'a>>, Error> {
         arguments
             .iter()
-            .filter(|(_, arg_def)| arg_def.subclass_of("Attr"))
-            .map(|(name, arg_def)| {
-                // TODO: Replace assert! with Result
-                assert!(!arg_def.subclass_of("DerivedAttr"));
-
-                OperationField::new_attribute(name, AttributeConstraint::new(*arg_def))
+            .filter(|(_, definition)| definition.subclass_of("Attr"))
+            .map(|(name, definition)| {
+                if definition.subclass_of("DerivedAttr") {
+                    Err(OdsError::UnexpectedSuperClass("DerivedAttr")
+                        .with_location(*definition)
+                        .into())
+                } else {
+                    Attribute::new(name, *definition)
+                }
             })
             .collect()
     }
 
-    fn collect_derived_attributes(def: Record<'a>) -> Result<Vec<OperationField<'a>>, Error> {
-        def.values()
-            .filter_map(|value| {
-                let Ok(def) = Record::try_from(value) else {
-                    return None;
-                };
-                def.subclass_of("Attr").then_some(def)
-            })
-            .map(|def| {
-                if def.subclass_of("DerivedAttr") {
-                    OperationField::new_attribute(def.name()?, AttributeConstraint::new(def))
+    fn collect_derived_attributes(definition: Record<'a>) -> Result<Vec<Attribute<'a>>, Error> {
+        definition
+            .values()
+            .filter(|value| matches!(value.init, TypedInit::Def(_)))
+            .map(Record::try_from)
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .filter(|definition| definition.subclass_of("Attr"))
+            .map(|definition| {
+                if definition.subclass_of("DerivedAttr") {
+                    Attribute::new(definition.name()?, definition)
                 } else {
                     Err(OdsError::ExpectedSuperClass("DerivedAttr")
-                        .with_location(def)
+                        .with_location(definition)
                         .into())
                 }
             })
             .collect()
-    }
-
-    pub fn from_def(def: Record<'a>) -> Result<Self, Error> {
-        let dialect = def.def_value("opDialect")?;
-        let traits = Self::collect_traits(def)?;
-        let has_trait = |name: &str| traits.iter().any(|r#trait| r#trait.has_name(name));
-
-        let arguments = Self::dag_constraints(def, "arguments")?;
-        let regions = Self::collect_regions(def)?;
-        let (results, num_variable_length_results) = Self::collect_results(
-            def,
-            has_trait("::mlir::OpTrait::SameVariadicResultSize"),
-            has_trait("::mlir::OpTrait::AttrSizedResultSegments"),
-        )?;
-
-        let name = def.name()?;
-        let class_name = if name.starts_with('_') {
-            name
-        } else if let Some(name) = name.split('_').nth(1) {
-            // Trim dialect prefix from name
-            name
-        } else {
-            name
-        };
-        let short_name = def.str_value("opName")?;
-
-        Ok(Self {
-            dialect,
-            short_name,
-            full_name: {
-                let dialect_name = dialect.string_value("name")?;
-
-                if dialect_name.is_empty() {
-                    short_name.into()
-                } else {
-                    format!("{dialect_name}.{short_name}")
-                }
-            },
-            class_name,
-            successors: Self::collect_successors(def)?,
-            operands: Self::collect_operands(
-                &arguments,
-                has_trait("::mlir::OpTrait::SameVariadicOperandSize"),
-                has_trait("::mlir::OpTrait::AttrSizedOperandSegments"),
-            )?,
-            results,
-            attributes: Self::collect_attributes(&arguments)?,
-            derived_attributes: Self::collect_derived_attributes(def)?,
-            can_infer_type: traits.iter().any(|r#trait| {
-                (r#trait.has_name("::mlir::OpTrait::FirstAttrDerivedResultType")
-                    || r#trait.has_name("::mlir::OpTrait::SameOperandsAndResultType"))
-                    && num_variable_length_results == 0
-                    || r#trait.has_name("::mlir::InferTypeOpInterface::Trait") && regions.is_empty()
-            }),
-            summary: {
-                let summary = def.str_value("summary")?;
-
-                if summary.is_empty() {
-                    format!("[`{short_name}`]({class_name}) operation")
-                } else {
-                    format!(
-                        "[`{short_name}`]({class_name}) operation: {}",
-                        summary[0..1].to_uppercase() + &summary[1..]
-                    )
-                }
-            },
-            description: unindent::unindent(def.str_value("description")?),
-            regions,
-        })
-    }
-}
-
-impl<'a> ToTokens for Operation<'a> {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let class_name = format_ident!("{}", &self.class_name);
-        let name = &self.full_name;
-        let accessors = self
-            .fields()
-            .map(|field| field.accessors().expect("valid accessors"));
-        let builder = OperationBuilder::new(self).expect("valid builder generator");
-        let builder_tokens = builder.builder().expect("valid builder");
-        let builder_fn = builder.create_op_builder_fn();
-        let default_constructor = builder
-            .create_default_constructor()
-            .expect("valid constructor");
-        let summary = &self.summary;
-        let description =
-            sanitize_documentation(&self.description).expect("valid Markdown documentation");
-
-        tokens.append_all(quote! {
-            #[doc = #summary]
-            #[doc = "\n\n"]
-            #[doc = #description]
-            pub struct #class_name<'c> {
-                operation: ::melior::ir::operation::Operation<'c>,
-            }
-
-            impl<'c> #class_name<'c> {
-                pub fn name() -> &'static str {
-                    #name
-                }
-
-                pub fn operation(&self) -> &::melior::ir::operation::Operation<'c> {
-                    &self.operation
-                }
-
-                #builder_fn
-
-                #(#accessors)*
-            }
-
-            #builder_tokens
-
-            #default_constructor
-
-            impl<'c> TryFrom<::melior::ir::operation::Operation<'c>> for #class_name<'c> {
-                type Error = ::melior::Error;
-
-                fn try_from(
-                    operation: ::melior::ir::operation::Operation<'c>,
-                ) -> Result<Self, Self::Error> {
-                    Ok(Self { operation })
-                }
-            }
-
-            impl<'c> From<#class_name<'c>> for ::melior::ir::operation::Operation<'c> {
-                fn from(operation: #class_name<'c>) -> ::melior::ir::operation::Operation<'c> {
-                    operation.operation
-                }
-            }
-        })
     }
 }

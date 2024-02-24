@@ -1,3 +1,6 @@
+mod ods;
+
+pub use self::ods::OdsError;
 use std::{
     error,
     fmt::{self, Display, Formatter},
@@ -78,23 +81,3 @@ impl From<FromUtf8Error> for Error {
         Self::Utf8(error)
     }
 }
-
-#[derive(Debug)]
-pub enum OdsError {
-    ExpectedSuperClass(&'static str),
-    InvalidTrait,
-}
-
-impl Display for OdsError {
-    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
-        match self {
-            Self::ExpectedSuperClass(class) => write!(
-                formatter,
-                "expected this record to be a subclass of {class}",
-            ),
-            Self::InvalidTrait => write!(formatter, "record is not a supported trait"),
-        }
-    }
-}
-
-impl error::Error for OdsError {}

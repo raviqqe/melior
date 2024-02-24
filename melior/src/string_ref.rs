@@ -1,18 +1,12 @@
-use crate::Context;
 use mlir_sys::{mlirStringRefEqual, MlirStringRef};
 use std::{
     ffi::CStr,
     marker::PhantomData,
-    pin::Pin,
     slice,
     str::{self, Utf8Error},
 };
 
 /// A string reference.
-// https://mlir.llvm.org/docs/CAPI/#stringref
-//
-// TODO The documentation says string refs do not have to be null-terminated.
-// But it looks like some functions do not handle strings not null-terminated?
 #[derive(Clone, Copy, Debug)]
 pub struct StringRef<'a> {
     raw: MlirStringRef,
@@ -35,21 +29,6 @@ impl<'a> StringRef<'a> {
         let string = MlirStringRef {
             data: string.as_ptr(),
             length: string.to_bytes_with_nul().len() - 1,
-        };
-
-        unsafe { Self::from_raw(string) }
-    }
-
-    /// Converts a string into a null-terminated string reference.
-    #[deprecated]
-    pub fn from_str(context: &'a Context, string: &str) -> Self {
-        let entry = context
-            .string_cache()
-            .entry(Pin::new(string.into()))
-            .or_default();
-        let string = MlirStringRef {
-            data: entry.key().as_bytes().as_ptr() as *const i8,
-            length: entry.key().len(),
         };
 
         unsafe { Self::from_raw(string) }

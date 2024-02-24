@@ -18,7 +18,7 @@ impl<'c> MemRefType<'c> {
     /// Creates a mem-ref type.
     pub fn new(
         r#type: Type<'c>,
-        dimensions: &[u64],
+        dimensions: &[i64],
         layout: Option<Attribute<'c>>,
         memory_space: Option<Attribute<'c>>,
     ) -> Self {
@@ -53,17 +53,17 @@ impl<'c> MemRefType<'c> {
         }
     }
 
-    /// Gets a layout.
+    /// Returns a layout.
     pub fn layout(&self) -> Attribute<'c> {
         unsafe { Attribute::from_raw(mlirMemRefTypeGetLayout(self.r#type.to_raw())) }
     }
 
-    /// Gets an affine map.
+    /// Returns an affine map.
     pub fn affine_map(&self) -> AffineMap<'c> {
         unsafe { AffineMap::from_raw(mlirMemRefTypeGetAffineMap(self.r#type.to_raw())) }
     }
 
-    /// Gets a memory space.
+    /// Returns a memory space.
     pub fn memory_space(&self) -> Option<Attribute<'c>> {
         unsafe { Attribute::from_option_raw(mlirMemRefTypeGetMemorySpace(self.r#type.to_raw())) }
     }
@@ -93,6 +93,21 @@ mod tests {
         assert_eq!(
             Type::from(MemRefType::new(Type::float64(&context), &[42], None, None,)),
             Type::parse(&context, "memref<42xf64>").unwrap()
+        );
+    }
+
+    #[test]
+    fn dynamic_dimension() {
+        let context = Context::new();
+
+        assert_eq!(
+            Type::from(MemRefType::new(
+                Type::float64(&context),
+                &[i64::MIN],
+                None,
+                None,
+            )),
+            Type::parse(&context, "memref<?xf64>").unwrap()
         );
     }
 

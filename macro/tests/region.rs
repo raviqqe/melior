@@ -15,14 +15,11 @@ fn single() {
 
     let location = Location::unknown(&context);
 
-    let op = {
-        let block = Block::new(&[]);
-        let r1 = Region::new();
-        r1.append_block(block);
-        region_test::single(&context, r1, location)
-    };
+    let region = Region::new();
+    region.append_block(Block::new(&[]));
+    let operation = region_test::single(&context, region, location);
 
-    assert!(op.default_region(&context).unwrap().first_block().is_some());
+    assert!(operation.default_region().unwrap().first_block().is_some());
 }
 
 #[test]
@@ -32,35 +29,42 @@ fn variadic_after_single() {
 
     let location = Location::unknown(&context);
 
-    let op = {
+    let one_operation = {
         let block = Block::new(&[]);
-        let (r1, r2, r3) = (Region::new(), Region::new(), Region::new());
-        r2.append_block(block);
-        region_test::variadic(&context, r1, vec![r2, r3], location)
+        let regions = (Region::new(), Region::new(), Region::new());
+        regions.1.append_block(block);
+        region_test::variadic(&context, regions.0, vec![regions.1, regions.2], location)
     };
 
-    let op2 = {
+    let other_operation = {
         let block = Block::new(&[]);
         let (r1, r2, r3) = (Region::new(), Region::new(), Region::new());
         r2.append_block(block);
-        region_test::VariadicOp::builder(&context, location)
+        region_test::VariadicOperation::builder(&context, location)
             .default_region(r1)
             .other_regions(vec![r2, r3])
             .build()
     };
 
-    assert_eq!(op.operation().to_string(), op2.operation().to_string());
+    assert_eq!(
+        one_operation.as_operation().to_string(),
+        other_operation.as_operation().to_string()
+    );
 
-    assert!(op.default_region(&context).unwrap().first_block().is_none());
-    assert_eq!(op.other_regions(&context).count(), 2);
-    assert!(op
-        .other_regions(&context)
+    assert!(one_operation
+        .default_region()
+        .unwrap()
+        .first_block()
+        .is_none());
+    assert_eq!(one_operation.other_regions().count(), 2);
+    assert!(one_operation
+        .other_regions()
         .next()
         .unwrap()
         .first_block()
         .is_some());
-    assert!(op
-        .other_regions(&context)
+    assert!(one_operation
+        .other_regions()
         .nth(1)
         .unwrap()
         .first_block()

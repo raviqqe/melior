@@ -5,8 +5,9 @@ use crate::{
     utility::print_callback,
 };
 use mlir_sys::{
-    mlirLocationEqual, mlirLocationFileLineColGet, mlirLocationFusedGet, mlirLocationGetContext,
-    mlirLocationNameGet, mlirLocationPrint, mlirLocationUnknownGet, MlirLocation,
+    mlirLocationCallSiteGet, mlirLocationEqual, mlirLocationFileLineColGet, mlirLocationFusedGet,
+    mlirLocationGetContext, mlirLocationNameGet, mlirLocationPrint, mlirLocationUnknownGet,
+    MlirLocation,
 };
 use std::{
     ffi::c_void,
@@ -57,12 +58,17 @@ impl<'c> Location<'c> {
         }
     }
 
+    /// Creates a call site location.
+    pub fn call_site(callee: Location, caller: Location) -> Self {
+        unsafe { Self::from_raw(mlirLocationCallSiteGet(callee.to_raw(), caller.to_raw())) }
+    }
+
     /// Creates an unknown location.
     pub fn unknown(context: &'c Context) -> Self {
         unsafe { Self::from_raw(mlirLocationUnknownGet(context.to_raw())) }
     }
 
-    /// Gets a context.
+    /// Returns a context.
     pub fn context(&self) -> ContextRef<'c> {
         unsafe { ContextRef::from_raw(mlirLocationGetContext(self.raw)) }
     }
@@ -136,6 +142,13 @@ mod tests {
         let context = Context::new();
 
         Location::name(&context, "foo", Location::unknown(&context));
+    }
+
+    #[test]
+    fn call_site() {
+        let context = Context::new();
+
+        Location::call_site(Location::unknown(&context), Location::unknown(&context));
     }
 
     #[test]

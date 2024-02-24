@@ -1,12 +1,15 @@
 mod error;
+mod generation;
 mod input;
 mod operation;
-mod types;
+mod r#trait;
+mod r#type;
 mod utility;
 
 use self::{
     error::Error,
-    utility::{sanitize_documentation, sanitize_snake_case_name},
+    generation::generate_operation,
+    utility::{sanitize_documentation, sanitize_snake_case_identifier},
 };
 pub use input::DialectInput;
 use operation::Operation;
@@ -19,28 +22,33 @@ use tblgen::{record::Record, record_keeper::RecordKeeper, TableGenParser};
 const LLVM_MAJOR_VERSION: usize = 17;
 
 pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std::error::Error>> {
-    let mut td_parser = TableGenParser::new();
+    let mut parser = TableGenParser::new();
 
-    if let Some(source) = input.tablegen() {
-        td_parser = td_parser.add_source(source).map_err(create_syn_error)?;
+    if let Some(source) = input.table_gen() {
+        parser = parser.add_source(source).map_err(create_syn_error)?;
     }
 
     if let Some(file) = input.td_file() {
-        td_parser = td_parser.add_source_file(file).map_err(create_syn_error)?;
+        parser = parser.add_source_file(file).map_err(create_syn_error)?;
     }
 
     // spell-checker: disable-next-line
-    for include in input.includes().chain([&*llvm_config("--includedir")?]) {
-        td_parser = td_parser.add_include_path(include);
+    let llvm_include_directory = llvm_config("--includedir")?;
+
+    for path in input
+        .include_directories()
+        .chain([llvm_include_directory.as_str()])
+    {
+        parser = parser.add_include_path(path);
     }
 
-    let keeper = td_parser.parse().map_err(Error::Parse)?;
+    let keeper = parser.parse().map_err(Error::Parse)?;
 
-    let dialect = dialect_module(
+    let dialect = generate_dialect_module(
         input.name(),
         keeper
             .all_derived_definitions("Dialect")
-            .find(|def| def.str_value("name") == Ok(input.name()))
+            .find(|definition| definition.str_value("name") == Ok(input.name()))
             .ok_or_else(|| create_syn_error("dialect not found"))?,
         &keeper,
     )
@@ -49,26 +57,26 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
     Ok(quote! { #dialect }.into())
 }
 
-fn dialect_module(
+fn generate_dialect_module(
     name: &str,
     dialect: Record,
     record_keeper: &RecordKeeper,
 ) -> Result<proc_macro2::TokenStream, Error> {
+    let dialect_name = dialect.name()?;
     let operations = record_keeper
         .all_derived_definitions("Op")
-        .map(Operation::from_def)
+        .map(Operation::new)
         .collect::<Result<Vec<_>, _>>()?
-        .into_iter()
-        .filter(|operation| operation.dialect.name() == dialect.name())
+        .iter()
+        .filter(|operation| operation.dialect_name() == dialect_name)
+        .map(generate_operation)
         .collect::<Vec<_>>();
 
     let doc = format!(
         "`{name}` dialect.\n\n{}",
-        sanitize_documentation(&unindent::unindent(
-            dialect.str_value("description").unwrap_or(""),
-        ))?
+        sanitize_documentation(dialect.str_value("description").unwrap_or(""),)?
     );
-    let name = sanitize_snake_case_name(name)?;
+    let name = sanitize_snake_case_identifier(name)?;
 
     Ok(quote! {
         #[doc = #doc]

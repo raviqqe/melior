@@ -4,7 +4,6 @@ use crate::{
     logical_result::LogicalResult,
     string_ref::StringRef,
 };
-use dashmap::DashMap;
 use mlir_sys::{
     mlirContextAppendDialectRegistry, mlirContextAttachDiagnosticHandler, mlirContextCreate,
     mlirContextDestroy, mlirContextDetachDiagnosticHandler, mlirContextEnableMultithreading,
@@ -13,7 +12,7 @@ use mlir_sys::{
     mlirContextIsRegisteredOperation, mlirContextLoadAllAvailableDialects,
     mlirContextSetAllowUnregisteredDialects, MlirContext, MlirDiagnostic, MlirLogicalResult,
 };
-use std::{ffi::c_void, marker::PhantomData, pin::Pin};
+use std::{ffi::c_void, marker::PhantomData};
 
 /// A context of IR, dialects, and passes.
 ///
@@ -22,9 +21,6 @@ use std::{ffi::c_void, marker::PhantomData, pin::Pin};
 #[derive(Debug)]
 pub struct Context {
     raw: MlirContext,
-    // We need to pass null-terminated strings to functions in the MLIR API although
-    // Rust's strings are not.
-    string_cache: DashMap<Pin<String>, ()>,
 }
 
 impl Context {
@@ -32,21 +28,20 @@ impl Context {
     pub fn new() -> Self {
         Self {
             raw: unsafe { mlirContextCreate() },
-            string_cache: Default::default(),
         }
     }
 
-    /// Gets a number of registered dialects.
+    /// Returns a number of registered dialects.
     pub fn registered_dialect_count(&self) -> usize {
         unsafe { mlirContextGetNumRegisteredDialects(self.raw) as usize }
     }
 
-    /// Gets a number of loaded dialects.
+    /// Returns a number of loaded dialects.
     pub fn loaded_dialect_count(&self) -> usize {
         unsafe { mlirContextGetNumLoadedDialects(self.raw) as usize }
     }
 
-    /// Gets or loads a dialect.
+    /// Returns or loads a dialect.
     pub fn get_or_load_dialect(&self, name: &str) -> Dialect {
         let name = StringRef::new(name);
 
@@ -123,10 +118,6 @@ impl Context {
 
     pub(crate) fn to_ref(&self) -> ContextRef {
         unsafe { ContextRef::from_raw(self.to_raw()) }
-    }
-
-    pub(crate) fn string_cache(&self) -> &DashMap<Pin<String>, ()> {
-        &self.string_cache
     }
 }
 
