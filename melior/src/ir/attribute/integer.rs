@@ -16,7 +16,7 @@ pub struct IntegerAttribute<'c> {
 
 impl<'c> IntegerAttribute<'c> {
     /// Creates an integer attribute.
-    pub fn new(integer: i64, r#type: Type<'c>) -> Self {
+    pub fn new(r#type: Type<'c>, integer: i64) -> Self {
         unsafe { Self::from_raw(mlirIntegerAttrGet(r#type.to_raw(), integer)) }
     }
 
@@ -48,7 +48,7 @@ mod tests {
         let context = create_test_context();
 
         assert_eq!(
-            IntegerAttribute::new(42, IntegerType::new(&context, 64).into()).value(),
+            IntegerAttribute::new(IntegerType::new(&context, 64).into(), 42).value(),
             42
         );
     }
