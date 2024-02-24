@@ -779,11 +779,10 @@ mod tests {
             OperationBuilder::new("foo", location)
                 .add_results(&[Type::index(&context)])
                 .add_regions([{
-                    let region = Region::new();
-
                     let block = Block::new(&[]);
                     block.append_operation(OperationBuilder::new("bar", location).build().unwrap());
 
+                    let mut region = Region::new();
                     region.append_block(block);
                     region
                 }])

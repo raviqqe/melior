@@ -81,7 +81,7 @@ mod tests {
 
             block.append_operation(func::r#return(&[sum.result(0).unwrap().into()], location));
 
-            let region = Region::new();
+            let mut region = Region::new();
             region.append_block(block);
 
             func::func(
@@ -192,7 +192,7 @@ mod tests {
                 dim.result(0).unwrap().into(),
                 one.result(0).unwrap().into(),
                 {
-                    let loop_region = Region::new();
+                    let mut loop_region = Region::new();
                     loop_region.append_block(loop_block);
                     loop_region
                 },
@@ -201,7 +201,7 @@ mod tests {
 
             function_block.append_operation(func::r#return(&[], location));
 
-            let function_region = Region::new();
+            let mut function_region = Region::new();
             function_region.append_block(function_block);
 
             func::func(
@@ -264,7 +264,7 @@ mod tests {
                     location,
                 ));
 
-                let region = Region::new();
+                let mut region = Region::new();
                 region.append_block(block);
                 region
             },

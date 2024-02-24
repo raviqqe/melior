@@ -370,10 +370,13 @@ mod tests {
 
     #[test]
     fn parent_region() {
-        let region = Region::new();
-        let block = region.append_block(Block::new(&[]));
+        let mut region = Region::new();
+        region.append_block(Block::new(&[]));
 
-        assert_eq!(block.parent_region().as_deref(), Some(&region));
+        assert_eq!(
+            region.first_block().unwrap().parent_region().as_deref(),
+            Some(&region)
+        );
     }
 
     #[test]
@@ -522,18 +525,31 @@ mod tests {
 
     #[test]
     fn next_in_region() {
-        let region = Region::new();
+        let context = create_test_context();
+        let mut region = Region::new();
 
-        let first_block = region.append_block(Block::new(&[]));
-        let second_block = region.append_block(Block::new(&[]));
+        region.append_block(Block::new(&[]));
+        region.append_block(Block::new(&[(
+            Type::index(&context),
+            Location::unknown(&context),
+        )]));
 
-        assert_eq!(first_block.next_in_region(), Some(second_block));
+        assert_eq!(
+            region
+                .first_block()
+                .unwrap()
+                .next_in_region()
+                .unwrap()
+                .argument_count(),
+            1
+        );
     }
 
     #[test]
     fn detach() {
-        let region = Region::new();
-        let block = region.append_block(Block::new(&[]));
+        let mut region = Region::new();
+        region.append_block(Block::new(&[]));
+        let block = region.first_block().unwrap();
 
         assert_eq!(
             unsafe { block.detach() }.unwrap().to_string(),

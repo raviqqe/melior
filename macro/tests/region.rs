@@ -15,7 +15,7 @@ fn single() {
 
     let location = Location::unknown(&context);
 
-    let region = Region::new();
+    let mut region = Region::new();
     region.append_block(Block::new(&[]));
     let operation = region_test::single(&context, region, location);
 
@@ -31,18 +31,18 @@ fn variadic_after_single() {
 
     let one_operation = {
         let block = Block::new(&[]);
-        let regions = (Region::new(), Region::new(), Region::new());
+        let mut regions = (Region::new(), Region::new(), Region::new());
         regions.1.append_block(block);
         region_test::variadic(&context, regions.0, vec![regions.1, regions.2], location)
     };
 
     let other_operation = {
         let block = Block::new(&[]);
-        let (r1, r2, r3) = (Region::new(), Region::new(), Region::new());
-        r2.append_block(block);
+        let mut regions = (Region::new(), Region::new(), Region::new());
+        regions.1.append_block(block);
         region_test::VariadicOperation::builder(&context, location)
-            .default_region(r1)
-            .other_regions(vec![r2, r3])
+            .default_region(regions.0)
+            .other_regions(vec![regions.1, regions.2])
             .build()
     };
 

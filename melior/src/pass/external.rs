@@ -226,7 +226,7 @@ mod tests {
                 let block = Block::new(&[]);
                 block.append_operation(func::r#return(&[], location));
 
-                let region = Region::new();
+                let mut region = Region::new();
                 region.append_block(block);
                 region
             },

@@ -267,7 +267,7 @@ mod tests {
             build_block(&block);
             block.append_operation(func::r#return(&[], location));
 
-            let region = Region::new();
+            let mut region = Region::new();
             region.append_block(block);
 
             func::func(
@@ -429,7 +429,7 @@ mod tests {
                 block.append_operation(get_global(&context, "foo", mem_ref_type, location));
                 block.append_operation(func::r#return(&[], location));
 
-                let region = Region::new();
+                let mut region = Region::new();
                 region.append_block(block);
                 region
             },

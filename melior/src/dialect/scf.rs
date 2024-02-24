@@ -153,7 +153,7 @@ mod tests {
                             location,
                         ));
 
-                        let region = Region::new();
+                        let mut region = Region::new();
                         region.append_block(block);
                         region
                     },
@@ -162,7 +162,7 @@ mod tests {
 
                 block.append_operation(func::r#return(&[], location));
 
-                let region = Region::new();
+                let mut region = Region::new();
                 region.append_block(block);
                 region
             },
@@ -215,7 +215,7 @@ mod tests {
                         let block = Block::new(&[(Type::index(&context), location)]);
                         block.append_operation(r#yield(&[], location));
 
-                        let region = Region::new();
+                        let mut region = Region::new();
                         region.append_block(block);
                         region
                     },
@@ -224,7 +224,7 @@ mod tests {
 
                 block.append_operation(func::r#return(&[], location));
 
-                let region = Region::new();
+                let mut region = Region::new();
                 region.append_block(block);
                 region
             },
@@ -278,7 +278,7 @@ mod tests {
                                 location,
                             ));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -296,7 +296,7 @@ mod tests {
                                 location,
                             ));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -308,7 +308,7 @@ mod tests {
                         location,
                     ));
 
-                    let region = Region::new();
+                    let mut region = Region::new();
                     region.append_block(block);
                     region
                 },
@@ -349,7 +349,7 @@ mod tests {
 
                             block.append_operation(r#yield(&[], location));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -359,7 +359,7 @@ mod tests {
 
                     block.append_operation(func::r#return(&[], location));
 
-                    let region = Region::new();
+                    let mut region = Region::new();
                     region.append_block(block);
                     region
                 },
@@ -404,7 +404,7 @@ mod tests {
 
                             block.append_operation(r#yield(&[], location));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -413,7 +413,7 @@ mod tests {
 
                             block.append_operation(r#yield(&[], location));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -422,7 +422,7 @@ mod tests {
 
                             block.append_operation(r#yield(&[], location));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -432,7 +432,7 @@ mod tests {
 
                 block.append_operation(func::r#return(&[], location));
 
-                let region = Region::new();
+                let mut region = Region::new();
                 region.append_block(block);
                 region
             },
@@ -494,7 +494,7 @@ mod tests {
                                 location,
                             ));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -512,7 +512,7 @@ mod tests {
                                 location,
                             ));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -521,7 +521,7 @@ mod tests {
 
                     block.append_operation(func::r#return(&[], location));
 
-                    let region = Region::new();
+                    let mut region = Region::new();
                     region.append_block(block);
                     region
                 },
@@ -581,7 +581,7 @@ mod tests {
                                 location,
                             ));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -599,7 +599,7 @@ mod tests {
                                 location,
                             ));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -608,7 +608,7 @@ mod tests {
 
                     block.append_operation(func::r#return(&[], location));
 
-                    let region = Region::new();
+                    let mut region = Region::new();
                     region.append_block(block);
                     region
                 },
@@ -674,7 +674,7 @@ mod tests {
                                 location,
                             ));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -696,7 +696,7 @@ mod tests {
                                 location,
                             ));
 
-                            let region = Region::new();
+                            let mut region = Region::new();
                             region.append_block(block);
                             region
                         },
@@ -705,7 +705,7 @@ mod tests {
 
                     block.append_operation(func::r#return(&[], location));
 
-                    let region = Region::new();
+                    let mut region = Region::new();
                     region.append_block(block);
                     region
                 },

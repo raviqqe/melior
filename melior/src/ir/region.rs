@@ -40,35 +40,35 @@ impl<'c> Region<'c> {
     }
 
     /// Inserts a block after another block.
+<<<<<<< Updated upstream
     pub fn insert_block_after(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef<'c, '_> {
+=======
+    pub fn insert_block_after(&mut self, one: BlockRef<'c, '_>, other: Block<'c>) {
+>>>>>>> Stashed changes
         unsafe {
-            let r#ref = BlockRef::from_raw(other.to_raw());
-
             mlirRegionInsertOwnedBlockAfter(self.raw, one.to_raw(), other.into_raw());
-
-            r#ref
         }
     }
 
     /// Inserts a block before another block.
+<<<<<<< Updated upstream
     pub fn insert_block_before(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef<'c, '_> {
+=======
+    pub fn insert_block_before(&mut self, one: BlockRef<'c, '_>, other: Block<'c>) {
+>>>>>>> Stashed changes
         unsafe {
-            let r#ref = BlockRef::from_raw(other.to_raw());
-
             mlirRegionInsertOwnedBlockBefore(self.raw, one.to_raw(), other.into_raw());
-
-            r#ref
         }
     }
 
     /// Appends a block.
+<<<<<<< Updated upstream
     pub fn append_block(&self, block: Block<'c>) -> BlockRef<'c, '_> {
+=======
+    pub fn append_block(&mut self, block: Block<'c>) {
+>>>>>>> Stashed changes
         unsafe {
-            let r#ref = BlockRef::from_raw(block.to_raw());
-
             mlirRegionAppendOwnedBlock(self.raw, block.into_raw());
-
-            r#ref
         }
     }
 
@@ -155,6 +155,7 @@ impl<'c, 'a> Eq for RegionRef<'c, 'a> {}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{ir::Location, ir::Type, test::create_test_context};
 
     #[test]
     fn new() {
@@ -168,7 +169,7 @@ mod tests {
 
     #[test]
     fn append_block() {
-        let region = Region::new();
+        let mut region = Region::new();
         let block = Block::new(&[]);
 
         region.append_block(block);
@@ -178,22 +179,30 @@ mod tests {
 
     #[test]
     fn insert_block_after() {
-        let region = Region::new();
+        let context = create_test_context();
+        let mut region = Region::new();
 
-        let block = region.append_block(Block::new(&[]));
-        region.insert_block_after(block, Block::new(&[]));
+        region.append_block(Block::new(&[]));
+        region.insert_block_after(
+            region.first_block().unwrap(),
+            Block::new(&[(Type::index(&context), Location::unknown(&context))]),
+        );
 
-        assert_eq!(region.first_block(), Some(block));
+        assert_eq!(region.first_block().unwrap().argument_count(), 0);
     }
 
     #[test]
     fn insert_block_before() {
-        let region = Region::new();
+        let context = create_test_context();
+        let mut region = Region::new();
 
-        let block = region.append_block(Block::new(&[]));
-        let block = region.insert_block_before(block, Block::new(&[]));
+        region.append_block(Block::new(&[]));
+        region.insert_block_before(
+            region.first_block().unwrap(),
+            Block::new(&[(Type::index(&context), Location::unknown(&context))]),
+        );
 
-        assert_eq!(region.first_block(), Some(block));
+        assert_eq!(region.first_block().unwrap().argument_count(), 1);
     }
 
     #[test]
