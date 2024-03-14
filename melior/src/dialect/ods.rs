@@ -113,7 +113,7 @@ melior_macro::dialect! {
 mod tests {
     use super::*;
     use crate::{
-        dialect::{self, func},
+        dialect,
         ir::{
             attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
             r#type::{FunctionType, IntegerType},
@@ -151,28 +151,30 @@ mod tests {
         let location = Location::unknown(context);
         let mut module = Module::new(location);
 
-        module.body().append_operation(func::func(
-            context,
-            StringAttribute::new(context, "foo"),
-            TypeAttribute::new(FunctionType::new(context, argument_types, &[]).into()),
-            {
-                let block = Block::new(
-                    &argument_types
-                        .iter()
-                        .copied()
-                        .map(|r#type| (r#type, location))
-                        .collect::<Vec<_>>(),
-                );
+        module.body().append_operation(
+            func::func(
+                context,
+                {
+                    let block = Block::new(
+                        &argument_types
+                            .iter()
+                            .copied()
+                            .map(|r#type| (r#type, location))
+                            .collect::<Vec<_>>(),
+                    );
 
-                callback(&block);
+                    callback(&block);
 
-                let region = Region::new();
-                region.append_block(block);
-                region
-            },
-            &[],
-            location,
-        ));
+                    let region = Region::new();
+                    region.append_block(block);
+                    region
+                },
+                StringAttribute::new(context, "foo"),
+                TypeAttribute::new(FunctionType::new(context, argument_types, &[]).into()),
+                location,
+            )
+            .into(),
+        );
 
         convert_module(context, &mut module);
 
@@ -197,7 +199,7 @@ mod tests {
                 .into(),
             );
 
-            block.append_operation(func::r#return(&[], location));
+            block.append_operation(func::r#return(&context, &[], location).into());
         });
     }
 
@@ -216,7 +218,7 @@ mod tests {
                     .into(),
             );
 
-            block.append_operation(func::r#return(&[], location));
+            block.append_operation(func::r#return(&context, &[], location).into());
         });
     }
 
@@ -239,7 +241,7 @@ mod tests {
                 .into(),
             );
 
-            block.append_operation(func::r#return(&[], location));
+            block.append_operation(func::r#return(&context, &[], location).into());
         });
     }
 
@@ -263,7 +265,7 @@ mod tests {
                     .into(),
             );
 
-            block.append_operation(func::r#return(&[], location));
+            block.append_operation(func::r#return(&context, &[], location).into());
         });
     }
 }
