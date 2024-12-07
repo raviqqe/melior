@@ -4,6 +4,8 @@ extern crate self as melior;
 
 #[macro_use]
 mod r#macro;
+#[cfg(feature = "helpers")]
+mod block_ext;
 mod context;
 pub mod diagnostic;
 pub mod dialect;
@@ -13,6 +15,9 @@ pub mod ir;
 mod logical_result;
 pub mod pass;
 mod string_ref;
+
+#[cfg(feature = "helpers")]
+pub use block_ext::{BlockExt, GepIndex};
 #[cfg(test)]
 mod test;
 pub mod utility;

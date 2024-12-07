@@ -10,6 +10,8 @@ keywords = ["mlir", "llvm"]
 
 [features]
 ods-dialects = []
+# Enable the BlockExt trait (requires ods feature)
+helpers = ["ods-dialects"]
 
 [dependencies]
 melior-macro = { version = "0.12.2", path = "../macro" }
