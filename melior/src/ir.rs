@@ -14,7 +14,7 @@ mod value;
 pub use self::{
     affine_map::AffineMap,
     attribute::{Attribute, AttributeLike},
-    block::{Block, BlockRef},
+    block::{Block, BlockApi, BlockRef},
     identifier::Identifier,
     location::Location,
     module::Module,

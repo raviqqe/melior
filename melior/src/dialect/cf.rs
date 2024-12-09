@@ -5,6 +5,7 @@ use crate::{
         attribute::{
             DenseElementsAttribute, DenseI32ArrayAttribute, IntegerAttribute, StringAttribute,
         },
+        block::BlockApi,
         operation::OperationBuilder,
         r#type::RankedTensorType,
         Block, Identifier, Location, Operation, Type, Value,

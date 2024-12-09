@@ -1,5 +1,5 @@
 use crate::{
-    ir::{Block, Operation, Value},
+    ir::{block::BlockApi, Block, Operation, Value},
     Error,
 };
 
