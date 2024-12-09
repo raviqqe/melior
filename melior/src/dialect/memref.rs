@@ -324,6 +324,7 @@ mod tests {
         dialect::{func, index},
         ir::{
             attribute::{DenseElementsAttribute, StringAttribute, TypeAttribute},
+            block::BlockApi,
             r#type::{FunctionType, IntegerType, RankedTensorType},
             Block, Module, Region, Type,
         },

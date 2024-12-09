@@ -23,6 +23,55 @@ use std::{
     ops::Deref,
 };
 
+pub trait BlockApi<'c, 'v> {
+    /// Returns an argument at a position.
+    fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'v>, Error>;
+    /// Returns a number of arguments.
+    fn argument_count(&self) -> usize;
+
+    /// Returns a reference to the first operation.
+    fn first_operation(&self) -> Option<OperationRef<'c, 'v>>;
+    /// Returns a mutable reference to the first operation.
+    fn first_operation_mut(&mut self) -> Option<OperationRefMut<'c, 'v>>;
+
+    /// Returns a reference to a terminator operation.
+    fn terminator(&self) -> Option<OperationRef<'c, 'v>>;
+    /// Returns a mutable reference to a terminator operation.
+    fn terminator_mut(&mut self) -> Option<OperationRefMut<'c, 'v>>;
+
+    /// Returns a parent region.
+    // TODO Store lifetime of regions in blocks, or create another type like
+    // `InsertedBlockRef`?
+    fn parent_region(&self) -> Option<RegionRef<'c, 'v>>;
+    /// Returns a parent operation.
+    fn parent_operation(&self) -> Option<OperationRef<'c, 'v>>;
+
+    /// Adds an argument.
+    fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, 'v>;
+
+    /// Appends an operation.
+    fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, 'v>;
+    /// Inserts an operation.
+    // TODO How can we make those update functions take `&mut self`?
+    // TODO Use cells?
+    fn insert_operation(&self, position: usize, operation: Operation<'c>) -> OperationRef<'c, 'v>;
+    /// Inserts an operation after another.
+    fn insert_operation_after(
+        &self,
+        one: OperationRef<'c, 'v>,
+        other: Operation<'c>,
+    ) -> OperationRef<'c, 'v>;
+    /// Inserts an operation before another.
+    fn insert_operation_before(
+        &self,
+        one: OperationRef<'c, 'v>,
+        other: Operation<'c>,
+    ) -> OperationRef<'c, 'v>;
+
+    /// Returns a next block in a region.
+    fn next_in_region(&self) -> Option<BlockRef<'c, 'v>>;
+}
+
 /// A block.
 pub struct Block<'c> {
     raw: MlirBlock,
@@ -50,130 +99,6 @@ impl<'c> Block<'c> {
         }
     }
 
-    /// Returns an argument at a position.
-    pub fn argument(&self, index: usize) -> Result<BlockArgument<'c, '_>, Error> {
-        unsafe {
-            if index < self.argument_count() {
-                Ok(BlockArgument::from_raw(mlirBlockGetArgument(
-                    self.raw,
-                    index as isize,
-                )))
-            } else {
-                Err(Error::PositionOutOfBounds {
-                    name: "block argument",
-                    value: self.to_string(),
-                    index,
-                })
-            }
-        }
-    }
-
-    /// Returns a number of arguments.
-    pub fn argument_count(&self) -> usize {
-        unsafe { mlirBlockGetNumArguments(self.raw) as usize }
-    }
-
-    /// Returns a reference to the first operation.
-    pub fn first_operation(&self) -> Option<OperationRef<'c, '_>> {
-        unsafe { OperationRef::from_option_raw(mlirBlockGetFirstOperation(self.raw)) }
-    }
-
-    /// Returns a mutable reference to the first operation.
-    pub fn first_operation_mut(&mut self) -> Option<OperationRefMut<'c, '_>> {
-        unsafe { OperationRefMut::from_option_raw(mlirBlockGetFirstOperation(self.raw)) }
-    }
-
-    /// Returns a reference to a terminator operation.
-    pub fn terminator(&self) -> Option<OperationRef<'c, '_>> {
-        unsafe { OperationRef::from_option_raw(mlirBlockGetTerminator(self.raw)) }
-    }
-
-    /// Returns a mutable reference to a terminator operation.
-    pub fn terminator_mut(&mut self) -> Option<OperationRefMut<'c, '_>> {
-        unsafe { OperationRefMut::from_option_raw(mlirBlockGetTerminator(self.raw)) }
-    }
-
-    /// Returns a parent region.
-    // TODO Store lifetime of regions in blocks, or create another type like
-    // `InsertedBlockRef`?
-    pub fn parent_region(&self) -> Option<RegionRef<'c, '_>> {
-        unsafe { RegionRef::from_option_raw(mlirBlockGetParentRegion(self.raw)) }
-    }
-
-    /// Returns a parent operation.
-    pub fn parent_operation(&self) -> Option<OperationRef<'c, '_>> {
-        unsafe { OperationRef::from_option_raw(mlirBlockGetParentOperation(self.raw)) }
-    }
-
-    /// Adds an argument.
-    pub fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, '_> {
-        unsafe {
-            Value::from_raw(mlirBlockAddArgument(
-                self.raw,
-                r#type.to_raw(),
-                location.to_raw(),
-            ))
-        }
-    }
-
-    /// Appends an operation.
-    pub fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, '_> {
-        unsafe {
-            let operation = operation.into_raw();
-
-            mlirBlockAppendOwnedOperation(self.raw, operation);
-
-            OperationRef::from_raw(operation)
-        }
-    }
-
-    /// Inserts an operation.
-    // TODO How can we make those update functions take `&mut self`?
-    // TODO Use cells?
-    pub fn insert_operation(
-        &self,
-        position: usize,
-        operation: Operation<'c>,
-    ) -> OperationRef<'c, '_> {
-        unsafe {
-            let operation = operation.into_raw();
-
-            mlirBlockInsertOwnedOperation(self.raw, position as isize, operation);
-
-            OperationRef::from_raw(operation)
-        }
-    }
-
-    /// Inserts an operation after another.
-    pub fn insert_operation_after(
-        &self,
-        one: OperationRef<'c, '_>,
-        other: Operation<'c>,
-    ) -> OperationRef<'c, '_> {
-        unsafe {
-            let other = other.into_raw();
-
-            mlirBlockInsertOwnedOperationAfter(self.raw, one.to_raw(), other);
-
-            OperationRef::from_raw(other)
-        }
-    }
-
-    /// Inserts an operation before another.
-    pub fn insert_operation_before(
-        &self,
-        one: OperationRef<'c, '_>,
-        other: Operation<'c>,
-    ) -> OperationRef<'c, '_> {
-        unsafe {
-            let other = other.into_raw();
-
-            mlirBlockInsertOwnedOperationBefore(self.raw, one.to_raw(), other);
-
-            OperationRef::from_raw(other)
-        }
-    }
-
     /// Detaches a block from a region and assumes its ownership.
     ///
     /// # Safety
@@ -189,11 +114,6 @@ impl<'c> Block<'c> {
         } else {
             None
         }
-    }
-
-    /// Returns a next block in a region.
-    pub fn next_in_region(&self) -> Option<BlockRef<'c, '_>> {
-        unsafe { BlockRef::from_option_raw(mlirBlockGetNextInRegion(self.raw)) }
     }
 
     /// Creates a block from a raw object.
@@ -220,6 +140,115 @@ impl<'c> Block<'c> {
     /// Converts a block into a raw object.
     pub const fn to_raw(&self) -> MlirBlock {
         self.raw
+    }
+}
+
+impl<'c, 'v> BlockApi<'c, 'v> for Block<'c> {
+    fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'v>, Error> {
+        unsafe {
+            if index < self.argument_count() {
+                Ok(BlockArgument::from_raw(mlirBlockGetArgument(
+                    self.raw,
+                    index as isize,
+                )))
+            } else {
+                Err(Error::PositionOutOfBounds {
+                    name: "block argument",
+                    value: self.to_string(),
+                    index,
+                })
+            }
+        }
+    }
+
+    fn argument_count(&self) -> usize {
+        unsafe { mlirBlockGetNumArguments(self.raw) as usize }
+    }
+
+    fn first_operation(&self) -> Option<OperationRef<'c, 'v>> {
+        unsafe { OperationRef::from_option_raw(mlirBlockGetFirstOperation(self.raw)) }
+    }
+
+    fn first_operation_mut(&mut self) -> Option<OperationRefMut<'c, 'v>> {
+        unsafe { OperationRefMut::from_option_raw(mlirBlockGetFirstOperation(self.raw)) }
+    }
+
+    fn terminator(&self) -> Option<OperationRef<'c, 'v>> {
+        unsafe { OperationRef::from_option_raw(mlirBlockGetTerminator(self.raw)) }
+    }
+
+    fn terminator_mut(&mut self) -> Option<OperationRefMut<'c, 'v>> {
+        unsafe { OperationRefMut::from_option_raw(mlirBlockGetTerminator(self.raw)) }
+    }
+
+    fn parent_region(&self) -> Option<RegionRef<'c, 'v>> {
+        unsafe { RegionRef::from_option_raw(mlirBlockGetParentRegion(self.raw)) }
+    }
+
+    fn parent_operation(&self) -> Option<OperationRef<'c, 'v>> {
+        unsafe { OperationRef::from_option_raw(mlirBlockGetParentOperation(self.raw)) }
+    }
+
+    fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, 'v> {
+        unsafe {
+            Value::from_raw(mlirBlockAddArgument(
+                self.raw,
+                r#type.to_raw(),
+                location.to_raw(),
+            ))
+        }
+    }
+
+    fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, 'v> {
+        unsafe {
+            let operation = operation.into_raw();
+
+            mlirBlockAppendOwnedOperation(self.raw, operation);
+
+            OperationRef::from_raw(operation)
+        }
+    }
+
+    fn insert_operation(&self, position: usize, operation: Operation<'c>) -> OperationRef<'c, 'v> {
+        unsafe {
+            let operation = operation.into_raw();
+
+            mlirBlockInsertOwnedOperation(self.raw, position as isize, operation);
+
+            OperationRef::from_raw(operation)
+        }
+    }
+
+    fn insert_operation_after(
+        &self,
+        one: OperationRef<'c, 'v>,
+        other: Operation<'c>,
+    ) -> OperationRef<'c, 'v> {
+        unsafe {
+            let other = other.into_raw();
+
+            mlirBlockInsertOwnedOperationAfter(self.raw, one.to_raw(), other);
+
+            OperationRef::from_raw(other)
+        }
+    }
+
+    fn insert_operation_before(
+        &self,
+        one: OperationRef<'c, 'v>,
+        other: Operation<'c>,
+    ) -> OperationRef<'c, 'v> {
+        unsafe {
+            let other = other.into_raw();
+
+            mlirBlockInsertOwnedOperationBefore(self.raw, one.to_raw(), other);
+
+            OperationRef::from_raw(other)
+        }
+    }
+
+    fn next_in_region(&self) -> Option<BlockRef<'c, 'v>> {
+        unsafe { BlockRef::from_option_raw(mlirBlockGetNextInRegion(self.raw)) }
     }
 }
 
@@ -295,8 +324,116 @@ impl BlockRef<'_, '_> {
     }
 }
 
-impl<'a> Deref for BlockRef<'_, 'a> {
-    type Target = Block<'a>;
+impl<'c, 'v> BlockApi<'c, 'v> for BlockRef<'c, 'v> {
+    fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'v>, Error> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.argument(index);
+        Block::into_raw(block);
+        result
+    }
+
+    fn argument_count(&self) -> usize {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.argument_count();
+        Block::into_raw(block);
+        result
+    }
+
+    fn first_operation(&self) -> Option<OperationRef<'c, 'v>> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.first_operation();
+        Block::into_raw(block);
+        result
+    }
+
+    fn first_operation_mut(&mut self) -> Option<OperationRefMut<'c, 'v>> {
+        let mut block = unsafe { Block::from_raw(self.raw) };
+        let result = block.first_operation_mut();
+        Block::into_raw(block);
+        result
+    }
+
+    fn terminator(&self) -> Option<OperationRef<'c, 'v>> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.terminator();
+        Block::into_raw(block);
+        result
+    }
+
+    fn terminator_mut(&mut self) -> Option<OperationRefMut<'c, 'v>> {
+        let mut block = unsafe { Block::from_raw(self.raw) };
+        let result = block.terminator_mut();
+        Block::into_raw(block);
+        result
+    }
+
+    fn parent_region(&self) -> Option<RegionRef<'c, 'v>> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.parent_region();
+        Block::into_raw(block);
+        result
+    }
+
+    fn parent_operation(&self) -> Option<OperationRef<'c, 'v>> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.parent_operation();
+        Block::into_raw(block);
+        result
+    }
+
+    fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, 'v> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.add_argument(r#type, location);
+        Block::into_raw(block);
+        result
+    }
+
+    fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, 'v> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.append_operation(operation);
+        Block::into_raw(block);
+        result
+    }
+
+    fn insert_operation(&self, position: usize, operation: Operation<'c>) -> OperationRef<'c, 'v> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.insert_operation(position, operation);
+        Block::into_raw(block);
+        result
+    }
+
+    fn insert_operation_after(
+        &self,
+        one: OperationRef<'c, 'v>,
+        other: Operation<'c>,
+    ) -> OperationRef<'c, 'v> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.insert_operation_after(one, other);
+        Block::into_raw(block);
+        result
+    }
+
+    fn insert_operation_before(
+        &self,
+        one: OperationRef<'c, 'v>,
+        other: Operation<'c>,
+    ) -> OperationRef<'c, 'v> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.insert_operation_before(one, other);
+        Block::into_raw(block);
+        result
+    }
+
+    fn next_in_region(&self) -> Option<BlockRef<'c, 'v>> {
+        let block = unsafe { Block::from_raw(self.raw) };
+        let result = block.next_in_region();
+        Block::into_raw(block);
+        result
+    }
+}
+
+impl<'c> Deref for BlockRef<'c, '_> {
+    type Target = Block<'c>;
 
     fn deref(&self) -> &Self::Target {
         unsafe { transmute(self) }

@@ -71,7 +71,7 @@ mod tests {
     use super::*;
     use crate::{
         context::Context,
-        ir::{Block, Location},
+        ir::{block::BlockApi, Block, Location},
     };
 
     #[test]
