@@ -80,7 +80,7 @@ mod tests {
     use super::*;
     use crate::{
         ir::{
-            block::BlockApi, operation::OperationBuilder, Attribute, Block, Identifier, Location,
+            block::BlockLike, operation::OperationBuilder, Attribute, Block, Identifier, Location,
         },
         test::create_test_context,
         Context,

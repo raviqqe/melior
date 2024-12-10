@@ -1,8 +1,10 @@
 //! Blocks.
 
 mod argument;
+mod block_like;
 
 pub use self::argument::BlockArgument;
+pub use self::block_like::BlockLike;
 use super::{
     operation::OperationRefMut, Location, Operation, OperationRef, RegionRef, Type, TypeLike, Value,
 };
@@ -22,55 +24,6 @@ use std::{
     mem::{forget, transmute},
     ops::Deref,
 };
-
-pub trait BlockApi<'c, 'v> {
-    /// Returns an argument at a position.
-    fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'v>, Error>;
-    /// Returns a number of arguments.
-    fn argument_count(&self) -> usize;
-
-    /// Returns a reference to the first operation.
-    fn first_operation(&self) -> Option<OperationRef<'c, 'v>>;
-    /// Returns a mutable reference to the first operation.
-    fn first_operation_mut(&mut self) -> Option<OperationRefMut<'c, 'v>>;
-
-    /// Returns a reference to a terminator operation.
-    fn terminator(&self) -> Option<OperationRef<'c, 'v>>;
-    /// Returns a mutable reference to a terminator operation.
-    fn terminator_mut(&mut self) -> Option<OperationRefMut<'c, 'v>>;
-
-    /// Returns a parent region.
-    // TODO Store lifetime of regions in blocks, or create another type like
-    // `InsertedBlockRef`?
-    fn parent_region(&self) -> Option<RegionRef<'c, 'v>>;
-    /// Returns a parent operation.
-    fn parent_operation(&self) -> Option<OperationRef<'c, 'v>>;
-
-    /// Adds an argument.
-    fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, 'v>;
-
-    /// Appends an operation.
-    fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, 'v>;
-    /// Inserts an operation.
-    // TODO How can we make those update functions take `&mut self`?
-    // TODO Use cells?
-    fn insert_operation(&self, position: usize, operation: Operation<'c>) -> OperationRef<'c, 'v>;
-    /// Inserts an operation after another.
-    fn insert_operation_after(
-        &self,
-        one: OperationRef<'c, 'v>,
-        other: Operation<'c>,
-    ) -> OperationRef<'c, 'v>;
-    /// Inserts an operation before another.
-    fn insert_operation_before(
-        &self,
-        one: OperationRef<'c, 'v>,
-        other: Operation<'c>,
-    ) -> OperationRef<'c, 'v>;
-
-    /// Returns a next block in a region.
-    fn next_in_region(&self) -> Option<BlockRef<'c, 'v>>;
-}
 
 /// A block.
 pub struct Block<'c> {
@@ -143,7 +96,7 @@ impl<'c> Block<'c> {
     }
 }
 
-impl<'c, 'v> BlockApi<'c, 'v> for Block<'c> {
+impl<'c, 'v> BlockLike<'c, 'v> for Block<'c> {
     fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'v>, Error> {
         unsafe {
             if index < self.argument_count() {
@@ -324,7 +277,7 @@ impl BlockRef<'_, '_> {
     }
 }
 
-impl<'c, 'v> BlockApi<'c, 'v> for BlockRef<'c, 'v> {
+impl<'c, 'v> BlockLike<'c, 'v> for BlockRef<'c, 'v> {
     fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'v>, Error> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.argument(index);
