@@ -207,6 +207,7 @@ mod tests {
     use crate::{
         ir::{operation::OperationBuilder, r#type::IntegerType, Module, Region, ValueLike},
         test::create_test_context,
+        Error,
     };
     use pretty_assertions::assert_eq;
 
