@@ -12,6 +12,7 @@ use mlir_sys::{
     mlirBlockInsertOwnedOperationBefore, MlirBlock,
 };
 
+// TODO Split this trait into `BlockLike` and `BlockLikeMut`.
 pub trait BlockLike<'c, 'a>: Copy + Display {
     /// Converts a block into a raw object.
     fn to_raw(self) -> MlirBlock;
