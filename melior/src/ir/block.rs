@@ -96,8 +96,8 @@ impl<'c> Block<'c> {
     }
 }
 
-impl<'c, 'v> BlockLike<'c, 'v> for Block<'c> {
-    fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'v>, Error> {
+impl<'c, 'a> BlockLike<'c, 'a> for Block<'c> {
+    fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'a>, Error> {
         unsafe {
             if index < self.argument_count() {
                 Ok(BlockArgument::from_raw(mlirBlockGetArgument(
@@ -118,31 +118,31 @@ impl<'c, 'v> BlockLike<'c, 'v> for Block<'c> {
         unsafe { mlirBlockGetNumArguments(self.raw) as usize }
     }
 
-    fn first_operation(&self) -> Option<OperationRef<'c, 'v>> {
+    fn first_operation(&self) -> Option<OperationRef<'c, 'a>> {
         unsafe { OperationRef::from_option_raw(mlirBlockGetFirstOperation(self.raw)) }
     }
 
-    fn first_operation_mut(&mut self) -> Option<OperationRefMut<'c, 'v>> {
+    fn first_operation_mut(&mut self) -> Option<OperationRefMut<'c, 'a>> {
         unsafe { OperationRefMut::from_option_raw(mlirBlockGetFirstOperation(self.raw)) }
     }
 
-    fn terminator(&self) -> Option<OperationRef<'c, 'v>> {
+    fn terminator(&self) -> Option<OperationRef<'c, 'a>> {
         unsafe { OperationRef::from_option_raw(mlirBlockGetTerminator(self.raw)) }
     }
 
-    fn terminator_mut(&mut self) -> Option<OperationRefMut<'c, 'v>> {
+    fn terminator_mut(&mut self) -> Option<OperationRefMut<'c, 'a>> {
         unsafe { OperationRefMut::from_option_raw(mlirBlockGetTerminator(self.raw)) }
     }
 
-    fn parent_region(&self) -> Option<RegionRef<'c, 'v>> {
+    fn parent_region(&self) -> Option<RegionRef<'c, 'a>> {
         unsafe { RegionRef::from_option_raw(mlirBlockGetParentRegion(self.raw)) }
     }
 
-    fn parent_operation(&self) -> Option<OperationRef<'c, 'v>> {
+    fn parent_operation(&self) -> Option<OperationRef<'c, 'a>> {
         unsafe { OperationRef::from_option_raw(mlirBlockGetParentOperation(self.raw)) }
     }
 
-    fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, 'v> {
+    fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, 'a> {
         unsafe {
             Value::from_raw(mlirBlockAddArgument(
                 self.raw,
@@ -152,7 +152,7 @@ impl<'c, 'v> BlockLike<'c, 'v> for Block<'c> {
         }
     }
 
-    fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, 'v> {
+    fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, 'a> {
         unsafe {
             let operation = operation.into_raw();
 
@@ -162,7 +162,7 @@ impl<'c, 'v> BlockLike<'c, 'v> for Block<'c> {
         }
     }
 
-    fn insert_operation(&self, position: usize, operation: Operation<'c>) -> OperationRef<'c, 'v> {
+    fn insert_operation(&self, position: usize, operation: Operation<'c>) -> OperationRef<'c, 'a> {
         unsafe {
             let operation = operation.into_raw();
 
@@ -174,9 +174,9 @@ impl<'c, 'v> BlockLike<'c, 'v> for Block<'c> {
 
     fn insert_operation_after(
         &self,
-        one: OperationRef<'c, 'v>,
+        one: OperationRef<'c, 'a>,
         other: Operation<'c>,
-    ) -> OperationRef<'c, 'v> {
+    ) -> OperationRef<'c, 'a> {
         unsafe {
             let other = other.into_raw();
 
@@ -188,9 +188,9 @@ impl<'c, 'v> BlockLike<'c, 'v> for Block<'c> {
 
     fn insert_operation_before(
         &self,
-        one: OperationRef<'c, 'v>,
+        one: OperationRef<'c, 'a>,
         other: Operation<'c>,
-    ) -> OperationRef<'c, 'v> {
+    ) -> OperationRef<'c, 'a> {
         unsafe {
             let other = other.into_raw();
 
@@ -200,7 +200,7 @@ impl<'c, 'v> BlockLike<'c, 'v> for Block<'c> {
         }
     }
 
-    fn next_in_region(&self) -> Option<BlockRef<'c, 'v>> {
+    fn next_in_region(&self) -> Option<BlockRef<'c, 'a>> {
         unsafe { BlockRef::from_option_raw(mlirBlockGetNextInRegion(self.raw)) }
     }
 }
@@ -277,8 +277,8 @@ impl BlockRef<'_, '_> {
     }
 }
 
-impl<'c, 'v> BlockLike<'c, 'v> for BlockRef<'c, 'v> {
-    fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'v>, Error> {
+impl<'c, 'a> BlockLike<'c, 'a> for BlockRef<'c, 'a> {
+    fn argument(&self, index: usize) -> Result<BlockArgument<'c, 'a>, Error> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.argument(index);
         Block::into_raw(block);
@@ -292,63 +292,63 @@ impl<'c, 'v> BlockLike<'c, 'v> for BlockRef<'c, 'v> {
         result
     }
 
-    fn first_operation(&self) -> Option<OperationRef<'c, 'v>> {
+    fn first_operation(&self) -> Option<OperationRef<'c, 'a>> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.first_operation();
         Block::into_raw(block);
         result
     }
 
-    fn first_operation_mut(&mut self) -> Option<OperationRefMut<'c, 'v>> {
+    fn first_operation_mut(&mut self) -> Option<OperationRefMut<'c, 'a>> {
         let mut block = unsafe { Block::from_raw(self.raw) };
         let result = block.first_operation_mut();
         Block::into_raw(block);
         result
     }
 
-    fn terminator(&self) -> Option<OperationRef<'c, 'v>> {
+    fn terminator(&self) -> Option<OperationRef<'c, 'a>> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.terminator();
         Block::into_raw(block);
         result
     }
 
-    fn terminator_mut(&mut self) -> Option<OperationRefMut<'c, 'v>> {
+    fn terminator_mut(&mut self) -> Option<OperationRefMut<'c, 'a>> {
         let mut block = unsafe { Block::from_raw(self.raw) };
         let result = block.terminator_mut();
         Block::into_raw(block);
         result
     }
 
-    fn parent_region(&self) -> Option<RegionRef<'c, 'v>> {
+    fn parent_region(&self) -> Option<RegionRef<'c, 'a>> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.parent_region();
         Block::into_raw(block);
         result
     }
 
-    fn parent_operation(&self) -> Option<OperationRef<'c, 'v>> {
+    fn parent_operation(&self) -> Option<OperationRef<'c, 'a>> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.parent_operation();
         Block::into_raw(block);
         result
     }
 
-    fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, 'v> {
+    fn add_argument(&self, r#type: Type<'c>, location: Location<'c>) -> Value<'c, 'a> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.add_argument(r#type, location);
         Block::into_raw(block);
         result
     }
 
-    fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, 'v> {
+    fn append_operation(&self, operation: Operation<'c>) -> OperationRef<'c, 'a> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.append_operation(operation);
         Block::into_raw(block);
         result
     }
 
-    fn insert_operation(&self, position: usize, operation: Operation<'c>) -> OperationRef<'c, 'v> {
+    fn insert_operation(&self, position: usize, operation: Operation<'c>) -> OperationRef<'c, 'a> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.insert_operation(position, operation);
         Block::into_raw(block);
@@ -357,9 +357,9 @@ impl<'c, 'v> BlockLike<'c, 'v> for BlockRef<'c, 'v> {
 
     fn insert_operation_after(
         &self,
-        one: OperationRef<'c, 'v>,
+        one: OperationRef<'c, 'a>,
         other: Operation<'c>,
-    ) -> OperationRef<'c, 'v> {
+    ) -> OperationRef<'c, 'a> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.insert_operation_after(one, other);
         Block::into_raw(block);
@@ -368,16 +368,16 @@ impl<'c, 'v> BlockLike<'c, 'v> for BlockRef<'c, 'v> {
 
     fn insert_operation_before(
         &self,
-        one: OperationRef<'c, 'v>,
+        one: OperationRef<'c, 'a>,
         other: Operation<'c>,
-    ) -> OperationRef<'c, 'v> {
+    ) -> OperationRef<'c, 'a> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.insert_operation_before(one, other);
         Block::into_raw(block);
         result
     }
 
-    fn next_in_region(&self) -> Option<BlockRef<'c, 'v>> {
+    fn next_in_region(&self) -> Option<BlockRef<'c, 'a>> {
         let block = unsafe { Block::from_raw(self.raw) };
         let result = block.next_in_region();
         Block::into_raw(block);
