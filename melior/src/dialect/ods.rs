@@ -140,6 +140,7 @@ mod tests {
         dialect,
         ir::{
             attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
+            block::BlockLike,
             r#type::{FunctionType, IntegerType},
             Block, Location, Module, Region, Type,
         },

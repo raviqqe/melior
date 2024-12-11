@@ -79,7 +79,9 @@ from_borrowed_subtypes!(Value, BlockArgument, OperationResult);
 mod tests {
     use super::*;
     use crate::{
-        ir::{operation::OperationBuilder, Attribute, Block, Identifier, Location},
+        ir::{
+            block::BlockLike, operation::OperationBuilder, Attribute, Block, Identifier, Location,
+        },
         test::create_test_context,
         Context,
     };
