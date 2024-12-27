@@ -4,7 +4,7 @@ description = "The rustic MLIR bindings in Rust"
 version = "0.20.1"
 edition = "2021"
 license = "Apache-2.0"
-repository = "https://github.com/mlir-sys/melior"
+repository = "https://github.com/mlir-rs/melior"
 documentation = "https://mlir-rs.github.io/melior/melior/"
 keywords = ["mlir", "llvm"]
 
