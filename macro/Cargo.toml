@@ -5,7 +5,7 @@ version = "0.13.1"
 edition = "2021"
 license = "Apache-2.0"
 repository = "https://github.com/mlir-sys/melior"
-documentation = "https://mlir-sys.github.io/melior/melior/"
+documentation = "https://mlir-rs.github.io/melior/melior/"
 readme = "../README.md"
 keywords = ["mlir", "llvm"]
 
