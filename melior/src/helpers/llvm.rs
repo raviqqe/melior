@@ -6,6 +6,7 @@ use crate::{
         attribute::{
             DenseI32ArrayAttribute, DenseI64ArrayAttribute, IntegerAttribute, TypeAttribute,
         },
+        block::BlockLike,
         r#type::IntegerType,
         Attribute, Block, Location, Type, Value, ValueLike,
     },
