@@ -25,14 +25,14 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
     if let Some(source) = input.table_gen() {
         let base = Path::new(env!("LLVM_INCLUDE_DIRECTORY"));
 
-        // Here source looks like " include "somepathto.td" include "somepathto2.td" "
+        // Here source looks like `include "foo.td" include "bar.td"`.
         for (i, p) in source.split_ascii_whitespace().enumerate() {
             if i % 2 == 0 {
                 continue; // skip "include"
             }
 
-            let x = &p[1..(p.len() - 1)]; // remove ""
-            let path = Path::new(x).parent().unwrap();
+            let path = &p[1..(p.len() - 1)]; // remove ""
+            let path = Path::new(path).parent().unwrap();
             let path = base.join(path);
             parser = parser.add_include_path(&path.to_string_lossy());
         }
