@@ -34,7 +34,7 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
     }
 
     if let Some(file) = input.td_file() {
-        parser = parser.add_source_file(file).map_err(create_syn_error)?;
+        parser = parser.add_source_file(file);
     }
 
     for path in input.include_directories().chain([LLVM_INCLUDE_DIRECTORY]) {
@@ -57,7 +57,7 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
     }
 
     for path in input.files() {
-        parser = parser.add_source_file(path).map_err(create_syn_error)?;
+        parser = parser.add_source_file(path);
     }
 
     let keeper = parser.parse().map_err(Error::Parse)?;

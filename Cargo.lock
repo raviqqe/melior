@@ -566,7 +566,7 @@ dependencies = [
 [[package]]
 name = "tblgen-alt"
 version = "0.4.0"
-source = "git+https://github.com/raviqqe/tblgen-rs-alt?branch=feature%2Finclude-file#0e0824a9f0fb10192d389599a772dfc60e4c5d26"
+source = "git+https://github.com/raviqqe/tblgen-rs-alt?branch=feature%2Finclude-file#1e5d0f367b2142521f1f0537e782a207c14c042f"
 dependencies = [
  "bindgen 0.69.4",
  "cc",
