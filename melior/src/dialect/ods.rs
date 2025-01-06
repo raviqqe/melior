@@ -32,9 +32,8 @@ melior_macro::dialect! {
 }
 melior_macro::dialect! {
     name: "arm_sme",
-    table_gen: r#"include "mlir/Dialect/ArmSME/IR/ArmSME.td"
-        include "mlir/Dialect/ArmSME/IR/ArmSMEOps.td"
-        include "mlir/Dialect/ArmSME/IR/ArmSMEIntrinsicOps.td""#
+    files: ["ArmSME.td", "ArmSMEOps.td", "ArmSMEIntrinsicOps.td"],
+    include_directories: ["mlir/Dialect/ArmSME/IR"],
 }
 melior_macro::dialect! {
     name: "async",
@@ -86,7 +85,8 @@ melior_macro::dialect! {
 }
 melior_macro::dialect! {
     name: "irdl",
-    table_gen: r#"include "mlir/Dialect/IRDL/IR/IRDL.td" include "mlir/Dialect/IRDL/IR/IRDLOps.td""#
+    files: ["IRDL.td", "IRDLOps.td"],
+    include_directories: ["mlir/Dialect/IRDL/IR"],
 }
 melior_macro::dialect! {
     name: "llvm",
