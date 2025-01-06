@@ -566,8 +566,7 @@ dependencies = [
 [[package]]
 name = "tblgen-alt"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ecbc9175dd38627cd01d546e7b41c9a115e5773f4c98f64e2185c81ec5f45ab"
+source = "git+https://github.com/raviqqe/tblgen-rs-alt?branch=feature%2Finclude-file#0e0824a9f0fb10192d389599a772dfc60e4c5d26"
 dependencies = [
  "bindgen 0.69.4",
  "cc",
