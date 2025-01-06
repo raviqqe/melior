@@ -85,7 +85,7 @@ melior_macro::dialect! {
 }
 melior_macro::dialect! {
     name: "irdl",
-    files: ["IRDL.td", "IRDLOps.td"],
+    files: ["IRDLOps.td", "IRDL.td"],
     include_directories: ["mlir/Dialect/IRDL/IR"],
 }
 melior_macro::dialect! {
