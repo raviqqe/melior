@@ -38,7 +38,7 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
     }
 
     for path in input.include_directories().chain([LLVM_INCLUDE_DIRECTORY]) {
-        parser = parser.add_include_path(path);
+        parser = parser.add_include_directory(path);
     }
 
     let llvm_include_directory = Path::new(LLVM_INCLUDE_DIRECTORY);
@@ -53,7 +53,7 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
             llvm_include_directory.join(path).display().to_string()
         };
 
-        parser = parser.add_include_path(&path);
+        parser = parser.add_include_directory(&path);
     }
 
     for path in input.files() {
