@@ -140,25 +140,30 @@ melior_macro::dialect! {
     name: "sparse_tensor",
     table_gen: r#"include "mlir/Dialect/SparseTensor/IR/SparseTensorOps.td""#
 }
+
 melior_macro::dialect! {
     name: "tensor",
-    table_gen: r#"include "mlir/Dialect/Tensor/IR/TensorOps.td""#
+    files: ["mlir/Dialect/Tensor/IR/TensorOps.td"],
 }
+
 melior_macro::dialect! {
     name: "tosa",
-    table_gen: r#"include "mlir/Dialect/Tosa/IR/TosaOps.td""#
+    files: ["mlir/Dialect/Tosa/IR/TosaOps.td"],
 }
+
 melior_macro::dialect! {
     name: "transform",
-    table_gen: r#"include "mlir/Dialect/Transform/IR/TransformOps.td""#
+    files: ["mlir/Dialect/Transform/IR/TransformOps.td"],
 }
+
 melior_macro::dialect! {
     name: "vector",
-    table_gen: r#"include "mlir/Dialect/Vector/IR/VectorOps.td""#
+    files: ["mlir/Dialect/Vector/IR/VectorOps.td"],
 }
+
 melior_macro::dialect! {
     name: "x86vector",
-    table_gen: r#"include "mlir/Dialect/X86Vector/X86Vector.td""#
+    files: ["mlir/Dialect/X86Vector/X86Vector.td"],
 }
 
 #[cfg(test)]
