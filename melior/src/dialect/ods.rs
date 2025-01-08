@@ -9,10 +9,10 @@ pub mod __private {
 
 melior_macro::dialect! {
     name: "affine",
-    table_gen: r#"include "mlir/Dialect/Affine/IR/AffineOps.td"
-        include "mlir/Dialect/Affine/TransformOps/AffineTransformOps.td"
-        include "mlir/Dialect/Affine/IR/AffineMemoryOpInterfaces.td""#
+    files: ["IR/AffineOps.td", "TransformOps/AffineTransformOps.td", "IR/AffineMemoryOpInterfaces.td"],
+    include_directories: ["mlir/Dialect/Affine"],
 }
+
 melior_macro::dialect! {
     name: "amdgpu",
     table_gen: r#"include "mlir/Dialect/AMDGPU/IR/AMDGPU.td"
