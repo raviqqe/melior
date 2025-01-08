@@ -41,8 +41,6 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
         parser = parser.add_include_directory(path);
     }
 
-    let llvm_include_directory = Path::new(LLVM_INCLUDE_DIRECTORY);
-
     for path in input.directories() {
         let path = if matches!(
             Path::new(path).components().next(),
@@ -50,10 +48,10 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
         ) {
             path.into()
         } else {
-            llvm_include_directory.join(path).display().to_string()
+            Path::new(LLVM_INCLUDE_DIRECTORY).join(path)
         };
 
-        parser = parser.add_include_directory(&path);
+        parser = parser.add_include_directory(&path.display().to_string());
     }
 
     if input.files().count() > 0 {
