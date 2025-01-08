@@ -32,7 +32,7 @@ melior_macro::dialect! {
 }
 melior_macro::dialect! {
     name: "arm_sme",
-    files: ["ArmSMEOps.td", "ArmSMEIntrinsicOps.td"],
+    files: ["ArmSME.td", "ArmSMEOps.td", "ArmSMEIntrinsicOps.td"],
     include_directories: ["mlir/Dialect/ArmSME/IR"],
 }
 melior_macro::dialect! {
@@ -85,7 +85,7 @@ melior_macro::dialect! {
 }
 melior_macro::dialect! {
     name: "irdl",
-    files: ["IRDLOps.td"],
+    files: ["IRDLOps.td", "IRDL.td"],
     include_directories: ["mlir/Dialect/IRDL/IR"],
 }
 melior_macro::dialect! {
