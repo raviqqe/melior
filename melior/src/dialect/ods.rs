@@ -70,42 +70,49 @@ melior_macro::dialect! {
     name: "complex",
     table_gen: r#"include "mlir/Dialect/Complex/IR/ComplexBase.td" include "mlir/Dialect/Complex/IR/ComplexOps.td""#
 }
+
 melior_macro::dialect! {
     name: "cf",
-    table_gen: r#"include "mlir/Dialect/ControlFlow/IR/ControlFlowOps.td""#
+    files: ["mlir/Dialect/ControlFlow/IR/ControlFlowOps.td"],
 }
+
 melior_macro::dialect! {
     name: "dlti",
-    table_gen: r#"include "mlir/Dialect/DLTI/DLTI.td"
-        include "mlir/Dialect/DLTI/DLTIAttrs.td"
-        include "mlir/Dialect/DLTI/DLTIBase.td""#
+    files: ["DLTI.td", "DLTIAttrs.td", "DLTIBase.td"],
+    include_directories: ["mlir/Dialect/DLTI"]
 }
+
 melior_macro::dialect! {
     name: "func",
-    table_gen: r#"include "mlir/Dialect/Func/IR/FuncOps.td"
-        include "mlir/Dialect/Func/TransformOps/FuncTransformOps.td"
-        include "mlir/Dialect/Func/Transforms/Passes.td""#
+    files: ["IR/FuncOps.td", "TransformOps/FuncTransformOps.td", "Transforms/Passes.td"],
+    include_directories: ["mlir/Dialect/Func"],
 }
+
 melior_macro::dialect! {
     name: "index",
-    table_gen: r#"include "mlir/Dialect/Index/IR/IndexOps.td""#
+    files: ["mlir/Dialect/Index/IR/IndexOps.td"],
 }
+
 melior_macro::dialect! {
     name: "irdl",
     files: ["IRDLOps.td", "IRDL.td"],
     include_directories: ["mlir/Dialect/IRDL/IR"],
 }
+
 melior_macro::dialect! {
     name: "llvm",
     // spell-checker: disable-next-line
-    table_gen: r#"include "mlir/Dialect/LLVMIR/LLVMOps.td"
-        include "mlir/Dialect/LLVMIR/LLVMIntrinsicOps.td"
-        include "mlir/Dialect/LLVMIR/LLVMDialect.td"
-        include "mlir/Dialect/LLVMIR/LLVMInterfaces.td"
-        include "mlir/Dialect/LLVMIR/LLVMTypes.td"
-        include "mlir/Dialect/LLVMIR/LLVMOpBase.td"
-        include "mlir/Dialect/LLVMIR/LLVMAttrDefs.td"
-        include "mlir/Dialect/LLVMIR/BasicPtxBuilderInterface.td""#
+    files: [
+        "LLVMOps.td",
+        "LLVMIntrinsicOps.td",
+        "LLVMDialect.td",
+        "LLVMInterfaces.td",
+        "LLVMTypes.td",
+        "LLVMOpBase.td",
+        "LLVMAttrDefs.td",
+        "/BasicPtxBuilderInterface.td",
+    ],
+    include_directories: ["mlir/Dialect/LLVMIR"],
 }
 
 melior_macro::dialect! {
