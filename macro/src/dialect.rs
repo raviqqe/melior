@@ -57,12 +57,9 @@ pub fn generate_dialect(input: DialectInput) -> Result<TokenStream, Box<dyn std:
     }
 
     if input.files().count() > 0 {
-        parser = parser.add_source(
-            &input
-                .files()
-                .map(|path| format!(r#"include "{path}""#))
-                .collect::<String>(),
-        )?;
+        parser = parser.add_source(&input.files().fold(String::new(), |source, path| {
+            source + r#"include""# + path + "\""
+        }))?;
     }
 
     let keeper = parser.parse().map_err(Error::Parse)?;
