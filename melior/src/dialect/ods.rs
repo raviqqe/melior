@@ -18,37 +18,44 @@ melior_macro::dialect! {
     table_gen: r#"include "mlir/Dialect/AMDGPU/IR/AMDGPU.td"
     include "mlir/Dialect/AMDGPU/Transforms/Passes.td""#
 }
+
 melior_macro::dialect! {
     name: "arith",
     table_gen: r#"include "mlir/Dialect/Arith/IR/ArithOps.td""#
 }
+
 melior_macro::dialect! {
     name: "arm_neon",
     table_gen: r#"include "mlir/Dialect/ArmNeon/ArmNeon.td""#
 }
+
 melior_macro::dialect! {
     name: "arm_sve",
     table_gen: r#"include "mlir/Dialect/ArmSVE/IR/ArmSVE.td""#
 }
+
 melior_macro::dialect! {
     name: "arm_sme",
     files: ["ArmSME.td", "ArmSMEOps.td", "ArmSMEIntrinsicOps.td"],
     include_directories: ["mlir/Dialect/ArmSME/IR"],
 }
+
 melior_macro::dialect! {
     name: "async",
-    table_gen: r#"include "mlir/Dialect/Async/IR/AsyncDialect.td"
-        include "mlir/Dialect/Async/IR/AsyncOps.td"
-        include "mlir/Dialect/Async/IR/AsyncTypes.td""#
+    files: ["AsyncDialect.td", "AsyncOps.td", "AsyncTypes.td"],
+    include_directories: ["mlir/Dialect/Async/IR"],
 }
+
 melior_macro::dialect! {
     name: "amx",
-    table_gen: r#"include "mlir/Dialect/AMX/AMX.td""#
+    files: ["mlir/Dialect/AMX/AMX.td"],
 }
+
 melior_macro::dialect! {
     name: "builtin",
-    table_gen: r#"include "mlir/IR/BuiltinOps.td""#
+    files: ["mlir/IR/BuiltinOps.td"],
 }
+
 melior_macro::dialect! {
     name: "bufferization",
     table_gen: r#"include "mlir/Dialect/Bufferization/IR/BufferizationOps.td"
@@ -100,45 +107,55 @@ melior_macro::dialect! {
         include "mlir/Dialect/LLVMIR/LLVMAttrDefs.td"
         include "mlir/Dialect/LLVMIR/BasicPtxBuilderInterface.td""#
 }
+
 melior_macro::dialect! {
     name: "memref",
-    table_gen: r#"include "mlir/Dialect/MemRef/IR/MemRefOps.td""#
+    files: ["mlir/Dialect/MemRef/IR/MemRefOps.td"],
 }
+
 melior_macro::dialect! {
     name: "scf",
-    table_gen: r#"include "mlir/Dialect/SCF/IR/SCFOps.td""#
+    files: ["mlir/Dialect/SCF/IR/SCFOps.td"],
 }
+
 melior_macro::dialect! {
     name: "pdl",
-    table_gen: r#"include "mlir/Dialect/PDL/IR/PDLOps.td""#
+    files: ["mlir/Dialect/PDL/IR/PDLOps.td"],
 }
+
 melior_macro::dialect! {
     name: "pdl_interp",
-    table_gen: r#"include "mlir/Dialect/PDLInterp/IR/PDLInterpOps.td""#
+    files: ["mlir/Dialect/PDLInterp/IR/PDLInterpOps.td"],
 }
+
 melior_macro::dialect! {
     name: "math",
-    table_gen: r#"include "mlir/Dialect/Math/IR/MathOps.td""#
+    files: ["mlir/Dialect/Math/IR/MathOps.td"],
 }
+
 melior_macro::dialect! {
     name: "gpu",
-    table_gen: r#"include "mlir/Dialect/GPU/IR/GPUOps.td""#
+    files: ["mlir/Dialect/GPU/IR/GPUOps.td"],
 }
+
 melior_macro::dialect! {
     name: "linalg",
-    table_gen: r#"include "mlir/Dialect/Linalg/IR/LinalgOps.td""#
+    files: ["mlir/Dialect/Linalg/IR/LinalgOps.td"],
 }
+
 melior_macro::dialect! {
     name: "quant",
-    table_gen: r#"include "mlir/Dialect/Quant/QuantOps.td""#
+    files: ["mlir/Dialect/Quant/QuantOps.td"],
 }
+
 melior_macro::dialect! {
     name: "shape",
-    table_gen: r#"include "mlir/Dialect/Shape/IR/ShapeOps.td""#
+    files: ["mlir/Dialect/Shape/IR/ShapeOps.td"],
 }
+
 melior_macro::dialect! {
     name: "sparse_tensor",
-    table_gen: r#"include "mlir/Dialect/SparseTensor/IR/SparseTensorOps.td""#
+    files: ["mlir/Dialect/SparseTensor/IR/SparseTensorOps.td"],
 }
 
 melior_macro::dialect! {
