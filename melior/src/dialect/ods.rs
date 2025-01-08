@@ -15,23 +15,23 @@ melior_macro::dialect! {
 
 melior_macro::dialect! {
     name: "amdgpu",
-    table_gen: r#"include "mlir/Dialect/AMDGPU/IR/AMDGPU.td"
-    include "mlir/Dialect/AMDGPU/Transforms/Passes.td""#
+    files: ["IR/AMDGPU.td", "Transforms/Passes.td"],
+    include_directories: ["mlir/Dialect/AMDGPU"],
 }
 
 melior_macro::dialect! {
     name: "arith",
-    table_gen: r#"include "mlir/Dialect/Arith/IR/ArithOps.td""#
+    files: ["mlir/Dialect/Arith/IR/ArithOps.td"],
 }
 
 melior_macro::dialect! {
     name: "arm_neon",
-    table_gen: r#"include "mlir/Dialect/ArmNeon/ArmNeon.td""#
+    files: ["mlir/Dialect/ArmNeon/ArmNeon.td"],
 }
 
 melior_macro::dialect! {
     name: "arm_sve",
-    table_gen: r#"include "mlir/Dialect/ArmSVE/IR/ArmSVE.td""#
+    files: ["mlir/Dialect/ArmSVE/IR/ArmSVE.td"],
 }
 
 melior_macro::dialect! {
@@ -58,17 +58,21 @@ melior_macro::dialect! {
 
 melior_macro::dialect! {
     name: "bufferization",
-    table_gen: r#"include "mlir/Dialect/Bufferization/IR/BufferizationOps.td"
-        include "mlir/Dialect/Bufferization/IR/AllocationOpInterface.td"
-        include "mlir/Dialect/Bufferization/IR/BufferizationEnums.td"
-        include "mlir/Dialect/Bufferization/IR/BufferizableOpInterface.td"
-        include "mlir/Dialect/Bufferization/TransformOps/BufferizationTransformOps.td"
-        include "mlir/Dialect/Bufferization/Transforms/Passes.td"
-    "#
+    files: [
+        "IR/BufferizationOps.td",
+        "IR/AllocationOpInterface.td",
+        "IR/BufferizationEnums.td",
+        "IR/BufferizableOpInterface.td",
+        "TransformOps/BufferizationTransformOps.td",
+        "Transforms/Passes.td",
+    ],
+    include_directories: ["mlir/Dialect/Bufferization"],
 }
+
 melior_macro::dialect! {
     name: "complex",
-    table_gen: r#"include "mlir/Dialect/Complex/IR/ComplexBase.td" include "mlir/Dialect/Complex/IR/ComplexOps.td""#
+    files: ["ComplexBase.td", "ComplexOps.td"],
+    include_directories: ["mlir/Dialect/Complex/IR"],
 }
 
 melior_macro::dialect! {
