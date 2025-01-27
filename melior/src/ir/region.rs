@@ -40,7 +40,11 @@ impl<'c> Region<'c> {
     }
 
     /// Inserts a block after another block.
-    pub fn insert_block_after(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef<'c, '_> {
+    pub fn insert_block_after(
+        &mut self,
+        one: BlockRef<'c, '_>,
+        other: Block<'c>,
+    ) -> BlockRef<'c, '_> {
         unsafe {
             let r#ref = BlockRef::from_raw(other.to_raw());
 
