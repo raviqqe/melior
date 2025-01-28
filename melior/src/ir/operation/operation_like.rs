@@ -60,7 +60,7 @@ where
     }
 
     /// Returns all operands.
-    fn operands(self) -> impl Iterator<Item = Value<'c, 'a>> {
+    fn operands(self) -> impl Iterator<Item = Value<'c, 'a>> + 'a {
         (0..self.operand_count())
             .map(move |index| self.operand(index).expect("valid operand index"))
     }
@@ -86,7 +86,7 @@ where
     }
 
     /// Returns all results.
-    fn results(self) -> impl Iterator<Item = OperationResult<'c, 'a>> {
+    fn results(self) -> impl Iterator<Item = OperationResult<'c, 'a>> + 'a {
         (0..self.result_count()).map(move |index| self.result(index).expect("valid result index"))
     }
 
