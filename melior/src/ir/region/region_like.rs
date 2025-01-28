@@ -3,17 +3,16 @@ use mlir_sys::{
     mlirRegionAppendOwnedBlock, mlirRegionGetFirstBlock, mlirRegionInsertOwnedBlockAfter,
     mlirRegionInsertOwnedBlockBefore, MlirRegion,
 };
-use std::mem::forget;
 
 /// A region-like trait.
-trait RegionLike<'c, 'a> {
+trait RegionLike<'c, 'a>: Sized {
     /// Converts a region into a raw object.
     fn to_raw(self) -> MlirRegion;
 
     /// Returns the first block in a region.
-    fn first_block(&self) -> Option<BlockRef<'c, '_>> {
+    fn first_block(self) -> Option<BlockRef<'c, 'a>> {
         unsafe {
-            let block = mlirRegionGetFirstBlock(self.raw);
+            let block = mlirRegionGetFirstBlock(self.to_raw());
 
             if block.ptr.is_null() {
                 None
@@ -24,44 +23,35 @@ trait RegionLike<'c, 'a> {
     }
 
     /// Inserts a block after another block.
-    fn insert_block_after(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef<'c, '_> {
+    fn insert_block_after(self, one: BlockRef<'c, 'a>, other: Block<'c>) -> BlockRef<'c, 'a> {
         unsafe {
             let r#ref = BlockRef::from_raw(other.to_raw());
 
-            mlirRegionInsertOwnedBlockAfter(self.raw, one.to_raw(), other.into_raw());
+            mlirRegionInsertOwnedBlockAfter(self.to_raw(), one.to_raw(), other.into_raw());
 
             r#ref
         }
     }
 
     /// Inserts a block before another block.
-    fn insert_block_before(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef<'c, '_> {
+    fn insert_block_before(self, one: BlockRef<'c, 'a>, other: Block<'c>) -> BlockRef<'c, 'a> {
         unsafe {
             let r#ref = BlockRef::from_raw(other.to_raw());
 
-            mlirRegionInsertOwnedBlockBefore(self.raw, one.to_raw(), other.into_raw());
+            mlirRegionInsertOwnedBlockBefore(self.to_raw(), one.to_raw(), other.into_raw());
 
             r#ref
         }
     }
 
     /// Appends a block.
-    fn append_block(&self, block: Block<'c>) -> BlockRef<'c, '_> {
+    fn append_block(self, block: Block<'c>) -> BlockRef<'c, 'a> {
         unsafe {
             let r#ref = BlockRef::from_raw(block.to_raw());
 
-            mlirRegionAppendOwnedBlock(self.raw, block.into_raw());
+            mlirRegionAppendOwnedBlock(self.to_raw(), block.into_raw());
 
             r#ref
         }
-    }
-
-    /// Converts a region into a raw object.
-    fn into_raw(self) -> mlir_sys::MlirRegion {
-        let region = self.raw;
-
-        forget(self);
-
-        region
     }
 }
