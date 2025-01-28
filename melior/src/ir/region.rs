@@ -16,7 +16,7 @@ pub struct Region<'c> {
     _block: PhantomData<Block<'c>>,
 }
 
-impl<'c> Region<'c> {
+impl Region<'_> {
     /// Creates a region.
     pub fn new() -> Self {
         Self {
@@ -35,7 +35,7 @@ impl<'c> Region<'c> {
     }
 }
 
-impl<'c, 'a> RegionLike<'c, 'a> for &Region<'c> {
+impl<'c> RegionLike<'c, '_> for &Region<'c> {
     fn to_raw(self) -> MlirRegion {
         self.raw
     }
