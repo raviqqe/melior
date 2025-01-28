@@ -17,7 +17,7 @@ use mlir_sys::{
 use std::fmt::Display;
 
 /// An operation-like  trait.
-trait OperationLike<'c: 'a, 'a>: Copy + Display
+pub trait OperationLike<'c: 'a, 'a>: Copy + Display
 where
     Self: 'a,
 {
