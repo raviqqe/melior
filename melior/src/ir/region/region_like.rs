@@ -1,12 +1,15 @@
 use crate::ir::{Block, BlockRef};
 use mlir_sys::{
-    mlirRegionAppendOwnedBlock, mlirRegionCreate, mlirRegionGetFirstBlock,
-    mlirRegionInsertOwnedBlockAfter, mlirRegionInsertOwnedBlockBefore,
+    mlirRegionAppendOwnedBlock, mlirRegionGetFirstBlock, mlirRegionInsertOwnedBlockAfter,
+    mlirRegionInsertOwnedBlockBefore, MlirRegion,
 };
 use std::mem::forget;
 
 /// A region-like trait.
 trait RegionLike<'c, 'a> {
+    /// Converts a region into a raw object.
+    fn to_raw(self) -> MlirRegion;
+
     /// Returns the first block in a region.
     fn first_block(&self) -> Option<BlockRef<'c, '_>> {
         unsafe {
