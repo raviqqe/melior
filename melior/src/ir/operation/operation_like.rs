@@ -58,7 +58,8 @@ trait OperationLike<'c: 'a, 'a>: Copy + Display {
 
     /// Returns all operands.
     fn operands(self) -> impl Iterator<Item = Value<'c, 'a>> {
-        (0..self.operand_count()).map(|index| self.operand(index).expect("valid operand index"))
+        (0..self.operand_count())
+            .map(move |index| self.operand(index).expect("valid operand index"))
     }
 
     /// Returns the number of results.
@@ -83,7 +84,7 @@ trait OperationLike<'c: 'a, 'a>: Copy + Display {
 
     /// Returns all results.
     fn results(self) -> impl Iterator<Item = OperationResult<'c, 'a>> {
-        (0..self.result_count()).map(|index| self.result(index).expect("valid result index"))
+        (0..self.result_count()).map(move |index| self.result(index).expect("valid result index"))
     }
 
     /// Returns the number of regions.
