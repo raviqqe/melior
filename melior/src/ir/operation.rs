@@ -1,6 +1,7 @@
 //! Operations and operation builders.
 
 mod builder;
+mod operation_like;
 mod printing_flags;
 mod result;
 
