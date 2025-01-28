@@ -20,6 +20,6 @@ pub use self::{
     module::Module,
     operation::{Operation, OperationRef},
     r#type::{ShapedTypeLike, Type, TypeLike},
-    region::{Region, RegionRef},
+    region::{Region, RegionLike, RegionRef},
     value::{Value, ValueLike},
 };

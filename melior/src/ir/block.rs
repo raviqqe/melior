@@ -205,7 +205,9 @@ impl Debug for BlockRef<'_, '_> {
 mod tests {
     use super::*;
     use crate::{
-        ir::{operation::OperationBuilder, r#type::IntegerType, Module, Region, ValueLike},
+        ir::{
+            operation::OperationBuilder, r#type::IntegerType, Module, Region, RegionLike, ValueLike,
+        },
         test::create_test_context,
         Error,
     };

@@ -368,8 +368,6 @@ pub fn zext<'c>(
 
 #[cfg(test)]
 mod tests {
-    use tests::r#type::pointer;
-
     use super::*;
     use crate::{
         dialect::{
@@ -383,11 +381,12 @@ mod tests {
             attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
             block::BlockLike,
             r#type::{FunctionType, IntegerType},
-            Block, Module, Region,
+            Block, Module, Region, RegionLike,
         },
         pass::{self, PassManager},
         test::create_test_context,
     };
+    use tests::r#type::pointer;
 
     fn convert_module<'c>(context: &'c Context, module: &mut Module<'c>) {
         let pass_manager = PassManager::new(context);
