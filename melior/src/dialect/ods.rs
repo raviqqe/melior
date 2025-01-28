@@ -201,9 +201,8 @@ mod tests {
         dialect,
         ir::{
             attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
-            block::BlockLike,
             r#type::{FunctionType, IntegerType},
-            Block, Location, Module, Region, Type,
+            Block, BlockLike, Location, Module, Region, RegionLike, Type,
         },
         pass::{self, PassManager},
         test::create_test_context,

@@ -155,7 +155,7 @@ mod tests {
         ir::{
             attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
             r#type::{FunctionType, IntegerType, Type},
-            Block, Module, Region,
+            Block, Module, Region, RegionLike,
         },
         test::load_all_dialects,
         Context,

@@ -77,7 +77,7 @@ mod tests {
             attribute::{StringAttribute, TypeAttribute},
             block::BlockLike,
             r#type::{FunctionType, IntegerType},
-            Block, Location, Module, Region, Type,
+            Block, Location, Module, Region, RegionLike, Type,
         },
         test::load_all_dialects,
         Context,

@@ -218,7 +218,7 @@ mod tests {
             attribute::{StringAttribute, TypeAttribute},
             block::BlockLike,
             r#type::FunctionType,
-            Block, Identifier, Location, Module, Region,
+            Block, Identifier, Location, Module, Region, RegionLike,
         },
         pass::PassManager,
         test::create_test_context,

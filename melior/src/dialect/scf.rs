@@ -116,7 +116,7 @@ mod tests {
             attribute::{FloatAttribute, IntegerAttribute, StringAttribute, TypeAttribute},
             block::BlockLike,
             r#type::{FunctionType, IntegerType, Type},
-            Attribute, Block, Module,
+            Attribute, Block, Module, RegionLike,
         },
         test::load_all_dialects,
         Context,

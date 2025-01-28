@@ -36,11 +36,9 @@ mod tests {
         dialect::{self, arith, func, scf},
         ir::{
             attribute::{IntegerAttribute, StringAttribute, TypeAttribute},
-            block::BlockLike,
             operation::OperationBuilder,
             r#type::{FunctionType, IntegerType},
-            region::RegionLike,
-            Block, Location, Module, Region, Type, Value,
+            Block, BlockLike, Location, Module, Region, RegionLike, Type, Value,
         },
         test::load_all_dialects,
     };
