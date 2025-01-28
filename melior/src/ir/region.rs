@@ -99,6 +99,12 @@ impl RegionRef<'_, '_> {
     }
 }
 
+impl<'c, 'a> RegionLike<'c, 'a> for RegionRef<'c, 'a> {
+    fn to_raw(self) -> MlirRegion {
+        self.raw
+    }
+}
+
 impl<'c> Deref for RegionRef<'c, '_> {
     type Target = Region<'c>;
 
