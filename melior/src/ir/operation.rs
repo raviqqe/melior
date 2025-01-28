@@ -17,7 +17,7 @@ use core::{
 use mlir_sys::{
     mlirOperationClone, mlirOperationDestroy, mlirOperationEqual, mlirOperationPrint, MlirOperation,
 };
-pub use operation_like::OperationLike;
+pub use operation_like::{OperationLike, OperationLikeMut};
 use std::{
     ffi::c_void,
     fmt::{Debug, Display, Formatter},
@@ -72,6 +72,14 @@ impl<'c: 'a, 'a> OperationLike<'c, 'a> for &'a Operation<'c> {
         self.raw
     }
 }
+
+impl<'c: 'a, 'a> OperationLike<'c, 'a> for &'a mut Operation<'c> {
+    fn to_raw(self) -> MlirOperation {
+        self.raw
+    }
+}
+
+impl<'c: 'a, 'a> OperationLikeMut<'c, 'a> for &'a mut Operation<'c> {}
 
 impl Clone for Operation<'_> {
     fn clone(&self) -> Self {
@@ -198,6 +206,8 @@ impl<'c: 'a, 'a> OperationLike<'c, 'a> for OperationRefMut<'c, 'a> {
     }
 }
 
+impl<'c: 'a, 'a> OperationLikeMut<'c, 'a> for OperationRefMut<'c, 'a> {}
+
 impl OperationRefMut<'_, '_> {
     /// Creates an operation reference from a raw object.
     ///
@@ -265,8 +275,8 @@ mod tests {
     use crate::{
         context::Context,
         ir::{
-            attribute::StringAttribute, Block, BlockLike, Location, OperationLike, Region,
-            RegionLike, Type,
+            attribute::StringAttribute, Block, BlockLike, Location, OperationLike,
+            OperationLikeMut, Region, RegionLike, Type,
         },
         test::create_test_context,
         Error,
