@@ -17,7 +17,10 @@ use mlir_sys::{
 use std::fmt::Display;
 
 /// An operation-like  trait.
-trait OperationLike<'c: 'a, 'a>: Copy + Display {
+trait OperationLike<'c: 'a, 'a>: Copy + Display
+where
+    Self: 'a,
+{
     /// Converts an operation into a raw object.
     fn to_raw(self) -> MlirOperation;
 
@@ -108,8 +111,8 @@ trait OperationLike<'c: 'a, 'a>: Copy + Display {
     }
 
     /// Returns all regions.
-    fn regions(self) -> impl Iterator<Item = RegionRef<'c, 'a>> {
-        (0..self.region_count()).map(|index| self.region(index).expect("valid result index"))
+    fn regions(self) -> impl Iterator<Item = RegionRef<'c, 'a>> + 'a {
+        (0..self.region_count()).map(move |index| self.region(index).expect("valid result index"))
     }
 
     /// Gets the location of the operation.
@@ -138,9 +141,9 @@ trait OperationLike<'c: 'a, 'a>: Copy + Display {
     }
 
     /// Returns all successors.
-    fn successors(self) -> impl Iterator<Item = BlockRef<'c, 'a>> {
+    fn successors(self) -> impl Iterator<Item = BlockRef<'c, 'a>> + 'a {
         (0..self.successor_count())
-            .map(|index| self.successor(index).expect("valid successor index"))
+            .map(move |index| self.successor(index).expect("valid successor index"))
     }
 
     /// Returns the number of attributes.
@@ -170,7 +173,7 @@ trait OperationLike<'c: 'a, 'a>: Copy + Display {
     /// Returns all attributes.
     fn attributes(self) -> impl Iterator<Item = (Identifier<'c>, Attribute<'c>)> + 'a {
         (0..self.attribute_count())
-            .map(|index| self.attribute_at(index).expect("valid attribute index"))
+            .map(move |index| self.attribute_at(index).expect("valid attribute index"))
     }
 
     /// Returns a attribute with the given name.
