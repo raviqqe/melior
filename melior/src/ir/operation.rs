@@ -264,8 +264,12 @@ mod tests {
     use super::*;
     use crate::{
         context::Context,
-        ir::{attribute::StringAttribute, Block, BlockLike, Location, Region, RegionLike, Type},
+        ir::{
+            attribute::StringAttribute, Block, BlockLike, Location, OperationLike, Region,
+            RegionLike, Type,
+        },
         test::create_test_context,
+        Error,
     };
     use pretty_assertions::assert_eq;
 
