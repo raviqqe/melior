@@ -1,3 +1,4 @@
+/// A region-like trait.
 impl RegionLike<'c, 'a> {
     /// Creates a region.
     pub fn new() -> Self {

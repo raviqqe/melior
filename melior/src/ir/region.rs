@@ -9,6 +9,7 @@ use std::{
     mem::{forget, transmute},
     ops::Deref,
 };
+mod region_like;
 
 /// A region.
 #[derive(Debug)]
