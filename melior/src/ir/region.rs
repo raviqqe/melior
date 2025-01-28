@@ -1,12 +1,8 @@
 mod region_like;
 
 pub use self::region_like::RegionLike;
-use super::{Block, BlockRef};
-use mlir_sys::{
-    mlirRegionAppendOwnedBlock, mlirRegionCreate, mlirRegionDestroy, mlirRegionEqual,
-    mlirRegionGetFirstBlock, mlirRegionInsertOwnedBlockAfter, mlirRegionInsertOwnedBlockBefore,
-    MlirRegion,
-};
+use super::Block;
+use mlir_sys::{mlirRegionCreate, mlirRegionDestroy, mlirRegionEqual, MlirRegion};
 use std::{
     marker::PhantomData,
     mem::{forget, transmute},

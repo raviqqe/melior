@@ -39,7 +39,8 @@ mod tests {
             block::BlockLike,
             operation::OperationBuilder,
             r#type::{FunctionType, IntegerType},
-            Block, Location, Module, Region, RegionLike, Type, Value,
+            region::RegionLike,
+            Block, Location, Module, Region, Type, Value,
         },
         test::load_all_dialects,
     };
