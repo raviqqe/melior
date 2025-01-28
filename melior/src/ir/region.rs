@@ -1,3 +1,5 @@
+mod region_like;
+
 use super::{Block, BlockRef};
 use mlir_sys::{
     mlirRegionAppendOwnedBlock, mlirRegionCreate, mlirRegionDestroy, mlirRegionEqual,
@@ -9,7 +11,6 @@ use std::{
     mem::{forget, transmute},
     ops::Deref,
 };
-mod region_like;
 
 /// A region.
 #[derive(Debug)]

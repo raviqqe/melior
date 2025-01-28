@@ -1,15 +1,14 @@
-/// A region-like trait.
-impl RegionLike<'c, 'a> {
-    /// Creates a region.
-    pub fn new() -> Self {
-        Self {
-            raw: unsafe { mlirRegionCreate() },
-            _block: Default::default(),
-        }
-    }
+use crate::ir::{Block, BlockRef};
+use mlir_sys::{
+    mlirRegionAppendOwnedBlock, mlirRegionCreate, mlirRegionGetFirstBlock,
+    mlirRegionInsertOwnedBlockAfter, mlirRegionInsertOwnedBlockBefore,
+};
+use std::mem::forget;
 
+/// A region-like trait.
+trait RegionLike<'c, 'a> {
     /// Returns the first block in a region.
-    pub fn first_block(&self) -> Option<BlockRef<'c, '_>> {
+    fn first_block(&self) -> Option<BlockRef<'c, '_>> {
         unsafe {
             let block = mlirRegionGetFirstBlock(self.raw);
 
@@ -22,7 +21,7 @@ impl RegionLike<'c, 'a> {
     }
 
     /// Inserts a block after another block.
-    pub fn insert_block_after(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef<'c, '_> {
+    fn insert_block_after(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef<'c, '_> {
         unsafe {
             let r#ref = BlockRef::from_raw(other.to_raw());
 
@@ -33,7 +32,7 @@ impl RegionLike<'c, 'a> {
     }
 
     /// Inserts a block before another block.
-    pub fn insert_block_before(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef<'c, '_> {
+    fn insert_block_before(&self, one: BlockRef<'c, '_>, other: Block<'c>) -> BlockRef<'c, '_> {
         unsafe {
             let r#ref = BlockRef::from_raw(other.to_raw());
 
@@ -44,7 +43,7 @@ impl RegionLike<'c, 'a> {
     }
 
     /// Appends a block.
-    pub fn append_block(&self, block: Block<'c>) -> BlockRef<'c, '_> {
+    fn append_block(&self, block: Block<'c>) -> BlockRef<'c, '_> {
         unsafe {
             let r#ref = BlockRef::from_raw(block.to_raw());
 
@@ -55,7 +54,7 @@ impl RegionLike<'c, 'a> {
     }
 
     /// Converts a region into a raw object.
-    pub const fn into_raw(self) -> mlir_sys::MlirRegion {
+    fn into_raw(self) -> mlir_sys::MlirRegion {
         let region = self.raw;
 
         forget(self);
